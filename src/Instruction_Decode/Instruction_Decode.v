@@ -23,7 +23,7 @@ module Instruction_Decode(
 	wire [2:0] ALUOp; //wire from Control FSM to ALU Decoder
 	wire RegWrite;
 	reg [2:0] funct3;
-	reg funct7_5;
+	reg [6:0] funct7
 	reg [4:0] rd, rs1, rs2;
 	wire [3:0] state;
 	
@@ -33,21 +33,21 @@ module Instruction_Decode(
 		if (instr[6:0] == 7'b0110011) begin //R-Type
 		
 			funct3 = instr[14:12];
-			funct7_5 = instr[30];
+			funct7 = instr[31:25];
 		
 		end
 		
 		else if (instr[6:0] == 7'b0010011) begin  //I-Type (excluding lw)
 		
 			funct3 = instr[14:12];
-			funct7_5 = instr[30];
+			funct7 = 7'b0;
 		
 		end
 		
 		else begin //lw, sw, jal, and beq instructions:
 		
 			funct3 = 3'b000;
-			funct7_5 = 1'b0;
+			funct7 = 7'b0;
 		
 		end
 	
@@ -134,13 +134,11 @@ module Instruction_Decode(
 
 	//Instantiate ALU Decoder module
 	
-	ALU_Decoder instanceALUDec(
+	ALUdecoder instanceALUDec(
 	
-		.ALUOp(ALUOp),
 		.funct3(funct3),
-		.opcode5(instr[6]),
-		.funct7_5(funct7_5),
-		.ALUControl(ALUControl)
+		.funct7(funct7),
+		.alu_op(ALUControl)
 	
 	);
 
