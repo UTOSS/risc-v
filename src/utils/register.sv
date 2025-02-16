@@ -3,12 +3,17 @@
 module register #( type DATA_TYPE
                  )
                  ( input  wire      clk
+                 , input  wire      reset
                  , input  wire      en
-                 , input  DATA_TYPE data_in
-                 , output DATA_TYPE data_out
+                 , input  wire [31:0] data_in
+                 , output reg [31:0] data_out
                  );
 
-  always_ff @(posedge clk) begin
+  always @(posedge clk) begin
+    if (reset) begin
+      data_out <= 32'b0;
+    end
+    else
     if (en) begin
       data_out <= data_in;
     end
