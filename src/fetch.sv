@@ -20,9 +20,7 @@ module fetch ( input  wire    clk
     );
 
   adder #( .WIDTH( `PROCESSOR_BITNESS ) ) program_counter_plus_4
-    ( .clk ( clk       )
-    , .en  ( `TRUE     )
-    , .lhs ( pc_cur    )
+    ( .lhs ( pc_cur    )
     , .rhs ( 32'h4     )
     , .out ( pc_next   )
     );
