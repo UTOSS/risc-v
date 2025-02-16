@@ -24,7 +24,7 @@ module Instruction_Decode(
 	wire [2:0] ALUOp; //wire from Control FSM to ALU Decoder
 	wire RegWrite;
 	reg [2:0] funct3;
-	reg [6:0] funct7
+	reg [6:0] funct7;
 	reg [4:0] rd, rs1, rs2;
 	wire [3:0] state;
 	
