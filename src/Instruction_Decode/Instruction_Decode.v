@@ -1,3 +1,4 @@
+`include "params.vh"
 module Instruction_Decode( 
 
 	input wire [31:0] instr,
@@ -30,14 +31,14 @@ module Instruction_Decode(
 	//combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
 	always@(*) begin
 	
-		if (instr[6:0] == 7'b0110011) begin //R-Type
+		if (instr[6:0] == RType) begin //R-Type
 		
 			funct3 = instr[14:12];
 			funct7 = instr[31:25];
 		
 		end
 		
-		else if (instr[6:0] == 7'b0010011) begin  //I-Type (excluding lw)
+		else if (instr[6:0] == IType) begin  //I-Type (excluding lw)
 		
 			funct3 = instr[14:12];
 			funct7 = 7'b0;
@@ -57,7 +58,7 @@ module Instruction_Decode(
 	//The logic depends on the instruction type
 	always@(*) begin
 	
-		if (instr[6:0] == 7'b0110011) begin //R-Type
+		if (instr[6:0] == RType) begin //R-Type
 		
 			rd = instr[11:7];
 			rs1 = instr[19:15];
@@ -65,7 +66,7 @@ module Instruction_Decode(
 		
 		end
 		
-		else if (instr[6:0] == 7'b0010011 || instr[6:0] == 7'b0000011) begin //I-Type (where lw is I type)
+		else if (instr[6:0] == IType || instr[6:0] == LWType) begin //I-Type (where lw is I type)
 		
 			rd = instr[11:7];
 			rs1 = instr[19:15];
@@ -73,7 +74,7 @@ module Instruction_Decode(
 		
 		end
 		
-		else if (instr[6:0] == 7'b0100011 || instr[6:0] == 7'b1100011) begin //S-type and B-Type
+		else if (instr[6:0] == SType || instr[6:0] == BType) begin //S-type and B-Type
 		
 			rd = 5'b00000;
 			rs1 = instr[19:15];
@@ -81,7 +82,7 @@ module Instruction_Decode(
 		
 		end
 		
-		else if (instr[6:0] == 7'b1101111) begin //J-Type
+		else if (instr[6:0] == JType) begin //J-Type
 		
 			rd = instr[11:7];
 			rs1 = 5'b00000;
