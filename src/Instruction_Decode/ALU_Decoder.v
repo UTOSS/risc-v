@@ -1,3 +1,5 @@
+`include "params.vh"
+
 module ALUdecoder_new (input [2:0] funct3, input [6:0] funct7, reg output alu_op);
 	always @(*)
 	begin
