@@ -104,11 +104,11 @@ module Instruction_Decode(
 	always@(*) begin
 		case(instr[6:0]) 
 
-			7'b0010011: ImmExt = {{20{instr[31]}}, instr[31:20]}; //I-Type
-			7'b0000011: ImmExt = {{20{instr[31]}}, instr[31:20]}; //lw
-			7'b0100011: ImmExt = {{20{instr[31]}}, instr[31:25], instr[11:7]}; //S-Type
-			7'b1100011: ImmExt = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0}; //B-Type
-			7'b1101111: ImmExt = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0}; //J-Type
+			IType : ImmExt = {{20{instr[31]}}, instr[31:20]}; //I-Type
+			LWType : ImmExt = {{20{instr[31]}}, instr[31:20]}; //lw
+			SType : ImmExt = {{20{instr[31]}}, instr[31:25], instr[11:7]}; //S-Type
+			BType : ImmExt = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0}; //B-Type
+			JType : ImmExt = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0}; //J-Type
 
 		endcase
 	end
