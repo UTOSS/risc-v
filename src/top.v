@@ -42,4 +42,10 @@ module top ( input wire clk
     , .instr           ( instr           )
     );
 
+  wire [31:0] imm_ext;
+  extend extend
+    ( .in      ( instr[31:20] )
+    , .imm_ext ( imm_ext      )
+    );
+
 endmodule
