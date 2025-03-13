@@ -1,0 +1,11 @@
+src/utils/adder.sv
+src/utils/MA.v
+src/utils/mux.sv
+src/utils/register.sv
+src/Instruction_Decode/ALU_Decoder.v
+src/Instruction_Decode/Instruction_Decode.v
+src/Instruction_Decode/RegisterFile.v
+src/ControlFSM.v
+src/fetch.sv
+src/top.v
+src/extend.sv
