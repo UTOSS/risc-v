@@ -4,8 +4,10 @@ module top ( input wire clk
            , input wire reset
            );
 
-  wire cfsm__pc_update;
+  wire    cfsm__pc_update;
+  wire    cfsm__pc_src;
   instr_t instr;
+  imm_t   imm_ext;
 
   wire __tmp_AdrSrc
      , __tmp_IRWrite
@@ -39,10 +41,11 @@ module top ( input wire clk
     ( .clk             ( clk             )
     , .reset           ( reset           )
     , .cfsm__pc_update ( cfsm__pc_update )
+    , .cfsm__pc_src    ( cfsm__pc_src    )
+    , .imm_ext         ( imm_ext         )
     , .instr           ( instr           )
     );
 
-  wire [31:0] imm_ext;
   extend extend
     ( .in      ( instr[31:20] )
     , .imm_ext ( imm_ext      )

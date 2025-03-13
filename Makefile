@@ -1,5 +1,4 @@
 SRC_DIR  := src
-SRCS 		 := $(shell find $(SRC_DIR) -type f \( -name "*.sv" -o -name "*.svh" -o -name "*.v" -o -name "*.vh" \))
 OUTPUT 	 := out/top.vvp
 IVERILOG := iverilog
 VVP 		 := vvp
@@ -7,7 +6,7 @@ VVP 		 := vvp
 all: $(OUTPUT)
 
 $(OUTPUT): $(SRCS)
-	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS)
+	$(IVERILOG) -g2012 -o $(OUTPUT) -c src/top.cf
 
 run: $(OUTPUT)
 	$(VVP) $(OUTPUT)
