@@ -46,15 +46,15 @@ module ControlFSM(
 			
 			DECODE: begin
 			
-				if (opcode == 7'b1101111) next_state = UNCONDJUMP;
+				if (opcode == JType) next_state = UNCONDJUMP;
 				
-				else if (opcode == 7'b0110011) next_state = EXECUTER;
+				else if (opcode == RType) next_state = EXECUTER;
 				
-				else if (opcode == 7'b0010011) next_state = EXECUTEI;
+				else if (opcode == IType_logic) next_state = EXECUTEI;
 				
-				else if (opcode == 7'b0000011 || opcode == 7'b0100011) next_state = MEMADR;
+				else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
 				
-				else if (opcode == 7'b1100011) next_state = BRANCHIFEQ;
+				else if (opcode == BType) next_state = BRANCHIFEQ;
 				
 				else next_state = DECODE;
 			
@@ -68,9 +68,9 @@ module ControlFSM(
 			
 			MEMADR: begin
 			
-				if (opcode == 7'b0000011) next_state = MEMREAD;
+				if (opcode == IType_load) next_state = MEMREAD;
 				
-				else if (opcode == 7'b0100011) next_state = MEMWRITE;
+				else if (opcode == SType) next_state = MEMWRITE;
 				
 				else next_state = MEMADR;
 			
