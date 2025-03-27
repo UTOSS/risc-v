@@ -1,18 +1,23 @@
 `timescale 1ns/1ps
 
 `include "src/utils.svh"
+`include "src/types.svh"
 
 module fetch_tb;
 
-  reg      clk;
-  reg      reset;
-  reg      cfsm__pc_update;
-  instr_t  instr;
+  reg     clk;
+  reg     reset;
+  reg     cfsm__pc_update;
+  reg     cfsm__pc_src;
+  imm_t   imm_ext;
+  instr_t instr;
 
   fetch uut
     ( .clk             ( clk             )
     , .reset           ( reset           )
     , .cfsm__pc_update ( cfsm__pc_update )
+    , .cfsm__pc_src    ( cfsm__pc_src    )
+    , .imm_ext         ( imm_ext         )
     , .instr           ( instr           )
     );
 
@@ -22,7 +27,10 @@ module fetch_tb;
   end
 
   initial begin
+
+    // testing incrementing pc naturally
     cfsm__pc_update <= `FALSE;
+    cfsm__pc_src    <= 1;
 
     assert(uut.pc_cur  === 32'hxxxxxxxx) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(uut.pc_next === 32'hxxxxxxxx) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
@@ -135,11 +143,70 @@ module fetch_tb;
     assert(uut.pc_next === 32'h00001004) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
     assert(instr       === 32'hxxxxxxxx) else $error("`instr` is `%0h`", instr);
 
+    reset <= `TRUE;
+    #10;
+    reset <= `FALSE;
+
+    // testing pc update via pc_target
+    uut.instruction_memory.M[64] = 32'hdeadbeef;
+    uut.instruction_memory.M[65] = 32'hfeedface;
+    uut.instruction_memory.M[66] = 32'hcafebabe;
+    uut.instruction_memory.M[128] = 32'hf00dcafe;
+    uut.instruction_memory.M[129] = 32'hd00dfafe;
+
+    cfsm__pc_src <= 0;
+    imm_ext      <= 32'h00000100;
+
+    #10;
+
+    assert(uut.pc_cur  === 32'h00000100) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
+    assert(uut.pc_next === 32'h00000200) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
+    assert(instr       === 32'hdeadbeef) else $error("`instr` is `%0h`", instr);
+
+    #10;
+
+    assert(uut.pc_cur  === 32'h00000200) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
+    assert(uut.pc_next === 32'h00000300) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
+    assert(instr       === 32'hf00dcafe) else $error("`instr` is `%0h`", instr);
+
+    cfsm__pc_src <= 1;
+
+    #10;
+
+    assert(uut.pc_cur  === 32'h00000204) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
+    assert(uut.pc_next === 32'h00000208) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
+    assert(instr       === 32'hd00dfafe) else $error("`instr` is `%0h`", instr);
+
+    imm_ext <= 32'h00002000; // out of memory bounds
+    cfsm__pc_src <= 0;
+
+    #10;
+
+    assert(uut.pc_cur  === 32'h00002204) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
+    assert(uut.pc_next === 32'h00004204) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
+    assert(instr       === 32'hxxxxxxxx) else $error("`instr` is `%0h`", instr);
+
+    imm_ext <= 32'h0; // zero jump
+
+    #10;
+
+    assert(uut.pc_cur  === 32'h00002204) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
+    assert(uut.pc_next === 32'h00002204) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
+    assert(instr       === 32'hxxxxxxxx) else $error("`instr` is `%0h`", instr);
+
+    imm_ext <= -32'd1; // negative jump
+
+    #10;
+
+    assert(uut.pc_cur  === 32'h00002203) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
+    assert(uut.pc_next === 32'h00002202) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
+    assert(instr       === 32'hxxxxxxxx) else $error("`instr` is `%0h`", instr);
+
     $finish;
   end
 
   initial begin
-    $dumpfile("fetch_tb.vcd");
+    $dumpfile("test/fetch_tb.vcd");
     $dumpvars(0, fetch_tb);
   end
 endmodule
