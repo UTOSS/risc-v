@@ -46,9 +46,9 @@ module fetch ( input  wire    clk
   assign pc_mux_in[0] = pc_target;
   assign pc_mux_in[1] = pc_plus_4;
   mux #( .INPUT_COUNT ( 2 ), .INPUT_WIDTH ( `PROCESSOR_BITNESS ) ) pc_mux
-    ( .sel ( cfsm__pc_src           )
-    , .in  ( pc_mux_in              )
-    , .out ( pc_next                )
+    ( .sel ( cfsm__pc_src )
+    , .in  ( pc_mux_in    )
+    , .out ( pc_next      )
     );
 
 endmodule

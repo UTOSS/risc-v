@@ -13,6 +13,6 @@ run: $(OUTPUT)
 
 # tmp
 fetch_tb:
-	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS) test/fetch_tb.sv
+	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS) -c src/top.cf test/fetch_tb.sv
 
 .PHONY: all run
