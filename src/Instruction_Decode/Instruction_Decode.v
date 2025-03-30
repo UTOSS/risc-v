@@ -113,26 +113,6 @@ module Instruction_Decode(
 		endcase
 	end
 
-	//instantiate state machine module
-	ControlFSM instanceFSM(
-		
-		.opcode(instr[6:0]),
-		.clk(clk),
-		.reset(reset),
-		.AdrSrc(AdrSrc),
-		.IRWrite(IRWrite),
-		.RegWrite(RegWrite),
-		.PCUpdate(PCUpdate),
-		.MemWrite(MemWrite),
-		.Branch(Branch),
-		.ALUSrcA(ALUSrcA),
-		.ALUSrcB(ALUSrcB),
-		.ALUOp(ALUOp),
-		.ResultSrc(ResultSrc),
-		.FSMState(state)
-	
-	);
-
 	//Instantiate ALU Decoder module
 	
 	ALUdecoder instanceALUDec(
