@@ -2,7 +2,8 @@ src/utils/adder.sv
 src/utils/MA.v
 src/utils/mux.sv
 src/utils/register.sv
-src/Instruction_Decode/ALU_Decoder.v
+src/ALU&ALUdecoder/ALUDecoder.v
+src/ALU&ALUdecoder/ALU.v
 src/Instruction_Decode/Instruction_Decode.v
 src/Instruction_Decode/RegisterFile.v
 src/ControlFSM.v
