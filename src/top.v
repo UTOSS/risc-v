@@ -15,6 +15,8 @@ module top ( input wire clk
   data_t rs1;
   data_t rs2;
 
+  wire alu__zero_flag;
+
   wire __tmp_AdrSrc
      , __tmp_IRWrite
      , __tmp_RegWrite
@@ -26,11 +28,13 @@ module top ( input wire clk
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
+  data_t __tmp_ALUOut;
 
   ControlFSM control_fsm
     ( .opcode    ( opcode          )
     , .clk       ( clk             )
     , .reset     ( reset           )
+    , .zero_flag ( alu__zero_flag  )
     , .AdrSrc    ( __tmp_AdrSrc    )
     , .IRWrite   ( __tmp_IRWrite   )
     , .RegWrite  ( __tmp_RegWrite  )
@@ -63,6 +67,14 @@ module top ( input wire clk
     , .baseAddr        ( rs1              )
     , .writeData       ( rs2              )
     , .imm_ext         ( imm_ext          )
+    );
+
+  ALU alu
+    ( .a              ( rs1              )
+    , .b              ( rs2              )
+    , .alu_control    ( __tmp_ALUControl )
+    , .out            ( __tmp_ALUOut     )
+    , .zeroE          ( alu__zero_flag   )
     );
 
 endmodule
