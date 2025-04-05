@@ -19,7 +19,7 @@ module Instruction_Decode(
 	output wire [3:0] ALUControl,
 	output wire [31:0] baseAddr,
 	output wire [31:0] writeData,
-  output imm_t imm_ext,
+  output imm_t imm_ext
 );
 
 	wire [1:0] ALUOp; //wire from Control FSM to ALU Decoder
@@ -122,7 +122,7 @@ module Instruction_Decode(
 		.funct3(funct3),
 		.funct7(funct7),
 		.alu_op(ALUOp),
-		.alu_control(ALUControl),
+		.alu_control(ALUControl)
 
 	);
 
