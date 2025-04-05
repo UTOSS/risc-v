@@ -8,6 +8,7 @@ module ControlFSM(
 	input opcode_t opcode,
 	input wire clk,
 	input wire reset,
+  input wire zero_flag,
 	output reg AdrSrc,
 	output reg IRWrite,
 	output reg RegWrite,
