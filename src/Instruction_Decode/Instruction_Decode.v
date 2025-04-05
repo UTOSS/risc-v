@@ -1,4 +1,6 @@
 `include "src/params.vh"
+`include "src/types.svh"
+
 module Instruction_Decode(
 
 	input wire [31:0] instr,
@@ -16,11 +18,10 @@ module Instruction_Decode(
 	output wire [1:0] ResultSrc,
 	output wire [3:0] ALUControl,
 	output wire [31:0] baseAddr,
-	output wire [31:0] writeData
-
+	output wire [31:0] writeData,
+  output imm_t imm_ext,
 );
 
-	reg [31:0] ImmExt;
 	wire [1:0] ALUOp; //wire from Control FSM to ALU Decoder
 	wire RegWrite;
 	reg [2:0] funct3;
@@ -101,17 +102,16 @@ module Instruction_Decode(
 
 	end
 
-	//case statement for choosing 32-bit immediate format; based on opcode
+	// case statement for choosing 32-bit immediate format; based on opcode
+  // this is essentially the extend module of the processor
 	always@(*) begin
 		case(instr[6:0])
-
-			IType : ImmExt = {{20{instr[31]}}, instr[31:20]}; //I-Type
-			LWType : ImmExt = {{20{instr[31]}}, instr[31:20]}; //lw
-			SType : ImmExt = {{20{instr[31]}}, instr[31:25], instr[11:7]}; //S-Type
-			BType : ImmExt = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0}; //B-Type
-            UType : ImmExt = {{12{instr[31]}}, instr[31:12]}; //U-Type
-			JType : ImmExt = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0}; //J-Type
-
+			IType  : imm_ext = {{20{instr[31]}}, instr[31:20]};
+			LWType : imm_ext = {{20{instr[31]}}, instr[31:20]};
+			SType  : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
+			BType  : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+      UType  : imm_ext = {{12{instr[31]}}, instr[31:12]};
+			JType  : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
 		endcase
 	end
 
