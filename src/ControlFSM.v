@@ -54,7 +54,7 @@ module ControlFSM(
 
 				else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
 
-				else if (opcode == BType) next_state = BRANCHIFEQ;
+				else if (opcode == INSTR_OPCODE_BEQ) next_state = BRANCHIFEQ;
 
 				else next_state = DECODE;
 
