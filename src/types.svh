@@ -7,5 +7,8 @@
 typedef logic [`PROCESSOR_BITNESS-1:0] instr_t;
 typedef logic [`PROCESSOR_BITNESS-1:0] addr_t;
 typedef logic [`PROCESSOR_BITNESS-1:0] imm_t;
+typedef logic [`PROCESSOR_BITNESS-1:0] data_t;
+
+typedef logic [6:0] opcode_t;
 
 `endif

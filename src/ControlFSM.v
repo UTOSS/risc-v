@@ -1,9 +1,11 @@
 //created by Joonseo Park, for University of Toronto Open Source Society
 //A Moore Type Finite State Machine for the RV32I Microprocessor Control Unit
 
+`include "src/types.svh"
+
 module ControlFSM(
 
-	input wire [6:0] opcode,
+	input opcode_t opcode,
 	input wire clk,
 	input wire reset,
 	output reg AdrSrc,
