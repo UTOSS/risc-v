@@ -39,6 +39,7 @@ module top ( input wire clk
     , .IRWrite   ( __tmp_IRWrite   )
     , .RegWrite  ( __tmp_RegWrite  )
     , .PCUpdate  ( cfsm__pc_update )
+    , .pc_src    ( cfsm__pc_src    )
     , .MemWrite  ( __tmp_MemWrite  )
     , .Branch    ( __tmp_Branch    )
     , .ALUSrcA   ( __tmp_ALUSrcA   )
