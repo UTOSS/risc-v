@@ -54,7 +54,7 @@ module ControlFSM(
 
 				else if (opcode == 7'b0000011 || opcode == 7'b0100011) next_state = MEMADR;
 
-				else if (opcode == 7'b1100011) next_state = BRANCHIFEQ;
+				else if (opcode == INSTR_OPCODE_BEQ) next_state = BRANCHIFEQ;
 
 				else next_state = DECODE;
 
