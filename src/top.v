@@ -4,11 +4,16 @@ module top ( input wire clk
            , input wire reset
            );
 
-  wire    cfsm__pc_update;
-  wire    cfsm__pc_src;
-  instr_t instr;
+  wire     cfsm__pc_update;
+  wire     cfsm__pc_src;
+  instr_t  instr;
   opcode_t opcode;
-  imm_t   imm_ext;
+  imm_t    imm_ext;
+
+  data_t __tmp_ResultData;
+
+  data_t rs1;
+  data_t rs2;
 
   wire __tmp_AdrSrc
      , __tmp_IRWrite
@@ -48,9 +53,16 @@ module top ( input wire clk
     , .instr           ( instr           )
     );
 
-  extend extend
-    ( .in      ( instr[31:20] )
-    , .imm_ext ( imm_ext      )
+  Instruction_Decode instruction_decode
+    ( .instr           ( instr            )
+    , .clk             ( clk              )
+    , .reset           ( reset            )
+    , .ResultData      ( __tmp_ResultData )
+    , .opcode          ( opcode           )
+    , .ALUControl      ( __tmp_ALUControl )
+    , .baseAddr        ( rs1              )
+    , .writeData       ( rs2              )
+    , .imm_ext         ( imm_ext          )
     );
 
 endmodule
