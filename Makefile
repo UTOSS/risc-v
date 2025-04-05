@@ -15,4 +15,7 @@ run: $(OUTPUT)
 fetch_tb:
 	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS) -c src/top.cf test/fetch_tb.sv
 
+beq_tb:
+	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS) -c src/top.cf test/beq_tb.sv
+
 .PHONY: all run
