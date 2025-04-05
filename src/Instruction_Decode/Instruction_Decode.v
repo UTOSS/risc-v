@@ -7,6 +7,7 @@ module Instruction_Decode(
 	input wire clk,
 	input wire reset,
 	input wire [31:0] ResultData,
+  output opcode_t opcode,
 	output wire [3:0] ALUControl,
 	output wire [31:0] baseAddr,
 	output wire [31:0] writeData,
@@ -20,18 +21,20 @@ module Instruction_Decode(
 	reg [4:0] rd, rs1, rs2;
 	wire [3:0] state;
 
+  assign opcode = instr[6:0];
+
 	//combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
 	always@(*) begin
 
-		if (instr[6:0] == RType) begin //R-Type
+		if (opcode == RType) begin //R-Type
 
 			funct3 = instr[14:12];
 			funct7 = instr[31:25];
 
 		end
 
-		else if (instr[6:0] == IType_logic || instr[6:0] == IType_load
-            instr[6:0] == SType || instr[6:0] == BType) begin
+		else if (opcode == IType_logic || opcode == IType_load
+            opcode == SType || opcode == BType) begin
 
 			funct3 = instr[14:12];
 			funct7 = 7'b0;
@@ -51,7 +54,7 @@ module Instruction_Decode(
 	//The logic depends on the instruction type
 	always@(*) begin
 
-		if (instr[6:0] == RType) begin //R-Type
+		if (opcode == RType) begin //R-Type
 
 			rd = instr[11:7];
 			rs1 = instr[19:15];
@@ -59,7 +62,7 @@ module Instruction_Decode(
 
 		end
 
-		else if (instr[6:0] == IType || instr[6:0] == LWType) begin //I-Type (where lw is I type)
+		else if (opcode == IType || opcode == LWType) begin //I-Type (where lw is I type)
 
 			rd = instr[11:7];
 			rs1 = instr[19:15];
@@ -67,7 +70,7 @@ module Instruction_Decode(
 
 		end
 
-		else if (instr[6:0] == SType || instr[6:0] == BType) begin //S-type and B-Type
+		else if (opcode == SType || opcode == BType) begin //S-type and B-Type
 
 			rd = 5'b00000;
 			rs1 = instr[19:15];
@@ -75,7 +78,7 @@ module Instruction_Decode(
 
 		end
 
-		else if (instr[6:0] == JType) begin //J-Type
+		else if (opcode == JType) begin //J-Type
 
 			rd = instr[11:7];
 			rs1 = 5'b00000;
@@ -96,7 +99,7 @@ module Instruction_Decode(
 	// case statement for choosing 32-bit immediate format; based on opcode
   // this is essentially the extend module of the processor
 	always@(*) begin
-		case(instr[6:0])
+		case(opcode)
 			IType  : imm_ext = {{20{instr[31]}}, instr[31:20]};
 			LWType : imm_ext = {{20{instr[31]}}, instr[31:20]};
 			SType  : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};

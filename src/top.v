@@ -7,6 +7,7 @@ module top ( input wire clk
   wire    cfsm__pc_update;
   wire    cfsm__pc_src;
   instr_t instr;
+  opcode_t opcode;
   imm_t   imm_ext;
 
   wire __tmp_AdrSrc
@@ -17,11 +18,12 @@ module top ( input wire clk
   wire [1:0] __tmp_ALUSrcA
            , __tmp_ALUSrcB;
   wire [2:0] __tmp_ALUOp;
+  wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
 
   ControlFSM control_fsm
-    ( .opcode    ( 7'b0000000      )
+    ( .opcode    ( opcode          )
     , .clk       ( clk             )
     , .reset     ( reset           )
     , .AdrSrc    ( __tmp_AdrSrc    )
