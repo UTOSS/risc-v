@@ -49,6 +49,35 @@ module beq_tb;
 
     assert(uut.fetch.pc_cur    == 32'hFFFFFFF4) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
+    // beq without satisfied condition
+    reset <= `TRUE;
+
+    uut.fetch.instruction_memory.M[0] = 32'b0000000_00010_00001_000_1000_0_1100011; // beq x1, x2, 0x10
+    uut.instruction_decode.instanceRegFile.RFMem[5'b00001] = 32'h0000002a; // x1 = 42
+    uut.instruction_decode.instanceRegFile.RFMem[5'b00010] = 32'h0000002b; // x2 = 43
+
+    #10;
+    reset <= `FALSE;
+
+    assert(uut.opcode ==  7'b1100011) else $error("`uut.opcode` is `%0b`", uut.opcode);
+
+    assert(uut.fetch.pc_cur  == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.imm_ext == 32'h00000010) else $error("`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
+
+    assert(uut.alu.a == 32'h0000002a) else $error("`uut.alu.a` is `%0h`", uut.alu.a);
+    assert(uut.alu.b == 32'h0000002b) else $error("`uut.alu.b` is `%0h`", uut.alu.b);
+
+    //assert(uut.alu__zero_flag == `FALSE)     else $error("`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
+    //assert(uut.cfsm__pc_src   == 0 /* +4 */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
+
+    //assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    //assert(uut.fetch.pc_target == 32'h00000010) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
+
+    #10; // wait for pc update
+
+    //assert(uut.fetch.pc_cur    == 32'h00000004) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+
+
     $finish;
   end
 
