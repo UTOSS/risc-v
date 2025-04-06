@@ -67,15 +67,15 @@ module beq_tb;
     assert(uut.alu.a == 32'h0000002a) else $error("`uut.alu.a` is `%0h`", uut.alu.a);
     assert(uut.alu.b == 32'h0000002b) else $error("`uut.alu.b` is `%0h`", uut.alu.b);
 
-    //assert(uut.alu__zero_flag == `FALSE)     else $error("`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
-    //assert(uut.cfsm__pc_src   == 0 /* +4 */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
+    assert(uut.alu__zero_flag == `FALSE)     else $error("`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
+    assert(uut.cfsm__pc_src   == 0 /* +4 */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
-    //assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    //assert(uut.fetch.pc_target == 32'h00000010) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
+    assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_target == 32'h00000010) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
     #10; // wait for pc update
 
-    //assert(uut.fetch.pc_cur    == 32'h00000004) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000004) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
 
     $finish;
