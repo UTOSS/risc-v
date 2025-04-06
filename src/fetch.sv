@@ -43,8 +43,8 @@ module fetch ( input  wire    clk
 
   // Continuous assignment of array concatenation is not yet supported.
   addr_t pc_mux_in [1:0];
-  assign pc_mux_in[0] = pc_target;
-  assign pc_mux_in[1] = pc_plus_4;
+  assign pc_mux_in[0] = pc_plus_4;
+  assign pc_mux_in[1] = pc_target;
   mux #( .INPUT_COUNT ( 2 ), .INPUT_WIDTH ( `PROCESSOR_BITNESS ) ) pc_mux
     ( .sel ( cfsm__pc_src )
     , .in  ( pc_mux_in    )

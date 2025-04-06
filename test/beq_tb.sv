@@ -45,6 +45,10 @@ module beq_tb;
     assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
     assert(uut.fetch.pc_target == 32'hFFFFFFF4) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
+    #10; // wait for pc update
+
+    assert(uut.fetch.pc_cur    == 32'hFFFFFFF4) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+
     $finish;
   end
 
