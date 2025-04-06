@@ -11,4 +11,14 @@ typedef logic [`PROCESSOR_BITNESS-1:0] data_t;
 
 typedef logic [6:0] opcode_t;
 
+// based on table 7.2 of digital design and computer architecture book
+typedef enum logic [1:0] {
+  ALU_OP__MEMORY_ACCESS      = 2'b00,
+  ALU_OP__BRANCH             = 2'b01,
+  ALU_OP__REGISTER_OPERATION = 2'b10,
+
+  // default value to use when alu op is not to be relied on
+  ALU_OP__UNSET              = 2'b11
+} alu_op_t;
+
 `endif

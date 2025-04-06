@@ -14,7 +14,7 @@ module Instruction_Decode(
   output imm_t imm_ext
 );
 
-	wire [1:0] ALUOp; //wire from Control FSM to ALU Decoder
+	alu_op_t alu_op;
 	wire RegWrite;
 	reg [2:0] funct3;
 	reg [6:0] funct7;
@@ -49,6 +49,18 @@ module Instruction_Decode(
 		end
 
 	end
+
+  // determine ALU op based on the opcode; see Table 7.2 of the digital design and computer
+  // architecture book
+  always@(*) begin
+    case (opcode)
+      RType:   alu_op = ALU_OP__REGISTER_OPERATION;
+      LWType:  alu_op = ALU_OP__MEMORY_ACCESS;
+      SType:   alu_op = ALU_OP__MEMORY_ACCESS;
+      BType:   alu_op = ALU_OP__BRANCH;
+      default: alu_op = ALU_OP__UNSET;
+    endcase
+  end
 
 	//logic for extracting rs1, rs2, and rd registers from 32-bit instruction field
 	//The logic depends on the instruction type
@@ -115,7 +127,7 @@ module Instruction_Decode(
 
 		.funct3(funct3),
 		.funct7(funct7),
-		.alu_op(ALUOp),
+		.alu_op(alu_op),
 		.alu_control(ALUControl)
 
 	);
