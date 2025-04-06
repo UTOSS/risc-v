@@ -12,7 +12,7 @@ module ControlFSM(
 	output reg AdrSrc,
 	output reg IRWrite,
 	output reg RegWrite,
-	output reg PCUpdate,
+	output wire PCUpdate,
   output wire pc_src,
 	output reg MemWrite,
 	output reg Branch,
@@ -140,7 +140,6 @@ module ControlFSM(
 				ALUSrcB <= 2'b10;
 				ALUOp <= 2'b00;
 				ResultSrc <= 2'b00;
-				PCUpdate <= 1'b1;
 
 			end
 
@@ -159,7 +158,6 @@ module ControlFSM(
 				ALUOp <= 2'b01;
 				ResultSrc <= 2'b00;
 				Branch <= 1'b1;
-        PCUpdate <= `TRUE;
 
 			end
 
@@ -215,4 +213,6 @@ module ControlFSM(
 
   assign pc_src = zero_flag;
 
+  // in a single-cycle processor, PC is updated every cycle unconditionally
+  assign PCUpdate = `TRUE;
 endmodule

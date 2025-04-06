@@ -36,8 +36,6 @@ module beq_tb;
     assert(uut.fetch.pc_cur  == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
     assert(uut.fetch.imm_ext == 32'hFFFFFFF4) else $error("`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
-    #10 // wait for register retrieval
-
     assert(uut.alu.a == 32'h0000002a) else $error("`uut.alu.a` is `%0h`", uut.alu.a);
     assert(uut.alu.b == 32'h0000002a) else $error("`uut.alu.b` is `%0h`", uut.alu.b);
 
