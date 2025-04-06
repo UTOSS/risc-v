@@ -1,4 +1,6 @@
 *.vvp
 *.vcd
 
+!test/fetch_tb.vcd
+
 .devcontainer/
