@@ -1,0 +1,349 @@
+$date
+	Sun Apr  6 14:19:54 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module beq_tb $end
+$var reg 1 ! clk $end
+$var reg 1 " reset $end
+$scope module uut $end
+$var wire 1 # cfsm__pc_update $end
+$var wire 1 ! clk $end
+$var wire 1 " reset $end
+$var wire 32 $ rs2 [31:0] $end
+$var wire 32 % rs1 [31:0] $end
+$var wire 7 & opcode [6:0] $end
+$var wire 32 ' instr [31:0] $end
+$var wire 32 ( imm_ext [31:0] $end
+$var wire 1 ) cfsm__pc_src $end
+$var wire 1 * alu__zero_flag $end
+$var wire 2 + __tmp_ResultSrc [1:0] $end
+$var wire 1 , __tmp_RegWrite $end
+$var wire 1 - __tmp_MemWrite $end
+$var wire 1 . __tmp_IRWrite $end
+$var wire 4 / __tmp_FSMState [3:0] $end
+$var wire 1 0 __tmp_Branch $end
+$var wire 1 1 __tmp_AdrSrc $end
+$var wire 2 2 __tmp_ALUSrcB [1:0] $end
+$var wire 2 3 __tmp_ALUSrcA [1:0] $end
+$var wire 32 4 __tmp_ALUOut [31:0] $end
+$var wire 3 5 __tmp_ALUOp [2:0] $end
+$var wire 4 6 __tmp_ALUControl [3:0] $end
+$var reg 32 7 __tmp_ResultData [31:0] $end
+$scope module alu $end
+$var wire 1 * zeroE $end
+$var wire 32 8 b [31:0] $end
+$var wire 4 9 alu_control [3:0] $end
+$var wire 32 : a [31:0] $end
+$var reg 32 ; out [31:0] $end
+$upscope $end
+$scope module control_fsm $end
+$var wire 1 # PCUpdate $end
+$var wire 1 ! clk $end
+$var wire 1 ) pc_src $end
+$var wire 1 " reset $end
+$var wire 1 * zero_flag $end
+$var wire 7 < opcode [6:0] $end
+$var parameter 4 = ALUWB $end
+$var parameter 4 > BRANCHIFEQ $end
+$var parameter 4 ? DECODE $end
+$var parameter 4 @ EXECUTEI $end
+$var parameter 4 A EXECUTER $end
+$var parameter 4 B FETCH $end
+$var parameter 4 C MEMADR $end
+$var parameter 4 D MEMREAD $end
+$var parameter 4 E MEMWB $end
+$var parameter 4 F MEMWRITE $end
+$var parameter 4 G UNCONDJUMP $end
+$var reg 3 H ALUOp [2:0] $end
+$var reg 2 I ALUSrcA [1:0] $end
+$var reg 2 J ALUSrcB [1:0] $end
+$var reg 1 1 AdrSrc $end
+$var reg 1 0 Branch $end
+$var reg 4 K FSMState [3:0] $end
+$var reg 1 . IRWrite $end
+$var reg 1 - MemWrite $end
+$var reg 1 , RegWrite $end
+$var reg 2 L ResultSrc [1:0] $end
+$var reg 4 M current_state [3:0] $end
+$var reg 4 N next_state [3:0] $end
+$upscope $end
+$scope module fetch $end
+$var wire 1 ) cfsm__pc_src $end
+$var wire 1 # cfsm__pc_update $end
+$var wire 1 ! clk $end
+$var wire 1 " reset $end
+$var wire 32 O pc_target [31:0] $end
+$var wire 32 P pc_plus_4 [31:0] $end
+$var wire 32 Q pc_next [31:0] $end
+$var wire 32 R pc_cur [31:0] $end
+$var wire 32 S instr [31:0] $end
+$var wire 32 T imm_ext [31:0] $end
+$scope module instruction_memory $end
+$var wire 1 ! CLK $end
+$var wire 32 U RD [31:0] $end
+$var wire 32 V WD [31:0] $end
+$var wire 1 W WE $end
+$var wire 32 X A [31:0] $end
+$var parameter 32 Y SIZE $end
+$upscope $end
+$scope module pc_mux $end
+$var wire 32 Z out [31:0] $end
+$var wire 1 ) sel $end
+$var parameter 32 [ INPUT_COUNT $end
+$var parameter 32 \ INPUT_WIDTH $end
+$upscope $end
+$scope module program_counter $end
+$var wire 1 ! clk $end
+$var wire 32 ] data_in [31:0] $end
+$var wire 1 # en $end
+$var wire 1 " reset $end
+$var reg 32 ^ data_out [31:0] $end
+$upscope $end
+$scope module program_counter_plus_4 $end
+$var wire 32 _ lhs [31:0] $end
+$var wire 32 ` rhs [31:0] $end
+$var parameter 32 a WIDTH $end
+$var reg 32 b out [31:0] $end
+$upscope $end
+$scope module program_counter_target $end
+$var wire 32 c lhs [31:0] $end
+$var wire 32 d rhs [31:0] $end
+$var parameter 32 e WIDTH $end
+$var reg 32 f out [31:0] $end
+$upscope $end
+$upscope $end
+$scope module instruction_decode $end
+$var wire 2 g ALUOp [1:0] $end
+$var wire 1 h RegWrite $end
+$var wire 32 i ResultData [31:0] $end
+$var wire 1 ! clk $end
+$var wire 32 j instr [31:0] $end
+$var wire 1 " reset $end
+$var wire 32 k writeData [31:0] $end
+$var wire 7 l opcode [6:0] $end
+$var wire 32 m baseAddr [31:0] $end
+$var wire 4 n ALUControl [3:0] $end
+$var reg 3 o funct3 [2:0] $end
+$var reg 7 p funct7 [6:0] $end
+$var reg 32 q imm_ext [31:0] $end
+$var reg 5 r rd [4:0] $end
+$var reg 5 s rs1 [4:0] $end
+$var reg 5 t rs2 [4:0] $end
+$scope module instanceALUDec $end
+$var wire 2 u alu_op [1:0] $end
+$var wire 3 v funct3 [2:0] $end
+$var wire 7 w funct7 [6:0] $end
+$var reg 4 x alu_control [3:0] $end
+$upscope $end
+$scope module instanceRegFile $end
+$var wire 5 y Addr1 [4:0] $end
+$var wire 5 z Addr2 [4:0] $end
+$var wire 5 { Addr3 [4:0] $end
+$var wire 32 | baseAddr [31:0] $end
+$var wire 1 ! clk $end
+$var wire 32 } dataIn [31:0] $end
+$var wire 1 h regWrite $end
+$var wire 32 ~ writeData [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+b100000 e
+b100000 a
+b100000 \
+b10 [
+b10000000000 Y
+b11 G
+b111 F
+b1001 E
+b1000 D
+b101 C
+b0 B
+b10 A
+b100 @
+b1 ?
+b1010 >
+b110 =
+$end
+#0
+$dumpvars
+bx ~
+bx }
+bx |
+bx {
+bx z
+bx y
+bx x
+bx w
+bx v
+bz u
+bx t
+bx s
+bx r
+bx q
+bx p
+bx o
+bx n
+bx m
+bx l
+bx k
+bx j
+bx i
+zh
+bz g
+bx f
+bx d
+bx c
+bx b
+b100 `
+bx _
+bx ^
+bx ]
+bx Z
+bx X
+0W
+bx V
+bx U
+bx T
+bx S
+bx R
+bx Q
+bx P
+bx O
+bx N
+bx M
+bx L
+bx K
+bx J
+bx I
+bx H
+bx <
+bx ;
+bx :
+bx 9
+bx 8
+bx 7
+bx 6
+bx 5
+bx 4
+bx 3
+bx 2
+x1
+x0
+bx /
+x.
+x-
+x,
+bx +
+x*
+x)
+bx (
+bx '
+bx &
+bx %
+bx $
+1#
+1"
+0!
+$end
+#5000
+b11111111111111111111111111110100 Q
+b11111111111111111111111111110100 Z
+b11111111111111111111111111110100 ]
+b11111111111111111111111111110100 O
+b11111111111111111111111111110100 f
+b100 P
+b100 b
+1)
+1*
+b0 4
+b0 ;
+b11111111111111111111111111110100 (
+b11111111111111111111111111110100 T
+b11111111111111111111111111110100 d
+b11111111111111111111111111110100 q
+b101010 $
+b101010 8
+b101010 k
+b101010 ~
+b100 t
+b100 z
+b101010 %
+b101010 :
+b101010 m
+b101010 |
+b100 s
+b100 y
+b0 r
+b0 {
+b0 p
+b0 w
+b0 o
+b0 v
+b1100011 &
+b1100011 <
+b1100011 l
+b1 N
+b11111110010000100000101011100011 '
+b11111110010000100000101011100011 S
+b11111110010000100000101011100011 U
+b11111110010000100000101011100011 j
+1.
+01
+b0 M
+b0 R
+b0 X
+b0 ^
+b0 _
+b0 c
+1!
+#10000
+0"
+0!
+#15000
+b11111111111111111111111111111000 P
+b11111111111111111111111111111000 b
+b11111111111111111111111111101000 Q
+b11111111111111111111111111101000 Z
+b11111111111111111111111111101000 ]
+b11111111111111111111111111101000 O
+b11111111111111111111111111101000 f
+bx $
+bx 8
+bx k
+bx ~
+b0 t
+b0 z
+bx %
+bx :
+bx m
+bx |
+b0 s
+b0 y
+bx &
+bx <
+bx l
+bx '
+bx S
+bx U
+bx j
+b1 N
+b11111111111111111111111111110100 R
+b11111111111111111111111111110100 X
+b11111111111111111111111111110100 ^
+b11111111111111111111111111110100 _
+b11111111111111111111111111110100 c
+b1 M
+b0 /
+b0 K
+1!
+#20000
+0!
