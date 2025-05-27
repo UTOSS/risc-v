@@ -9,4 +9,3 @@ src/Instruction_Decode/RegisterFile.v
 src/ControlFSM.v
 src/fetch.sv
 src/top.v
-src/extend.sv
