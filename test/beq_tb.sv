@@ -77,7 +77,6 @@ module beq_tb;
 
     assert(uut.fetch.pc_cur    == 32'h00000004) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
-
     $finish;
   end
 

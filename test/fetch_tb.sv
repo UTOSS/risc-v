@@ -30,7 +30,7 @@ module fetch_tb;
 
     // testing incrementing pc naturally
     cfsm__pc_update <= `FALSE;
-    cfsm__pc_src    <= 1;
+    cfsm__pc_src    <= 0;
 
     assert(uut.pc_cur  === 32'hxxxxxxxx) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(uut.pc_next === 32'hxxxxxxxx) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
@@ -154,7 +154,7 @@ module fetch_tb;
     uut.instruction_memory.M[128] = 32'hf00dcafe;
     uut.instruction_memory.M[129] = 32'hd00dfafe;
 
-    cfsm__pc_src <= 0;
+    cfsm__pc_src <= 1;
     imm_ext      <= 32'h00000100;
 
     #10;
@@ -169,7 +169,7 @@ module fetch_tb;
     assert(uut.pc_next === 32'h00000300) else $error("`uut.pc_next` is `%0h`", uut.pc_next);
     assert(instr       === 32'hf00dcafe) else $error("`instr` is `%0h`", instr);
 
-    cfsm__pc_src <= 1;
+    cfsm__pc_src <= 0;
 
     #10;
 
@@ -178,7 +178,7 @@ module fetch_tb;
     assert(instr       === 32'hd00dfafe) else $error("`instr` is `%0h`", instr);
 
     imm_ext <= 32'h00002000; // out of memory bounds
-    cfsm__pc_src <= 0;
+    cfsm__pc_src <= 1;
 
     #10;
 
