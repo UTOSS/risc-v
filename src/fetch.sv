@@ -21,12 +21,6 @@ module fetch ( input  wire    clk
     , .data_out ( pc_cur          )
     );
 
-  adder #( .WIDTH( `PROCESSOR_BITNESS ) ) program_counter_plus_4
-    ( .lhs ( pc_cur    )
-    , .rhs ( 32'h4     )
-    , .out ( pc_plus_4 )
-    );
-
   MA instruction_memory
     ( .A   ( pc_cur       )
     , .WD  ( 32'hxxxxxxxx )
@@ -35,11 +29,10 @@ module fetch ( input  wire    clk
     , .RD  ( instr        )
     );
 
-  adder #( .WIDTH( `PROCESSOR_BITNESS ) ) program_counter_target
-    ( .lhs ( pc_cur    )
-    , .rhs ( imm_ext   )
-    , .out ( pc_target )
-    );
+  always @(*) begin
+    pc_target <= pc_cur + imm_ext;
+    pc_plus_4 <= pc_cur + 32'h4;
+  end
 
   // Continuous assignment of array concatenation is not yet supported.
   addr_t pc_mux_in [1:0];

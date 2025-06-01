@@ -1,4 +1,3 @@
-src/utils/adder.sv
 src/utils/MA.v
 src/utils/mux.sv
 src/utils/register.sv
