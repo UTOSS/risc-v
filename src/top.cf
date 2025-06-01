@@ -1,5 +1,4 @@
 src/utils/MA.v
-src/utils/mux.sv
 src/utils/register.sv
 src/ALU&ALUdecoder/ALUDecoder.v
 src/ALU&ALUdecoder/ALU.v

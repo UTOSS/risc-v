@@ -32,16 +32,12 @@ module fetch ( input  wire    clk
   always @(*) begin
     pc_target <= pc_cur + imm_ext;
     pc_plus_4 <= pc_cur + 32'h4;
-  end
 
-  // Continuous assignment of array concatenation is not yet supported.
-  addr_t pc_mux_in [1:0];
-  assign pc_mux_in[0] = pc_plus_4;
-  assign pc_mux_in[1] = pc_target;
-  mux #( .INPUT_COUNT ( 2 ), .INPUT_WIDTH ( `PROCESSOR_BITNESS ) ) pc_mux
-    ( .sel ( cfsm__pc_src )
-    , .in  ( pc_mux_in    )
-    , .out ( pc_next      )
-    );
+    case (cfsm__pc_src)
+      0      : pc_next = pc_plus_4;
+      1      : pc_next = pc_target;
+      default: pc_next = 32'hxxxxxxxx;
+    endcase
+  end
 
 endmodule
