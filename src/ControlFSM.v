@@ -100,6 +100,7 @@ module ControlFSM(
 	always@(*) begin
     Branch <= 1'b0;
     pc_src <= 1'b0;
+    PCUpdate <= 1'b0;
 
 		FSMState <= current_state;
 
