@@ -11,15 +11,52 @@ module fetch ( input  wire    clk
              , output instr_t instr
              );
 
-  addr_t pc_plus_4, pc_target, pc_next, pc_cur;
+  typedef enum logic [2:0] {
+    FETCH_INSTRUCTION,
+    IDLE,
+    INCREMENT_PC,
+    JUMP_PC
+  } state_t;
 
-  register #( .DATA_TYPE( addr_t ) ) program_counter
-    ( .clk      ( clk             )
-    , .reset    ( reset           )
-    , .en       ( cfsm__pc_update )
-    , .data_in  ( pc_next         )
-    , .data_out ( pc_cur          )
-    );
+  state_t cur_state, next_state;
+
+  addr_t pc_cur;
+  addr_t saved_imm_reg;
+
+  always @ (*) begin
+    case (cur_state)
+      FETCH_INSTRUCTION: if      (cfsm__pc_update &&  cfsm__pc_src) next_state = JUMP_PC;
+                         else if (cfsm__pc_update && !cfsm__pc_src) next_state = INCREMENT_PC;
+                         else /* ------------------------------> */ next_state = IDLE;
+      IDLE:              if      (cfsm__pc_update &&  cfsm__pc_src) next_state = JUMP_PC;
+                         else if (cfsm__pc_update && !cfsm__pc_src) next_state = INCREMENT_PC;
+                         else /* ------------------------------> */ next_state = IDLE;
+      INCREMENT_PC: /* ----------------------------------------> */ next_state = FETCH_INSTRUCTION;
+      JUMP_PC: /* ---------------------------------------------> */ next_state = FETCH_INSTRUCTION;
+      default: /* ---------------------------------------------> */ next_state = FETCH_INSTRUCTION;
+    endcase
+  end
+
+  always @ (posedge clk) begin
+    if (reset) begin
+      cur_state <= FETCH_INSTRUCTION;
+      pc_cur    <= 32'h00000000;
+    end else begin
+      cur_state <= next_state;
+    end
+
+    saved_imm_reg <= imm_ext;
+  end
+
+  always @ (*) begin
+    case (cur_state)
+      FETCH_INSTRUCTION: pc_cur = pc_cur;
+      IDLE:              pc_cur = pc_cur;
+      INCREMENT_PC:      pc_cur = pc_cur + 32'h4;
+      JUMP_PC:           pc_cur = pc_cur + saved_imm_reg;
+      default:           pc_cur = 32'hxxxxxxxx;
+    endcase
+  end
 
   MA instruction_memory
     ( .A   ( pc_cur       )
@@ -28,16 +65,5 @@ module fetch ( input  wire    clk
     , .CLK ( clk          )
     , .RD  ( instr        )
     );
-
-  always @(*) begin
-    pc_target <= pc_cur + imm_ext;
-    pc_plus_4 <= pc_cur + 32'h4;
-
-    case (cfsm__pc_src)
-      0      : pc_next = pc_plus_4;
-      1      : pc_next = pc_target;
-      default: pc_next = 32'hxxxxxxxx;
-    endcase
-  end
 
 endmodule

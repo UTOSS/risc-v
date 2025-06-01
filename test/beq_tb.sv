@@ -48,7 +48,6 @@ module beq_tb;
     assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
     assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.pc_target == 32'hFFFFFFF4) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
     #10; // pc update
 
@@ -81,12 +80,10 @@ module beq_tb;
 
     assert(uut.cfsm__pc_src   == 0 /* +4 */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
     assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.pc_target == 32'h00000010) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
     #10; // pc update
 
     assert(uut.fetch.pc_cur    == 32'h00000004) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.pc_target == 32'h00000014) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
     #10; // check that zero-setting instructions do not result in a jump
     reset <= `TRUE;
@@ -98,7 +95,6 @@ module beq_tb;
     reset <= `FALSE;
 
     assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.pc_target == 32'h00000010) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
     #10; // decode stage
 
@@ -110,7 +106,6 @@ module beq_tb;
 
     // pc update not implemented yet for this
     assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.pc_target == 32'h00000010) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
     $finish;
   end
