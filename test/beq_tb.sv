@@ -28,7 +28,7 @@ module beq_tb;
     // initialize registers
     uut.instruction_decode.instanceRegFile.RFMem[5'b00100] = 32'h0000002a; // x4 = 42
 
-    #10;
+    #10; // fetch stage
     reset <= `FALSE;
 
     assert(uut.opcode ==  7'b1100011) else $error("`uut.opcode` is `%0b`", uut.opcode);
@@ -39,17 +39,22 @@ module beq_tb;
     assert(uut.alu.a == 32'h0000002a) else $error("`uut.alu.a` is `%0h`", uut.alu.a);
     assert(uut.alu.b == 32'h0000002a) else $error("`uut.alu.b` is `%0h`", uut.alu.b);
 
+    #10; // decode stage
+
     assert(uut.alu__zero_flag == `TRUE)        else $error("`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
+
+    #10; // beq stage
+
     assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
     assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
     assert(uut.fetch.pc_target == 32'hFFFFFFF4) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
-    #10; // wait for pc update
+    #10; // pc update
 
     assert(uut.fetch.pc_cur    == 32'hFFFFFFF4) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
-    // beq without satisfied condition
+    #10; // beq without satisfied condition
     reset <= `TRUE;
 
     uut.fetch.instruction_memory.M[0] = 32'b0000000_00010_00001_000_1000_0_1100011; // beq x1, x2, 0x10
@@ -73,9 +78,17 @@ module beq_tb;
     assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
     assert(uut.fetch.pc_target == 32'h00000010) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
-    #10; // wait for pc update
+    uut.fetch.instruction_memory.M[1] = 32'b0100000_00001_00001_000_00001_0110011; // sub x1, x1, x1
+    uut.instruction_decode.instanceRegFile.RFMem[5'b00001] = 32'h00000001; // x1 = 1
+    #10; // wait for pc update; + check that zero-setting instructions do not result in a jump
 
     assert(uut.fetch.pc_cur    == 32'h00000004) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_target == 32'h00000014) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
+
+    #10; // wait for pc update
+
+    assert(uut.fetch.pc_cur    == 32'h00000008) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_target == 32'h00000018) else $error("`uut.fetch.pc_target` is `%0h`", uut.fetch.pc_target);
 
     $finish;
   end
