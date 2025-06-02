@@ -1,4 +1,8 @@
-/* sandbox module for fetching instructions */
+/* module for fetching instructions
+ *
+ * concerns itself with reading instruction from the instruction memory, as well as managing the
+ * program counter (PC); implemented as a Moore FSM
+ */
 
 `include "src/utils.svh"
 `include "src/types.svh"
