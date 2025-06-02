@@ -5,7 +5,7 @@ module top ( input wire clk
            );
 
   wire     cfsm__pc_update;
-  wire     cfsm__pc_src;
+  pc_src_t cfsm__pc_src;
   instr_t  instr;
   opcode_t opcode;
   imm_t    imm_ext;

@@ -13,7 +13,7 @@ module ControlFSM(
 	output reg IRWrite,
 	output reg RegWrite,
 	output reg PCUpdate,
-  output reg pc_src,
+  output pc_src_t pc_src,
 	output reg MemWrite,
 	output reg Branch,
 	output reg [1:0] ALUSrcA,
@@ -162,7 +162,7 @@ module ControlFSM(
 				ALUOp <= 2'b01;
 				ResultSrc <= 2'b00;
 				Branch <= 1'b1;
-        pc_src <= zero_flag;
+        pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
         PCUpdate <= 1'b1;
 
 			end

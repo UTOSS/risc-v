@@ -3,12 +3,12 @@
 `include "src/utils.svh"
 `include "src/types.svh"
 
-module fetch ( input  wire    clk
-             , input  wire    reset
-             , input  wire    cfsm__pc_update
-             , input  wire    cfsm__pc_src
-             , input  imm_t   imm_ext
-             , output instr_t instr
+module fetch ( input  wire     clk
+             , input  wire     reset
+             , input  wire     cfsm__pc_update
+             , input  pc_src_t cfsm__pc_src
+             , input  imm_t    imm_ext
+             , output instr_t  instr
              );
 
   typedef enum logic [2:0] {
@@ -25,15 +25,19 @@ module fetch ( input  wire    clk
 
   always @ (*) begin
     case (cur_state)
-      FETCH_INSTRUCTION: if      (cfsm__pc_update &&  cfsm__pc_src) next_state = JUMP_PC;
-                         else if (cfsm__pc_update && !cfsm__pc_src) next_state = INCREMENT_PC;
-                         else /* ------------------------------> */ next_state = IDLE;
-      IDLE:              if      (cfsm__pc_update &&  cfsm__pc_src) next_state = JUMP_PC;
-                         else if (cfsm__pc_update && !cfsm__pc_src) next_state = INCREMENT_PC;
-                         else /* ------------------------------> */ next_state = IDLE;
-      INCREMENT_PC: /* ----------------------------------------> */ next_state = FETCH_INSTRUCTION;
-      JUMP_PC: /* ---------------------------------------------> */ next_state = FETCH_INSTRUCTION;
-      default: /* ---------------------------------------------> */ next_state = FETCH_INSTRUCTION;
+      FETCH_INSTRUCTION, IDLE: begin
+        if (cfsm__pc_update) begin
+          case (cfsm__pc_src)
+            PC_SRC__INCREMENT: next_state = INCREMENT_PC;
+            PC_SRC__JUMP:      next_state = JUMP_PC;
+          endcase
+        end else begin
+          next_state = IDLE;
+        end
+      end
+      INCREMENT_PC: next_state = FETCH_INSTRUCTION;
+      JUMP_PC:      next_state = FETCH_INSTRUCTION;
+      default:      next_state = FETCH_INSTRUCTION;
     endcase
   end
 
