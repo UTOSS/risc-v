@@ -93,43 +93,36 @@ module fetch_tb;
     assert(instr       === 32'h55667788) else $error("`instr` is `%0h`", instr);
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00000008) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'h99aabbcc) else $error("`instr` is `%0h`", instr);
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h0000000c) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hddeeff00) else $error("`instr` is `%0h`", instr);
 
     #10170;
-    #10170; // another set of cycles to update pc
 
     assert(uut.pc_cur  === 32'h00000ff0) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hdeadbeef) else $error("`instr` is `%0h`", instr);
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00000ff4) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hfeedface) else $error("`instr` is `%0h`", instr);
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00000ff8) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hcafebabe) else $error("`instr` is `%0h`", instr);
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00000ffc) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hf00dcafe) else $error("`instr` is `%0h`", instr);
 
     #10;
-    #10; // another cycle to update pc
 
     // out of memory
     assert(uut.pc_cur  === 32'h00001000) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
@@ -155,7 +148,6 @@ module fetch_tb;
     assert(instr       === 32'hdeadbeef) else $error("`instr` is `%0h`", instr);
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00000200) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hf00dcafe) else $error("`instr` is `%0h`", instr);
@@ -163,7 +155,6 @@ module fetch_tb;
     cfsm__pc_src <= 0;
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00000204) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hd00dfafe) else $error("`instr` is `%0h`", instr);
@@ -172,7 +163,6 @@ module fetch_tb;
     cfsm__pc_src <= 1;
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00002204) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hxxxxxxxx) else $error("`instr` is `%0h`", instr);
@@ -180,7 +170,6 @@ module fetch_tb;
     imm_ext <= 32'h0; // zero jump
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00002204) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hxxxxxxxx) else $error("`instr` is `%0h`", instr);
@@ -188,7 +177,6 @@ module fetch_tb;
     imm_ext <= -32'd1; // negative jump
 
     #10;
-    #10; // another cycle to update pc
 
     assert(uut.pc_cur  === 32'h00002203) else $error("`uut.pc_cur` is `%0h`", uut.pc_cur);
     assert(instr       === 32'hxxxxxxxx) else $error("`instr` is `%0h`", instr);
