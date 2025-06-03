@@ -38,14 +38,15 @@ module Instruction_Decode(
 		
 		end
 		
-		else if (instr[6:0] == IType) begin  //I-Type (excluding lw)
+		else if (instr[6:0] == IType_logic || instr[6:0] == IType_load
+            instr[6:0] == SType || instr[6:0] == BType) begin
 		
 			funct3 = instr[14:12];
 			funct7 = 7'b0;
-		
+
 		end
 		
-		else begin //lw, sw, jal, and beq instructions:
+		else begin // U-Type and J-Type
 		
 			funct3 = 3'b000;
 			funct7 = 7'b0;
@@ -108,6 +109,7 @@ module Instruction_Decode(
 			LWType : ImmExt = {{20{instr[31]}}, instr[31:20]}; //lw
 			SType : ImmExt = {{20{instr[31]}}, instr[31:25], instr[11:7]}; //S-Type
 			BType : ImmExt = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0}; //B-Type
+            UType : ImmExt = {{12{instr[31]}}, instr[31:12]}; //U-Type
 			JType : ImmExt = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0}; //J-Type
 
 		endcase
