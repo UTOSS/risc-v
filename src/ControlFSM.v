@@ -126,7 +126,7 @@ module ControlFSM(
 			
 				ALUSrcA <= 2'b10;
 				ALUSrcB <= 2'b01;
-				ALUOp <= 2'b10;
+				ALUOp <= 2'b11;
 			
 			end
 			
