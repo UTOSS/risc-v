@@ -54,11 +54,11 @@ module Instruction_Decode(
   // architecture book
   always@(*) begin
     case (opcode)
-      RType:   alu_op = ALU_OP__REGISTER_OPERATION;
-      LWType:  alu_op = ALU_OP__MEMORY_ACCESS;
-      SType:   alu_op = ALU_OP__MEMORY_ACCESS;
-      BType:   alu_op = ALU_OP__BRANCH;
-      default: alu_op = ALU_OP__UNSET;
+      RType:      alu_op = ALU_OP__REGISTER_OPERATION;
+      IType_load: alu_op = ALU_OP__MEMORY_ACCESS;
+      SType:      alu_op = ALU_OP__MEMORY_ACCESS;
+      BType:      alu_op = ALU_OP__BRANCH;
+      default:    alu_op = ALU_OP__UNSET;
     endcase
   end
 
@@ -74,7 +74,7 @@ module Instruction_Decode(
 
 		end
 
-		else if (opcode == IType || opcode == LWType) begin //I-Type (where lw is I type)
+		else if (opcode == IType_logic || opcode == IType_load) begin //I-Type (where lw is I type)
 
 			rd = instr[11:7];
 			rs1 = instr[19:15];
@@ -112,12 +112,11 @@ module Instruction_Decode(
   // this is essentially the extend module of the processor
 	always@(*) begin
 		case(opcode)
-			IType  : imm_ext = {{20{instr[31]}}, instr[31:20]};
-			LWType : imm_ext = {{20{instr[31]}}, instr[31:20]};
-			SType  : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
-			BType  : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
-      UType  : imm_ext = {{12{instr[31]}}, instr[31:12]};
-			JType  : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+			IType_logic : imm_ext = {{20{instr[31]}}, instr[31:20]};
+			IType_load  : imm_ext = {{20{instr[31]}}, instr[31:20]};
+			SType       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
+			BType       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+			JType       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
 		endcase
 	end
 
