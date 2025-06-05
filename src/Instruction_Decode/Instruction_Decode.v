@@ -33,7 +33,7 @@ module Instruction_Decode(
 
 		end
 
-		else if (opcode == IType_logic || opcode == IType_load
+		else if (opcode == IType_logic || opcode == IType_load ||
             opcode == SType || opcode == BType) begin
 
 			funct3 = instr[14:12];
