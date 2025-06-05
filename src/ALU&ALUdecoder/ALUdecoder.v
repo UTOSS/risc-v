@@ -1,10 +1,12 @@
-module ALUdecoder (input [2:0] funct3, input [6:0] funct7, input [1:0] alu_op, output reg [3:0] alu_control);
+`include "src/types.svh"
+
+module ALUdecoder (input [2:0] funct3, input [6:0] funct7, input alu_op_t alu_op, output reg [3:0] alu_control);
 	always @(*)
 	begin
 	case (alu_op)
-		2'b00: alu_control = 4'b0000; //lw, sw (ADD)
-		2'b01: alu_control = 4'b0001; //branch (SUB)
-		2'b10: //R type
+		ALU_OP__MEMORY_ACCESS: alu_control = 4'b0000; //lw, sw (ADD)
+		ALU_OP__BRANCH: alu_control = 4'b0001; //branch (SUB)
+		ALU_OP__REGISTER_OPERATION: //R type
 		begin
 			case (funct3)
 			3'b000: if (funct7==7'h00) alu_control = 4'b0000;      //ADD
@@ -20,7 +22,7 @@ module ALUdecoder (input [2:0] funct3, input [6:0] funct7, input [1:0] alu_op, o
 			default: alu_control = 4'b0;
 			endcase
 		end
-		2'b11: //I type
+		ALU_OP__UNSET: //I type
 		begin
 			case (funct3)
 			3'b000: alu_control = 4'b0000;      					//ADDI
