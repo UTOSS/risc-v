@@ -1,0 +1,5 @@
+module InstructionDecode_TB#(
+    parameter integer SPI_MAXLEN  = 32   // Maximum SPI transfer length
+);
+
+endmodule
