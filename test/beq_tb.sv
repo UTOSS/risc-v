@@ -3,6 +3,8 @@
 `include "src/utils.svh"
 `include "src/types.svh"
 
+`include "test/utils.svh"
+
 module beq_tb;
   reg clk;
   reg reset;
@@ -110,8 +112,6 @@ module beq_tb;
     $finish;
   end
 
-  initial begin
-    $dumpfile("test/beq_tb.vcd");
-    $dumpvars(0, beq_tb);
-  end
+  `SETUP_VCD_DUMP(beq_tb)
+
 endmodule

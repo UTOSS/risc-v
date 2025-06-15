@@ -1,5 +1,5 @@
 $date
-	Thu Jun  5 04:15:54 2025
+	Sun Jun 15 20:29:55 2025
 $end
 $version
 	Icarus Verilog
@@ -34,6 +34,8 @@ $upscope $end
 $upscope $end
 $scope begin $ivl_for_loop0 $end
 $var integer 32 0 i [31:0] $end
+$upscope $end
+$scope begin $unm_blk_48 $end
 $upscope $end
 $upscope $end
 $enddefinitions $end

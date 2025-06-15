@@ -1,5 +1,5 @@
 $date
-	Thu Jun  5 04:15:59 2025
+	Sun Jun 15 20:29:55 2025
 $end
 $version
 	Icarus Verilog
@@ -124,6 +124,8 @@ $var reg 32 n baseAddr [31:0] $end
 $var reg 32 o writeData [31:0] $end
 $upscope $end
 $upscope $end
+$upscope $end
+$scope begin $unm_blk_47 $end
 $upscope $end
 $upscope $end
 $enddefinitions $end

@@ -3,6 +3,8 @@
 `include "src/utils.svh"
 `include "src/types.svh"
 
+`include "test/utils.svh"
+
 module fetch_tb;
 
   reg     clk;
@@ -184,8 +186,6 @@ module fetch_tb;
     $finish;
   end
 
-  initial begin
-    $dumpfile("test/fetch_tb.vcd");
-    $dumpvars(0, fetch_tb);
-  end
+  `SETUP_VCD_DUMP(fetch_tb)
+
 endmodule
