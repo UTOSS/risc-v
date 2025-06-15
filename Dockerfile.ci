@@ -19,10 +19,6 @@ RUN useradd --create-home dev && \
     apt update && apt install -y sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# install dumb init system
-USER root
-RUN apt update && apt install -y dumb-init
-
 # build and install icarus verilog
 USER dev
 ARG ICARUS_SRC_TAR=v12_0.tar.gz
@@ -36,4 +32,4 @@ RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison fle
     cd iverilog-* && sh autoconf.sh && ./configure && make && make check && sudo make install && \
     cd .. && rm ${ICARUS_SRC_TAR} && rm -rf ./iverilog-*
 
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+USER dev
