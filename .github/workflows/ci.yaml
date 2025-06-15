@@ -1,0 +1,29 @@
+name: RISC-V CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/utoss/risc-v:ci
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build testbench
+        run: make build_tb
+
+      - name: Run testbench
+        run: make run_tb
+
+      - name: Upload VCD files
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vcd-files
+          path: test/out/*.vcd
+          retention-days: 7
