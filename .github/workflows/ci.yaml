@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/utoss/risc-v:ci
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout code
