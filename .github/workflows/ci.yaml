@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/utoss/risc-v:ci
+      options: --user dev
 
     steps:
       - name: Checkout code
