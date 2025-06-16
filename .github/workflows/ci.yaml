@@ -1,10 +1,10 @@
-name: RISC-V CI
+name: risc-v CI
 
 on:
   pull_request:
 
 jobs:
-  test:
+  build_and_test:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/utoss/risc-v:ci
@@ -13,7 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build top
+        id: build-top
+        run: make build_top
+
       - name: Build testbench
+        id: build-testbench
         run: make build_tb
 
       - name: Run testbench
@@ -21,8 +26,16 @@ jobs:
 
       - name: Upload VCD files
         uses: actions/upload-artifact@v4
-        if: always()
+        if: steps.build-testbench.outcome == 'success'
         with:
           name: vcd-files
           path: test/vcd/*.vcd
+          retention-days: 7
+
+      - name: Upload VVP files
+        uses: actions/upload-artifact@v4
+        if: steps.build-top.outcome == 'success'
+        with:
+          name: vvp-files
+          path: out/*.vvp
           retention-days: 7

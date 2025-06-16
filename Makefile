@@ -12,13 +12,13 @@ TB_UTILS := test/utils.svh
 
 TB_VCD_BASE_PATH := test/vcd
 
-all: $(OUTPUT)
+build_top: $(OUTPUT)
+
+run_top: $(OUTPUT)
+	$(VVP) $(OUTPUT)
 
 $(OUTPUT):
 	$(IVERILOG) -g2012 -o $(OUTPUT) -c src/top.cf
-
-run: $(OUTPUT)
-	$(VVP) $(OUTPUT)
 
 $(TB_OUT_PATTERN): $(TB_SRC_PATTERN) $(TB_UTILS)
 	$(IVERILOG) -g2012 -o $@ -c src/top.cf $<
