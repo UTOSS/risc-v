@@ -1,6 +1,6 @@
 src/utils/MA.v
 src/utils/register.sv
-src/ALU_ALUdecoder/ALUDecoder.v
+src/ALU_ALUdecoder/ALUdecoder.v
 src/ALU_ALUdecoder/ALU.v
 src/Instruction_Decode/Instruction_Decode.v
 src/Instruction_Decode/RegisterFile.v
