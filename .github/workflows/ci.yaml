@@ -24,5 +24,5 @@ jobs:
         if: always()
         with:
           name: vcd-files
-          path: test/out/*.vcd
+          path: test/vcd/*.vcd
           retention-days: 7
