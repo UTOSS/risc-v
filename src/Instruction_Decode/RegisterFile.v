@@ -25,18 +25,18 @@ output reg [31:0] writeData //data read line #2 - from second source register
 	//32 bits deep (32 addresses) and 32 bits wide (32 bits at each register)
 	//note that RFMem[0:31] means there are 32 elements (with addr for each element), each of which are 32-bit regs
 	reg [31:0] RFMem [0:31] /* synthesis ramstyle = M10K*/;
-	
+
 	always@(posedge clk) begin
-	
-		baseAddr <= RFMem[Addr1]; //read out 32-bit contents of rs1 register
-		writeData <= RFMem[Addr2]; //read out 32-bit contents of rs2 register
-		
+
+    baseAddr  <= RFMem[Addr1]; //read out 32-bit contents of rs1 register
+    writeData <= RFMem[Addr2]; //read out 32-bit contents of rs2 register
+
 		if(regWrite) begin
-			
+
 			RFMem[Addr3] <= dataIn; //write into destination register if RegWrite = 1
-			
+
 		end
-	
+
 	end
 
 endmodule
