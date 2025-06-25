@@ -3,6 +3,8 @@
 `include "src/utils.svh"
 `include "src/types.svh"
 
+`include "test/utils.svh"
+
 module beq_tb;
   reg clk;
   reg reset;
@@ -31,27 +33,27 @@ module beq_tb;
     #10; // fetch stage
     reset <= `FALSE;
 
-    assert(uut.opcode ==  7'b1100011) else $error("`uut.opcode` is `%0b`", uut.opcode);
+    assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
-    assert(uut.fetch.pc_cur  == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.imm_ext == 32'hFFFFFFF4) else $error("`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
+    assert(uut.fetch.pc_cur  == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.imm_ext == 32'hFFFFFFF4) else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
     #10; // decode stage
 
-    assert(uut.alu__zero_flag == `TRUE)        else $error("`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
+    assert(uut.alu__zero_flag == `TRUE)        else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
-    assert(uut.alu.a == 32'h0000002a) else $error("`uut.alu.a` is `%0h`", uut.alu.a);
-    assert(uut.alu.b == 32'h0000002a) else $error("`uut.alu.b` is `%0h`", uut.alu.b);
+    assert(uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
+    assert(uut.alu.b == 32'h0000002a) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
 
     #10; // beq stage
 
-    assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
+    assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     #10; // pc update
 
-    assert(uut.fetch.pc_cur    == 32'hFFFFFFF4) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'hFFFFFFF4) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     // beq without satisfied condition
     #10;
@@ -64,26 +66,26 @@ module beq_tb;
     #10; // fetch stage
     reset <= `FALSE;
 
-    assert(uut.opcode ==  7'b1100011) else $error("`uut.opcode` is `%0b`", uut.opcode);
+    assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
-    assert(uut.fetch.pc_cur  == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.imm_ext == 32'h00000010) else $error("`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
+    assert(uut.fetch.pc_cur  == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.imm_ext == 32'h00000010) else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
     #10; // decode stage
 
-    assert(uut.alu.a == 32'h0000002a) else $error("`uut.alu.a` is `%0h`", uut.alu.a);
-    assert(uut.alu.b == 32'h0000002b) else $error("`uut.alu.b` is `%0h`", uut.alu.b);
+    assert(uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
+    assert(uut.alu.b == 32'h0000002b) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
 
-    assert(uut.alu__zero_flag == `FALSE)     else $error("`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
+    assert(uut.alu__zero_flag == `FALSE)     else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
     #10; // beq stage
 
-    assert(uut.cfsm__pc_src   == 0 /* +4 */) else $error("`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.cfsm__pc_src   == 0 /* +4 */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
+    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     #10; // pc update
 
-    assert(uut.fetch.pc_cur    == 32'h00000004) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     #10; // check that zero-setting instructions do not result in a jump
     reset <= `TRUE;
@@ -94,24 +96,22 @@ module beq_tb;
     #10; // fetch stage
     reset <= `FALSE;
 
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     #10; // decode stage
 
     #10; // execute stage
 
-    assert(uut.alu__zero_flag == `TRUE)     else $error("`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
+    assert(uut.alu__zero_flag == `TRUE)     else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
     #10; // wait for pc update
 
     // pc update not implemented yet for this
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $error("`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     $finish;
   end
 
-  initial begin
-    $dumpfile("test/beq_tb.vcd");
-    $dumpvars(0, beq_tb);
-  end
+  `SETUP_VCD_DUMP(beq_tb)
+
 endmodule
