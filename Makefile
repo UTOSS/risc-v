@@ -3,6 +3,8 @@ OUTPUT 	 := out/top.vvp
 IVERILOG := iverilog
 VVP 		 := vvp
 
+SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v")
+
 TB_SRC_PATTERN := test/%_tb.sv
 TB_OUT_PATTERN := out/%_tb.vvp
 
@@ -17,11 +19,11 @@ build_top: $(OUTPUT)
 run_top: $(OUTPUT)
 	$(VVP) $(OUTPUT)
 
-$(OUTPUT):
-	$(IVERILOG) -g2012 -o $(OUTPUT) -c src/top.cf
+$(OUTPUT): $(SRCS)
+	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS)
 
-$(TB_OUT_PATTERN): $(TB_SRC_PATTERN) $(TB_UTILS)
-	$(IVERILOG) -g2012 -o $@ -c src/top.cf $<
+$(TB_OUT_PATTERN): $(TB_SRC_PATTERN) $(TB_UTILS) $(SRCS)
+	$(IVERILOG) -g2012 -o $@ $(SRCS) $<
 
 build_tb: $(TB_VVPS)
 
