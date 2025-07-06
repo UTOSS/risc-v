@@ -25,6 +25,13 @@ $(OUTPUT): $(SRCS)
 $(TB_OUT_PATTERN): $(TB_SRC_PATTERN) $(TB_UTILS) $(SRCS)
 	$(IVERILOG) -g2012 -o $@ $(SRCS) $<
 
+new_tb:
+	@if [ -z "$(name)" ]; then \
+		echo "Usage: make new_tb name=<testbench_name>"; \
+		exit 1; \
+	fi
+	m4 -D M4__TB_NAME="$(name)_tb" test/tb_template.sv.m4 > test/$(name)_tb.sv
+
 build_tb: $(TB_VVPS)
 
 run_tb: $(TB_VVPS)
