@@ -68,4 +68,25 @@ module top ( input wire clk
       .writeData  (writeData)   
   );
 
+  mux pc (
+    .input0(PCPlus4),  
+    .input1(PCTarget),  
+    .sel(PCSrc),  
+    .out(PCNext)     
+  );
+
+  mux alu (
+    .input0(RD2),    
+    .input1(ImmExt),  
+    .sel(ALUSrc),   
+    .out(SrcB)
+  );
+
+  mux result (
+    .input0(ALUResult),
+    .input1(ReadData),
+    .sel(ResultSrc), 
+    .out(Result)
+  );
+
 endmodule
