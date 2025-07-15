@@ -91,9 +91,9 @@ riscof_run: $(RISCOF_CONFIG) riscof_build_dut
 			--env=riscv-arch-test/riscv-test-suite/env
 
 svlint:
-	svlint $(SRCS) --config $(SRC_DIR)/.svlint.toml
+	svlint $(SRCS)
 
 svlint_tb:
-	svlint $(TB_SRCS)/ --config $(TB_DIR)/.svlint.toml
+	svlint $(TB_SRCS)
 
 .PHONY: all run testbenches run-tests
