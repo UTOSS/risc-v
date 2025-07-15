@@ -1,4 +1,5 @@
 SRC_DIR  := src
+TB_DIR   := test
 OUTPUT 	 := out/top.vvp
 IVERILOG := iverilog
 # /opt/iverilog-12/bin/iverilog
@@ -88,5 +89,11 @@ riscof_run: $(RISCOF_CONFIG) riscof_build_dut
 			--config=config.ini                         \
 			--suite=riscv-arch-test/riscv-test-suite/   \
 			--env=riscv-arch-test/riscv-test-suite/env
+
+svlint:
+	svlint $(SRCS) --config $(SRC_DIR)/.svlint.toml
+
+svlint_tb:
+	svlint $(TB_SRCS)/ --config $(TB_DIR)/.svlint.toml
 
 .PHONY: all run testbenches run-tests
