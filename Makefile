@@ -1,4 +1,5 @@
 SRC_DIR  := src
+TB_DIR   := test
 OUTPUT 	 := out/top.vvp
 IVERILOG := iverilog
 VVP 		 := vvp
@@ -52,5 +53,11 @@ run_tb: $(TB_VVPS)
 	else                                                      \
 		echo "\033[32mAll testbenches passed!\033[0m";          \
 	fi
+
+svlint:
+	svlint $(SRCS) --config $(SRC_DIR)/.svlint.toml
+
+svlint_tb:
+	svlint $(TB_SRCS)/ --config $(TB_DIR)/.svlint.toml
 
 .PHONY: all run testbenches run-tests
