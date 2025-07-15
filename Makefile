@@ -96,4 +96,4 @@ svlint:
 svlint_tb:
 	svlint $(TB_SRCS)
 
-.PHONY: all run testbenches run-tests
+.PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb
