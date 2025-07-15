@@ -1,5 +1,6 @@
 {
   "recommendations": [
-    "tamasfe.even-better-toml"
+    "tamasfe.even-better-toml",
+    "dalance.svls-vscode"
   ]
 }
