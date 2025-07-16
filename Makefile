@@ -61,9 +61,9 @@ run_tb: $(TB_VVPS)
 	fi
 
 svlint:
-	svlint $(SRCS)
+	svlint $(if $(CI),--github-actions) $(SRCS)
 
 svlint_tb:
-	svlint $(TB_SRCS)
+	svlint $(if $(CI),--github-actions) $(TB_SRCS)
 
 .PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb
