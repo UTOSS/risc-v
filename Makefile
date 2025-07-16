@@ -15,6 +15,12 @@ TB_UTILS := test/utils.svh
 
 TB_VCD_BASE_PATH := test/vcd
 
+print_srcs:
+	@echo $(SRCS)
+
+print_tb_srcs:
+	@echo $(TB_SRCS)
+
 build_top: $(OUTPUT)
 
 run_top: $(OUTPUT)
