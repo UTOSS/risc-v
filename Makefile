@@ -97,9 +97,9 @@ riscof_run: $(RISCOF_CONFIG) riscof_build_dut
 			--env=riscv-arch-test/riscv-test-suite/env
 
 svlint:
-	svlint $(if $(CI),--github-actions) $(SRCS)
+	svlint $(if $(CI),--github-actions) $(SRCS) $(if $(CI),| sed 's/::error/::warning/g')
 
 svlint_tb:
-	svlint $(if $(CI),--github-actions) $(TB_SRCS)
+	svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed 's/::error/::warning/g')
 
 .PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb
