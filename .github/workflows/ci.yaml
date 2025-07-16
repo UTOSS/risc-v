@@ -71,11 +71,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: lint sources
-        run: make svlint
+      - name: get srcs
+        id: get-srcs
+        run: |
+          echo "srcs=$(make print_srcs)" >> $GITHUB_OUTPUT
+          echo "tb_srcs=$(make print_tb_srcs)" >> $GITHUB_OUTPUT
 
-      - name: lint testbench
-        run: make svlint_tb
+      - name: lint sources
+        uses: dalance/svlint-action@v1.0.2
+        with:
+          files: ${{ steps.get-srcs.outputs.srcs }}
+
+      - name: lint testbenches
+        uses: dalance/svlint-action@v1.0.2
+        with:
+          files: ${{ steps.get-srcs.outputs.tb_srcs }}
 
   build_and_test:
     timeout-minutes: 30

@@ -23,6 +23,12 @@ RISCOF_DUT_VVP := $(RISCOF_DIR)/dut.vvp
 RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
 RISCOF_CONFIG := $(RISCOF_DIR)/config.ini
 
+print_srcs:
+	@echo $(SRCS)
+
+print_tb_srcs:
+	@echo $(TB_SRCS)
+
 build_top: $(OUTPUT)
 
 run_top: $(OUTPUT)
