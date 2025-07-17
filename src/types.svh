@@ -21,6 +21,22 @@ typedef enum logic [1:0] {
   ALU_OP__UNSET              = 2'b11
 } alu_op_t;
 
+typedef enum logic [1:0] {
+  ALU_SRC_A__PC     = 2'b00,
+  ALU_SRC_A__OLD_PC = 2'b01,
+  ALU_SRC_A__RD1    = 2'b10,
+
+  ALU_SRC_A__UNSET  = 2'b11
+} alu_src_a_t;
+
+typedef enum logic [1:0] {
+  ALU_SRC_B__RD2     = 2'b00,
+  ALU_SRC_B__IMM_EXT = 2'b01,
+  ALU_SRC_B__4       = 2'b10,
+
+  ALU_SRC_B__UNSET = 2'b11
+} alu_src_b_t;
+
 typedef enum logic {
   PC_SRC__INCREMENT = 1'b0,
   PC_SRC__JUMP      = 1'b1

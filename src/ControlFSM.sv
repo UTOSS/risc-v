@@ -16,8 +16,8 @@ module ControlFSM(
   output pc_src_t pc_src,
 	output reg MemWrite,
 	output reg Branch,
-	output reg [1:0] ALUSrcA,
-	output reg [1:0] ALUSrcB,
+	output alu_src_a_t ALUSrcA,
+	output alu_src_b_t ALUSrcB,
 	output reg [2:0] ALUOp, //to ALU Decoder
 	output reg [1:0] ResultSrc,
 	output reg [3:0] FSMState
@@ -115,32 +115,32 @@ module ControlFSM(
 
 			DECODE: begin
 
-				ALUSrcA <= 2'b01;
-				ALUSrcB <= 2'b01;
+				ALUSrcA <= ALU_SRC_A__OLD_PC;
+				ALUSrcB <= ALU_SRC_B__IMM_EXT;
 				ALUOp <= 2'b00;
 
 			end
 
 			EXECUTER: begin
 
-				ALUSrcA <= 2'b10;
-				ALUSrcB <= 2'b00;
+				ALUSrcA <= ALU_SRC_A__RD1;
+				ALUSrcB <= ALU_SRC_B__RD2;
 				ALUOp <= 2'b10;
 
 			end
 
 			EXECUTEI: begin
 
-				ALUSrcA <= 2'b10;
-				ALUSrcB <= 2'b01;
+				ALUSrcA <= ALU_SRC_A__RD1;
+				ALUSrcB <= ALU_SRC_B__IMM_EXT;
 				ALUOp <= 2'b11;
 
 			end
 
 			UNCONDJUMP: begin
 
-				ALUSrcA <= 2'b01;
-				ALUSrcB <= 2'b10;
+				ALUSrcA <= ALU_SRC_A__OLD_PC;
+				ALUSrcB <= ALU_SRC_B__4;
 				ALUOp <= 2'b00;
 				ResultSrc <= 2'b00;
         PCUpdate <= 1'b1;
@@ -149,16 +149,16 @@ module ControlFSM(
 
 			MEMADR: begin
 
-				ALUSrcA <= 2'b10;
-				ALUSrcB <= 2'b01;
+				ALUSrcA <= ALU_SRC_A__RD1;
+				ALUSrcB <= ALU_SRC_B__IMM_EXT;
 				ALUOp <= 2'b00;
 
 			end
 
 			BRANCHIFEQ: begin
 
-				ALUSrcA <= 2'b10;
-				ALUSrcB <= 2'b00;
+				ALUSrcA <= ALU_SRC_A__RD1;
+				ALUSrcB <= ALU_SRC_B__RD2;
 				ALUOp <= 2'b01;
 				ResultSrc <= 2'b00;
 				Branch <= 1'b1;
