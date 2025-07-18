@@ -7,7 +7,9 @@ module top ( input wire clk
   wire     cfsm__pc_update;
   pc_src_t cfsm__pc_src;
   addr_t   pc_cur;
+  addr_t   memory_address;
   data_t   data;
+  instr_t  instruction;
   opcode_t opcode;
   imm_t    imm_ext;
 
@@ -24,8 +26,8 @@ module top ( input wire clk
 
   wire alu__zero_flag;
 
-  wire __tmp_AdrSrc
-     , __tmp_IRWrite
+  adr_src_t cfsm__adr_src;
+  wire __tmp_IRWrite
      , __tmp_RegWrite
      , __tmp_MemWrite
      , __tmp_Branch;
@@ -42,7 +44,7 @@ module top ( input wire clk
     , .clk       ( clk             )
     , .reset     ( reset           )
     , .zero_flag ( alu__zero_flag  )
-    , .AdrSrc    ( __tmp_AdrSrc    )
+    , .AdrSrc    ( cfsm__adr_src   )
     , .IRWrite   ( __tmp_IRWrite   )
     , .RegWrite  ( __tmp_RegWrite  )
     , .PCUpdate  ( cfsm__pc_update )
@@ -67,14 +69,21 @@ module top ( input wire clk
     , .pc_cur          ( pc_cur          )
     );
 
+  always @(*) begin
+    case (cfsm__adr_src)
+      ADR_SRC__PC:     memory_address = pc_cur;
+      ADR_SRC__RESULT: memory_address = __tmp_ALUOut; // this will be the output of the result mux
+    endcase
+  end
+
   MA memory // instructions and data
-    ( .A   ( pc_cur       )
-    , .WD  ( 32'hxxxxxxxx )
-    , .WE  ( `FALSE       )
-    , .CLK ( clk          )
+    ( .A   ( memory_address )
+    , .WD  ( 32'hxxxxxxxx   )
+    , .WE  ( `FALSE         )
+    , .CLK ( clk            )
 
     // outputs
-    , .RD  ( data         )
+    , .RD  ( data           )
     );
 
   Instruction_Decode instruction_decode
