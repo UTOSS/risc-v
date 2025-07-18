@@ -9,7 +9,7 @@ module ControlFSM(
 	input wire clk,
 	input wire reset,
   input wire zero_flag,
-	output reg AdrSrc,
+	output adr_src_t AdrSrc,
 	output reg IRWrite,
 	output reg RegWrite,
 	output reg PCUpdate,
@@ -108,7 +108,7 @@ module ControlFSM(
 
 			FETCH: begin
 
-				AdrSrc <= 1'b0;
+				AdrSrc <= ADR_SRC__PC;
 				IRWrite <= 1'b1;
 
 			end
@@ -177,7 +177,7 @@ module ControlFSM(
 			MEMWRITE: begin
 
 				ResultSrc <= 2'b00;
-				AdrSrc <= 1'b1;
+				AdrSrc <= ADR_SRC__RESULT;
 				MemWrite <= 1'b1;
 
 			end
@@ -185,7 +185,7 @@ module ControlFSM(
 			MEMREAD: begin
 
 				ResultSrc <= 2'b00;
-				AdrSrc <= 1'b1;
+				AdrSrc <= ADR_SRC__RESULT;
 
 			end
 
@@ -198,7 +198,7 @@ module ControlFSM(
 
 			default: begin //by default, we return to FETCH state
 
-				AdrSrc <= 1'b0;
+				AdrSrc <= ADR_SRC__PC;
 				IRWrite <= 1'b1;
 
 			end
