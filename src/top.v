@@ -6,7 +6,8 @@ module top ( input wire clk
 
   wire     cfsm__pc_update;
   pc_src_t cfsm__pc_src;
-  instr_t  instr;
+  addr_t   pc_cur;
+  data_t   data;
   opcode_t opcode;
   imm_t    imm_ext;
 
@@ -61,11 +62,23 @@ module top ( input wire clk
     , .cfsm__pc_update ( cfsm__pc_update )
     , .cfsm__pc_src    ( cfsm__pc_src    )
     , .imm_ext         ( imm_ext         )
-    , .instr           ( instr           )
+
+    // outputs
+    , .pc_cur          ( pc_cur          )
+    );
+
+  MA memory // instructions and data
+    ( .A   ( pc_cur       )
+    , .WD  ( 32'hxxxxxxxx )
+    , .WE  ( `FALSE       )
+    , .CLK ( clk          )
+
+    // outputs
+    , .RD  ( data         )
     );
 
   Instruction_Decode instruction_decode
-    ( .instr           ( instr            )
+    ( .instr           ( data             )
     , .clk             ( clk              )
     , .reset           ( reset            )
     , .ResultData      ( __tmp_ResultData )
