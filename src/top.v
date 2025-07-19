@@ -68,25 +68,32 @@ module top ( input wire clk
       .writeData  (writeData)   
   );
 
-  mux pc (
-    .input0(PCPlus4),  
-    .input1(PCTarget),  
-    .sel(PCSrc),  
-    .out(PCNext)     
-  );
+  always @(*) begin
+   case (__tmp_ALUSrcA)
+      2'b00: alu_input_a = 32'd0;    
+      2'b01: alu_input_a = rs1;       
+      2'b10: alu_input_a = OldPC;     
+      default: alu_input_a = 32'hxxxxxxxx;
+    endcase
+  end
 
-  mux alu (
-    .input0(RD2),    
-    .input1(ImmExt),  
-    .sel(ALUSrc),   
-    .out(SrcB)
-  );
+  always @(*) begin
+   case (__tmp_ALUSrcB)
+      2'b00: alu_input_b = rs2;
+      2'b01: alu_input_b = 32'd4;
+      2'b10: alu_input_b = imm_ext;
+      default: alu_input_b = 32'hxxxxxxxx;
+    endcase
+  end
 
-  mux result (
-    .input0(ALUResult),
-    .input1(ReadData),
-    .sel(ResultSrc), 
-    .out(Result)
-  );
+  always @(*) begin
+   case (__tmp_ResultSrc)
+      2'b00: __tmp_ResultData = __tmp_ALUOut;
+      2'b01: __tmp_ResultData = Data;
+      2'b10: __tmp_ResultData = OldPC;
+      default: __tmp_ResultData = 32'hxxxxxxxx;
+    endcase
+  end
+
 
 endmodule
