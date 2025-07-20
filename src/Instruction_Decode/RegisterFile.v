@@ -16,6 +16,7 @@ input [4:0] Addr3, //rd field - desination register
 input clk,
 input regWrite,
 input [31:0] dataIn,
+input reset,
 output reg [31:0] baseAddr, //data read line #1 - from first source register
 output reg [31:0] writeData //data read line #2 - from second source register
 
@@ -27,11 +28,13 @@ output reg [31:0] writeData //data read line #2 - from second source register
 	reg [31:0] RFMem [0:31] /* synthesis ramstyle = M10K*/;
 	
 	always@(posedge clk) begin
+
+		if (reset) RFMem[0] <= 0; //register r0 should always remain at 0
 	
 		baseAddr <= RFMem[Addr1]; //read out 32-bit contents of rs1 register
 		writeData <= RFMem[Addr2]; //read out 32-bit contents of rs2 register
 		
-		if(regWrite) begin
+		if(regWrite && Addr3 != 0) begin
 			
 			RFMem[Addr3] <= dataIn; //write into destination register if RegWrite = 1
 			

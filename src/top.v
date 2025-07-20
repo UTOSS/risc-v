@@ -4,8 +4,18 @@ module top ( input wire clk
            , input wire reset
            );
 
-  wire cfsm__pc_update;
-  instr_t instr;
+  wire     cfsm__pc_update;
+  pc_src_t cfsm__pc_src;
+  instr_t  instr;
+  opcode_t opcode;
+  imm_t    imm_ext;
+
+  data_t __tmp_ResultData;
+
+  data_t rs1;
+  data_t rs2;
+
+  wire alu__zero_flag;
 
   wire __tmp_AdrSrc
      , __tmp_IRWrite
@@ -15,17 +25,21 @@ module top ( input wire clk
   wire [1:0] __tmp_ALUSrcA
            , __tmp_ALUSrcB;
   wire [2:0] __tmp_ALUOp;
+  wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
+  data_t __tmp_ALUOut;
 
   ControlFSM control_fsm
-    ( .opcode    ( 7'b0000000      )
+    ( .opcode    ( opcode          )
     , .clk       ( clk             )
     , .reset     ( reset           )
+    , .zero_flag ( alu__zero_flag  )
     , .AdrSrc    ( __tmp_AdrSrc    )
     , .IRWrite   ( __tmp_IRWrite   )
     , .RegWrite  ( __tmp_RegWrite  )
     , .PCUpdate  ( cfsm__pc_update )
+    , .pc_src    ( cfsm__pc_src    )
     , .MemWrite  ( __tmp_MemWrite  )
     , .Branch    ( __tmp_Branch    )
     , .ALUSrcA   ( __tmp_ALUSrcA   )
@@ -39,46 +53,42 @@ module top ( input wire clk
     ( .clk             ( clk             )
     , .reset           ( reset           )
     , .cfsm__pc_update ( cfsm__pc_update )
+    , .cfsm__pc_src    ( cfsm__pc_src    )
+    , .imm_ext         ( imm_ext         )
     , .instr           ( instr           )
     );
 
-  MA memory_access (
-      .A   (baseAddr),        //baseAddr is from Instruction_Decode.v it sounded like it matches with the module paramters in MA
-      .WD  (writeData),       //same as above
-      .WE  (MemWrite),        //same as above but from ControlFSM interacting with MA e.g. when memWrite = 1
-      .CLK (clk),
-      .RD  (ma__readdata)     //just left this because i dont think its connected to anything ?
-  );
+  Instruction_Decode instruction_decode
+    ( .instr           ( instr            )
+    , .clk             ( clk              )
+    , .reset           ( reset            )
+    , .ResultData      ( __tmp_ResultData )
+    , .opcode          ( opcode           )
+    , .ALUControl      ( __tmp_ALUControl )
+    , .baseAddr        ( rs1              )
+    , .writeData       ( rs2              )
+    , .imm_ext         ( imm_ext          )
+    );
 
-  Instruction_Decode instruction_decode (
-      .instr      (instr),
-      .clk        (clk),
-      .reset      (reset),
-      .ResultData (ResultData),   
-      .AdrSrc     (AdrSrc),
-      .IRWrite    (IRWrite),
-      .PCUpdate   (PCUpdate),     
-      .MemWrite   (MemWrite),
-      .Branch     (Branch),
-      .ALUSrcA    (ALUSrcA),
-      .ALUSrcB    (ALUSrcB),
-      .ResultSrc  (ResultSrc),
-      .ALUControl (ALUControl),
-      .baseAddr   (baseAddr),     
-      .writeData  (writeData)   
-  );
+  ALU alu
+    ( .a              ( rs1              )
+    , .b              ( rs2              )
+    , .alu_control    ( __tmp_ALUControl )
+    , .out            ( __tmp_ALUOut     )
+    , .zeroE          ( alu__zero_flag   )
+    );
 
   always @(*) begin
-   case (__tmp_ALUSrcA)
-      2'b00: alu_input_a = 32'd0;    
-      2'b01: alu_input_a = rs1;       
-      2'b10: alu_input_a = OldPC;     
+    case (__tmp_ALUSrcA)
+      2'b00: alu_input_a = 32'd0;
+      2'b01: alu_input_a = rs1;
+      2'b10: alu_input_a = OldPC;
       default: alu_input_a = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
-   case (__tmp_ALUSrcB)
+    case (__tmp_ALUSrcB)
       2'b00: alu_input_b = rs2;
       2'b01: alu_input_b = 32'd4;
       2'b10: alu_input_b = imm_ext;
@@ -87,13 +97,12 @@ module top ( input wire clk
   end
 
   always @(*) begin
-   case (__tmp_ResultSrc)
+    case (__tmp_ResultSrc)
       2'b00: __tmp_ResultData = __tmp_ALUOut;
       2'b01: __tmp_ResultData = Data;
       2'b10: __tmp_ResultData = OldPC;
       default: __tmp_ResultData = 32'hxxxxxxxx;
     endcase
   end
-
 
 endmodule
