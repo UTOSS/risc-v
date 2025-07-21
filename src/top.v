@@ -84,8 +84,8 @@ module top ( input wire clk
   always @(*) begin
     case (__tmp_ALUSrcA)
       2'b00: alu_input_a = 32'd0;
-      2'b01: alu_input_a = rs1;
-      2'b10: alu_input_a = OldPC;
+      2'b01: alu_input_a = OldPC;
+      2'b10: alu_input_a = rs1;
       default: alu_input_a = 32'hxxxxxxxx;
     endcase
   end
@@ -93,8 +93,8 @@ module top ( input wire clk
   always @(*) begin
     case (__tmp_ALUSrcB)
       2'b00: alu_input_b = rs2;
-      2'b01: alu_input_b = 32'd4;
-      2'b10: alu_input_b = imm_ext;
+      2'b01: alu_input_b = imm_ext;
+      2'b10: alu_input_b = 32'd4;
       default: alu_input_b = 32'hxxxxxxxx;
     endcase
   end
