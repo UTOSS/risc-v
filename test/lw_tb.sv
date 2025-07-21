@@ -17,6 +17,12 @@ module lw_tb;
     forever #5 clk = ~clk;
   end
 
+  task wait_till_next_cfsm_state(input [5:0] expected_state);
+    @(posedge clk); #1;
+    assert(uut.control_fsm.current_state == expected_state)
+      else $fatal(1,"`uut.control_fsm.state` is `%0d`", uut.control_fsm.current_state);
+  endtask
+
   initial begin
     reset <= `TRUE;
 
@@ -27,15 +33,11 @@ module lw_tb;
     // set up register file
     uut.instruction_decode.instanceRegFile.RFMem[2] = 32'h0000002a; // x1 = 42
 
-    @(posedge clk); #1;
-    assert(uut.control_fsm.current_state == uut.control_fsm.FETCH)
-      else $fatal(1,"`uut.control_fsm.state` is `%0d`", uut.control_fsm.current_state);
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
     reset <= `FALSE;
 
-    @(posedge clk); #1;
-    assert(uut.control_fsm.current_state == uut.control_fsm.DECODE)
-      else $fatal(1,"`uut.control_fsm.state` is `%0d`", uut.control_fsm.current_state);
+    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
     assert(uut.opcode == 7'b0000011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
     assert(uut.instruction_decode.rs1 == 2)
@@ -45,9 +47,7 @@ module lw_tb;
     assert(uut.instruction_decode.imm_ext == 32'h00000000)
       else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
-    @(posedge clk); #1;
-    assert(uut.control_fsm.current_state == uut.control_fsm.MEMADR)
-      else $fatal(1,"`uut.control_fsm.state` is `%0d`", uut.control_fsm.current_state);
+    wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
 
     assert(uut.instruction_decode.instanceRegFile.RFMem[2] == 32'h0000002a)
       else $fatal(1,"`uut.instruction_decode.instanceRegFile.RFMem[2]` is `%0h`", uut.instruction_decode.instanceRegFile.RFMem[2]);
@@ -55,24 +55,18 @@ module lw_tb;
     assert(uut.alu.b == 32'h00000000) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
     assert(uut.alu.out == 32'h0000002a) else $fatal(1,"`uut.alu.out` is `%0h`", uut.alu.out);
 
-    @(posedge clk); #1;
-    assert(uut.control_fsm.current_state == uut.control_fsm.MEMREAD)
-      else $fatal(1,"`uut.control_fsm.state` is `%0d`", uut.control_fsm.current_state);
+    wait_till_next_cfsm_state(uut.control_fsm.MEMREAD);
 
     assert(uut.result == 32'h0000002a) else $fatal(1,"`uut.result` is `%0h`", uut.result);
     assert(uut.memory_address == 32'h0000002a)
       else $fatal(1,"`uut.memory_address` is `%0h`", uut.memory_address);
 
-    @(posedge clk); #1;
-    assert(uut.control_fsm.current_state == uut.control_fsm.MEMWB)
-      else $fatal(1,"`uut.control_fsm.state` is `%0d`", uut.control_fsm.current_state);
+    wait_till_next_cfsm_state(uut.control_fsm.MEMWB);
 
     assert(uut.data == 32'hdeadbeef) else $fatal(1,"`uut.data` is `%0h`", uut.data);
     assert(uut.result == 32'hdeadbeef) else $fatal(1,"`uut.result` is `%0h`", uut.result);
 
-    @(posedge clk); #1;
-    assert(uut.control_fsm.current_state == uut.control_fsm.FETCH)
-      else $fatal(1,"`uut.control_fsm.state` is `%0d`", uut.control_fsm.current_state);
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
     assert(uut.instruction_decode.instanceRegFile.RFMem[1] == 32'hdeadbeef)
       else $fatal(1,"`uut.instruction_decode.instanceRegFile.RFMem[1]` is `%0h`", uut.instruction_decode.instanceRegFile.RFMem[1]);
