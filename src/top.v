@@ -15,6 +15,9 @@ module top ( input wire clk
   data_t rs1;
   data_t rs2;
 
+  data_t alu_input_a;
+  data_t alu_input_b;
+
   wire alu__zero_flag;
 
   wire __tmp_AdrSrc
@@ -71,8 +74,8 @@ module top ( input wire clk
     );
 
   ALU alu
-    ( .a              ( rs1              )
-    , .b              ( rs2              )
+    ( .a              ( alu_input_a      )
+    , .b              ( alu_input_b      )
     , .alu_control    ( __tmp_ALUControl )
     , .out            ( __tmp_ALUOut     )
     , .zeroE          ( alu__zero_flag   )
