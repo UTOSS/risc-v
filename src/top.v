@@ -77,8 +77,8 @@ module top ( input wire clk
     );
 
   ALU alu
-    ( .a              ( alu_input_a      )
-    , .b              ( alu_input_b      )
+    ( .a              ( rs1              )
+    , .b              ( rs2              )
     , .alu_control    ( __tmp_ALUControl )
     , .out            ( __tmp_ALUOut     )
     , .zeroE          ( alu__zero_flag   )
