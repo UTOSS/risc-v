@@ -127,10 +127,10 @@ module top ( input wire clk
 
   always @(*) begin
     case (__tmp_ResultSrc)
-      2'b00: __tmp_ResultData = __tmp_ALUOut;
-      2'b01: __tmp_ResultData = Data;
-      2'b10: __tmp_ResultData = pc_old;
-      default: __tmp_ResultData = 32'hxxxxxxxx;
+      RESULT_SRC__ALU_OUT:    __tmp_ResultData = __tmp_ALUOut;
+      RESULT_SRC__DATA:       __tmp_ResultData = Data;
+      RESULT_SRC__ALU_RESULT: __tmp_ResultData = pc_old;
+      default:                __tmp_ResultData = 32'hxxxxxxxx;
     endcase
   end
 

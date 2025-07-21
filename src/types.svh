@@ -42,6 +42,12 @@ typedef enum logic {
   ADR_SRC__RESULT = 1'b1
 } adr_src_t;
 
+typedef enum logic [1:0] {
+  RESULT_SRC__ALU_OUT    = 2'b00,
+  RESULT_SRC__DATA       = 2'b01,
+  RESULT_SRC__ALU_RESULT = 2'b10
+} result_src_t;
+
 typedef enum logic {
   PC_SRC__INCREMENT = 1'b0,
   PC_SRC__JUMP      = 1'b1
