@@ -108,19 +108,19 @@ module top ( input wire clk
 
   always @(*) begin
     case (__tmp_ALUSrcA)
-      2'b00: alu_input_a = 32'd0;
-      2'b01: alu_input_a = OldPC;
-      2'b10: alu_input_a = rs1;
-      default: alu_input_a = 32'hxxxxxxxx;
+      ALU_SRC_A__PC:     alu_input_a = 32'd0;
+      ALU_SRC_A__OLD_PC: alu_input_a = OldPC;
+      ALU_SRC_A__RD1:    alu_input_a = rs1;
+      default:           alu_input_a = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
     case (__tmp_ALUSrcB)
-      2'b00: alu_input_b = rs2;
-      2'b01: alu_input_b = imm_ext;
-      2'b10: alu_input_b = 32'd4;
-      default: alu_input_b = 32'hxxxxxxxx;
+      ALU_SRC_B__RD2:     alu_input_b = rs2;
+      ALU_SRC_B__IMM_EXT: alu_input_b = imm_ext;
+      ALU_SRC_B__4:       alu_input_b = 32'd4;
+      default:            alu_input_b = 32'hxxxxxxxx;
     endcase
   end
 
