@@ -23,6 +23,8 @@ module top ( input wire clk
 
   data_t alu_input_a;
   data_t alu_input_b;
+  data_t alu_result;
+  data_t alu_out;
 
   addr_t pc_old;
   data_t Data; // TODO: this will need to be moved into fetch module
@@ -39,7 +41,6 @@ module top ( input wire clk
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
-  data_t __tmp_ALUOut;
 
   ControlFSM control_fsm
     ( .opcode    ( opcode           )
@@ -75,7 +76,7 @@ module top ( input wire clk
   always @(*) begin
     case (cfsm__adr_src)
       ADR_SRC__PC:     memory_address = pc_cur;
-      ADR_SRC__RESULT: memory_address = __tmp_ALUOut; // this will be the output of the result mux
+      ADR_SRC__RESULT: memory_address = result;
     endcase
   end
 
@@ -106,9 +107,13 @@ module top ( input wire clk
     ( .a              ( alu_input_a      )
     , .b              ( alu_input_b      )
     , .alu_control    ( __tmp_ALUControl )
-    , .out            ( __tmp_ALUOut     )
+    , .out            ( alu_result       )
     , .zeroE          ( alu__zero_flag   )
     );
+
+  always @(posedge clk) begin
+    alu_out <= alu_result;
+  end
 
   always @(*) begin
     case (__tmp_ALUSrcA)
@@ -130,7 +135,7 @@ module top ( input wire clk
 
   always @(*) begin
     case (cfsm__result_src)
-      RESULT_SRC__ALU_OUT:    result = __tmp_ALUOut;
+      RESULT_SRC__ALU_OUT:    result = alu_out;
       RESULT_SRC__DATA:       result = Data;
       RESULT_SRC__ALU_RESULT: result = pc_old;
       default:                result = 32'hxxxxxxxx;
