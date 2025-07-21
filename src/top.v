@@ -15,8 +15,8 @@ module top ( input wire clk
 
   data_t __tmp_ResultData;
 
-  data_t rs1;
-  data_t rs2;
+  data_t rd1;
+  data_t rd2;
 
   data_t alu_input_a;
   data_t alu_input_b;
@@ -93,14 +93,14 @@ module top ( input wire clk
     , .ResultData      ( __tmp_ResultData )
     , .opcode          ( opcode           )
     , .ALUControl      ( __tmp_ALUControl )
-    , .baseAddr        ( rs1              )
-    , .writeData       ( rs2              )
+    , .baseAddr        ( rd1              )
+    , .writeData       ( rd2              )
     , .imm_ext         ( imm_ext          )
     );
 
   ALU alu
-    ( .a              ( rs1              )
-    , .b              ( rs2              )
+    ( .a              ( rd1              )
+    , .b              ( rd2              )
     , .alu_control    ( __tmp_ALUControl )
     , .out            ( __tmp_ALUOut     )
     , .zeroE          ( alu__zero_flag   )
@@ -110,14 +110,14 @@ module top ( input wire clk
     case (__tmp_ALUSrcA)
       ALU_SRC_A__PC:     alu_input_a = 32'd0;
       ALU_SRC_A__OLD_PC: alu_input_a = OldPC;
-      ALU_SRC_A__RD1:    alu_input_a = rs1;
+      ALU_SRC_A__RD1:    alu_input_a = rd1;
       default:           alu_input_a = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
     case (__tmp_ALUSrcB)
-      ALU_SRC_B__RD2:     alu_input_b = rs2;
+      ALU_SRC_B__RD2:     alu_input_b = rd2;
       ALU_SRC_B__IMM_EXT: alu_input_b = imm_ext;
       ALU_SRC_B__4:       alu_input_b = 32'd4;
       default:            alu_input_b = 32'hxxxxxxxx;
