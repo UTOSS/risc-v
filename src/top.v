@@ -4,8 +4,10 @@ module top ( input wire clk
            , input wire reset
            );
 
-  wire     cfsm__pc_update;
-  pc_src_t cfsm__pc_src;
+  wire         cfsm__pc_update;
+  pc_src_t     cfsm__pc_src;
+  result_src_t cfsm__result_src;
+
   addr_t   pc_cur;
   addr_t   memory_address;
   data_t   data;
@@ -13,7 +15,7 @@ module top ( input wire clk
   opcode_t opcode;
   imm_t    imm_ext;
 
-  data_t __tmp_ResultData;
+  data_t result;
 
   data_t rd1;
   data_t rd2;
@@ -40,22 +42,22 @@ module top ( input wire clk
   data_t __tmp_ALUOut;
 
   ControlFSM control_fsm
-    ( .opcode    ( opcode          )
-    , .clk       ( clk             )
-    , .reset     ( reset           )
-    , .zero_flag ( alu__zero_flag  )
-    , .AdrSrc    ( cfsm__adr_src   )
-    , .IRWrite   ( __tmp_IRWrite   )
-    , .RegWrite  ( __tmp_RegWrite  )
-    , .PCUpdate  ( cfsm__pc_update )
-    , .pc_src    ( cfsm__pc_src    )
-    , .MemWrite  ( __tmp_MemWrite  )
-    , .Branch    ( __tmp_Branch    )
-    , .ALUSrcA   ( __tmp_ALUSrcA   )
-    , .ALUSrcB   ( __tmp_ALUSrcB   )
-    , .ALUOp     ( __tmp_ALUOp     )
-    , .ResultSrc ( __tmp_ResultSrc )
-    , .FSMState  ( __tmp_FSMState  )
+    ( .opcode    ( opcode           )
+    , .clk       ( clk              )
+    , .reset     ( reset            )
+    , .zero_flag ( alu__zero_flag   )
+    , .AdrSrc    ( cfsm__adr_src    )
+    , .IRWrite   ( __tmp_IRWrite    )
+    , .RegWrite  ( __tmp_RegWrite   )
+    , .PCUpdate  ( cfsm__pc_update  )
+    , .pc_src    ( cfsm__pc_src     )
+    , .MemWrite  ( __tmp_MemWrite   )
+    , .Branch    ( __tmp_Branch     )
+    , .ALUSrcA   ( __tmp_ALUSrcA    )
+    , .ALUSrcB   ( __tmp_ALUSrcB    )
+    , .ALUOp     ( __tmp_ALUOp      )
+    , .ResultSrc ( cfsm__result_src )
+    , .FSMState  ( __tmp_FSMState   )
     );
 
   fetch fetch
@@ -91,7 +93,7 @@ module top ( input wire clk
     ( .instr           ( data             )
     , .clk             ( clk              )
     , .reset           ( reset            )
-    , .ResultData      ( __tmp_ResultData )
+    , .ResultData      ( result           )
     , .opcode          ( opcode           )
     , .ALUControl      ( __tmp_ALUControl )
     , .baseAddr        ( rd1              )
@@ -126,11 +128,11 @@ module top ( input wire clk
   end
 
   always @(*) begin
-    case (__tmp_ResultSrc)
-      RESULT_SRC__ALU_OUT:    __tmp_ResultData = __tmp_ALUOut;
-      RESULT_SRC__DATA:       __tmp_ResultData = Data;
-      RESULT_SRC__ALU_RESULT: __tmp_ResultData = pc_old;
-      default:                __tmp_ResultData = 32'hxxxxxxxx;
+    case (cfsm__result_src)
+      RESULT_SRC__ALU_OUT:    result = __tmp_ALUOut;
+      RESULT_SRC__DATA:       result = Data;
+      RESULT_SRC__ALU_RESULT: result = pc_old;
+      default:                result = 32'hxxxxxxxx;
     endcase
   end
 
