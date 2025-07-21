@@ -21,7 +21,7 @@ module top ( input wire clk
   data_t alu_input_a;
   data_t alu_input_b;
 
-  addr_t OldPC; // TODO: this will need to be moved into fetch module
+  addr_t pc_old;
   data_t Data; // TODO: this will need to be moved into fetch module
 
   wire alu__zero_flag;
@@ -67,6 +67,7 @@ module top ( input wire clk
 
     // outputs
     , .pc_cur          ( pc_cur          )
+    , .pc_old          ( pc_old          )
     );
 
   always @(*) begin
@@ -109,7 +110,7 @@ module top ( input wire clk
   always @(*) begin
     case (__tmp_ALUSrcA)
       ALU_SRC_A__PC:     alu_input_a = 32'd0;
-      ALU_SRC_A__OLD_PC: alu_input_a = OldPC;
+      ALU_SRC_A__OLD_PC: alu_input_a = pc_old;
       ALU_SRC_A__RD1:    alu_input_a = rd1;
       default:           alu_input_a = 32'hxxxxxxxx;
     endcase
@@ -128,7 +129,7 @@ module top ( input wire clk
     case (__tmp_ResultSrc)
       2'b00: __tmp_ResultData = __tmp_ALUOut;
       2'b01: __tmp_ResultData = Data;
-      2'b10: __tmp_ResultData = OldPC;
+      2'b10: __tmp_ResultData = pc_old;
       default: __tmp_ResultData = 32'hxxxxxxxx;
     endcase
   end
