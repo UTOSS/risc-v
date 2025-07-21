@@ -15,6 +15,12 @@ module top ( input wire clk
   data_t rs1;
   data_t rs2;
 
+  data_t alu_input_a;
+  data_t alu_input_b;
+
+  addr_t OldPC; // TODO: this will need to be moved into fetch module
+  data_t Data; // TODO: this will need to be moved into fetch module
+
   wire alu__zero_flag;
 
   wire __tmp_AdrSrc
@@ -77,5 +83,32 @@ module top ( input wire clk
     , .out            ( __tmp_ALUOut     )
     , .zeroE          ( alu__zero_flag   )
     );
+
+  always @(*) begin
+    case (__tmp_ALUSrcA)
+      2'b00: alu_input_a = 32'd0;
+      2'b01: alu_input_a = OldPC;
+      2'b10: alu_input_a = rs1;
+      default: alu_input_a = 32'hxxxxxxxx;
+    endcase
+  end
+
+  always @(*) begin
+    case (__tmp_ALUSrcB)
+      2'b00: alu_input_b = rs2;
+      2'b01: alu_input_b = imm_ext;
+      2'b10: alu_input_b = 32'd4;
+      default: alu_input_b = 32'hxxxxxxxx;
+    endcase
+  end
+
+  always @(*) begin
+    case (__tmp_ResultSrc)
+      2'b00: __tmp_ResultData = __tmp_ALUOut;
+      2'b01: __tmp_ResultData = Data;
+      2'b10: __tmp_ResultData = OldPC;
+      default: __tmp_ResultData = 32'hxxxxxxxx;
+    endcase
+  end
 
 endmodule
