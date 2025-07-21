@@ -18,6 +18,9 @@ module top ( input wire clk
   data_t alu_input_a;
   data_t alu_input_b;
 
+  addr_t OldPC; // TODO: this will need to be moved into fetch module
+  data_t Data; // TODO: this will need to be moved into fetch module
+
   wire alu__zero_flag;
 
   wire __tmp_AdrSrc
