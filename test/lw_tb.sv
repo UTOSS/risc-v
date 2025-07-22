@@ -28,6 +28,8 @@ module lw_tb;
     // set up instrctions and data memory
     uut.memory.M[ 0] = 32'h00012083; // lw x1, 0(x2)
     uut.memory.M[ 4] = 32'h00412083; // lw x1, 4(x2)
+    uut.memory.M[ 8] = 32'hff812083; // lw x1, -8(x2)
+    uut.memory.M[34] = 32'hbadab00f; // have some data at address 34
     uut.memory.M[42] = 32'hdeadbeef; // have some data at address 42
     uut.memory.M[46] = 32'hcafebabe; // have some data at address 46
 
@@ -96,7 +98,37 @@ module lw_tb;
 
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hcafebabe)
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
-    `assert_equal(uut.fetch.pc_cur, 8)
+    `assert_equal(uut.fetch.pc_cur, 8) // starting third instruction already
+
+    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+
+    `assert_equal(uut.opcode, 7'b0000011)
+    `assert_equal(uut.instruction_decode.rs1, 2)
+    `assert_equal(uut.instruction_decode.rs2, 0)
+    `assert_equal(uut.instruction_decode.imm_ext, -8)
+
+    wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
+
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.alu.a, 42)
+    `assert_equal(uut.alu.b, -8)
+    `assert_equal(uut.alu.out, 34)
+
+    wait_till_next_cfsm_state(uut.control_fsm.MEMREAD);
+
+    `assert_equal(uut.result, 34)
+    `assert_equal(uut.memory_address, 34)
+
+    wait_till_next_cfsm_state(uut.control_fsm.MEMWB);
+
+    `assert_equal(uut.data, 32'hbadab00f)
+    `assert_equal(uut.result, 32'hbadab00f)
+
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hbadab00f)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.fetch.pc_cur, 12)
 
   end
 
