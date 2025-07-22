@@ -34,7 +34,7 @@ module lw_tb;
     uut.memory.M[46] = 32'hcafebabe; // have some data at address 46
 
     // set up register file
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 42; // x1 = 42
+    uut.instruction_decode.instanceRegFile.RFMem[2] = 42; // x2 = 42
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
