@@ -136,7 +136,7 @@ module top ( input wire clk
     case (cfsm__result_src)
       RESULT_SRC__ALU_OUT:    result = alu_out;
       RESULT_SRC__DATA:       result = data;
-      RESULT_SRC__ALU_RESULT: result = pc_old;
+      RESULT_SRC__ALU_RESULT: result = alu_result;
       default:                result = 32'hxxxxxxxx;
     endcase
   end
