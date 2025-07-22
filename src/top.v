@@ -117,7 +117,7 @@ module top ( input wire clk
 
   always @(*) begin
     case (__tmp_ALUSrcA)
-      ALU_SRC_A__PC:     alu_input_a = 32'd0;
+      ALU_SRC_A__PC:     alu_input_a = pc_cur;
       ALU_SRC_A__OLD_PC: alu_input_a = pc_old;
       ALU_SRC_A__RD1:    alu_input_a = rd1;
       default:           alu_input_a = 32'hxxxxxxxx;
