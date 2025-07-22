@@ -27,7 +27,6 @@ module top ( input wire clk
   data_t alu_out;
 
   addr_t pc_old;
-  data_t Data; // TODO: this will need to be moved into fetch module
 
   wire alu__zero_flag;
 
@@ -136,7 +135,7 @@ module top ( input wire clk
   always @(*) begin
     case (cfsm__result_src)
       RESULT_SRC__ALU_OUT:    result = alu_out;
-      RESULT_SRC__DATA:       result = Data;
+      RESULT_SRC__DATA:       result = data;
       RESULT_SRC__ALU_RESULT: result = pc_old;
       default:                result = 32'hxxxxxxxx;
     endcase
