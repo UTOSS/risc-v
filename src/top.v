@@ -112,11 +112,7 @@ module top ( input wire clk
     );
 
   always @(posedge clk) begin
-    if (reset) begin
-      alu_out <= 32'd0;
-    end else begin
-      alu_out <= alu_result;
-    end
+    alu_out <= alu_result;
   end
 
   always @(*) begin
