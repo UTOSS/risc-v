@@ -184,7 +184,7 @@ module ControlFSM(
 
 			MEMREAD: begin
 
-				ResultSrc <= 2'b00;
+				ResultSrc <= RESULT_SRC__ALU_OUT;
 				AdrSrc <= ADR_SRC__RESULT;
 
 			end
