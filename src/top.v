@@ -6,6 +6,7 @@ module top ( input wire clk
 
   wire         cfsm__pc_update;
   wire         cfsm__reg_write;
+  wire         cfsm__ir_write;
   pc_src_t     cfsm__pc_src;
   result_src_t cfsm__result_src;
 
@@ -31,8 +32,7 @@ module top ( input wire clk
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
-  wire __tmp_IRWrite
-     , __tmp_MemWrite
+  wire __tmp_MemWrite
      , __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA
            , __tmp_ALUSrcB;
@@ -47,7 +47,7 @@ module top ( input wire clk
     , .reset     ( reset            )
     , .zero_flag ( alu__zero_flag   )
     , .AdrSrc    ( cfsm__adr_src    )
-    , .IRWrite   ( __tmp_IRWrite    )
+    , .IRWrite   ( cfsm__ir_write   )
     , .RegWrite  ( cfsm__reg_write  )
     , .PCUpdate  ( cfsm__pc_update  )
     , .pc_src    ( cfsm__pc_src     )
@@ -65,6 +65,7 @@ module top ( input wire clk
     , .reset           ( reset           )
     , .cfsm__pc_update ( cfsm__pc_update )
     , .cfsm__pc_src    ( cfsm__pc_src    )
+    , .cfsm__ir_write  ( cfsm__ir_write  )
     , .imm_ext         ( imm_ext         )
 
     // outputs
