@@ -25,7 +25,7 @@ module lw_tb;
   initial begin
     reset <= `TRUE;
 
-    // set up instrctions and data memory
+    // set up instructions and data memory
     uut.memory.M[ 0] = 32'h00012083; // lw x1, 0(x2)
     uut.memory.M[ 4] = 32'h00412083; // lw x1, 4(x2)
     uut.memory.M[ 8] = 32'hff812083; // lw x1, -8(x2)
