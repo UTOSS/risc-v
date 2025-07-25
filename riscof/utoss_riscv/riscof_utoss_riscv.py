@@ -79,6 +79,8 @@ class utoss_riscv(pluginTemplate):
          -I ' + archtest_env + ' {2} -o {3} {4}'
 
        # add more utility snippets here
+       self.objcopy_cmd = 'riscv{0}-unknown-elf-objcopy \
+         -O verilog --verilog-data-width=4 {1} {1}.mem'
 
     def build(self, isa_yaml, platform_yaml):
 
@@ -150,6 +152,8 @@ class utoss_riscv(pluginTemplate):
           # function
           cmd = self.compile_cmd.format(testentry['isa'].lower(), self.xlen, test, elf, compile_macros)
 
+          objcopy = self.objcopy_cmd.format(self.xlen, elf)
+
 	  # if the user wants to disable running the tests and only compile the tests, then
 	  # the "else" clause is executed below assigning the sim command to simple no action
 	  # echo statement.
@@ -160,7 +164,7 @@ class utoss_riscv(pluginTemplate):
             simcmd = 'echo "NO RUN"'
 
           # concatenate all commands that need to be executed within a make-target.
-          execute = '@cd {0}; {1}; {2};'.format(testentry['work_dir'], cmd, simcmd)
+          execute = '@cd {0}; {1}; {2}; {3};'.format(testentry['work_dir'], cmd, objcopy, simcmd)
 
           # create a target. The makeutil will create a target with the name "TARGET<num>" where num
           # starts from 0 and increments automatically for each new target that is added
