@@ -7,13 +7,14 @@
 `include "src/utils.svh"
 `include "src/types.svh"
 
-module fetch ( input  wire     clk
-             , input  wire     reset
-             , input  wire     cfsm__pc_update
-             , input  pc_src_t cfsm__pc_src
-             , input  imm_t    imm_ext
-             , output instr_t  instr
-             );
+module fetch #( parameter MEM_SIZE )
+              ( input  wire     clk
+              , input  wire     reset
+              , input  wire     cfsm__pc_update
+              , input  pc_src_t cfsm__pc_src
+              , input  imm_t    imm_ext
+              , output instr_t  instr
+              );
 
   addr_t pc_cur, pc_next;
 
@@ -33,12 +34,13 @@ module fetch ( input  wire     clk
     else       pc_cur <= pc_next;
   end
 
-  MA instruction_memory
-    ( .A   ( pc_cur       )
-    , .WD  ( 32'hxxxxxxxx )
-    , .WE  ( `FALSE       )
-    , .CLK ( clk          )
-    , .RD  ( instr        )
-    );
+  MA #( .SIZE ( MEM_SIZE ) )
+    instruction_memory
+      ( .A   ( pc_cur       )
+      , .WD  ( 32'hxxxxxxxx )
+      , .WE  ( `FALSE       )
+      , .CLK ( clk          )
+      , .RD  ( instr        )
+      );
 
 endmodule
