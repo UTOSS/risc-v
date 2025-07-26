@@ -7,7 +7,7 @@ module dut;
   reg clk;
   reg reset;
 
-  top #( .MEM_SIZE () )
+  top #( .MEM_SIZE ( 250000 /* 1MB */ ) )
     top
       ( .clk   ( clk   )
       , .reset ( reset )
