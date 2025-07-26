@@ -1,8 +1,9 @@
 `include "src/types.svh"
 
-module top ( input wire clk
-           , input wire reset
-           );
+module top #( parameter MEM_SIZE = 1024 )
+            ( input wire clk
+            , input wire reset
+            );
 
   wire     cfsm__pc_update;
   pc_src_t cfsm__pc_src;
@@ -55,14 +56,15 @@ module top ( input wire clk
     , .FSMState  ( __tmp_FSMState  )
     );
 
-  fetch fetch
-    ( .clk             ( clk             )
-    , .reset           ( reset           )
-    , .cfsm__pc_update ( cfsm__pc_update )
-    , .cfsm__pc_src    ( cfsm__pc_src    )
-    , .imm_ext         ( imm_ext         )
-    , .instr           ( instr           )
-    );
+  fetch #( .MEM_SIZE ( MEM_SIZE ) )
+    fetch
+      ( .clk             ( clk             )
+      , .reset           ( reset           )
+      , .cfsm__pc_update ( cfsm__pc_update )
+      , .cfsm__pc_src    ( cfsm__pc_src    )
+      , .imm_ext         ( imm_ext         )
+      , .instr           ( instr           )
+      );
 
   Instruction_Decode instruction_decode
     ( .instr           ( instr            )

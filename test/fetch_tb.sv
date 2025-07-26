@@ -14,14 +14,15 @@ module fetch_tb;
   imm_t   imm_ext;
   instr_t instr;
 
-  fetch uut
-    ( .clk             ( clk             )
-    , .reset           ( reset           )
-    , .cfsm__pc_update ( cfsm__pc_update )
-    , .cfsm__pc_src    ( cfsm__pc_src    )
-    , .imm_ext         ( imm_ext         )
-    , .instr           ( instr           )
-    );
+  fetch #( .MEM_SIZE ( 1024 ) )
+    uut
+      ( .clk             ( clk             )
+      , .reset           ( reset           )
+      , .cfsm__pc_update ( cfsm__pc_update )
+      , .cfsm__pc_src    ( cfsm__pc_src    )
+      , .imm_ext         ( imm_ext         )
+      , .instr           ( instr           )
+      );
 
   initial begin
     clk = 0;
