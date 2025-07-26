@@ -7,10 +7,11 @@ module dut;
   reg clk;
   reg reset;
 
-  top top
-    ( .clk   ( clk   )
-    , .reset ( reset )
-    );
+  top #( .MEM_SIZE () )
+    top
+      ( .clk   ( clk   )
+      , .reset ( reset )
+      );
 
   initial begin
     clk = 0;
