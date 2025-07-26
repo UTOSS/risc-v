@@ -21,6 +21,41 @@ typedef enum logic [1:0] {
   ALU_OP__UNSET              = 2'b11
 } alu_op_t;
 
+// represents the possible input sources for the first operand of the ALU as selected by the Control
+// FSM; See Figure 7.46 of digital design and computer architecture book
+typedef enum logic [1:0] {
+  ALU_SRC_A__PC     = 2'b00,
+  ALU_SRC_A__OLD_PC = 2'b01,
+  ALU_SRC_A__RD1    = 2'b10,
+
+  ALU_SRC_A__UNSET  = 2'b11
+} alu_src_a_t;
+
+// represents the possible input sources for the second operand of the ALU as selected by the
+// Control FSM; See Figure 7.46 of digital design and computer architecture book
+typedef enum logic [1:0] {
+  ALU_SRC_B__RD2     = 2'b00,
+  ALU_SRC_B__IMM_EXT = 2'b01,
+  ALU_SRC_B__4       = 2'b10,
+
+  ALU_SRC_B__UNSET = 2'b11
+} alu_src_b_t;
+
+// represents the possible input sources of the address for memory access as selected by the Control
+// FSM; See Figure 7.22 of the digital disgn and computer architecture book
+typedef enum logic {
+  ADR_SRC__PC     = 1'b0,
+  ADR_SRC__RESULT = 1'b1
+} adr_src_t;
+
+// represents the possible sources of the result fed into PC, RF, or memory as selected by the
+// Control FSM; See Figure 7.46 of the digital design and computer architecture book
+typedef enum logic [1:0] {
+  RESULT_SRC__ALU_OUT    = 2'b00,
+  RESULT_SRC__DATA       = 2'b01,
+  RESULT_SRC__ALU_RESULT = 2'b10
+} result_src_t;
+
 typedef enum logic {
   PC_SRC__INCREMENT = 1'b0,
   PC_SRC__JUMP      = 1'b1

@@ -4,29 +4,35 @@ module top ( input wire clk
            , input wire reset
            );
 
-  wire     cfsm__pc_update;
-  pc_src_t cfsm__pc_src;
-  instr_t  instr;
+  wire         cfsm__pc_update;
+  wire         cfsm__reg_write;
+  wire         cfsm__ir_write;
+  pc_src_t     cfsm__pc_src;
+  result_src_t cfsm__result_src;
+
+  addr_t   pc_cur;
+  addr_t   memory_address;
+  data_t   data;
+  instr_t  instruction;
   opcode_t opcode;
   imm_t    imm_ext;
 
-  data_t __tmp_ResultData;
+  data_t result;
 
-  data_t rs1;
-  data_t rs2;
+  data_t rd1;
+  data_t rd2;
 
   data_t alu_input_a;
   data_t alu_input_b;
+  data_t alu_result;
+  data_t alu_out;
 
-  addr_t OldPC; // TODO: this will need to be moved into fetch module
-  data_t Data; // TODO: this will need to be moved into fetch module
+  addr_t pc_old;
 
   wire alu__zero_flag;
 
-  wire __tmp_AdrSrc
-     , __tmp_IRWrite
-     , __tmp_RegWrite
-     , __tmp_MemWrite
+  adr_src_t cfsm__adr_src;
+  wire __tmp_MemWrite
      , __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA
            , __tmp_ALUSrcB;
@@ -34,25 +40,24 @@ module top ( input wire clk
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
-  data_t __tmp_ALUOut;
 
   ControlFSM control_fsm
-    ( .opcode    ( opcode          )
-    , .clk       ( clk             )
-    , .reset     ( reset           )
-    , .zero_flag ( alu__zero_flag  )
-    , .AdrSrc    ( __tmp_AdrSrc    )
-    , .IRWrite   ( __tmp_IRWrite   )
-    , .RegWrite  ( __tmp_RegWrite  )
-    , .PCUpdate  ( cfsm__pc_update )
-    , .pc_src    ( cfsm__pc_src    )
-    , .MemWrite  ( __tmp_MemWrite  )
-    , .Branch    ( __tmp_Branch    )
-    , .ALUSrcA   ( __tmp_ALUSrcA   )
-    , .ALUSrcB   ( __tmp_ALUSrcB   )
-    , .ALUOp     ( __tmp_ALUOp     )
-    , .ResultSrc ( __tmp_ResultSrc )
-    , .FSMState  ( __tmp_FSMState  )
+    ( .opcode    ( opcode           )
+    , .clk       ( clk              )
+    , .reset     ( reset            )
+    , .zero_flag ( alu__zero_flag   )
+    , .AdrSrc    ( cfsm__adr_src    )
+    , .IRWrite   ( cfsm__ir_write   )
+    , .RegWrite  ( cfsm__reg_write  )
+    , .PCUpdate  ( cfsm__pc_update  )
+    , .pc_src    ( cfsm__pc_src     )
+    , .MemWrite  ( __tmp_MemWrite   )
+    , .Branch    ( __tmp_Branch     )
+    , .ALUSrcA   ( __tmp_ALUSrcA    )
+    , .ALUSrcB   ( __tmp_ALUSrcB    )
+    , .ALUOp     ( __tmp_ALUOp      )
+    , .ResultSrc ( cfsm__result_src )
+    , .FSMState  ( __tmp_FSMState   )
     );
 
   fetch fetch
@@ -60,54 +65,80 @@ module top ( input wire clk
     , .reset           ( reset           )
     , .cfsm__pc_update ( cfsm__pc_update )
     , .cfsm__pc_src    ( cfsm__pc_src    )
+    , .cfsm__ir_write  ( cfsm__ir_write  )
     , .imm_ext         ( imm_ext         )
-    , .instr           ( instr           )
+
+    // outputs
+    , .pc_cur          ( pc_cur          )
+    , .pc_old          ( pc_old          )
+    );
+
+  always @(*) begin
+    case (cfsm__adr_src)
+      ADR_SRC__PC:     memory_address = pc_cur;
+      ADR_SRC__RESULT: memory_address = result;
+    endcase
+  end
+
+  MA memory // instructions and data
+    ( .A   ( memory_address )
+    , .WD  ( 32'hxxxxxxxx   )
+    , .WE  ( `FALSE         )
+    , .CLK ( clk            )
+
+    // outputs
+    , .RD  ( data           )
     );
 
   Instruction_Decode instruction_decode
-    ( .instr           ( instr            )
+    ( .instr           ( data             )
     , .clk             ( clk              )
     , .reset           ( reset            )
-    , .ResultData      ( __tmp_ResultData )
+    , .ResultData      ( result           )
+    , .reg_write       ( cfsm__reg_write  )
     , .opcode          ( opcode           )
     , .ALUControl      ( __tmp_ALUControl )
-    , .baseAddr        ( rs1              )
-    , .writeData       ( rs2              )
+    , .baseAddr        ( rd1              )
+    , .writeData       ( rd2              )
     , .imm_ext         ( imm_ext          )
     );
 
   ALU alu
-    ( .a              ( rs1              )
-    , .b              ( rs2              )
+    ( .a              ( alu_input_a      )
+    , .b              ( alu_input_b      )
     , .alu_control    ( __tmp_ALUControl )
-    , .out            ( __tmp_ALUOut     )
+    , .out            ( alu_result       )
     , .zeroE          ( alu__zero_flag   )
     );
 
+  always @(posedge clk) begin
+    alu_out <= alu_result;
+  end
+
   always @(*) begin
     case (__tmp_ALUSrcA)
-      2'b00: alu_input_a = 32'd0;
-      2'b01: alu_input_a = OldPC;
-      2'b10: alu_input_a = rs1;
-      default: alu_input_a = 32'hxxxxxxxx;
+      ALU_SRC_A__PC:     alu_input_a = pc_cur;
+      ALU_SRC_A__OLD_PC: alu_input_a = pc_old;
+      ALU_SRC_A__RD1:    alu_input_a = rd1;
+      default:           alu_input_a = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
     case (__tmp_ALUSrcB)
-      2'b00: alu_input_b = rs2;
-      2'b01: alu_input_b = imm_ext;
-      2'b10: alu_input_b = 32'd4;
-      default: alu_input_b = 32'hxxxxxxxx;
+      ALU_SRC_B__RD2:     alu_input_b = rd2;
+      ALU_SRC_B__IMM_EXT: alu_input_b = imm_ext;
+      ALU_SRC_B__4:       alu_input_b = 32'd4;
+      default:            alu_input_b = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
-    case (__tmp_ResultSrc)
-      2'b00: __tmp_ResultData = __tmp_ALUOut;
-      2'b01: __tmp_ResultData = Data;
-      2'b10: __tmp_ResultData = OldPC;
-      default: __tmp_ResultData = 32'hxxxxxxxx;
+    case (cfsm__result_src)
+      RESULT_SRC__ALU_OUT:    result = alu_out;
+      RESULT_SRC__DATA:       result = data;
+      RESULT_SRC__ALU_RESULT: result = alu_result;
+      default:                result = 32'hxxxxxxxx;
     endcase
   end
 

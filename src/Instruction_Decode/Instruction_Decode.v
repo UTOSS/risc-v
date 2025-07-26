@@ -7,6 +7,7 @@ module Instruction_Decode(
 	input wire clk,
 	input wire reset,
 	input wire [31:0] ResultData,
+  input wire reg_write,
   output opcode_t opcode,
 	output wire [3:0] ALUControl,
 	output wire [31:0] baseAddr,
@@ -15,7 +16,6 @@ module Instruction_Decode(
 );
 
 	alu_op_t alu_op;
-	wire RegWrite;
 	reg [2:0] funct3;
 	reg [6:0] funct7;
 	reg [4:0] rd, rs1, rs2;
@@ -138,7 +138,7 @@ module Instruction_Decode(
 		.Addr2(rs2),
 		.Addr3(rd),
 		.clk(clk),
-		.regWrite(RegWrite),
+		.regWrite(reg_write),
 		.dataIn(ResultData),
 		.baseAddr(baseAddr),
 		.writeData(writeData)
