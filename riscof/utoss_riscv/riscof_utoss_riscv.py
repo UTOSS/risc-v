@@ -80,7 +80,7 @@ class utoss_riscv(pluginTemplate):
 
        # add more utility snippets here
        self.objcopy_cmd = 'riscv{0}-unknown-elf-objcopy \
-         -O verilog --verilog-data-width=4 {1} {1}.mem'
+         -O verilog --verilog-data-width=1 {1} {1}.mem'
 
     def build(self, isa_yaml, platform_yaml):
 
