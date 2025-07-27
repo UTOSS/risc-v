@@ -80,7 +80,7 @@ class utoss_riscv(pluginTemplate):
 
        # add more utility snippets here
        self.objcopy_cmd = 'riscv{0}-unknown-elf-objcopy \
-         -O verilog --verilog-data-width=1 {1} {1}.mem'
+         -O verilog --verilog-data-width=1 {1} {2}'
 
     def build(self, isa_yaml, platform_yaml):
 
@@ -137,6 +137,7 @@ class utoss_riscv(pluginTemplate):
 
           # name of the elf file after compilation of the test
           elf = 'my.elf'
+          mem = 'my.mem'
 
           # name of the signature file as per requirement of RISCOF. RISCOF expects the signature to
           # be named as DUT-<dut-name>.signature. The below variable creates an absolute path of
@@ -152,7 +153,7 @@ class utoss_riscv(pluginTemplate):
           # function
           cmd = self.compile_cmd.format(testentry['isa'].lower(), self.xlen, test, elf, compile_macros)
 
-          objcopy = self.objcopy_cmd.format(self.xlen, elf)
+          objcopy = self.objcopy_cmd.format(self.xlen, elf, mem)
 
 	  # if the user wants to disable running the tests and only compile the tests, then
 	  # the "else" clause is executed below assigning the sim command to simple no action
