@@ -101,6 +101,7 @@ module ControlFSM(
     Branch <= 1'b0;
     pc_src <= 1'b0;
     PCUpdate <= 1'b0;
+    IRWrite <= 1'b0;
 
 		FSMState <= current_state;
 
@@ -110,6 +111,7 @@ module ControlFSM(
 
 				AdrSrc <= ADR_SRC__PC;
 				IRWrite <= 1'b1;
+        PCUpdate <= 1'b1;
 
 			end
 

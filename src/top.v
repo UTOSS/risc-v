@@ -12,6 +12,7 @@ module top ( input wire clk
 
   addr_t   pc_cur;
   addr_t   memory_address;
+  data_t   memory_data;
   data_t   data;
   instr_t  instruction;
   opcode_t opcode;
@@ -87,11 +88,21 @@ module top ( input wire clk
     , .CLK ( clk            )
 
     // outputs
-    , .RD  ( data           )
+    , .RD  ( memory_data    )
     );
 
+  always @(posedge clk) begin
+    if (cfsm__ir_write) begin
+      instruction <= memory_data;
+    end
+  end
+
+  always @(posedge clk) begin
+    data <= memory_data;
+  end
+
   Instruction_Decode instruction_decode
-    ( .instr           ( data             )
+    ( .instr           ( instruction      )
     , .clk             ( clk              )
     , .reset           ( reset            )
     , .ResultData      ( result           )
