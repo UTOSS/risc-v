@@ -9,6 +9,8 @@ module MA #( parameter SIZE = 1024 )
     reg [31:0] M[0:SIZE-1];
 
     initial begin
+      string mem_file;
+
       if ($value$plusargs("MEM=%s", mem_file)) begin
         $display("loading memory from <%s>", mem_file);
         $readmemh(mem_file, M);
