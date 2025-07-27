@@ -58,7 +58,7 @@ run_tb: $(TB_VVPS)
 	fi
 
 $(RISCOF_DUT_VVP): $(SRCS) $(RISCOF_DUT_SRC)
-	$(IVERILOG) -g2012 -o $(RISCOF_DUT_VVP) $(SRCS)
+	$(IVERILOG) -g2012 -o $(RISCOF_DUT_VVP) $(SRCS) $(RISCOF_DUT_SRC)
 
 riscof_build_dut: $(RISCOF_DUT_VVP)
 
