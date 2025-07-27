@@ -1,7 +1,5 @@
 `timescale 1ns/1ps
 
-`include "src/top.v"
-
 module dut;
 
   reg clk;
@@ -18,9 +16,9 @@ module dut;
     forever #5 clk = ~clk;
   end
 
-  inital begin
+  initial begin
     reset <= `TRUE;
-    @(posedge clk); #1
+    @(posedge clk); #1;
     reset <= `FALSE;
   end
 
