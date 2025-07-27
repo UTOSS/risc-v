@@ -139,6 +139,8 @@ class utoss_riscv(pluginTemplate):
           elf = 'my.elf'
           mem = 'my.mem'
 
+          log = 'dut.log'
+
           # name of the signature file as per requirement of RISCOF. RISCOF expects the signature to
           # be named as DUT-<dut-name>.signature. The below variable creates an absolute path of
           # signature file.
@@ -160,7 +162,10 @@ class utoss_riscv(pluginTemplate):
 	  # echo statement.
           if self.target_run:
             # set up the simulation command. Template is for spike. Please change.
-            simcmd = self.dut_exe + ' --isa={0} +signature={1} +signature-granularity=4 +MEM={2}'.format(self.isa, sig_file, mem)
+            simcmd = self.dut_exe + \
+              ' --isa={0} +signature={1} +signature-granularity=4 +MEM={2} ' \
+              '> {3} 2>&1' \
+                .format(self.isa, sig_file, mem, log)
           else:
             simcmd = 'echo "NO RUN"'
 
