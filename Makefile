@@ -75,7 +75,7 @@ riscof_generate_testlist:
 			--suite=riscv-arch-test/riscv-test-suite/   \
 			--env=riscv-arch-test/riscv-test-suite/env
 
-riscof_run:
+riscof_run: riscof_build_dut
 	cd $(RISCOF_DIR) &&                             \
 		riscof run                                    \
 			--config=config.ini                         \
