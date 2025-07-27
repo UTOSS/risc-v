@@ -80,7 +80,7 @@ module tb_registerFile;
     assert(dut.RFMem[0] == 0) else $fatal(1, "WRITE FAILED: current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]);	 
     $display("PASS: Write to register 0 verified. current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]);
 
-    $finish;
+    // $finish;
   end
   
   initial begin //generate waveform

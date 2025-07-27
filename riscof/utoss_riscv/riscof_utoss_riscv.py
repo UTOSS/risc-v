@@ -82,6 +82,12 @@ class utoss_riscv(pluginTemplate):
        self.objcopy_cmd = 'riscv{0}-unknown-elf-objcopy \
          -O verilog --verilog-data-width=1 {1} {2}'
 
+       self.symbol_address_cmd = \
+         'riscv{0}-unknown-elf-nm {1} ' \
+           '| grep " D " ' \
+           '| grep {2} ' \
+           '| awk \'{{print $1}}\''
+
     def build(self, isa_yaml, platform_yaml):
 
       # load the isa yaml as a dictionary in python.
@@ -157,6 +163,10 @@ class utoss_riscv(pluginTemplate):
 
           objcopy = self.objcopy_cmd.format(self.xlen, elf, mem)
 
+          begin_sig_addr_cmd = self.symbol_address_cmd.format(self.xlen, elf, 'begin_signature')
+          end_sig_addr_cmd   = self.symbol_address_cmd.format(self.xlen, elf, 'end_signature')
+          tohost_addr_cmd = self.symbol_address_cmd.format(self.xlen, elf, 'tohost')
+
 	  # if the user wants to disable running the tests and only compile the tests, then
 	  # the "else" clause is executed below assigning the sim command to simple no action
 	  # echo statement.
@@ -164,8 +174,13 @@ class utoss_riscv(pluginTemplate):
             # set up the simulation command. Template is for spike. Please change.
             simcmd = self.dut_exe + \
               ' --isa={0} +signature={1} +signature-granularity=4 +MEM={2} ' \
-              '> {3} 2>&1' \
-                .format(self.isa, sig_file, mem, log)
+              '+begin_signature=`{3}` +end_signature=`{4}` +tohost=`{5}`' \
+              '> {6} 2>&1' \
+                .format(
+                  self.isa, sig_file, mem,
+                  begin_sig_addr_cmd, end_sig_addr_cmd, tohost_addr_cmd,
+                  log
+                )
           else:
             simcmd = 'echo "NO RUN"'
 
