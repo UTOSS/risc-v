@@ -34,7 +34,7 @@ new_tb:
 
 build_tb: $(TB_VVPS) $(TB_SRCS) $(TB_UTILS)
 
-run_tb: $(TB_VVPS)
+run_tb: build_tb
 	@failed=0;                                                \
 	for tb in $(TB_VVPS); do                                  \
 		echo "Running $$tb...";                                 \
