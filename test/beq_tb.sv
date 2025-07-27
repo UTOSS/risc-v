@@ -19,6 +19,11 @@ module beq_tb;
     forever #5 clk = ~clk;
   end
 
+  task wait_till_next_cfsm_state(input [5:0] expected_state);
+    @(posedge clk); #1;
+    `assert_equal(uut.control_fsm.current_state, expected_state)
+  endtask
+
   initial begin
 
     // initialize instruction memory
@@ -30,17 +35,17 @@ module beq_tb;
     // initialize registers
     uut.instruction_decode.instanceRegFile.RFMem[5'b00100] = 32'h0000002a; // x4 = 42
 
-    @(posedge clk); #1; // fetch stage
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
     reset <= `FALSE;
 
-    @(posedge clk); #1; // decode stage
+    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
     assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
-    assert(uut.fetch.pc_cur  == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur  == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
     assert(uut.fetch.imm_ext == 32'hFFFFFFF4) else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
-    @(posedge clk); #1; // beq stage
+    wait_till_next_cfsm_state(uut.control_fsm.BRANCHIFEQ);
 
     assert(uut.alu__zero_flag == `TRUE)        else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
@@ -49,11 +54,11 @@ module beq_tb;
 
     assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
-    @(posedge clk); #1; // fetch stage
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    assert(uut.fetch.pc_cur    == 32'hFFFFFFF4) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'hFFFFFFF8) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     // beq without satisfied condition
     @(posedge clk); #1;
@@ -63,17 +68,17 @@ module beq_tb;
     uut.instruction_decode.instanceRegFile.RFMem[5'b00001] = 32'h0000002a; // x1 = 42
     uut.instruction_decode.instanceRegFile.RFMem[5'b00010] = 32'h0000002b; // x2 = 43
 
-    @(posedge clk); #1; // fetch stage
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
     reset <= `FALSE;
 
-    @(posedge clk); #1; // decode stage
+    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
     assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
-    assert(uut.fetch.pc_cur  == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur  == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
     assert(uut.fetch.imm_ext == 32'h00000010) else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
-    @(posedge clk); #1; // beq stage
+    wait_till_next_cfsm_state(uut.control_fsm.BRANCHIFEQ);
 
     assert(uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
     assert(uut.alu.b == 32'h0000002b) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
@@ -81,11 +86,11 @@ module beq_tb;
     assert(uut.alu__zero_flag == `FALSE)     else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
     assert(uut.cfsm__pc_src   == 0 /* +4 */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-
-    @(posedge clk); #1; // fetch stage
-
     assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+
+    assert(uut.fetch.pc_cur    == 32'h00000008) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     @(posedge clk); #1; // check that zero-setting instructions do not result in a jump
     reset <= `TRUE;
@@ -93,21 +98,20 @@ module beq_tb;
     uut.memory.M[0] = 32'b0100000_00001_00001_000_00001_0110011; // sub x1, x1, x1
     uut.instruction_decode.instanceRegFile.RFMem[5'b00001] = 32'h00000001; // x1 = 1
 
-    @(posedge clk); #1; // fetch stage
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
     reset <= `FALSE;
 
-    @(posedge clk); #1; // decode stage
+    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
-    @(posedge clk); #1; // execute stage
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
 
     assert(uut.alu__zero_flag == `TRUE)     else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
-    @(posedge clk); #1; // wait for pc update
+    wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
 
-    // pc update not implemented yet for this
-    assert(uut.fetch.pc_cur    == 32'h00000000) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     $finish;
   end
