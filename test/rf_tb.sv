@@ -28,10 +28,7 @@ module rf_tb;
   );
 
   //Clock generation
-  initial begin
-    clk = 0;
-    forever #5 clk = ~clk;
-  end
+  always #5 clk = ~clk;
 
   initial begin
     $display("Starting Register File Testbench...");
