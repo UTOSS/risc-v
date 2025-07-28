@@ -25,16 +25,18 @@ module lw_tb;
   initial begin
     reset <= `TRUE;
 
-    // set up instructions and data memory
+    // set up instructions and data memory; M array uses word addressing, hence the indices there
+    // are 4 times smaller than the actual addresses corresponding to the beginning to the
+    // corresponding word
     uut.memory.M[ 0] = 32'h00012083; // lw x1, 0(x2)
-    uut.memory.M[ 4] = 32'h00412083; // lw x1, 4(x2)
-    uut.memory.M[ 8] = 32'hff812083; // lw x1, -8(x2)
-    uut.memory.M[34] = 32'hbadab00f; // have some data at address 34
-    uut.memory.M[42] = 32'hdeadbeef; // have some data at address 42
-    uut.memory.M[46] = 32'hcafebabe; // have some data at address 46
+    uut.memory.M[ 1] = 32'h00412083; // lw x1, 4(x2)
+    uut.memory.M[ 2] = 32'hff812083; // lw x1, -8(x2)
+    uut.memory.M[40] = 32'hbadab00f; // have some data at address 0xa0
+    uut.memory.M[42] = 32'hdeadbeef; // have some data at address 0xa8
+    uut.memory.M[43] = 32'hcafebabe; // have some data at address 0xac
 
     // set up register file
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 42; // x2 = 42
+    uut.instruction_decode.instanceRegFile.RFMem[2] = 32'ha8; // x2 = 42 * 4 = 168 = 0xa8
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
@@ -49,15 +51,15 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
-    `assert_equal(uut.alu.a, 42)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.alu.a, 32'ha8)
     `assert_equal(uut.alu.b, 0)
-    `assert_equal(uut.alu.out, 42)
+    `assert_equal(uut.alu.out, 32'ha8)
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMREAD);
 
-    `assert_equal(uut.result, 42)
-    `assert_equal(uut.memory_address, 42)
+    `assert_equal(uut.result, 32'ha8)
+    `assert_equal(uut.memory_address, 32'ha8)
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMWB);
 
@@ -67,7 +69,7 @@ module lw_tb;
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hdeadbeef)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.fetch.pc_cur, 4) // starting second instruction already
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -79,15 +81,15 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
-    `assert_equal(uut.alu.a, 42)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.alu.a, 32'ha8)
     `assert_equal(uut.alu.b, 4)
-    `assert_equal(uut.alu.out, 46)
+    `assert_equal(uut.alu.out, 32'hac)
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMREAD);
 
-    `assert_equal(uut.result, 46)
-    `assert_equal(uut.memory_address, 46)
+    `assert_equal(uut.result, 32'hac)
+    `assert_equal(uut.memory_address, 32'hac)
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMWB);
 
@@ -97,7 +99,7 @@ module lw_tb;
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hcafebabe)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.fetch.pc_cur, 8) // starting third instruction already
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -109,15 +111,15 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
-    `assert_equal(uut.alu.a, 42)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.alu.a, 32'ha8)
     `assert_equal(uut.alu.b, -8)
-    `assert_equal(uut.alu.out, 34)
+    `assert_equal(uut.alu.out, 32'ha0)
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMREAD);
 
-    `assert_equal(uut.result, 34)
-    `assert_equal(uut.memory_address, 34)
+    `assert_equal(uut.result, 32'ha0)
+    `assert_equal(uut.memory_address, 32'ha0)
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMWB);
 
@@ -127,9 +129,10 @@ module lw_tb;
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hbadab00f)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.fetch.pc_cur, 12)
 
+    $finish;
   end
 
   `SETUP_VCD_DUMP(lw_tb)

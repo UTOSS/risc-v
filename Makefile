@@ -32,9 +32,9 @@ new_tb:
 	fi
 	m4 -D M4__TB_NAME="$(name)_tb" test/tb_template.sv.m4 > test/$(name)_tb.sv
 
-build_tb: $(TB_VVPS)
+build_tb: $(TB_VVPS) $(TB_SRCS) $(TB_UTILS)
 
-run_tb: $(TB_VVPS)
+run_tb: build_tb
 	@failed=0;                                                \
 	for tb in $(TB_VVPS); do                                  \
 		echo "Running $$tb...";                                 \
