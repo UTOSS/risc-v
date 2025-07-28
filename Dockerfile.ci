@@ -57,8 +57,8 @@ RUN mkdir -p /tmp/sail-riscv && \
     sudo mv riscv_sim_rv64d riscv_sim_RV64
 
 # install riscof
-USER dev
-RUN sudo apt update && sudo apt install -y python3 python3-pip && \
+USER root
+RUN apt update && apt install -y python3 python3-pip && \
     pip3 install riscof
 
 # CI needs priviledged access
