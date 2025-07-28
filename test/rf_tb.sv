@@ -1,6 +1,8 @@
 `timescale 1ns/1ps
 
-module tb_registerFile;
+`include "test/utils.svh"
+
+module rf_tb;
 
   //DUT inputs
   logic [4:0] Addr1, Addr2, Addr3;
@@ -46,7 +48,7 @@ module tb_registerFile;
     //set Addr1 = 5 and Addr2 = 10 to read from registers 5 and 10
     Addr1 = 5;
     Addr2 = 10;
-    Addr3 = 0; 
+    Addr3 = 0;
     dataIn = 0;
     regWrite = 0;
 
@@ -61,33 +63,28 @@ module tb_registerFile;
     Addr3 = 15;
     dataIn = 32'h12345678;
     regWrite = 1;
- 
+
     @(posedge clk); //wait one clock cycle
 
     #1; //wait for written data to stabilize
     regWrite = 0; //de-assert write
     assert(dut.RFMem[15] == 32'h12345678) else $fatal(1, "WRITE FAILED: current reg 15 output: %h; expected reg 15 output: 12345678", dut.RFMem[15]);
     $display("PASS: Write to register 15 verified. current reg 15 output: %h; expected reg 15 output: 12345678", dut.RFMem[15]);
-	 
+
 	 //CASE 3 - Write to reg 0
 	 Addr3 = 0;
 	 dataIn = 32'h12345678;
-	 
+
 	 @(posedge clk); //wait one clock cycle
-	 
+
     #1; //wait for written data to stabilize
     regWrite = 0; //de-assert write
-    assert(dut.RFMem[0] == 0) else $fatal(1, "WRITE FAILED: current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]);	 
+    assert(dut.RFMem[0] == 0) else $fatal(1, "WRITE FAILED: current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]);
     $display("PASS: Write to register 0 verified. current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]);
 
-    // $finish;
+    $finish;
   end
-  
-  initial begin //generate waveform
-	 
-	$dumpfile("RFTB.vcd");
-	$dumpvars(0, tb_registerFile);
-	 
-  end
+
+  `SETUP_VCD_DUMP(rf_tb)
 
 endmodule

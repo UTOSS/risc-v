@@ -38,7 +38,7 @@ module dut;
       $display("%m: watching tohost at address <%0d>", tohost);
       forever begin
         @(posedge clk);
-        tohost_data = top.fetch.instruction_memory.M[tohost];
+        tohost_data = top.memory.M[tohost];
         if (tohost_data != 0) begin
           $display("%m: memory[tohost] written <%0d> at time %t", tohost_data, $time);
           void'(extract_signature());
@@ -79,7 +79,7 @@ module dut;
     sig_file = $fopen(sig_filename, "w");
     if (sig_file != 0) begin
       for (i = begin_signature; i < end_signature; i = i + 1) begin
-        $fwrite(sig_file, "%08x\n", top.fetch.instruction_memory.M[i[31:2]]);
+        $fwrite(sig_file, "%08x\n", top.memory.M[i[31:2]]);
       end
       $fclose(sig_file);
       $display("%m: signature written to %s", sig_filename);
