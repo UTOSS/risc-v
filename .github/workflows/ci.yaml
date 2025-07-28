@@ -97,3 +97,26 @@ jobs:
           name: vvp-files
           path: out/*.vvp
           retention-days: 7
+
+  riscof:
+    timeout-minutes: 30
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build DUT
+        run: make riscof_build_dut
+
+      - name: Validate YAML
+        run: make riscof_validateyaml
+
+      - name: Clone arch-test
+        run: make riscof_clone_archtest
+
+      - name: Run RISCOF
+        run: make riscof_run
