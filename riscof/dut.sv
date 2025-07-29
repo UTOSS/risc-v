@@ -53,7 +53,7 @@ module dut;
 
   task watch_timeout();
     $display("%m: waiting for timeout...");
-    repeat (1) @(posedge clk);
+    repeat (100) @(posedge clk);
     $display("%m: timeout reached");
     void'(extract_signature());
   endtask
