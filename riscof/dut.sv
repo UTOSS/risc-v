@@ -1,5 +1,7 @@
 `timescale 1ns/1ps
 
+`include "test/utils.svh"
+
 module dut;
 
   reg clk;
@@ -89,5 +91,7 @@ module dut;
       return 1;
     end
   endfunction
+
+  `SETUP_VCD_DUMP(dut)
 
 endmodule

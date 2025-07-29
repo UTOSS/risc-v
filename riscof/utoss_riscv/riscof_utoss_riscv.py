@@ -173,7 +173,7 @@ class utoss_riscv(pluginTemplate):
           if self.target_run:
             # set up the simulation command. Template is for spike. Please change.
             simcmd = self.dut_exe + \
-              ' --isa={0} +signature={1} +signature-granularity=4 +MEM={2} ' \
+              ' --isa={0} +signature={1} +signature-granularity=4 +MEM={2} +VCD_PATH=. ' \
               '+begin_signature=`{3}` +end_signature=`{4}` +tohost=`{5}`' \
               '> {6} 2>&1' \
                 .format(
