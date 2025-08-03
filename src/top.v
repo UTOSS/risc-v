@@ -12,6 +12,7 @@ module top ( input wire clk
 
   addr_t   pc_cur;
   addr_t   memory_address;
+  data_t   memory_data;
   data_t   data;
   instr_t  instruction;
   opcode_t opcode;
@@ -103,7 +104,7 @@ module top ( input wire clk
   end
 
   Instruction_Decode instruction_decode
-    ( .instr           ( data             )
+    ( .instr           ( instruction      )
     , .clk             ( clk              )
     , .reset           ( reset            )
     , .ResultData      ( result           )
