@@ -2,6 +2,9 @@ name: risc-v CI
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -12,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image-tag: ${{ steps.meta.outputs.tags }}
+      image-primary-tag: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
       image-digest: ${{ steps.build.outputs.digest }}
 
     steps:
@@ -59,7 +63,7 @@ jobs:
     needs: build_ci_image
     runs-on: ubuntu-latest
     container:
-      image: ${{ needs.build_ci_image.outputs.image-tag }}
+      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
 
     steps:
       - name: Checkout code
