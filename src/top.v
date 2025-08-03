@@ -40,7 +40,7 @@ module top ( input wire clk
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
-  wire [31:0] dataA
+  logic [31:0] dataA
 			 ,dataB;
 
   ControlFSM control_fsm
