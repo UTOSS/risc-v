@@ -12,7 +12,6 @@ module top ( input wire clk
 
   addr_t   pc_cur;
   addr_t   memory_address;
-  data_t   memory_data;
   data_t   data;
   instr_t  instruction;
   opcode_t opcode;
@@ -41,6 +40,8 @@ module top ( input wire clk
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
+  wire [31:0] dataA
+			 ,dataB;
 
   ControlFSM control_fsm
     ( .opcode    ( opcode           )
@@ -83,26 +84,16 @@ module top ( input wire clk
 
   MA memory // instructions and data
     ( .A   ( memory_address )
-    , .WD  ( 32'hxxxxxxxx   )
-    , .WE  ( `FALSE         )
+    , .WD  ( dataB          )
+    , .WE  ( __tmp_MemWrite )
     , .CLK ( clk            )
 
     // outputs
-    , .RD  ( memory_data    )
+    , .RD  ( data           )
     );
 
-  always @(posedge clk) begin
-    if (cfsm__ir_write) begin
-      instruction <= memory_data;
-    end
-  end
-
-  always @(posedge clk) begin
-    data <= memory_data;
-  end
-
   Instruction_Decode instruction_decode
-    ( .instr           ( instruction      )
+    ( .instr           ( data             )
     , .clk             ( clk              )
     , .reset           ( reset            )
     , .ResultData      ( result           )
@@ -130,14 +121,14 @@ module top ( input wire clk
     case (__tmp_ALUSrcA)
       ALU_SRC_A__PC:     alu_input_a = pc_cur;
       ALU_SRC_A__OLD_PC: alu_input_a = pc_old;
-      ALU_SRC_A__RD1:    alu_input_a = rd1;
+      ALU_SRC_A__RD1:    alu_input_a = dataA;
       default:           alu_input_a = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
     case (__tmp_ALUSrcB)
-      ALU_SRC_B__RD2:     alu_input_b = rd2;
+      ALU_SRC_B__RD2:     alu_input_b = dataB;
       ALU_SRC_B__IMM_EXT: alu_input_b = imm_ext;
       ALU_SRC_B__4:       alu_input_b = 32'd4;
       default:            alu_input_b = 32'hxxxxxxxx;
@@ -152,5 +143,10 @@ module top ( input wire clk
       default:                result = 32'hxxxxxxxx;
     endcase
   end
+  
+  always @(posedge clk) begin
+	dataA <= rd1;
+	dataB <= rd2;
+  end
 
-endmodule
+endmodule	
