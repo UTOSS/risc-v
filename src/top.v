@@ -89,7 +89,7 @@ module top ( input wire clk
     , .CLK ( clk            )
 
     // outputs
-    , .RD  ( data           )
+    , .RD  ( memory_data    )
     );
 
   always @(posedge clk) begin
