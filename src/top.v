@@ -92,6 +92,16 @@ module top ( input wire clk
     , .RD  ( data           )
     );
 
+  always @(posedge clk) begin
+    if (cfsm__ir_write) begin
+      instruction <= memory_data;
+    end
+  end
+
+  always @(posedge clk) begin
+    data <= memory_data;
+  end
+
   Instruction_Decode instruction_decode
     ( .instr           ( data             )
     , .clk             ( clk              )
