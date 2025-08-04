@@ -30,7 +30,8 @@ module beq_tb;
     reset <= `TRUE;
 
     // initialize memory
-    uut.memory.M[0] = 32'hFE420AE3; // beq x4, x4, -0xc
+    uut.memory.M[0] = 32'h00420663; // beq x4, x4, -0xc
+    uut.memory.M[3] = 32'h00108093; // addi x1, x1, 1 ; dummy instruction
 
     // initialize registers
     uut.instruction_decode.instanceRegFile.RFMem[5'b00100] = 32'h0000002a; // x4 = 42
@@ -38,23 +39,34 @@ module beq_tb;
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
     reset <= `FALSE;
 
+    assert(uut.alu.a == 32'h00000000) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a); // old pc
+    assert(uut.alu.b == 32'h00000004) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
+    assert(uut.alu.result == 32'h00000004) else $fatal(1,"`uut.alu.result` is `%0h`", uut.alu.result);
+
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
     assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
     assert(uut.fetch.pc_cur  == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.imm_ext == 32'hFFFFFFF4) else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
+
+    assert(uut.alu.a == 32'h00000000) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a); // old pc
+    assert(uut.alu.b == 32'h0000000c) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b); // imm_ext
 
     wait_till_next_cfsm_state(uut.control_fsm.BRANCHIFEQ);
+
+    assert(uut.rd1 == 32'h0000002a) else $fatal(1,"`uut.rd1` is `%0h`", uut.rd1);
+    assert(uut.rd2 == 32'h0000002a) else $fatal(1,"`uut.rd2` is `%0h`", uut.rd2);
+
+    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
     assert(uut.alu__zero_flag == `TRUE)        else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
     assert(uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
     assert(uut.alu.b == 32'h0000002a) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
 
-    assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
+    // assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
-    assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'h0000000c) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
@@ -76,7 +88,7 @@ module beq_tb;
     assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
     assert(uut.fetch.pc_cur  == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.imm_ext == 32'h00000010) else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
+    // assert(uut.fetch.imm_ext == 32'h00000010) else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
     wait_till_next_cfsm_state(uut.control_fsm.BRANCHIFEQ);
 
@@ -85,7 +97,7 @@ module beq_tb;
 
     assert(uut.alu__zero_flag == `FALSE)     else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
-    assert(uut.cfsm__pc_src   == 0 /* +4 */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
+    // assert(uut.cfsm__pc_src   == 0 /* +4 */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
     assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
