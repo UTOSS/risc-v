@@ -4,10 +4,9 @@ module top ( input wire clk
            , input wire reset
            );
 
-  wire         cfsm__pc_update;
+  wire         cfsm__pc_write;
   wire         cfsm__reg_write;
   wire         cfsm__ir_write;
-  pc_src_t     cfsm__pc_src;
   result_src_t cfsm__result_src;
 
   addr_t   pc_cur;
@@ -33,8 +32,7 @@ module top ( input wire clk
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
-  wire __tmp_MemWrite
-     , __tmp_Branch;
+  wire __tmp_MemWrite;
   wire [1:0] __tmp_ALUSrcA
            , __tmp_ALUSrcB;
   wire [2:0] __tmp_ALUOp;
@@ -50,10 +48,8 @@ module top ( input wire clk
     , .AdrSrc    ( cfsm__adr_src    )
     , .IRWrite   ( cfsm__ir_write   )
     , .RegWrite  ( cfsm__reg_write  )
-    , .PCUpdate  ( cfsm__pc_update  )
-    , .pc_src    ( cfsm__pc_src     )
+    , .pc_write  ( cfsm__pc_write   )
     , .MemWrite  ( __tmp_MemWrite   )
-    , .Branch    ( __tmp_Branch     )
     , .ALUSrcA   ( __tmp_ALUSrcA    )
     , .ALUSrcB   ( __tmp_ALUSrcB    )
     , .ALUOp     ( __tmp_ALUOp      )
@@ -64,10 +60,9 @@ module top ( input wire clk
   fetch fetch
     ( .clk             ( clk             )
     , .reset           ( reset           )
-    , .cfsm__pc_update ( cfsm__pc_update )
-    , .cfsm__pc_src    ( cfsm__pc_src    )
+    , .cfsm__pc_write  ( cfsm__pc_write  )
     , .cfsm__ir_write  ( cfsm__ir_write  )
-    , .imm_ext         ( imm_ext         )
+    , .result          ( result          )
 
     // outputs
     , .pc_cur          ( pc_cur          )
@@ -151,6 +146,11 @@ module top ( input wire clk
       RESULT_SRC__ALU_RESULT: result = alu_result;
       default:                result = 32'hxxxxxxxx;
     endcase
+  end
+
+  always @(posedge clk) begin
+	dataA <= rd1;
+	dataB <= rd2;
   end
 
 endmodule
