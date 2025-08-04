@@ -12,10 +12,8 @@ module ControlFSM(
 	output adr_src_t AdrSrc,
 	output reg IRWrite,
 	output reg RegWrite,
-	output reg PCUpdate,
-  output pc_src_t pc_src,
+  output wire pc_write,
 	output reg MemWrite,
-	output reg Branch,
 	output alu_src_a_t ALUSrcA,
 	output alu_src_b_t ALUSrcB,
 	output reg [2:0] ALUOp, //to ALU Decoder
@@ -40,6 +38,9 @@ module ControlFSM(
 
 	//declare state registers
 	reg [3:0] current_state, next_state;
+
+	reg PCUpdate;
+	reg Branch;
 
 	//Next state logic
 	always@(*)begin
@@ -99,7 +100,6 @@ module ControlFSM(
 	//output logic
 	always@(*) begin
     Branch <= 1'b0;
-    pc_src <= 1'b0;
     PCUpdate <= 1'b0;
     IRWrite <= 1'b0;
 
@@ -112,6 +112,12 @@ module ControlFSM(
 				AdrSrc <= ADR_SRC__PC;
 				IRWrite <= 1'b1;
         PCUpdate <= 1'b1;
+
+        // while ALU is not busy, increment PC by 4, fast
+        ALUSrcA <= ALU_SRC_A__PC;
+        ALUSrcB <= ALU_SRC_B__4;
+        ALUOp <= 2'b00;
+        ResultSrc <= RESULT_SRC__ALU_RESULT;
 
 			end
 
@@ -164,7 +170,6 @@ module ControlFSM(
 				ALUOp <= 2'b01;
 				ResultSrc <= RESULT_SRC__ALU_OUT;
 				Branch <= 1'b1;
-        pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
         PCUpdate <= 1'b1;
 
 			end
@@ -218,4 +223,7 @@ module ControlFSM(
 		else current_state <= next_state;
 
 	end
+
+  // see Figure 7.28 of the digital design book
+  assign pc_write = Branch && zero_flag || PCUpdate;
 endmodule
