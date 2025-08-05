@@ -16,7 +16,7 @@ module ControlFSM(
 	output reg MemWrite,
 	output alu_src_a_t ALUSrcA,
 	output alu_src_b_t ALUSrcB,
-	output reg [2:0] ALUOp, //to ALU Decoder
+	output reg [1:0] ALUOp, //to ALU Decoder
 	output result_src_t ResultSrc,
 	output reg [3:0] FSMState
 

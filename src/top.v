@@ -8,6 +8,7 @@ module top ( input wire clk
   wire         cfsm__reg_write;
   wire         cfsm__ir_write;
   result_src_t cfsm__result_src;
+  wire [1:0]   cfsm__alu_op;
 
   addr_t   pc_cur;
   addr_t   memory_address;
@@ -22,6 +23,9 @@ module top ( input wire clk
   data_t rd1;
   data_t rd2;
 
+  data_t dataA;
+  data_t dataB;
+
   data_t alu_input_a;
   data_t alu_input_b;
   data_t alu_result;
@@ -35,7 +39,6 @@ module top ( input wire clk
   wire __tmp_MemWrite;
   wire [1:0] __tmp_ALUSrcA
            , __tmp_ALUSrcB;
-  wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
@@ -52,7 +55,7 @@ module top ( input wire clk
     , .MemWrite  ( __tmp_MemWrite   )
     , .ALUSrcA   ( __tmp_ALUSrcA    )
     , .ALUSrcB   ( __tmp_ALUSrcB    )
-    , .ALUOp     ( __tmp_ALUOp      )
+    , .ALUOp     ( cfsm__alu_op     )
     , .ResultSrc ( cfsm__result_src )
     , .FSMState  ( __tmp_FSMState   )
     );
@@ -102,6 +105,7 @@ module top ( input wire clk
     , .reset           ( reset            )
     , .ResultData      ( result           )
     , .reg_write       ( cfsm__reg_write  )
+    , .alu_op          ( cfsm__alu_op     )
     , .opcode          ( opcode           )
     , .ALUControl      ( __tmp_ALUControl )
     , .baseAddr        ( rd1              )
@@ -125,14 +129,14 @@ module top ( input wire clk
     case (__tmp_ALUSrcA)
       ALU_SRC_A__PC:     alu_input_a = pc_cur;
       ALU_SRC_A__OLD_PC: alu_input_a = pc_old;
-      ALU_SRC_A__RD1:    alu_input_a = rd1;
+      ALU_SRC_A__RD1:    alu_input_a = dataA;
       default:           alu_input_a = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
     case (__tmp_ALUSrcB)
-      ALU_SRC_B__RD2:     alu_input_b = rd2;
+      ALU_SRC_B__RD2:     alu_input_b = dataB;
       ALU_SRC_B__IMM_EXT: alu_input_b = imm_ext;
       ALU_SRC_B__4:       alu_input_b = 32'd4;
       default:            alu_input_b = 32'hxxxxxxxx;
@@ -149,8 +153,8 @@ module top ( input wire clk
   end
 
   always @(posedge clk) begin
-	dataA <= rd1;
-	dataB <= rd2;
+	  dataA <= rd1;
+	  dataB <= rd2;
   end
 
 endmodule

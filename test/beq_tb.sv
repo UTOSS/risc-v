@@ -41,7 +41,7 @@ module beq_tb;
 
     assert(uut.alu.a == 32'h00000000) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a); // old pc
     assert(uut.alu.b == 32'h00000004) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
-    assert(uut.alu.result == 32'h00000004) else $fatal(1,"`uut.alu.result` is `%0h`", uut.alu.result);
+    assert(uut.alu.out == 32'h00000004) else $fatal(1,"`uut.alu.out` is `%0h`", uut.alu.out);
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
@@ -59,6 +59,8 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
+    assert(uut.dataA == 32'h0000002a) else $fatal(1,"`uut.dataA` is `%0h`", uut.dataA);
+    assert(uut.dataB == 32'h0000002a) else $fatal(1,"`uut.dataB` is `%0h`", uut.dataB);
     assert(uut.alu__zero_flag == `TRUE)        else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
     assert(uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
