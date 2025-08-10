@@ -45,7 +45,7 @@ module addi_tb;
     `assert_equal(uut.instruction_decode.rd, 1)
     `assert_equal(uut.instruction_decode.imm_ext, 0)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTE);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
     `assert_equal(uut.alu.a, 42)
     `assert_equal(uut.alu.b, 0)
     `assert_equal(uut.alu.out, 42)
@@ -60,7 +60,7 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
     `assert_equal(uut.instruction_decode.imm_ext, 4)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTE);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
     `assert_equal(uut.alu.out, 46)
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
@@ -73,7 +73,7 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
     `assert_equal(uut.instruction_decode.imm_ext, -8)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTE);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
     `assert_equal(uut.alu.out, 34)
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
