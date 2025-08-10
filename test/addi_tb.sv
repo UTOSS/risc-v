@@ -26,12 +26,12 @@ module addi_tb;
     reset <= `TRUE;
 
     // Set up instruction memory
-    uut.memory.M[ 0] = 32'h00010113; // addi x1, x2, 0
-    uut.memory.M[ 4] = 32'h00410113; // addi x1, x2, 4
-    uut.memory.M[ 8] = 32'hff810113; // addi x1, x2, -8
+    uut.memory.M[ 0] = 32'h00010093; // addi x1, x2, 0
+    uut.memory.M[ 1] = 32'h00410093; // addi x1, x2, 4
+    uut.memory.M[ 2] = 32'hff810093; // addi x1, x2, -8
 
     // Set up register file
-    // x1 = 0 by default
+    uut.instruction_decode.instanceRegFile.RFMem[1] = 0; // x1 = 0
     uut.instruction_decode.instanceRegFile.RFMem[2] = 42; // x2 = 42
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
@@ -45,45 +45,47 @@ module addi_tb;
     `assert_equal(uut.instruction_decode.rd, 1)
     `assert_equal(uut.instruction_decode.imm_ext, 0)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
     `assert_equal(uut.alu.a, 42)
     `assert_equal(uut.alu.b, 0)
     `assert_equal(uut.alu.out, 42)
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 42)
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 42)
     `assert_equal(uut.fetch.pc_cur, 4)
 
     // --- Instruction 2: addi x1, x2, 4 ---
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
     `assert_equal(uut.instruction_decode.imm_ext, 4)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
     `assert_equal(uut.alu.out, 46)
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 46)
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 46)
     `assert_equal(uut.fetch.pc_cur, 8)
 
     // --- Instruction 3: addi x1, x2, -8 ---
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
     `assert_equal(uut.instruction_decode.imm_ext, -8)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
     `assert_equal(uut.alu.out, 34)
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 34)
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 34)
 
     // Final assertions
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 34)
+
+    $finish;
   end
 
   `SETUP_VCD_DUMP(addi_tb)
