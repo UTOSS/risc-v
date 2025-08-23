@@ -107,6 +107,7 @@ module srli_tb;
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
     `assert_equal(uut.fetch.pc_cur, 12)
 
+    $finish;
   end
 
   `SETUP_VCD_DUMP(srli_tb)
