@@ -26,9 +26,9 @@ module srli_tb;
     reset <= `TRUE;
 
     // set up instructions and data memory
-    uut.memory.M[ 0] = 32'h0010d113; // srli x1, x2, 1
-    uut.memory.M[ 1] = 32'h0020d113; // srli x1, x2, 2
-    uut.memory.M[ 2] = 32'h0030d113; // srli x1, x2, 3
+    uut.memory.M[ 0] = 32'h00115093; // srli x1, x2, 1
+    uut.memory.M[ 1] = 32'h00215093; // srli x1, x2, 2
+    uut.memory.M[ 2] = 32'h00315093; // srli x1, x2, 3
 
 
     // set up register file
