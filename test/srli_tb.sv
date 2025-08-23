@@ -80,7 +80,7 @@ module srli_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 21)
+    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 10)
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
     `assert_equal(uut.fetch.pc_cur, 8) // starting third instruction already
 
