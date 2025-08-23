@@ -65,7 +65,7 @@ module srli_tb;
 
     `assert_equal(uut.opcode, 7'b0010011)
     `assert_equal(uut.instruction_decode.rs1, 2)
-    `assert_equal(uut.instruction_decode.imm_ext, 2)
+    `assert_equal(uut.instruction_decode.imm_ext, 32'h2)
 
     wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
@@ -88,7 +88,7 @@ module srli_tb;
 
     `assert_equal(uut.opcode, 7'b0010011)
     `assert_equal(uut.instruction_decode.rs1, 2)
-    `assert_equal(uut.instruction_decode.imm_ext, 3)
+    `assert_equal(uut.instruction_decode.imm_ext, 32'h3)
 
     wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
