@@ -44,7 +44,7 @@ module srli_tb;
     `assert_equal(uut.instruction_decode.rs1, 2)
     `assert_equal(uut.instruction_decode.imm_ext, 32'h1)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXEUTEI);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
     `assert_equal(uut.alu.a, 42)
@@ -67,7 +67,7 @@ module srli_tb;
     `assert_equal(uut.instruction_decode.rs1, 2)
     `assert_equal(uut.instruction_decode.imm_ext, 2)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXEUTEI);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
     `assert_equal(uut.alu.a, 42)
@@ -90,7 +90,7 @@ module srli_tb;
     `assert_equal(uut.instruction_decode.rs1, 2)
     `assert_equal(uut.instruction_decode.imm_ext, 3)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXEUTEI);
+    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
     `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
     `assert_equal(uut.alu.a, 42)
