@@ -42,6 +42,8 @@ module top #( parameter MEM_SIZE = 1024 )
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
+  logic [31:0] dataA
+			 ,dataB;
 
   ControlFSM control_fsm
     ( .opcode    ( opcode           )
@@ -85,8 +87,8 @@ module top #( parameter MEM_SIZE = 1024 )
   MA #( .SIZE ( MEM_SIZE ) )
     memory // instructions and data
       ( .A   ( memory_address )
-      , .WD  ( 32'hxxxxxxxx   )
-      , .WE  ( `FALSE         )
+      , .WD  ( dataB          )
+      , .WE  ( __tmp_MemWrite )
       , .CLK ( clk            )
 
       // outputs
@@ -132,14 +134,14 @@ module top #( parameter MEM_SIZE = 1024 )
     case (__tmp_ALUSrcA)
       ALU_SRC_A__PC:     alu_input_a = pc_cur;
       ALU_SRC_A__OLD_PC: alu_input_a = pc_old;
-      ALU_SRC_A__RD1:    alu_input_a = rd1;
+      ALU_SRC_A__RD1:    alu_input_a = dataA;
       default:           alu_input_a = 32'hxxxxxxxx;
     endcase
   end
 
   always @(*) begin
     case (__tmp_ALUSrcB)
-      ALU_SRC_B__RD2:     alu_input_b = rd2;
+      ALU_SRC_B__RD2:     alu_input_b = dataB;
       ALU_SRC_B__IMM_EXT: alu_input_b = imm_ext;
       ALU_SRC_B__4:       alu_input_b = 32'd4;
       default:            alu_input_b = 32'hxxxxxxxx;
@@ -153,6 +155,11 @@ module top #( parameter MEM_SIZE = 1024 )
       RESULT_SRC__ALU_RESULT: result = alu_result;
       default:                result = 32'hxxxxxxxx;
     endcase
+  end
+
+  always @(posedge clk) begin
+	dataA <= rd1;
+	dataB <= rd2;
   end
 
 endmodule
