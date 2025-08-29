@@ -1,0 +1,65 @@
+FROM public.ecr.aws/lts/ubuntu:22.04_stable AS builder
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG KEYRING_PATH=/usr/share/keyrings
+ARG APT_SOURCES_PATH=/etc/apt/sources.list.d
+
+# update and upgrade
+RUN apt update && apt upgrade -y
+
+# install essentialls
+RUN apt update && \
+    apt install -y \
+    man make build-essential git zsh vim curl wget procps gnupg gnupg2 ca-certificates zip \
+    software-properties-common
+
+# unminimize the system
+RUN bash -c "yes | unminimize"
+
+# create dev sudo user
+RUN useradd --create-home dev && \
+    usermod --append --groups sudo dev && \
+    apt update && apt install -y sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# build riscv toolchain
+RUN sudo apt-get install -y \
+    autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk \
+    build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev && \
+    cd /tmp && \
+    git clone --recursive https://github.com/riscv/riscv-gnu-toolchain.git && \
+    git clone --recursive https://github.com/riscv/riscv-opcodes.git && \
+    cd riscv-gnu-toolchain && \
+    ./configure --prefix=/opt/riscv --with-arch=rv32i --with-abi=ilp32 && \
+    sudo make
+
+# main image stage
+FROM public.ecr.aws/lts/ubuntu:22.04_stable
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG KEYRING_PATH=/usr/share/keyrings
+ARG APT_SOURCES_PATH=/etc/apt/sources.list.d
+
+# update and upgrade
+RUN apt update && apt upgrade -y
+
+# install essentialls
+RUN apt update && \
+    apt install -y \
+    man make build-essential git zsh vim curl wget procps gnupg gnupg2 ca-certificates zip \
+    software-properties-common
+
+# unminimize the system
+RUN bash -c "yes | unminimize"
+
+# create dev sudo user
+RUN useradd --create-home dev && \
+    usermod --append --groups sudo dev && \
+    apt update && apt install -y sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# get toolchain artifacts from builder stage
+COPY --from=builder /opt/riscv /opt/riscv
+ENV PATH="/opt/riscv/bin:${PATH}"
+
+USER dev

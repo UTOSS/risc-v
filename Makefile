@@ -14,6 +14,12 @@ TB_UTILS := test/utils.svh
 
 TB_VCD_BASE_PATH := test/vcd
 
+RISCOF_DIR := riscof
+RISCOF_DUT_SRC := $(RISCOF_DIR)/dut.sv
+RISCOF_DUT_VVP := $(RISCOF_DIR)/dut.vvp
+RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
+RISCOF_CONFIG := $(RISCOF_DIR)/config.ini
+
 build_top: $(OUTPUT)
 
 run_top: $(OUTPUT)
@@ -52,5 +58,33 @@ run_tb: build_tb
 	else                                                      \
 		echo "\033[32mAll testbenches passed!\033[0m";          \
 	fi
+
+$(RISCOF_DUT_VVP): $(SRCS) $(RISCOF_DUT_SRC)
+	$(IVERILOG) -g2012 -o $(RISCOF_DUT_VVP) $(SRCS) $(RISCOF_DUT_SRC)
+
+$(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
+	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
+
+riscof_build_dut: $(RISCOF_DUT_VVP)
+
+riscof_validateyaml: $(RISCOF_CONFIG)
+	cd $(RISCOF_DIR) && riscof validateyaml --config=config.ini
+
+riscof_clone_archtest: $(RISCOF_CONFIG)
+	cd $(RISCOF_DIR) && riscof arch-test --clone
+
+riscof_generate_testlist: $(RISCOF_CONFIG)
+	cd $(RISCOF_DIR) &&                             \
+		riscof testlist                               \
+			--config=config.ini                         \
+			--suite=riscv-arch-test/riscv-test-suite/   \
+			--env=riscv-arch-test/riscv-test-suite/env
+
+riscof_run: $(RISCOF_CONFIG) riscof_build_dut
+	cd $(RISCOF_DIR) &&                             \
+		riscof run                                    \
+			--config=config.ini                         \
+			--suite=riscv-arch-test/riscv-test-suite/   \
+			--env=riscv-arch-test/riscv-test-suite/env
 
 .PHONY: all run testbenches run-tests
