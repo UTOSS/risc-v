@@ -117,6 +117,9 @@ module Instruction_Decode(
 			SType       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
 			BType       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
 			JType       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+			UType_auipc	: imm_ext = {instr[31:12], 12'b0};
+			UType_lui	: imm_ext = {instr[31:12], 12'b0};
+			
 		endcase
 	end
 

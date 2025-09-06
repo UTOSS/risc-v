@@ -131,6 +131,7 @@ module top ( input wire clk
       ALU_SRC_A__PC:     alu_input_a = pc_cur;
       ALU_SRC_A__OLD_PC: alu_input_a = pc_old;
       ALU_SRC_A__RD1:    alu_input_a = rd1;
+      ALU_SRC_A__ZERO:   alu_input_a = 32'b0;
       default:           alu_input_a = 32'hxxxxxxxx;
     endcase
   end
