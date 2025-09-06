@@ -2,3 +2,9 @@
 *.vcd
 
 .devcontainer/
+
+riscof/riscof_work/
+riscof/riscv-arch-test/
+riscof/utoss_riscv/__pycache__/
+riscof/sail_cSim/__pycache__
+riscof/config.ini
