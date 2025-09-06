@@ -53,4 +53,14 @@ run_tb: build_tb
 		echo "\033[32mAll testbenches passed!\033[0m";          \
 	fi
 
+asm_to_bin:
+	@if [ -z "$(instr)" ]; then \
+		echo "Usage: make asm_to_bin instr='<instruction in assembly>'"; \
+		exit 1; \
+	fi
+
+	echo "$(instr)" | riscv32-unknown-elf-as -march=rv32i -mabi=ilp32 - -o /tmp/test.o
+	riscv32-unknown-elf-objdump -d /tmp/test.o
+	rm /tmp/test.o
+
 .PHONY: all run testbenches run-tests
