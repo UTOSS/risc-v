@@ -54,7 +54,7 @@ module ControlFSM(
 
 				else if (opcode == RType) next_state = EXECUTER;
 
-				else if (opcode == IType_logic) next_state = EXECUTEI;
+				else if (opcode == IType_logic || opcode == OP__LUI) next_state = EXECUTEI;
 
 				else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
 
@@ -137,6 +137,16 @@ module ControlFSM(
 				ALUSrcA <= ALU_SRC_A__RD1;
 				ALUSrcB <= ALU_SRC_B__IMM_EXT;
 				ALUOp <= 2'b11;
+
+        // special handing of LUI instruction;
+        // TODO: move ALU src selection to decoder eventually
+        case (opcode)
+          OP__LUI: begin
+            // add 0 with imm ext to pass the immediate through the ALU
+            ALUSrcA <= ALU_SRC_A__ZERO;
+          end
+          default: ;
+        endcase
 
 			end
 
