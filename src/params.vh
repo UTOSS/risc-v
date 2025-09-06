@@ -1,8 +1,9 @@
 `ifndef PARAMS_VH
 `define PARAMS_VH
 
-// Opcodes
+// Opcodes; see Table 70. of ISA spec
 parameter RType = 7'b0110011;
+parameter OP__LUI = 7'b0110111;
 parameter IType_logic = 7'b0010011;
 parameter IType_load = 7'b0000011;
 parameter SType = 7'b0100011;
