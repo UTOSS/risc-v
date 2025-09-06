@@ -138,7 +138,7 @@ module ControlFSM(
 				ALUSrcB <= ALU_SRC_B__IMM_EXT;
 				ALUOp <= 2'b11;
 
-        // special handing of LUI instruction;
+        // special handling of LUI instruction;
         // TODO: move ALU src selection to decoder eventually
         case (opcode)
           OP__LUI: begin
