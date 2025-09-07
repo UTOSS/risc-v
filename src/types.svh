@@ -29,7 +29,7 @@ typedef enum logic [1:0] {
   ALU_SRC_A__RD1    = 2'b10,
   ALU_SRC_A__ZERO   = 2'b11,
 
-  ALU_SRC_A__UNSET  = 2'b11
+  ALU_SRC_A__UNSET  = 2'bxx
 } alu_src_a_t;
 
 // represents the possible input sources for the second operand of the ALU as selected by the
