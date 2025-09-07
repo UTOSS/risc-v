@@ -124,6 +124,6 @@ module auipc_tb;
 
   end
 
-  `SETUP_VCD_DUMP(lui_tb)
+  `SETUP_VCD_DUMP(auipc_tb)
 
 endmodule
