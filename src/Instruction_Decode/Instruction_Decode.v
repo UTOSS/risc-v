@@ -58,7 +58,10 @@ module Instruction_Decode(
       IType_load: alu_op = ALU_OP__MEMORY_ACCESS;
       SType:      alu_op = ALU_OP__MEMORY_ACCESS;
       BType:      alu_op = ALU_OP__BRANCH;
+	  UType_auipc: alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
+	  UType_lui:   alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
       default:    alu_op = ALU_OP__UNSET;
+
     endcase
   end
 
