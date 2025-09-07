@@ -57,7 +57,7 @@ module auipc_tb;
     tb_pc_old = uut.pc_old;
     `assert_equal(uut.alu_input_a, tb_pc_old)
     `assert_equal(uut.alu_input_b, 32'h00014000)
-    `assert_equal(uut.__tem_ALUControl, 4'b0)
+    `assert_equal(uut.__tmp_ALUControl, 4'b0)
     `assert_equal(uut.alu_result, 32'h00014000 + tb_pc_old)
 
     //This new state will be connected to ALUWB
