@@ -55,7 +55,7 @@ module lui_tb;
 
     `assert_equal(uut.alu_input_a, 32'b0)
     `assert_equal(uut.alu_input_b, 32'h00014000)
-    `assert_equal(uut.__tem_ALUControl, 4'b0)
+    `assert_equal(uut.__tmp_ALUControl, 4'b0)
     `assert_equal(uut.alu_result, 32'h00014000)
 
     //This new state will be connected to ALUWB
@@ -81,7 +81,7 @@ module lui_tb;
 
     `assert_equal(uut.alu_input_a, 32'b0)
     `assert_equal(uut.alu_input_b, 32'h000c8000)
-    `assert_equal(uut.__tem_ALUControl, 4'b0)
+    `assert_equal(uut.__tmp_ALUControl, 4'b0)
     `assert_equal(uut.alu_result, 32'h000c8000)
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
@@ -104,7 +104,7 @@ module lui_tb;
 
     `assert_equal(uut.alu_input_a, 32'b0)
     `assert_equal(uut.alu_input_b, 32'h003ff000)
-    `assert_equal(uut.__tem_ALUControl, 4'b0)
+    `assert_equal(uut.__tmp_ALUControl, 4'b0)
     `assert_equal(uut.alu_result, 32'h003ff000)
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
