@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 
 `include "test/utils.svh"
+`include "src/utils.svh"
 
 module auipc_tb;
 
