@@ -98,6 +98,12 @@ module Instruction_Decode(
 
 		end
 
+		else if (opcode == UType_auipc || opcode == UType_lui) begin
+			rd = instr[11:7];
+			rs1 = 5'b00000;
+			rs2 = 5'b00000;
+		end
+
 		else begin
 
 			rd = 5'b00000;
