@@ -38,6 +38,11 @@ module ControlFSM(
 	parameter MEMWB = 4'b1001;
 	parameter BRANCHIFEQ = 4'b1010;
 
+	//new states for lui and auipc
+	parameter LUI = 4'b1011;
+	parameter AUIPC = 4'b1100;
+
+
 	//declare state registers
 	reg [3:0] current_state, next_state;
 
@@ -60,9 +65,17 @@ module ControlFSM(
 
 				else if (opcode == BType) next_state = BRANCHIFEQ;
 
+				else if (opcode == UType_auipc) next_state = AUIPC;
+
+				else if (opcode == UType_lui) next_state = LUI;
+
 				else next_state = DECODE;
 
 			end
+
+			AUIPC: next_state = ALUWB;
+
+			LUI: next_state = ALUWB;
 
 			UNCONDJUMP: next_state = ALUWB;
 
@@ -119,6 +132,22 @@ module ControlFSM(
 			DECODE: begin
 
 				ALUSrcA <= ALU_SRC_A__OLD_PC;
+				ALUSrcB <= ALU_SRC_B__IMM_EXT;
+				ALUOp <= 2'b00;
+
+			end
+
+			AUIPC: begin
+				
+				ALUSrcA <= ALU_SRC_A__OLD_PC;
+				ALUSrcB <= ALU_SRC_B__IMM_EXT;
+				ALUOp <= 2'b00;
+
+			end
+
+			LUI: begin
+				
+				ALUSrcA <= ALU_SRC_A__ZERO;
 				ALUSrcB <= ALU_SRC_B__IMM_EXT;
 				ALUOp <= 2'b00;
 
