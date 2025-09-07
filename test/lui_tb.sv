@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-`include "utils.svh"
+`include "test\utils.svh"
 
 module lui_tb;
 
