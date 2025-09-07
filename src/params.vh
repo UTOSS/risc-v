@@ -8,8 +8,8 @@ parameter IType_load = 7'b0000011;
 parameter SType = 7'b0100011;
 parameter BType = 7'b1100011;
 parameter JType = 7'b1101111;
-parameter UType_auipc = 7'b0010011;
-parameter UType_lui = 7'b0110011;
+parameter UType_auipc = 7'b0010111;
+parameter UType_lui = 7'b0110111;
 
 //ALU Operation Control Codes
 parameter ALUAdd = 4'b0000;
