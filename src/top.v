@@ -1,8 +1,9 @@
 `include "src/types.svh"
 
-module top ( input wire clk
-           , input wire reset
-           );
+module top #( parameter MEM_SIZE = 1024 )
+            ( input wire clk
+            , input wire reset
+            );
 
   wire         cfsm__pc_update;
   wire         cfsm__reg_write;
@@ -83,15 +84,16 @@ module top ( input wire clk
     endcase
   end
 
-  MA memory // instructions and data
-    ( .A   ( memory_address )
-    , .WD  ( dataB          )
-    , .WE  ( __tmp_MemWrite )
-    , .CLK ( clk            )
+  MA #( .SIZE ( MEM_SIZE ) )
+    memory // instructions and data
+      ( .A   ( memory_address )
+      , .WD  ( dataB          )
+      , .WE  ( __tmp_MemWrite )
+      , .CLK ( clk            )
 
-    // outputs
-    , .RD  ( memory_data    )
-    );
+      // outputs
+      , .RD  ( memory_data    )
+      );
 
   always @(posedge clk) begin
     if (cfsm__ir_write) begin
@@ -156,10 +158,10 @@ module top ( input wire clk
       default:                result = 32'hxxxxxxxx;
     endcase
   end
-  
+
   always @(posedge clk) begin
 	dataA <= rd1;
 	dataB <= rd2;
   end
 
-endmodule	
+endmodule
