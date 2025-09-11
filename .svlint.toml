@@ -1,4 +1,1 @@
 option.textwidth = 200
-textrules.style_textwidth = true
-textrules.style_semicolon = true
-option.indent = 2
