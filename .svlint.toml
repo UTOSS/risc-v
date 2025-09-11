@@ -1,7 +1,3 @@
-# This style is built based on the following rulesets:
-# * https://github.com/dalance/svlint/blob/v0.9.3/rulesets/style.toml
-# * https://github.com/dalance/svlint/blob/v0.9.3/rulesets/designintent.toml
-
 option.textwidth = 200
 textrules.style_textwidth = true
 textrules.style_semicolon = true
