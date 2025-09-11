@@ -5,6 +5,14 @@ UTOSS' starter multicycle RISC-V core.
 
 Put new modules into `src/` folder.
 
+### Formatting
+
+We use SVLint to make sure our SystemVerilog code is well formatted. Use the following command to
+check for new offences:
+```
+$ make svlint
+```
+
 ### Testbenches
 
 It is important that new functionality is tested to a reasonable extent by using test benches. To
