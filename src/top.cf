@@ -1,9 +1,0 @@
-src/utils/MA.v
-src/utils/register.sv
-src/ALU&ALUdecoder/ALUDecoder.v
-src/ALU&ALUdecoder/ALU.v
-src/Instruction_Decode/Instruction_Decode.v
-src/Instruction_Decode/RegisterFile.v
-src/ControlFSM.v
-src/fetch.sv
-src/top.v

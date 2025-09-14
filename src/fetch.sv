@@ -11,11 +11,13 @@ module fetch ( input  wire     clk
              , input  wire     reset
              , input  wire     cfsm__pc_update
              , input  pc_src_t cfsm__pc_src
+             , input  wire     cfsm__ir_write
              , input  imm_t    imm_ext
-             , output instr_t  instr
+             , output addr_t   pc_cur
+             , output addr_t   pc_old
              );
 
-  addr_t pc_cur, pc_next;
+  addr_t pc_next;
 
   always @ (*) begin
     if (cfsm__pc_update) begin
@@ -31,14 +33,10 @@ module fetch ( input  wire     clk
   always @ (posedge clk) begin
     if (reset) pc_cur <= 32'h00000000;
     else       pc_cur <= pc_next;
-  end
 
-  MA instruction_memory
-    ( .A   ( pc_cur       )
-    , .WD  ( 32'hxxxxxxxx )
-    , .WE  ( `FALSE       )
-    , .CLK ( clk          )
-    , .RD  ( instr        )
-    );
+    if (cfsm__ir_write) begin
+      pc_old <= pc_cur;
+    end
+  end
 
 endmodule
