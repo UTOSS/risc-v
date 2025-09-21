@@ -58,7 +58,10 @@ module Instruction_Decode(
       IType_load: alu_op = ALU_OP__MEMORY_ACCESS;
       SType:      alu_op = ALU_OP__MEMORY_ACCESS;
       BType:      alu_op = ALU_OP__BRANCH;
+	  UType_auipc: alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
+	  UType_lui:   alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
       default:    alu_op = ALU_OP__UNSET;
+
     endcase
   end
 
@@ -98,6 +101,12 @@ module Instruction_Decode(
 
 		end
 
+		else if (opcode == UType_auipc || opcode == UType_lui) begin
+			rd = instr[11:7];
+			rs1 = 5'b00000;
+			rs2 = 5'b00000;
+		end
+
 		else begin
 
 			rd = 5'b00000;
@@ -117,6 +126,9 @@ module Instruction_Decode(
 			SType       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
 			BType       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
 			JType       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+			UType_auipc	: imm_ext = {instr[31:12], 12'b0};
+			UType_lui	: imm_ext = {instr[31:12], 12'b0};
+			
 		endcase
 	end
 
