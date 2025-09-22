@@ -80,7 +80,7 @@ module dut;
 
     sig_file = $fopen(sig_filename, "w");
     if (sig_file != 0) begin
-      for (i = begin_signature; i < end_signature; i = i + 1) begin
+      for (i = begin_signature; i < end_signature; i = i + 4) begin
         $fwrite(sig_file, "%08x\n", top.memory.M[i[31:2]]);
       end
       $fclose(sig_file);
