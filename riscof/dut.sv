@@ -38,14 +38,14 @@ module dut;
     $display("%m: waiting for tohost...");
     if ($value$plusargs("tohost=%h", tohost)) begin
       $display("%m: watching tohost at address <%0d>", tohost);
-      forever begin
+
+      while (tohost_data === 0 || tohost_data === 32'bx) begin
         @(posedge clk);
-        tohost_data = top.memory.M[tohost];
-        if (tohost_data != 0) begin
-          $display("%m: memory[tohost] written <%0d> at time %t", tohost_data, $time);
-          void'(extract_signature());
-        end
+        tohost_data = top.memory.M[tohost[31:2]];
       end
+
+      $display("%m: memory[tohost] written <%0d> at time %t", tohost_data, $time);
+      void'(extract_signature());
     end else begin
       $display("%m: tohost not specified.");
     end
