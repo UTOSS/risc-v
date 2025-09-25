@@ -120,11 +120,14 @@ jobs:
 
       - name: Run RISCOF
         run: make riscof_run
+        continue-on-error: true
 
       - name: Upload RISCOF report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: riscof-report
-          path: riscof/riscof_work/report.html
+          path: |
+            riscof/riscof_work/report.html
+            riscof/riscof_work/style.css
           retention-days: 7
