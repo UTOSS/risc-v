@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - jalr-branch
 
 permissions:
   contents: read
@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   build_ci_image:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     outputs:
       image-tag: ${{ steps.meta.outputs.tags }}
@@ -60,6 +61,7 @@ jobs:
             type=registry,ref=ghcr.io/utoss/risc-v:buildcache,mode=max
 
   build_and_test:
+    timeout-minutes: 30
     needs: build_ci_image
     runs-on: ubuntu-latest
     container:
@@ -94,4 +96,39 @@ jobs:
         with:
           name: vvp-files
           path: out/*.vvp
+          retention-days: 7
+
+  riscof:
+    timeout-minutes: 30
+    needs: build_ci_image
+    #[build_ci_image, build_and_test]
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build DUT
+        run: make riscof_build_dut
+
+      - name: Validate YAML
+        run: make riscof_validateyaml
+
+      - name: Clone arch-test
+        run: make riscof_clone_archtest
+
+      - name: Run RISCOF
+        run: make riscof_run
+        continue-on-error: true
+
+      - name: Upload RISCOF report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: riscof-report
+          path: |
+            riscof/riscof_work/report.html
+            riscof/riscof_work/style.css
           retention-days: 7
