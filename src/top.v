@@ -41,14 +41,17 @@ module top ( input wire clk
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
-  logic [31:0] dataA
-			 ,dataB;
+  logic [31:0] dataA, 
+               dataB;
 
   ControlFSM control_fsm
-    ( .opcode    ( opcode           )
+    ( 
+    // inputs
+      .opcode    ( opcode           )
     , .clk       ( clk              )
     , .reset     ( reset            )
     , .zero_flag ( alu__zero_flag   )
+    // outputs
     , .AdrSrc    ( cfsm__adr_src    )
     , .IRWrite   ( cfsm__ir_write   )
     , .RegWrite  ( cfsm__reg_write  )
@@ -94,21 +97,36 @@ module top ( input wire clk
     );
 
   always @(posedge clk) begin
+    /* include this?
+    if (reset) begin
+      instruction <= 32'b0;
+    end
+    */
     if (cfsm__ir_write) begin
       instruction <= memory_data;
     end
   end
 
   always @(posedge clk) begin
-    data <= memory_data;
+    /* include this?
+    if (reset) begin
+      data <= 32'b0;
+    end
+    */
+    else begin
+      data <= memory_data;
+    end
   end
 
   Instruction_Decode instruction_decode
-    ( .instr           ( instruction      )
+    ( 
+    // inputs
+      .instr           ( instruction      )
     , .clk             ( clk              )
     , .reset           ( reset            )
     , .ResultData      ( result           )
     , .reg_write       ( cfsm__reg_write  )
+    // outputs
     , .opcode          ( opcode           )
     , .ALUControl      ( __tmp_ALUControl )
     , .baseAddr        ( rd1              )
