@@ -68,6 +68,7 @@ module top ( input wire clk
     , .reset           ( reset           )
     , .cfsm__pc_update ( cfsm__pc_update )
     , .cfsm__pc_src    ( cfsm__pc_src    )
+    , .alu_result_for_pc ( alu_out )
     , .cfsm__ir_write  ( cfsm__ir_write  )
     , .imm_ext         ( imm_ext         )
 
