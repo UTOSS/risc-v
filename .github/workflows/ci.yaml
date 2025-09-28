@@ -100,7 +100,6 @@ jobs:
 
   riscof:
     timeout-minutes: 30
-    needs: build_ci_image
     #[build_ci_image, build_and_test]
     runs-on: ubuntu-latest
     container:
