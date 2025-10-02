@@ -1,3 +1,5 @@
+FROM ghcr.io/utoss/risc-v-toolchain:latest AS risc-v-toolchain
+
 FROM public.ecr.aws/lts/ubuntu:22.04_stable
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -31,6 +33,33 @@ RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison fle
     tar -xzf ${ICARUS_SRC_TAR} && \
     cd iverilog-* && sh autoconf.sh && ./configure && make && make check && sudo make install && \
     cd .. && rm ${ICARUS_SRC_TAR} && rm -rf ./iverilog-*
+
+# install riscv toolchain
+USER dev
+COPY --from=risc-v-toolchain /opt/riscv /opt/riscv
+ENV PATH="/opt/riscv/bin:${PATH}"
+
+# install SAIL simulator
+USER dev
+ARG SAIL_RISCV_VERSION=0.7
+ARG SAIL_RISCV_ZIP_NAME=sail_riscv-Linux-x86_64.tar.gz
+ARG SAIL_RISCV_ZIP_URL=https://github.com/riscv/sail-riscv/releases/download/${SAIL_RISCV_VERSION}/${SAIL_RISCV_ZIP_NAME}
+ARG SAIL_RISCV_ZIP_HASH="6b8c3abc3126ce14911a3dec46ff540a60841ef090898f72c4c6f9b0b825efab  ${SAIL_RISCV_ZIP_NAME}"
+RUN mkdir -p /tmp/sail-riscv && \
+    cd /tmp/sail-riscv && \
+    wget ${SAIL_RISCV_ZIP_URL} && \
+    echo ${SAIL_RISCV_ZIP_HASH} | sha256sum -c && \
+    tar -xzf ${SAIL_RISCV_ZIP_NAME} && \
+    sudo mv sail_riscv-Linux-x86_64/bin/* /usr/local/bin/ && \
+    cd .. && sudo rm -r /tmp/sail-riscv && \
+    cd /usr/local/bin && \
+    sudo mv riscv_sim_rv32d riscv_sim_RV32 && \
+    sudo mv riscv_sim_rv64d riscv_sim_RV64
+
+# install riscof
+USER root
+RUN apt update && apt install -y python3 python3-pip && \
+    pip3 install riscof
 
 # CI needs priviledged access
 USER root
