@@ -112,8 +112,7 @@ module top ( input wire clk
     if (reset) begin
       data <= 32'b0;
     end
-    */
-    else begin
+    else*/ begin
       data <= memory_data;
     end
   end
