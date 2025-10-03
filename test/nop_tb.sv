@@ -30,7 +30,7 @@ module nop_tb;
         uut.memory.M[0] = 32'h00000013; //NOP instruction - addi x0, x0, 0
 
         // set up register file to a known value
-        uut.instruction_decode.instanceRegFile.RFMem[0] = 32'h01010101; // x0
+        uut.instruction_decode.instanceRegFile.RFMem[0] = 32'h01010101; // x0, and it should still be 0 even we try to write it as 0
 
         //wait until reset makes FSM go to fetch state
         wait_till_next_cfsm_state(uut.control_fsm.FETCH);
@@ -45,14 +45,14 @@ module nop_tb;
         `assert_equal(uut.instruction_decode.imm_ext, 0)
 
         wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
-        `assert_equal(uut.alu.a, 32'h01010101)
+        `assert_equal(uut.alu.a, 32'h0)
         `assert_equal(uut.alu.b, 0)
-        `assert_equal(uut.alu.out, 32'h01010101)
+        `assert_equal(uut.alu.out, 32'h0)
 
         wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
 
         wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-        `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[0], 32'h01010101)
+        `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[0], 32'h0)
         `assert_equal(uut.fetch.pc_cur, 4)
 
         $finish;
