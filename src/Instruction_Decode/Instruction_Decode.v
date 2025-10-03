@@ -150,6 +150,7 @@ module Instruction_Decode(
 		.Addr2(rs2),
 		.Addr3(rd),
 		.clk(clk),
+		.reset(reset),
 		.regWrite(reg_write),
 		.dataIn(ResultData),
 		.baseAddr(baseAddr),
