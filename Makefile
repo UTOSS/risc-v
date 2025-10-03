@@ -1,7 +1,7 @@
 SRC_DIR  := src
 OUTPUT 	 := out/top.vvp
-IVERILOG := /opt/iverilog-12/bin/iverilog
-VVP 		 := /opt/iverilog-12/bin/vvp
+IVERILOG := iverilog
+VVP 		 := vvp
 
 SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v")
 
