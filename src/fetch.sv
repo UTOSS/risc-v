@@ -22,8 +22,9 @@ module fetch ( input  wire     clk
   always @ (*) begin
     if (cfsm__pc_update) begin
       case (cfsm__pc_src)
-        PC_SRC__INCREMENT: pc_next <= pc_cur + 32'h4;
-        PC_SRC__JUMP:       pc_next <= pc_cur + imm_ext;
+        PC_SRC__INCREMENT: pc_next = pc_cur + 32'h4;
+        PC_SRC__JUMP:       pc_next = pc_old + imm_ext;
+        //PC_SRC__JUMP:       pc_next = pc_cur + imm_ext;
       endcase
     end else begin
       pc_next <= pc_cur;

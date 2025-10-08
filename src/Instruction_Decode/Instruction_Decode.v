@@ -7,12 +7,12 @@ module Instruction_Decode(
 	input wire clk,
 	input wire reset,
 	input wire [31:0] ResultData,
-  input wire reg_write,
-  output opcode_t opcode,
+  	input wire reg_write,
+  	output opcode_t opcode,
 	output wire [3:0] ALUControl,
 	output wire [31:0] baseAddr,
 	output wire [31:0] writeData,
-  output imm_t imm_ext
+  	output imm_t imm_ext
 );
 
 	alu_op_t alu_op;
@@ -21,7 +21,7 @@ module Instruction_Decode(
 	reg [4:0] rd, rs1, rs2;
 	wire [3:0] state;
 
-  assign opcode = instr[6:0];
+  	assign opcode = instr[6:0];
 
 	//combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
 	always@(*) begin
@@ -120,6 +120,7 @@ module Instruction_Decode(
 	// case statement for choosing 32-bit immediate format; based on opcode
   // this is essentially the extend module of the processor
 	always@(*) begin
+		imm_ext = 32'h0000_0000;  //default for beginning
 		case(opcode)
 			IType_logic : imm_ext = {{20{instr[31]}}, instr[31:20]};
 			IType_load  : imm_ext = {{20{instr[31]}}, instr[31:20]};

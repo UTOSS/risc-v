@@ -127,7 +127,8 @@ module top #( parameter MEM_SIZE = 1024 )
     );
 
   always @(posedge clk) begin
-    alu_out <= alu_result;
+    if(reset) alu_out <= 32'b0;
+    else alu_out <= alu_result;
   end
 
   always @(*) begin
@@ -160,8 +161,8 @@ module top #( parameter MEM_SIZE = 1024 )
   end
 
   always @(posedge clk) begin
-	dataA <= rd1;
-	dataB <= rd2;
+	  dataA <= rd1;
+	  dataB <= rd2;
   end
 
 endmodule

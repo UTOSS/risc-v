@@ -8,17 +8,17 @@ module ControlFSM(
 	input opcode_t opcode,
 	input wire clk,
 	input wire reset,
-  input wire zero_flag,
+  	input wire zero_flag,
 	output adr_src_t AdrSrc,
 	output reg IRWrite,
 	output reg RegWrite,
 	output reg PCUpdate,
-  output pc_src_t pc_src,
+  	output pc_src_t pc_src,
 	output reg MemWrite,
 	output reg Branch,
 	output alu_src_a_t ALUSrcA,
 	output alu_src_b_t ALUSrcB,
-	output reg [2:0] ALUOp, //to ALU Decoder
+	output reg [2:0] ALUOp, //to ALU Decoder, not used in current version, use the one from Instruction_Decode now. Which should we use?
 	output result_src_t ResultSrc,
 	output reg [3:0] FSMState
 
@@ -111,127 +111,144 @@ module ControlFSM(
 
 	//output logic
 	always@(*) begin
-    Branch <= 1'b0;
-    pc_src <= 1'b0;
-    PCUpdate <= 1'b0;
-    IRWrite <= 1'b0;
-    MemWrite <= 1'b0;
+    	Branch = 1'b0;
+    	pc_src = PC_SRC__INCREMENT;
+    	PCUpdate = 1'b0;
+    	IRWrite = 1'b0;
+    	MemWrite = 1'b0;
+		FSMState = current_state;
 
-		FSMState <= current_state;
+		AdrSrc    = ADR_SRC__PC;
+		RegWrite  = 1'b0;
+		ALUSrcA   = ALU_SRC_A__ZERO;          
+		ALUSrcB   = ALU_SRC_B__4; 
+		ALUOp     = 2'b00;
+		ResultSrc = RESULT_SRC__ALU_RESULT;   
+
+		//AdrSrc    = ADR_SRC__PC;
+  		//RegWrite  = 1'b0;
+  		//ALUSrcA   = ALU_SRC_A__RD1;
+  		//ALUSrcB   = ALU_SRC_B__IMM_EXT;
+  		//ALUOp     = 2'b00;
+  		//ResultSrc = RESULT_SRC__ALU_RESULT;   
+  		//FSMState  = current_state;
 
 		case(current_state)
 
 			FETCH: begin
 
-				AdrSrc <= ADR_SRC__PC;
-				IRWrite <= 1'b1;
-        PCUpdate <= 1'b1;
+				AdrSrc = ADR_SRC__PC;
+				IRWrite = 1'b1;
+            	PCUpdate = 1'b1;
 
 			end
 
 			DECODE: begin
-
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+				//Pre-calculate next pc, not used for now. But should be useful for pipeline
+				//ALUSrcA = ALU_SRC_A__OLD_PC;
+				//ALUSrcB = ALU_SRC_B__IMM_EXT;
+				//ALUOp = 2'b00;
 
 			end
 
 			AUIPC: begin
 				
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+				ALUSrcA = ALU_SRC_A__OLD_PC;
+				ALUSrcB = ALU_SRC_B__IMM_EXT;
+				ALUOp = 2'b00;
 
 			end
 
 			LUI: begin
 				
-				ALUSrcA <= ALU_SRC_A__ZERO;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+				ALUSrcA = ALU_SRC_A__ZERO;
+				ALUSrcB = ALU_SRC_B__IMM_EXT;
+				ALUOp = 2'b00;
 
 			end
 
 			EXECUTER: begin
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__RD2;
-				ALUOp <= 2'b10;
+				ALUSrcA = ALU_SRC_A__RD1;
+				ALUSrcB = ALU_SRC_B__RD2;
+				ALUOp = 2'b10;
 
 			end
 
 			EXECUTEI: begin
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b11;
+				ALUSrcA = ALU_SRC_A__RD1;
+				ALUSrcB = ALU_SRC_B__IMM_EXT;
+				ALUOp = 2'b11;
 
 			end
 
 			UNCONDJUMP: begin
 
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__4;
-				ALUOp <= 2'b00;
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-        PCUpdate <= 1'b1;
+				ALUSrcA = ALU_SRC_A__OLD_PC;
+				ALUSrcB = ALU_SRC_B__4;
+				ALUOp = 2'b00;
+				ResultSrc = RESULT_SRC__ALU_OUT;
+				pc_src    = PC_SRC__JUMP; // need jump
+        		PCUpdate = 1'b1;
 
 			end
 
 			MEMADR: begin
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+				ALUSrcA = ALU_SRC_A__RD1;
+				ALUSrcB = ALU_SRC_B__IMM_EXT;
+				ALUOp = 2'b00;
 
 			end
 
 			BRANCHIFEQ: begin
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__RD2;
-				ALUOp <= 2'b01;
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				Branch <= 1'b1;
-        pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
-        PCUpdate <= 1'b1;
+				ALUSrcA = ALU_SRC_A__RD1;
+				ALUSrcB = ALU_SRC_B__RD2;
+				ALUOp = 2'b01;
+				ResultSrc = RESULT_SRC__ALU_OUT;
+				Branch = 1'b1;
+				pc_src = PC_SRC__JUMP;
+				PCUpdate = zero_flag;
+        		//pc_src = zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
+        		//PCUpdate = 1'b1;
 
 			end
 
 			ALUWB: begin
 
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				RegWrite <= 1'b1;
+				ResultSrc = RESULT_SRC__ALU_OUT;
+				RegWrite = 1'b1;
 
 			end
 
 			MEMWRITE: begin
 
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				AdrSrc <= ADR_SRC__RESULT;
-				MemWrite <= 1'b1;
+				ResultSrc = RESULT_SRC__ALU_OUT;
+				AdrSrc = ADR_SRC__RESULT;
+				MemWrite = 1'b1;
 
 			end
 
 			MEMREAD: begin
 
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				AdrSrc <= ADR_SRC__RESULT;
+				ResultSrc = RESULT_SRC__ALU_OUT;
+				AdrSrc = ADR_SRC__RESULT;
 
 			end
 
 			MEMWB: begin
 
-				ResultSrc <= RESULT_SRC__DATA;
-				RegWrite <= 1'b1;
+				ResultSrc = RESULT_SRC__DATA;
+				RegWrite = 1'b1;
 
 			end
 
 			default: begin //by default, we return to FETCH state
 
-				AdrSrc <= ADR_SRC__PC;
-				IRWrite <= 1'b1;
+				AdrSrc = ADR_SRC__PC;
+				IRWrite = 1'b1;
 
 			end
 
