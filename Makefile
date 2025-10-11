@@ -1,4 +1,5 @@
 SRC_DIR  := src
+TB_DIR   := test
 OUTPUT 	 := out/top.vvp
 IVERILOG := iverilog
 # /opt/iverilog-12/bin/iverilog
@@ -21,6 +22,12 @@ RISCOF_DUT_SRC := $(RISCOF_DIR)/dut.sv
 RISCOF_DUT_VVP := $(RISCOF_DIR)/dut.vvp
 RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
 RISCOF_CONFIG := $(RISCOF_DIR)/config.ini
+
+print_srcs:
+	@echo $(SRCS)
+
+print_tb_srcs:
+	@echo $(TB_SRCS)
 
 build_top: $(OUTPUT)
 
@@ -89,4 +96,10 @@ riscof_run: $(RISCOF_CONFIG) riscof_build_dut
 			--suite=riscv-arch-test/riscv-test-suite/   \
 			--env=riscv-arch-test/riscv-test-suite/env
 
-.PHONY: all run testbenches run-tests
+svlint:
+	svlint $(if $(CI),--github-actions) $(SRCS) $(if $(CI),| sed 's/::error/::warning/g')
+
+svlint_tb:
+	svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed 's/::error/::warning/g')
+
+.PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb

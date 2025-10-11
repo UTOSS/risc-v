@@ -61,5 +61,19 @@ USER root
 RUN apt update && apt install -y python3 python3-pip && \
     pip3 install riscof
 
+# install svlint
+USER dev
+ARG SVLINT_VERSION=0.9.3
+ARG SVLINT_ZIP_NAME=svlint-v${SVLINT_VERSION}-x86_64-lnx.zip
+ARG SVLINT_ZIP_URL=https://github.com/dalance/svlint/releases/download/v${SVLINT_VERSION}/${SVLINT_ZIP_NAME}
+ARG SVLINT_ZIP_HASH="df44caa38e0cddd09bafa93365d489e47f4823bdda26aa923028c2f06df90456  ${SVLINT_ZIP_NAME}"
+RUN mkdir -p /tmp/svlint && \
+    cd /tmp/svlint && \
+    wget ${SVLINT_ZIP_URL} && \
+    echo ${SVLINT_ZIP_HASH} | sha256sum -c && \
+    unzip ${SVLINT_ZIP_NAME} && \
+    sudo mv bin/* /usr/local/bin/ && \
+    cd .. && rm -r /tmp/svlint
+
 # CI needs priviledged access
 USER root
