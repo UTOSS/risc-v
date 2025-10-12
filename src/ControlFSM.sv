@@ -8,244 +8,61 @@ module ControlFSM(
 	input opcode_t opcode,
 	input wire clk,
 	input wire reset,
-  input wire zero_flag,
-	output adr_src_t AdrSrc,
-	output reg IRWrite,
-	output reg RegWrite,
-	output reg PCUpdate,
-  output pc_src_t pc_src,
-	output reg MemWrite,
-	output reg Branch,
-	output alu_src_a_t ALUSrcA,
-	output alu_src_b_t ALUSrcB,
-	output reg [2:0] ALUOp, //to ALU Decoder
-	output result_src_t ResultSrc,
-	output reg [3:0] FSMState
+    input wire zero_flag,
+	output reg RegWriteW,
+	output reg [1:0] immSrcD,
+ 	output reg PCSrcE,
+    output reg JumpE,
+	output reg MemWriteM,
+	output reg BranchE,
+	output alu_src_b_t ALUSrcE,
+	output reg [2:0] ALUOpE, //to ALU Decoder
+	output result_src_t ResultSrcE,
+	output result_src_t ResultSrcM,
 
 );
-
-	//parameterize states (binary encoding)
-	//in later systemverilog implementation, change to enum
-	parameter FETCH = 4'b0000;
-	parameter DECODE = 4'b0001;
-	parameter EXECUTER = 4'b0010;
-	parameter UNCONDJUMP = 4'b0011;
-	parameter EXECUTEI = 4'b0100;
-	parameter MEMADR = 4'b0101;
-	parameter ALUWB = 4'b0110;
-	parameter MEMWRITE = 4'b0111;
-	parameter MEMREAD = 4'b1000;
-	parameter MEMWB = 4'b1001;
-	parameter BRANCHIFEQ = 4'b1010;
-
-	//new states for lui and auipc
-	parameter LUI = 4'b1011;
-	parameter AUIPC = 4'b1100;
+result_src_t ResultSrcD,
+logic RegWriteD, RegWriteE, RegWriteM;
+logic MemWriteD, MemWriteE;
+logic JumpD;
+logic [2:0] ALUOpD;
 
 
-	//declare state registers
-	reg [3:0] current_state, next_state;
+logic [10:0] control_signals;
+    assign {RegWriteD, immSrcD, ALUSrcD, MemWriteD, ResultSrcD, BranchD, ALUOpD, JumpD} = control_signals;
 
-	//Next state logic
-	always@(*)begin
-
-		case(current_state)
-
-			FETCH: next_state = DECODE;
-
-			DECODE: begin
-
-				if (opcode == JType) next_state = UNCONDJUMP;
-
-				else if (opcode == RType) next_state = EXECUTER;
-
-				else if (opcode == IType_logic) next_state = EXECUTEI;
-
-				else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
-
-				else if (opcode == BType) next_state = BRANCHIFEQ;
-
-				else if (opcode == UType_auipc) next_state = AUIPC;
-
-				else if (opcode == UType_lui) next_state = LUI;
-
-				else next_state = DECODE;
-
-			end
-
-			AUIPC: next_state = ALUWB;
-
-			LUI: next_state = ALUWB;
-
-			UNCONDJUMP: next_state = ALUWB;
-
-			EXECUTER: next_state = ALUWB;
-
-			EXECUTEI: next_state = ALUWB;
-
-			MEMADR: begin
-
-				if (opcode == IType_load) next_state = MEMREAD;
-
-				else if (opcode == SType) next_state = MEMWRITE;
-
-				else next_state = MEMADR;
-
-			end
-
-			BRANCHIFEQ: next_state = FETCH;
-
-			ALUWB: next_state = FETCH;
-
-			MEMREAD: next_state = MEMWB;
-
-			MEMWRITE: next_state = FETCH;
-
-			MEMWB: next_state = FETCH;
-
-			default: next_state = FETCH;
-
-		endcase
-
+    always_comb begin
+        if (opcode[1:0] == 2'b11) begin //The least two significant bits of opcode for RV32I should always be 11
+            case (opcode[6:2])
+                5'b0:     control_signals = 11'b1_00_1_0_01_0_00_0; //I_type -> Load
+                5'b00100: control_signals = 11'b1_00_1_0_00_0_10_0; //I_type -> ALU
+                5'b01000: control_signals = 11'b0_01_1_1_00_0_00_0; //S_type
+                5'b01100: control_signals = 11'b1_00_0_0_00_0_10_0; //R_type
+                5'b11000: control_signals = 11'b0_10_0_0_00_1_01_0; //B_type
+                5'b11011: control_signals = 11'b1_11_0_0_10_0_00_1; //J_type
+                default: control_signals = 11'b0; 
+            endcase
+        end
+        else begin
+            control_signals = 11'bx_xx_x_x_xx_x_xx_x; 
+        end
+            
+    end
+	
+	always@(posedge clk)//should be the period of every stage
+	begin
+		RegWriteE <= RegWriteD;
+		RegWriteM <= RegWriteE;
+		RegWriteW <= RegWriteM;
+		MemWriteE <= MemWriteD;
+		MemWriteM <= MemWriteE;
+		ResultSrcE <= ResultSrcD;
+		ResultSrcM <= ResultSrcE;
+		BranchE <= BranchD;
+		JumpE <= JumpD;
+		ALUOpE <= ALUOpD;
+		ALUSrcE <= ALUSrcD;
 	end
 
-	//output logic
-	always@(*) begin
-    Branch <= 1'b0;
-    pc_src <= 1'b0;
-    PCUpdate <= 1'b0;
-    IRWrite <= 1'b0;
-    MemWrite <= 1'b0;
 
-		FSMState <= current_state;
-
-		case(current_state)
-
-			FETCH: begin
-
-				AdrSrc <= ADR_SRC__PC;
-				IRWrite <= 1'b1;
-        PCUpdate <= 1'b1;
-
-			end
-
-			DECODE: begin
-
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
-
-			end
-
-			AUIPC: begin
-				
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
-
-			end
-
-			LUI: begin
-				
-				ALUSrcA <= ALU_SRC_A__ZERO;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
-
-			end
-
-			EXECUTER: begin
-
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__RD2;
-				ALUOp <= 2'b10;
-
-			end
-
-			EXECUTEI: begin
-
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b11;
-
-			end
-
-			UNCONDJUMP: begin
-
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__4;
-				ALUOp <= 2'b00;
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-        PCUpdate <= 1'b1;
-
-			end
-
-			MEMADR: begin
-
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
-
-			end
-
-			BRANCHIFEQ: begin
-
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__RD2;
-				ALUOp <= 2'b01;
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				Branch <= 1'b1;
-        pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
-        PCUpdate <= 1'b1;
-
-			end
-
-			ALUWB: begin
-
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				RegWrite <= 1'b1;
-
-			end
-
-			MEMWRITE: begin
-
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				AdrSrc <= ADR_SRC__RESULT;
-				MemWrite <= 1'b1;
-
-			end
-
-			MEMREAD: begin
-
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				AdrSrc <= ADR_SRC__RESULT;
-
-			end
-
-			MEMWB: begin
-
-				ResultSrc <= RESULT_SRC__DATA;
-				RegWrite <= 1'b1;
-
-			end
-
-			default: begin //by default, we return to FETCH state
-
-				AdrSrc <= ADR_SRC__PC;
-				IRWrite <= 1'b1;
-
-			end
-
-
-		endcase
-
-	end
-
-	//State transition logic (sequential)
-	always @ (posedge clk) begin
-
-		if (reset) current_state <= FETCH;
-
-		else current_state <= next_state;
-
-	end
 endmodule
