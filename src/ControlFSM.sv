@@ -116,6 +116,7 @@ module ControlFSM(
     PCUpdate <= 1'b0;
     IRWrite <= 1'b0;
     MemWrite <= 1'b0;
+    RegWrite <= 1'b0;
 
 		FSMState <= current_state;
 
