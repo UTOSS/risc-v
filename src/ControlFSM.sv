@@ -125,7 +125,8 @@ module ControlFSM(
 
 				AdrSrc <= ADR_SRC__PC;
 				IRWrite <= 1'b1;
-        PCUpdate <= 1'b1;
+       			PCUpdate <= 1'b1;
+				RegWrite <= 1'b0;
 
 			end
 
