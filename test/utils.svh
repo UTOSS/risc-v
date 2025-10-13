@@ -18,7 +18,7 @@
     end                                                                 \
   end
 
-`define assert_equal(expected, actual) \
+`define assert_equal(actual, expected) \
   assert (expected == actual) else $fatal(1, "Expected `%0h`, got `%0h`", expected, actual);
 
 `include "src/utils.svh"

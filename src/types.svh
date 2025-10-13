@@ -60,7 +60,8 @@ typedef enum logic [1:0] {
 typedef enum logic [1:0] {
   PC_SRC__INCREMENT = 2'b00,
   PC_SRC__JUMP      = 2'b01,
-  PC_SRC__ALU_RESULT = 2'b10
+  PC_SRC__ALU_RESULT = 2'b10,
+  PC_SRC__BRANCH = 2'b11
 } pc_src_t;
 
 `endif

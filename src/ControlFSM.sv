@@ -187,6 +187,7 @@ module ControlFSM(
 				ALUOp <= 2'b00;
 				ResultSrc <= RESULT_SRC__ALU_OUT;
         		PCUpdate <= 1'b1;
+				pc_src <= PC_SRC__JUMP;
 
 			end
 
@@ -220,7 +221,7 @@ module ControlFSM(
 				ALUOp <= 2'b01;
 				ResultSrc <= RESULT_SRC__ALU_OUT;
 				Branch <= 1'b1;
-        		pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
+        		pc_src <= zero_flag ? PC_SRC__BRANCH : PC_SRC__INCREMENT;
         		PCUpdate <= 1'b1;
 
 			end

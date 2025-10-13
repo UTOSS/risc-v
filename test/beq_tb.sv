@@ -52,7 +52,7 @@ module beq_tb;
     assert(uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
     assert(uut.alu.b == 32'h0000002a) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
 
-    assert(uut.cfsm__pc_src   == 1 /* JUMP */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
+    assert(uut.cfsm__pc_src   == 2'b11 /* BRANCH */) else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
     assert(uut.fetch.pc_cur    == 32'h00000004) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 

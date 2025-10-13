@@ -24,9 +24,9 @@ module fetch ( input  wire     clk
     if (cfsm__pc_update) begin
       case (cfsm__pc_src)
         PC_SRC__INCREMENT:  pc_next <= pc_cur + 32'h4;
-        // PC_SRC__JUMP:       pc_next <= pc_old + imm_ext;
-        PC_SRC__JUMP:       pc_next <= pc_cur + imm_ext;
+        PC_SRC__JUMP:       pc_next <= pc_old + imm_ext;
         PC_SRC__ALU_RESULT: pc_next <= {alu_result_for_pc[31:1], 1'b0};
+        PC_SRC__BRANCH:     pc_next <= pc_cur + imm_ext;
       endcase
     end else begin
       pc_next <= pc_cur;
@@ -34,8 +34,13 @@ module fetch ( input  wire     clk
   end
 
   always @ (posedge clk) begin
-    if (reset) pc_cur <= 32'h00000000;
-    else       pc_cur <= pc_next;
+    if (reset) begin
+      pc_cur <= 32'h00000000; 
+      pc_old <= 32'h00000000;
+    end
+    else begin
+      pc_cur <= pc_next;
+    end
 
     if (cfsm__ir_write) begin
       pc_old <= pc_cur;
