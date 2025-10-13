@@ -5,6 +5,7 @@
 parameter RType = 7'b0110011;
 parameter IType_logic = 7'b0010011;
 parameter IType_load = 7'b0000011;
+parameter IType_jalr  = 7'b1100111;
 parameter SType = 7'b0100011;
 parameter BType = 7'b1100011;
 parameter JType = 7'b1101111;
