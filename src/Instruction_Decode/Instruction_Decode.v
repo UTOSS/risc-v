@@ -7,12 +7,12 @@ module Instruction_Decode(
 	input wire clk,
 	input wire reset,
 	input wire [31:0] ResultData,
-  input wire reg_write,
-  output opcode_t opcode,
+  	input wire reg_write,
+  	output opcode_t opcode,
 	output wire [3:0] ALUControl,
 	output wire [31:0] baseAddr,
 	output wire [31:0] writeData,
-  output imm_t imm_ext
+  	output imm_t imm_ext
 );
 
 	alu_op_t alu_op;
@@ -163,8 +163,7 @@ module Instruction_Decode(
 		.regWrite(reg_write),
 		.dataIn(ResultData),
 		.baseAddr(baseAddr),
-		.writeData(writeData),
-		.reset(reset)
+		.writeData(writeData)
 
 	);
 
