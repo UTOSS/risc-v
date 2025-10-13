@@ -26,14 +26,14 @@ module Instruction_Decode(
 	//combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
 	always@(*) begin
 
-		if (opcode == RType) begin //R-Type
+		if (opcode == RType || opcode == IType_logic) begin //R-Type
 
 			funct3 = instr[14:12];
 			funct7 = instr[31:25];
 
 		end
 
-		else if (opcode == IType_logic || opcode == IType_load ||
+		else if (opcode == IType_load ||
             opcode == SType || opcode == BType) begin
 
 			funct3 = instr[14:12];
