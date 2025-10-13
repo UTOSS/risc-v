@@ -116,6 +116,7 @@ module ControlFSM(
     PCUpdate <= 1'b0;
     IRWrite <= 1'b0;
     MemWrite <= 1'b0;
+	RegWrite <= 1'b0;
 
 		FSMState <= current_state;
 
@@ -125,7 +126,7 @@ module ControlFSM(
 
 				AdrSrc <= ADR_SRC__PC;
 				IRWrite <= 1'b1;
-        PCUpdate <= 1'b1;
+       			PCUpdate <= 1'b1;
 
 			end
 
@@ -175,7 +176,7 @@ module ControlFSM(
 				ALUSrcB <= ALU_SRC_B__4;
 				ALUOp <= 2'b00;
 				ResultSrc <= RESULT_SRC__ALU_OUT;
-        PCUpdate <= 1'b1;
+        		PCUpdate <= 1'b1;
 
 			end
 
@@ -194,8 +195,8 @@ module ControlFSM(
 				ALUOp <= 2'b01;
 				ResultSrc <= RESULT_SRC__ALU_OUT;
 				Branch <= 1'b1;
-        pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
-        PCUpdate <= 1'b1;
+        		pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
+        		PCUpdate <= 1'b1;
 
 			end
 
