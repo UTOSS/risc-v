@@ -18,8 +18,10 @@ module top #( parameter MEM_SIZE = 1024 )
   instr_t  instruction;
   opcode_t opcode;
   imm_t    imm_ext;
+  reg [2:0] funct3;
 
   data_t result;
+  data_t mem_load_result;
 
   data_t rd1;
   data_t rd2;
@@ -101,8 +103,18 @@ module top #( parameter MEM_SIZE = 1024 )
     end
   end
 
+  always @(*) begin
+    case (funct3)
+    3'b000:    mem_load_result = {{24{memory_data[7]}}, memory_data[7:0]};
+    3'b001:    mem_load_result = {{16{memory_data[15]}}, memory_data[15:0]};
+    3'b010:    mem_load_result = memory_data;
+    3'b100:    mem_load_result = {{24{1'b0}}, memory_data[7:0]};
+    3'b101:    mem_load_result = {{16{1'b0}}, memory_data[15:0]};
+    endcase
+  end
+
   always @(posedge clk) begin
-    data <= memory_data;
+    data <= mem_load_result;
   end
 
   Instruction_Decode instruction_decode
@@ -112,6 +124,7 @@ module top #( parameter MEM_SIZE = 1024 )
     , .ResultData      ( result           )
     , .reg_write       ( cfsm__reg_write  )
     , .opcode          ( opcode           )
+    , .funct3          ( funct3           ) 
     , .ALUControl      ( __tmp_ALUControl )
     , .baseAddr        ( rd1              )
     , .writeData       ( rd2              )

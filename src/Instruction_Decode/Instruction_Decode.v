@@ -9,6 +9,7 @@ module Instruction_Decode(
 	input wire [31:0] ResultData,
   input wire reg_write,
   output opcode_t opcode,
+  output reg [2:0] funct3,
 	output wire [3:0] ALUControl,
 	output wire [31:0] baseAddr,
 	output wire [31:0] writeData,
@@ -16,7 +17,7 @@ module Instruction_Decode(
 );
 
 	alu_op_t alu_op;
-	reg [2:0] funct3;
+	//reg [2:0] funct3;
 	reg [6:0] funct7;
 	reg [4:0] rd, rs1, rs2;
 	wire [3:0] state;
