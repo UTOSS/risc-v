@@ -126,7 +126,7 @@ module top #( parameter MEM_SIZE = 1024 )
         2 : mem_load_result = {{16{memory_data[31]}}, memory_data[31:16]};
       endcase
         
-      end  /
+      end
     3'b010:    mem_load_result = memory_data; //lw
     3'b100:    
     begin //lbu
@@ -145,7 +145,7 @@ module top #( parameter MEM_SIZE = 1024 )
         1 : mem_load_result = {{16{1'b0}}, memory_data[23:8]};
         2 : mem_load_result = {{16{1'b0}}, memory_data[31:16]};
       endcase
-      
+
       end 
     endcase
   end
