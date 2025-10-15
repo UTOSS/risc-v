@@ -108,17 +108,17 @@ module top #( parameter MEM_SIZE = 1024 )
   always @(*) begin
     byteindex = memory_address[1:0];
     case (funct3)
-    3'b000:    
+    3'b000:    //lb
       begin
         case (byteindex)
-        0 : mem_load_result = {{24{memory_data[7]}}, memory_data[7:0]}; //lb
-        1 : mem_load_result = {{24{memory_data[15]}}, memory_data[15:8]}; //lb
-        2 : mem_load_result = {{24{memory_data[23]}}, memory_data[23:16]}; //lb
-        3 : mem_load_result = {{24{memory_data[31]}}, memory_data[31:24]}; //lb
+        0 : mem_load_result = {{24{memory_data[7]}}, memory_data[7:0]};
+        1 : mem_load_result = {{24{memory_data[15]}}, memory_data[15:8]};
+        2 : mem_load_result = {{24{memory_data[23]}}, memory_data[23:16]};
+        3 : mem_load_result = {{24{memory_data[31]}}, memory_data[31:24]};
       endcase
         
       end 
-    3'b001:    
+    3'b001:   //lh 
     begin
         case (byteindex)
         0 : mem_load_result = {{16{memory_data[15]}}, memory_data[15:0]};
@@ -126,27 +126,27 @@ module top #( parameter MEM_SIZE = 1024 )
         2 : mem_load_result = {{16{memory_data[31]}}, memory_data[31:16]};
       endcase
         
-      end  //lh
+      end  /
     3'b010:    mem_load_result = memory_data; //lw
     3'b100:    
-    begin
+    begin //lbu
         case (byteindex)
-        0 : mem_load_result = {{24{1'b0}}, memory_data[7:0]}; //lb
-        1 : mem_load_result = {{24{1'b0}}, memory_data[15:8]}; //lb
-        2 : mem_load_result = {{24{1'b0}}, memory_data[23:16]}; //lb
-        3 : mem_load_result = {{24{1'b0}}, memory_data[31:24]}; //lb
+        0 : mem_load_result = {{24{1'b0}}, memory_data[7:0]};
+        1 : mem_load_result = {{24{1'b0}}, memory_data[15:8]};
+        2 : mem_load_result = {{24{1'b0}}, memory_data[23:16]};
+        3 : mem_load_result = {{24{1'b0}}, memory_data[31:24]};
       endcase
         
       end 
-    3'b101: 
+    3'b101: //lhu
     begin
         case (byteindex)
         0 : mem_load_result = {{16{1'b0}}, memory_data[15:0]};
         1 : mem_load_result = {{16{1'b0}}, memory_data[23:8]};
         2 : mem_load_result = {{16{1'b0}}, memory_data[31:16]};
       endcase
-        
-      end  //lh
+      
+      end 
     endcase
   end
 
