@@ -105,11 +105,11 @@ module top #( parameter MEM_SIZE = 1024 )
 
   always @(*) begin
     case (funct3)
-    3'b000:    mem_load_result = {{24{memory_data[7]}}, memory_data[7:0]};
-    3'b001:    mem_load_result = {{16{memory_data[15]}}, memory_data[15:0]};
-    3'b010:    mem_load_result = memory_data;
-    3'b100:    mem_load_result = {{24{1'b0}}, memory_data[7:0]};
-    3'b101:    mem_load_result = {{16{1'b0}}, memory_data[15:0]};
+    3'b000:    mem_load_result = {{24{memory_data[7]}}, memory_data[7:0]}; //lb
+    3'b001:    mem_load_result = {{16{memory_data[15]}}, memory_data[15:0]}; //lh
+    3'b010:    mem_load_result = memory_data; //lw
+    3'b100:    mem_load_result = {{24{1'b0}}, memory_data[7:0]}; //lbu
+    3'b101:    mem_load_result = {{16{1'b0}}, memory_data[15:0]}; //lhu
     endcase
   end
 
