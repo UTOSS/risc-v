@@ -23,6 +23,9 @@ RISCOF_DUT_VVP := $(RISCOF_DIR)/dut.vvp
 RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
 RISCOF_CONFIG := $(RISCOF_DIR)/config.ini
 
+all: build_top
+	@echo "Build finished! Try 'make run_top' or 'make run_tb' to run the core or testbenches."
+
 print_srcs:
 	@echo $(SRCS)
 
