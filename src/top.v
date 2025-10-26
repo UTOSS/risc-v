@@ -18,8 +18,12 @@ module top #( parameter MEM_SIZE = 1024 )
   instr_t  instruction;
   opcode_t opcode;
   imm_t    imm_ext;
+  reg [2:0] funct3;
+
+  integer byteindex;
 
   data_t result;
+  data_t mem_load_result;
 
   data_t rd1;
   data_t rd2;
@@ -101,13 +105,59 @@ module top #( parameter MEM_SIZE = 1024 )
     end
   end
 
+  always @(*) begin
+    byteindex = memory_address[1:0];
+    case (funct3)
+    3'b000:    //lb
+      begin
+        case (byteindex)
+        0 : mem_load_result = {{24{memory_data[7]}}, memory_data[7:0]};
+        1 : mem_load_result = {{24{memory_data[15]}}, memory_data[15:8]};
+        2 : mem_load_result = {{24{memory_data[23]}}, memory_data[23:16]};
+        3 : mem_load_result = {{24{memory_data[31]}}, memory_data[31:24]};
+      endcase
+        
+      end 
+    3'b001:   //lh 
+    begin
+        case (byteindex)
+        0 : mem_load_result = {{16{memory_data[15]}}, memory_data[15:0]};
+        1 : mem_load_result = {{16{memory_data[23]}}, memory_data[23:8]};
+        2 : mem_load_result = {{16{memory_data[31]}}, memory_data[31:16]};
+      endcase
+        
+      end
+    3'b010:    mem_load_result = memory_data; //lw
+    3'b100:    
+    begin //lbu
+        case (byteindex)
+        0 : mem_load_result = {{24{1'b0}}, memory_data[7:0]};
+        1 : mem_load_result = {{24{1'b0}}, memory_data[15:8]};
+        2 : mem_load_result = {{24{1'b0}}, memory_data[23:16]};
+        3 : mem_load_result = {{24{1'b0}}, memory_data[31:24]};
+      endcase
+        
+      end 
+    3'b101: //lhu
+    begin
+        case (byteindex)
+        0 : mem_load_result = {{16{1'b0}}, memory_data[15:0]};
+        1 : mem_load_result = {{16{1'b0}}, memory_data[23:8]};
+        2 : mem_load_result = {{16{1'b0}}, memory_data[31:16]};
+      endcase
+
+      end 
+    endcase
+  end
+
   always @(posedge clk) begin
-    data <= memory_data;
+    data <= mem_load_result;
   end
 
   Instruction_Decode instruction_decode
     ( .instr           ( instruction      )
     , .opcode          ( opcode           )
+    , .funct3          ( funct3           ) 
     , .ALUControl      ( __tmp_ALUControl )
     , .imm_ext         ( imm_ext          )
     , .rd              ( rd               )
