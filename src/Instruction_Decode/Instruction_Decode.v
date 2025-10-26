@@ -7,6 +7,7 @@ module Instruction_Decode(
   	output opcode_t opcode,
 	output wire [3:0] ALUControl,
  	output imm_t imm_ext,
+	output reg [2:0] funct3,
 	output reg [4:0] rd,
 	output reg [4:0] rs1, 
 	output reg [4:0] rs2
@@ -114,7 +115,7 @@ module Instruction_Decode(
 	end
 
 	// case statement for choosing 32-bit immediate format; based on opcode
-  // this is essentially the extend module of the processor
+    // this is essentially the extend module of the processor
 	always@(*) begin
 		case(opcode)
 			IType_logic : imm_ext = {{20{instr[31]}}, instr[31:20]};
