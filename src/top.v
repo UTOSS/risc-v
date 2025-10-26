@@ -166,15 +166,15 @@ module top #( parameter MEM_SIZE = 1024 )
     );
 
   registerFile RegFile
-    ( .Addr1(rs1)
-    , .Addr2(rs2)
-    , .Addr3(rd)
-    , .clk(clk)
-    , .reset(reset)
-    , .regWrite(cfsm__reg_write)
-    , .dataIn(result)
-    , .baseAddr(rd1)
-    , .writeData(rd2)
+    ( .Addr1           ( rs1              )
+    , .Addr2           ( rs2              )
+    , .Addr3           ( rd               )
+    , .clk             ( clk              )
+    , .reset           ( reset            )
+    , .regWrite        ( cfsm__reg_write  )
+    , .dataIn          ( result           )
+    , .baseAddr        ( rd1              )
+    , .writeData       ( rd2              )
 	  );
 
   ALU alu
