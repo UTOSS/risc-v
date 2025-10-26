@@ -1,11 +1,11 @@
 module MemoryLoader (
-    input  logic [31:0] memory_data,
-    input  logic [31:0] memory_address,
+    input  data_t memory_data,
+    input  addr_t memory_address,
     input  logic [2:0]  funct3,
-    output logic [31:0] mem_load_result
+    output data_t mem_load_result
 );
 
-    logic [1:0] byteindex;
+    integer byteindex;
     assign byteindex = memory_address[1:0];
 
     always_comb begin

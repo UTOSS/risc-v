@@ -107,6 +107,7 @@ module top #( parameter MEM_SIZE = 1024 )
 
   MemoryLoader MemLoad
   ( .memory_data       ( memory_data     )
+  , .memory_address    ( memory_address  )
   , .mem_load_result   ( mem_load_result )
   , .funct3            ( funct3          )
   );
