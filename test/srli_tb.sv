@@ -32,7 +32,7 @@ module srli_tb;
 
 
     // set up register file
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 42; // x2 = 42; 101010
+    uut.RegFile.RFMem[2] = 42; // x2 = 42; 101010
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
@@ -46,7 +46,7 @@ module srli_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.RegFile.RFMem[2], 42)
     `assert_equal(uut.alu.a, 42)
     `assert_equal(uut.alu.b, 1)
     `assert_equal(uut.alu.out, 21)
@@ -57,8 +57,8 @@ module srli_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 21)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.RegFile.RFMem[1], 21)
+    `assert_equal(uut.RegFile.RFMem[2], 42)
     `assert_equal(uut.fetch.pc_cur, 4) // starting second instruction already
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -69,7 +69,7 @@ module srli_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.RegFile.RFMem[2], 42)
     `assert_equal(uut.alu.a, 42)
     `assert_equal(uut.alu.b, 2)
     `assert_equal(uut.alu.out, 10)
@@ -80,8 +80,8 @@ module srli_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 10)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.RegFile.RFMem[1], 10)
+    `assert_equal(uut.RegFile.RFMem[2], 42)
     `assert_equal(uut.fetch.pc_cur, 8) // starting third instruction already
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -92,7 +92,7 @@ module srli_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.RegFile.RFMem[2], 42)
     `assert_equal(uut.alu.a, 42)
     `assert_equal(uut.alu.b, 3)
     `assert_equal(uut.alu.out, 5)
@@ -103,8 +103,8 @@ module srli_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 5)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
+    `assert_equal(uut.RegFile.RFMem[1], 5)
+    `assert_equal(uut.RegFile.RFMem[2], 42)
     `assert_equal(uut.fetch.pc_cur, 12)
 
     $finish;

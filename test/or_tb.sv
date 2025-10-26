@@ -27,8 +27,8 @@ module or_tb;
 
     uut.memory.M[0] = 32'h003160b3; // or x1,x2,x3 ; x1 = x2 | x3
 
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 32'hf0f0f0f0; // x2
-    uut.instruction_decode.instanceRegFile.RFMem[3] = 32'h0b0b0b0b; // x3
+    uut.RegFile.RFMem[2] = 32'hf0f0f0f0; // x2
+    uut.RegFile.RFMem[3] = 32'h0b0b0b0b; // x3
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
@@ -54,7 +54,7 @@ module or_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hfbfbfbfb)
+    `assert_equal(uut.RegFile.RFMem[1], 32'hfbfbfbfb)
     `assert_equal(uut.fetch.pc_cur, 4)
 
     $finish;

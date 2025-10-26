@@ -33,7 +33,7 @@ module beq_tb;
     uut.memory.M[0] = 32'hFE420AE3; // beq x4, x4, -0xc
 
     // initialize registers
-    uut.instruction_decode.instanceRegFile.RFMem[5'b00100] = 32'h0000002a; // x4 = 42
+    uut.RegFile.RFMem[5'b00100] = 32'h0000002a; // x4 = 42
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
     reset <= `FALSE;
@@ -65,8 +65,8 @@ module beq_tb;
     reset <= `TRUE;
 
     uut.memory.M[0] = 32'b0000000_00010_00001_000_1000_0_1100011; // beq x1, x2, 0x10
-    uut.instruction_decode.instanceRegFile.RFMem[5'b00001] = 32'h0000002a; // x1 = 42
-    uut.instruction_decode.instanceRegFile.RFMem[5'b00010] = 32'h0000002b; // x2 = 43
+    uut.RegFile.RFMem[5'b00001] = 32'h0000002a; // x1 = 42
+    uut.RegFile.RFMem[5'b00010] = 32'h0000002b; // x2 = 43
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
     reset <= `FALSE;
@@ -96,7 +96,7 @@ module beq_tb;
     reset <= `TRUE;
 
     uut.memory.M[0] = 32'b0100000_00001_00001_000_00001_0110011; // sub x1, x1, x1
-    uut.instruction_decode.instanceRegFile.RFMem[5'b00001] = 32'h00000001; // x1 = 1
+    uut.RegFile.RFMem[5'b00001] = 32'h00000001; // x1 = 1
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
     reset <= `FALSE;

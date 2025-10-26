@@ -31,8 +31,8 @@ module addi_tb;
     uut.memory.M[ 2] = 32'hff810093; // addi x1, x2, -8
 
     // Set up register file
-    uut.instruction_decode.instanceRegFile.RFMem[1] = 0; // x1 = 0
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 42; // x2 = 42
+    uut.RegFile.RFMem[1] = 0; // x1 = 0
+    uut.RegFile.RFMem[2] = 42; // x2 = 42
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
@@ -53,7 +53,7 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 42)
+    `assert_equal(uut.RegFile.RFMem[1], 42)
     `assert_equal(uut.fetch.pc_cur, 4)
 
     // --- Instruction 2: addi x1, x2, 4 ---
@@ -66,7 +66,7 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 46)
+    `assert_equal(uut.RegFile.RFMem[1], 46)
     `assert_equal(uut.fetch.pc_cur, 8)
 
     // --- Instruction 3: addi x1, x2, -8 ---
@@ -79,11 +79,11 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 34)
+    `assert_equal(uut.RegFile.RFMem[1], 34)
 
     // Final assertions
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 42)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 34)
+    `assert_equal(uut.RegFile.RFMem[2], 42)
+    `assert_equal(uut.RegFile.RFMem[1], 34)
 
     $finish;
   end
