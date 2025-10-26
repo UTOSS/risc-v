@@ -42,8 +42,8 @@ module top #( parameter MEM_SIZE = 1024 )
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
-  logic [31:0] dataA
-			 ,dataB;
+  data_t     dataA, dataB;
+  reg  [4:0] rd, rs1, rs2;
 
   ControlFSM control_fsm
     ( .opcode    ( opcode           )
@@ -107,16 +107,25 @@ module top #( parameter MEM_SIZE = 1024 )
 
   Instruction_Decode instruction_decode
     ( .instr           ( instruction      )
-    , .clk             ( clk              )
-    , .reset           ( reset            )
-    , .ResultData      ( result           )
-    , .reg_write       ( cfsm__reg_write  )
     , .opcode          ( opcode           )
     , .ALUControl      ( __tmp_ALUControl )
-    , .baseAddr        ( rd1              )
-    , .writeData       ( rd2              )
     , .imm_ext         ( imm_ext          )
+    , .rd              ( rd               )
+    , .rs1             ( rs1              )
+    , .rs2             ( rs2              )
     );
+
+  registerFile RegFile
+    ( .Addr1(rs1)
+    , .Addr2(rs2)
+    , .Addr3(rd)
+    , .clk(clk)
+    , .reset(reset)
+    , .regWrite(cfsm__reg_write)
+    , .dataIn(result)
+    , .baseAddr(rd1)
+    , .writeData(rd2)
+	  );
 
   ALU alu
     ( .a              ( alu_input_a      )
@@ -160,8 +169,8 @@ module top #( parameter MEM_SIZE = 1024 )
   end
 
   always @(posedge clk) begin
-	dataA <= rd1;
-	dataB <= rd2;
+	  dataA <= rd1;
+	  dataB <= rd2;
   end
 
 endmodule
