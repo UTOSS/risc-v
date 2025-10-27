@@ -10,6 +10,7 @@ module MA #( parameter SIZE = 1024 )
 
     initial begin
       string mem_file;
+      
 
       if ($value$plusargs("MEM=%s", mem_file)) begin
         $display("loading memory from <%s>", mem_file);
@@ -19,8 +20,7 @@ module MA #( parameter SIZE = 1024 )
     end
 
     assign RD = M[A[31:2]]; // 2 LSBs used for byte addressing
-
-    always @(posedge CLK) begin
+    always @(posedge CLK) begin 
         if (WE) begin
             M[A[31:2]] <= WD;
         end
