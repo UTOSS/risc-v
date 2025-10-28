@@ -16,7 +16,7 @@ module alu_decoder_tb;
         .alu_control(alu_control)
     );
 
-	initial begin
+  initial begin
 
     // Test lw/sw (ADD operation)
     alu_op = 2'b00; funct3 = 3'b000; funct7 = 7'b0000000;
@@ -27,17 +27,17 @@ module alu_decoder_tb;
     alu_op = 2'b01; funct3 = 3'b000; funct7 = 7'b0000000;
     #10;
     assert(alu_control  == 4'b0001) else $fatal(1,"Unexpected zero output for funct3=%b", funct3);
-	/*
-			BRANCHIFEQ: begin
+  /*
+      BRANCHIFEQ: begin
 
-				ALUSrcA <= 2'b10;
-				ALUSrcB <= 2'b00;
-				ALUOp <= 2'b01;
-				ResultSrc <= 2'b00;
-				Branch <= 1'b1;
+        ALUSrcA <= 2'b10;
+        ALUSrcB <= 2'b00;
+        ALUOp <= 2'b01;
+        ResultSrc <= 2'b00;
+        Branch <= 1'b1;
 
-			end
-	*/
+      end
+  */
 
     // Test R-type ADD
     alu_op = 2'b10; funct3 = 3'b000; funct7 = 7'b0000000;
@@ -70,7 +70,7 @@ module alu_decoder_tb;
     assert(alu_control  == 4'b0111) else $fatal(1,"Unexpected zero output for funct3=%b", funct3);
 
 
-	end
+  end
 
   `SETUP_VCD_DUMP(alu_decoder_tb)
 

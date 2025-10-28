@@ -120,7 +120,7 @@ module top #( parameter MEM_SIZE = 1024 )
   Instruction_Decode instruction_decode
     ( .instr           ( instruction      )
     , .opcode          ( opcode           )
-    , .funct3          ( funct3           ) 
+    , .funct3          ( funct3           )
     , .ALUControl      ( __tmp_ALUControl )
     , .imm_ext         ( imm_ext          )
     , .rd              ( rd               )
@@ -138,7 +138,7 @@ module top #( parameter MEM_SIZE = 1024 )
     , .dataIn          ( result           )
     , .baseAddr        ( rd1              )
     , .writeData       ( rd2              )
-	  );
+    );
 
   ALU alu
     ( .a              ( alu_input_a      )
@@ -182,8 +182,8 @@ module top #( parameter MEM_SIZE = 1024 )
   end
 
   always @(posedge clk) begin
-	  dataA <= rd1;
-	  dataB <= rd2;
+    dataA <= rd1;
+    dataB <= rd2;
   end
 
 endmodule
