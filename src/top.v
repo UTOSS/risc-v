@@ -38,10 +38,8 @@ module top #( parameter MEM_SIZE = 1024 )
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
-  wire __tmp_MemWrite
-     , __tmp_Branch;
-  wire [1:0] __tmp_ALUSrcA
-           , __tmp_ALUSrcB;
+  wire __tmp_MemWrite, __tmp_Branch;
+  wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;

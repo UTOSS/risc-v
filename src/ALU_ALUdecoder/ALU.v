@@ -1,11 +1,12 @@
 //`include "params.vh"
 
-module ALU ( input [31:0] a
-           , input [31:0] b
-           , input [3:0] alu_control
-           , output reg [31:0] out
-           , output zeroE
-           );
+module ALU
+  ( input [31:0] a
+  , input [31:0] b
+  , input [3:0] alu_control
+  , output reg [31:0] out
+  , output zeroE
+  );
     always @(*)
   begin
   case (alu_control)

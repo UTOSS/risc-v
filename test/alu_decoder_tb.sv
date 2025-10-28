@@ -44,7 +44,7 @@ module alu_decoder_tb;
     #10;
     assert(alu_control  == 4'b0000) else $fatal(1,"Unexpected zero output for funct3=%b", funct3);
 
-     // Test R-type SUB
+    // Test R-type SUB
     alu_op = 2'b10; funct3 = 3'b000; funct7 = 7'b0100000;
     #10;
     assert(alu_control  == 4'b0001) else $fatal(1,"Unexpected zero output for funct3=%b", funct3);
