@@ -22,24 +22,27 @@ output wire [31:0] writeData //data read line #2 - from second source register
 
 );
 
-	//declare 32 registers in Register File, with 32 bits each
-	//32 bits deep (32 addresses) and 32 bits wide (32 bits at each register)
-	//note that RFMem[0:31] means there are 32 elements (with addr for each element), each of which are 32-bit regs
+	//declare 32 registers in Register File, with 32 bits each 32 bits deep (32 addresses) and 32 bits
+	//wide (32 bits at each register) note that RFMem[0:31] means there are 32 elements (with addr for
+	//each element), each of which are 32-bit regs
 	reg [31:0] RFMem [0:31] /* synthesis ramstyle = M10K*/;
 
-	assign baseAddr  = (Addr1 == 5'd0) ? 32'd0 : RFMem[Addr1]; // x0 always 0, read out 32-bit contents of rs1 register
-    assign writeData = (Addr2 == 5'd0) ? 32'd0 : RFMem[Addr2]; // x0 always 0 on read, read out 32-bit contents of rs2 register
+  // x0 always 0, read out 32-bit contents of rs1 register
+	assign baseAddr  = (Addr1 == 5'd0) ? 32'd0 : RFMem[Addr1];
+  
+  // x0 always 0 on read, read out 32-bit contents of rs2 register
+  assign writeData = (Addr2 == 5'd0) ? 32'd0 : RFMem[Addr2];
 
 	always@(posedge clk) begin
 
 		if (reset) RFMem[0] <= 0; //register r0 should always remain at 0
 
 		if(regWrite && Addr3 != 0) begin
-			
+
 			RFMem[Addr3] <= dataIn; //write into destination register if RegWrite = 1
-			
+
 		end
-	
+
 	end
 
 endmodule

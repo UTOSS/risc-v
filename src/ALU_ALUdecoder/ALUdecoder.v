@@ -1,6 +1,10 @@
 `include "src/types.svh"
 
-module ALUdecoder (input [2:0] funct3, input [6:0] funct7, input alu_op_t alu_op, output reg [3:0] alu_control);
+module ALUdecoder ( input [2:0] funct3
+                  , input [6:0] funct7
+                  , input alu_op_t alu_op
+                  , output reg [3:0] alu_control
+                  );
 	always @(*)
 	begin
 	case (alu_op)

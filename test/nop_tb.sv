@@ -30,7 +30,7 @@ module nop_tb;
         uut.memory.M[0] = 32'h00000013; //NOP instruction - addi x0, x0, 0
 
         // set up register file to a known value
-        uut.RegFile.RFMem[0] = 32'h01010101; // x0, and it should still be 0 even we try to write it as 0
+        uut.RegFile.RFMem[0] = 32'h01010101; // x0, hould still be 0 even we try to write it as 0
 
         //wait until reset makes FSM go to fetch state
         wait_till_next_cfsm_state(uut.control_fsm.FETCH);

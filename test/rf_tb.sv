@@ -54,10 +54,15 @@ module rf_tb;
 
     @(posedge clk); //waits for positive clock edge
     #1; // wait for output to stabilize after posedge
-    assert(baseAddr == 32'hDEADBEEF) else $fatal(1, "READ FAILED: current baseAddr output: %h; expected baseAddr output: DEADBEEF", baseAddr);
-    assert(writeData == 32'hCAFEBABE) else $fatal(1, "READ FAILED: current writeData output: %h; expected writeData output: CAFEBABE", writeData);
-    $display("PASS: current baseAddr output: %h; expected baseAddr output: DEADBEEF", baseAddr);
-    $display("PASS: current writeData output: %h; expected writeData output: CAFEBABE", writeData);
+    assert(baseAddr == 32'hDEADBEEF)
+      else $fatal(
+        1, "READ FAILED: current baseAddr output: %h; expected baseAddr output: DEADBEEF", baseAddr
+      );
+    assert(writeData == 32'hCAFEBABE)
+      else $fatal(
+        1, "READ FAILED: current writeData output: %h; expected writeData output: CAFEBABE",
+        writeData
+      );
 
     //CASE 2 - Write to reg 15
     Addr3 = 15;
@@ -68,8 +73,11 @@ module rf_tb;
 
     #1; //wait for written data to stabilize
     regWrite = 0; //de-assert write
-    assert(dut.RFMem[15] == 32'h12345678) else $fatal(1, "WRITE FAILED: current reg 15 output: %h; expected reg 15 output: 12345678", dut.RFMem[15]);
-    $display("PASS: Write to register 15 verified. current reg 15 output: %h; expected reg 15 output: 12345678", dut.RFMem[15]);
+    assert(dut.RFMem[15] == 32'h12345678)
+      else $fatal(
+        1, "WRITE FAILED: current reg 15 output: %h; expected reg 15 output: 12345678",
+        dut.RFMem[15]
+      );
 
 	 //CASE 3 - Write to reg 0
 	 Addr3 = 0;
@@ -79,8 +87,10 @@ module rf_tb;
 
     #1; //wait for written data to stabilize
     regWrite = 0; //de-assert write
-    assert(dut.RFMem[0] == 0) else $fatal(1, "WRITE FAILED: current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]);
-    $display("PASS: Write to register 0 verified. current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]);
+    assert(dut.RFMem[0] == 0)
+      else $fatal(
+        1, "WRITE FAILED: current reg 0 output: %h; expected reg 0 output: 0", dut.RFMem[0]
+      );
 
     $finish;
   end
