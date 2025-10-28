@@ -68,7 +68,7 @@ module lui_tb;
     //Exe lui x2, 200
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'h00014000)
+    `assert_equal(uut.RegFile.RFMem[1], 32'h00014000)
     //x1 at this moment should be updated
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -92,7 +92,7 @@ module lui_tb;
     //Exe lui x3, 1023
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'h000c8000)
+    `assert_equal(uut.RegFile.RFMem[2], 32'h000c8000)
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
@@ -114,7 +114,7 @@ module lui_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[3], 32'h003ff000)
+    `assert_equal(uut.RegFile.RFMem[3], 32'h003ff000)
 
     //If the simulation makes to this point, the simulation passed
 

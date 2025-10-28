@@ -36,7 +36,7 @@ module lw_tb;
     uut.memory.M[43] = 32'hcafebabe; // have some data at address 0xac
 
     // set up register file
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 32'ha8; // x2 = 42 * 4 = 168 = 0xa8
+    uut.RegFile.RFMem[2] = 32'ha8; // x2 = 42 * 4 = 168 = 0xa8
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
@@ -51,7 +51,7 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.RegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.alu.a, 32'ha8)
     `assert_equal(uut.alu.b, 0)
     `assert_equal(uut.alu.out, 32'ha8)
@@ -68,8 +68,8 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hdeadbeef)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.RegFile.RFMem[1], 32'hdeadbeef)
+    `assert_equal(uut.RegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.fetch.pc_cur, 4) // starting second instruction already
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -81,7 +81,7 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.RegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.alu.a, 32'ha8)
     `assert_equal(uut.alu.b, 4)
     `assert_equal(uut.alu.out, 32'hac)
@@ -98,8 +98,8 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hcafebabe)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.RegFile.RFMem[1], 32'hcafebabe)
+    `assert_equal(uut.RegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.fetch.pc_cur, 8) // starting third instruction already
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -111,7 +111,7 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.RegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.alu.a, 32'ha8)
     `assert_equal(uut.alu.b, -8)
     `assert_equal(uut.alu.out, 32'ha0)
@@ -128,8 +128,8 @@ module lw_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'hbadab00f)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'ha8)
+    `assert_equal(uut.RegFile.RFMem[1], 32'hbadab00f)
+    `assert_equal(uut.RegFile.RFMem[2], 32'ha8)
     `assert_equal(uut.fetch.pc_cur, 12)
 
     $finish;

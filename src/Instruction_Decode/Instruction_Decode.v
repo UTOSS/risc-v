@@ -4,22 +4,18 @@
 module Instruction_Decode(
 
 	input wire [31:0] instr,
-	input wire clk,
-	input wire reset,
-	input wire [31:0] ResultData,
-  input wire reg_write,
-  output opcode_t opcode,
-  output reg [2:0] funct3,
+  	output opcode_t opcode,
 	output wire [3:0] ALUControl,
-	output wire [31:0] baseAddr,
-	output wire [31:0] writeData,
-  output imm_t imm_ext
+ 	output imm_t imm_ext,
+	output reg [2:0] funct3,
+	output reg [4:0] rd,
+	output reg [4:0] rs1, 
+	output reg [4:0] rs2
 );
 
 	alu_op_t alu_op;
 	//reg [2:0] funct3;
 	reg [6:0] funct7;
-	reg [4:0] rd, rs1, rs2;
 	wire [3:0] state;
 
   assign opcode = instr[6:0];
@@ -119,7 +115,7 @@ module Instruction_Decode(
 	end
 
 	// case statement for choosing 32-bit immediate format; based on opcode
-  // this is essentially the extend module of the processor
+    // this is essentially the extend module of the processor
 	always@(*) begin
 		case(opcode)
 			IType_logic : imm_ext = {{20{instr[31]}}, instr[31:20]};
@@ -141,21 +137,6 @@ module Instruction_Decode(
 		.funct7(funct7),
 		.alu_op(alu_op),
 		.alu_control(ALUControl)
-
-	);
-
-	//instantiate Register File module
-	registerFile instanceRegFile(
-
-		.Addr1(rs1),
-		.Addr2(rs2),
-		.Addr3(rd),
-		.clk(clk),
-		.reset(reset),
-		.regWrite(reg_write),
-		.dataIn(ResultData),
-		.baseAddr(baseAddr),
-		.writeData(writeData)
 
 	);
 
