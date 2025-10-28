@@ -20,6 +20,10 @@ TB_VCD_BASE_PATH := test/vcd
 RISCOF_DIR := riscof
 RISCOF_DUT_SRC := $(RISCOF_DIR)/dut.sv
 RISCOF_DUT_VVP := $(RISCOF_DIR)/dut.vvp
+
+# Consolidate all design-related SystemVerilog sources
+DESIGN_SRCS := $(SRCS) $(RISCOF_DUT_SRC)
+
 RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
 RISCOF_CONFIG := $(RISCOF_DIR)/config.ini
 
@@ -68,8 +72,8 @@ run_tb: build_tb
 		echo "\033[32mAll testbenches passed!\033[0m";          \
 	fi
 
-$(RISCOF_DUT_VVP): $(SRCS) $(RISCOF_DUT_SRC)
-	$(IVERILOG) -g2012 -o $(RISCOF_DUT_VVP) $(SRCS) $(RISCOF_DUT_SRC)
+$(RISCOF_DUT_VVP): $(DESIGN_SRCS)
+	$(IVERILOG) -g2012 -o $(RISCOF_DUT_VVP) $(DESIGN_SRCS)
 
 $(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
 	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
@@ -97,7 +101,7 @@ riscof_run: $(RISCOF_CONFIG) riscof_build_dut
 			--env=riscv-arch-test/riscv-test-suite/env
 
 svlint:
-	svlint $(if $(CI),--github-actions) $(SRCS) $(if $(CI),| sed 's/::error/::warning/g')
+	svlint $(if $(CI),--github-actions) $(DESIGN_SRCS) $(if $(CI),| sed 's/::error/::warning/g')
 
 svlint_tb:
 	svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed 's/::error/::warning/g')
