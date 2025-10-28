@@ -1,22 +1,23 @@
-/* module for fetching instructions
- *
- * concerns itself with reading instruction from the instruction memory, as well as managing the
- * program counter (PC); implemented as a Moore FSM
- */
+// module for fetching instructions
+//
+// concerns itself with reading instruction from the instruction memory, as well as managing the
+// program counter (PC); implemented as a Moore FSM
+//
 
 `include "src/utils.svh"
 `include "src/types.svh"
 
-module fetch ( input  wire     clk
-             , input  wire     reset
-             , input  wire     cfsm__pc_update
-             , input  pc_src_t cfsm__pc_src
-             , input  wire     cfsm__ir_write
-             , input addr_t alu_result_for_pc
-             , input  imm_t    imm_ext
-             , output addr_t   pc_cur
-             , output addr_t   pc_old
-             );
+module fetch
+  ( input  wire     clk
+  , input  wire     reset
+  , input  wire     cfsm__pc_update
+  , input  pc_src_t cfsm__pc_src
+  , input  wire     cfsm__ir_write
+  , input addr_t alu_result_for_pc
+  , input  imm_t    imm_ext
+  , output addr_t   pc_cur
+  , output addr_t   pc_old
+  );
 
   addr_t pc_next;
 

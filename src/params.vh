@@ -24,4 +24,4 @@ parameter ALUSRA = 4'b0111;
 parameter ALUOR = 4'b1000;
 parameter ALUAND = 4'b1001;
 
-`endif // PARAMS_VH
+`endif  // PARAMS_VH

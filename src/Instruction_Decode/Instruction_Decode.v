@@ -1,17 +1,16 @@
 `include "src/params.vh"
 `include "src/types.svh"
 
-module Instruction_Decode(
-
-  input wire [31:0] instr,
-    output opcode_t opcode,
-  output wire [3:0] ALUControl,
-   output imm_t imm_ext,
-  output reg [2:0] funct3,
-  output reg [4:0] rd,
-  output reg [4:0] rs1,
-  output reg [4:0] rs2
-);
+module Instruction_Decode
+  ( input wire [31:0] instr
+  , output opcode_t opcode
+  , output wire [3:0] ALUControl
+  , output imm_t imm_ext
+  , output reg [2:0] funct3
+  , output reg [4:0] rd
+  , output reg [4:0] rs1
+  , output reg [4:0] rs2
+  );
 
   alu_op_t alu_op;
   //reg [2:0] funct3;

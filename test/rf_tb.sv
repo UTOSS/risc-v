@@ -44,7 +44,7 @@ module rf_tb;
     dut.RFMem[5] = 32'hDEADBEEF; //preloads memory values into registers
     dut.RFMem[10] = 32'hCAFEBABE;
 
-   //CASE I - reading
+    //CASE I - reading
     //set Addr1 = 5 and Addr2 = 10 to read from registers 5 and 10
     Addr1 = 5;
     Addr2 = 10;
@@ -79,11 +79,11 @@ module rf_tb;
         dut.RFMem[15]
       );
 
-   //CASE 3 - Write to reg 0
-   Addr3 = 0;
-   dataIn = 32'h12345678;
+    //CASE 3 - Write to reg 0
+    Addr3 = 0;
+    dataIn = 32'h12345678;
 
-   @(posedge clk); //wait one clock cycle
+    @(posedge clk); //wait one clock cycle
 
     #1; //wait for written data to stabilize
     regWrite = 0; //de-assert write
