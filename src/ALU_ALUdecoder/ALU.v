@@ -7,8 +7,8 @@ module ALU ( input [31:0] a
            , output zeroE
            );
     always @(*)
-	begin
-	case (alu_control)
+  begin
+  case (alu_control)
             4'b0000: out = a + b;                    // ADD
             4'b0001: out = a - b;                    // SUB
             4'b0010: out = a << b[4:0];              // SLL
@@ -20,8 +20,8 @@ module ALU ( input [31:0] a
             4'b1000: out = a | b;                    // OR
             4'b1001: out = a & b;                    // AND
             default: out = 32'b0;
-	endcase
-	end
-	assign zeroE = (out == 0);
+  endcase
+  end
+  assign zeroE = (out == 0);
 endmodule
 
