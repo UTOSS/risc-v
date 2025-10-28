@@ -23,9 +23,9 @@ RUN useradd --create-home dev && \
 
 # build and install icarus verilog
 USER dev
-ARG ICARUS_SRC_TAR=v12_0.tar.gz
+ARG ICARUS_SRC_TAR=s20251012.tar.gz
 ARG ICARUS_SRC_URL=https://github.com/steveicarus/iverilog/archive/refs/tags/${ICARUS_SRC_TAR}
-ARG ICARUS_SRC_HASH="a68cb1ef7c017ef090ebedb2bc3e39ef90ecc70a3400afb4aa94303bc3beaa7d  ${ICARUS_SRC_TAR}"
+ARG ICARUS_SRC_HASH="97776c5dd1ee09157f7cb9f48978c7687b9157b09fa7029c0f9378aac9a6f58c  ${ICARUS_SRC_TAR}"
 RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison flex && \
     cd /tmp && \
     wget ${ICARUS_SRC_URL} && \
