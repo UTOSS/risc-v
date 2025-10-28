@@ -61,7 +61,7 @@ module jal_only_tb;
 
     // Back to FETCH: PC should be 16; x1 should be 4
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'd4)  // rd = link = 4
+    `assert_equal(uut.RegFile.RFMem[1], 32'd4)  // rd = link = 4
     `assert_equal(uut.fetch.pc_cur, 32'd16)                                 // PC jumped to 16
 
     $finish;
