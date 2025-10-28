@@ -35,7 +35,7 @@ module fetch
 
   always @ (posedge clk) begin
     if (reset) pc_cur <= 32'h00000000;
-    else       pc_cur <= pc_next;
+    else pc_cur <= pc_next;
 
     if (cfsm__ir_write) begin
       pc_old <= pc_cur;

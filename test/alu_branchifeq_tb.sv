@@ -40,8 +40,8 @@ module alu_branchifeq_tb;
     alu_op = 2'b01; funct3 = 3'b000; funct7 = 7'b0000000;
   A = 32'h0010; B = 32'h0010;
     #10;
-    assert(alu_control  == 4'b0001) else $fatal(1,"Unexpected zero output for funct3=%b", funct3);
-  assert(out  == 32'b0) else $fatal(1,"not branching when equal for funct3=%b", funct3);
+    assert (alu_control == 4'b0001) else $fatal(1,"Unexpected zero output for funct3=%b", funct3);
+  assert (out == 32'b0) else $fatal(1,"not branching when equal for funct3=%b", funct3);
   $display("finish testing");
   /*
       BRANCHIFEQ: begin

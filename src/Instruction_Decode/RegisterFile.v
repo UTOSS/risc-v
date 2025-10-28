@@ -33,11 +33,11 @@ output wire [31:0] writeData //data read line #2 - from second source register
   // x0 always 0 on read, read out 32-bit contents of rs2 register
   assign writeData = (Addr2 == 5'd0) ? 32'd0 : RFMem[Addr2];
 
-  always@(posedge clk) begin
+  always @(posedge clk) begin
 
     if (reset) RFMem[0] <= 0; //register r0 should always remain at 0
 
-    if(regWrite && Addr3 != 0) begin
+    if (regWrite && Addr3 != 0) begin
 
       RFMem[Addr3] <= dataIn; //write into destination register if RegWrite = 1
 

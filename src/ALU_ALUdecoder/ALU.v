@@ -1,5 +1,3 @@
-//`include "params.vh"
-
 module ALU
   ( input [31:0] a
   , input [31:0] b
