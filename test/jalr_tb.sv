@@ -38,8 +38,8 @@ module jalr_only_tb;
     uut.memory.M[0] = 32'h005100E7;
 
     // Registers
-    uut.instruction_decode.instanceRegFile.RFMem[1] = 32'd0;    // x1 (link) cleared
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 32'd100;  // x2 = 100
+    uut.RegFile.RFMem[1] = 32'd0;    // x1 (link) cleared
+    uut.RegFile.RFMem[2] = 32'd100;  // x2 = 100
 
     // Enter FETCH with reset asserted (for stable pc_old=0)
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
@@ -74,7 +74,7 @@ module jalr_only_tb;
 
     // Back to FETCH: PC should be (100+5)&~1 = 104, x1 should be 4
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'd4)
+    `assert_equal(uut.RegFile.RFMem[1], 32'd4)
     `assert_equal(uut.fetch.pc_cur, 32'd104)
 
     // End of first subtest -> now run a second variant with negative odd imm
@@ -91,8 +91,8 @@ module jalr_only_tb;
     uut.memory.M[0] = 32'hFF9100E7;
 
     // Registers
-    uut.instruction_decode.instanceRegFile.RFMem[1] = 32'd0;     // x1 cleared
-    uut.instruction_decode.instanceRegFile.RFMem[2] = 32'd200;   // x2 = 200
+    uut.RegFile.RFMem[1] = 32'd0;     // x1 cleared
+    uut.RegFile.RFMem[2] = 32'd200;   // x2 = 200
 
     // Re-enter FETCH, then release reset
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
@@ -122,7 +122,7 @@ module jalr_only_tb;
     // Writeback then check PC/link
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'd4)
+    `assert_equal(uut.RegFile.RFMem[1], 32'd4)
     `assert_equal(uut.fetch.pc_cur, 32'd192)
 
     $finish;
