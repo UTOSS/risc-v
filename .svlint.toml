@@ -33,7 +33,7 @@ syntaxrules.style_keyword_end = true
 syntaxrules.style_keyword_maybelabel = true
 syntaxrules.style_keyword_new = true
 syntaxrules.style_keyword_newline = true
-# syntaxrules.style_commaleading = true
+syntaxrules.style_commaleading = true
 syntaxrules.eventlist_or = true
 
 # Style ruleset end

@@ -1,9 +1,9 @@
-module MemoryLoader (
-    input  data_t memory_data,
-    input  addr_t memory_address,
-    input  logic [2:0]  funct3,
-    output data_t mem_load_result
-);
+module MemoryLoader
+  ( input  data_t memory_data
+  , input  addr_t memory_address
+  , input  logic [2:0]  funct3
+  , output data_t mem_load_result
+  );
 
     integer byteindex;
     assign byteindex = memory_address[1:0];
@@ -12,7 +12,7 @@ module MemoryLoader (
         case (funct3)
             3'b000: begin // lb
                 case (byteindex)
-                    2'd0: mem_load_result = {{24{memory_data[7]}},  memory_data[7:0]};
+                    2'd0: mem_load_result = {{24{memory_data[7]}} , memory_data[7:0]};
                     2'd1: mem_load_result = {{24{memory_data[15]}}, memory_data[15:8]};
                     2'd2: mem_load_result = {{24{memory_data[23]}}, memory_data[23:16]};
                     2'd3: mem_load_result = {{24{memory_data[31]}}, memory_data[31:24]};
