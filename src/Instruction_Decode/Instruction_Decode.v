@@ -137,13 +137,11 @@ module Instruction_Decode
 
   //Instantiate ALU Decoder module
 
-  ALUdecoder instanceALUDec(
-
-    .funct3(funct3),
-    .funct7(funct7),
-    .alu_op(alu_op),
-    .alu_control(ALUControl)
-
-  );
+  ALUdecoder instanceALUDec
+    ( .funct3(funct3)
+    , .funct7(funct7)
+    , .alu_op(alu_op)
+    , .alu_control(ALUControl)
+    );
 
 endmodule

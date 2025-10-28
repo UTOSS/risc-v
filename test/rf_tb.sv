@@ -15,17 +15,17 @@ module rf_tb;
   logic [31:0] baseAddr, writeData;
 
   //Instantiate the DUT
-  registerFile dut (
-    .Addr1(Addr1),
-    .Addr2(Addr2),
-    .Addr3(Addr3),
-    .clk(clk),
-    .regWrite(regWrite),
-    .dataIn(dataIn),
-    .reset(reset),
-    .baseAddr(baseAddr),
-    .writeData(writeData)
-  );
+  registerFile dut
+    ( .Addr1(Addr1)
+    , .Addr2(Addr2)
+    , .Addr3(Addr3)
+    , .clk(clk)
+    , .regWrite(regWrite)
+    , .dataIn(dataIn)
+    , .reset(reset)
+    , .baseAddr(baseAddr)
+    , .writeData(writeData)
+    );
 
   //Clock generation
   always #5 clk = ~clk;
@@ -59,10 +59,11 @@ module rf_tb;
         1, "READ FAILED: current baseAddr output: %h; expected baseAddr output: DEADBEEF", baseAddr
       );
     assert (writeData == 32'hCAFEBABE)
-      else $fatal(
-        1, "READ FAILED: current writeData output: %h; expected writeData output: CAFEBABE",
-        writeData
-      );
+      else $fatal
+        ( 1
+        , "READ FAILED: current writeData output: %h; expected writeData output: CAFEBABE"
+        , writeData
+        );
 
     //CASE 2 - Write to reg 15
     Addr3 = 15;
@@ -74,10 +75,11 @@ module rf_tb;
     #1; //wait for written data to stabilize
     regWrite = 0; //de-assert write
     assert (dut.RFMem[15] == 32'h12345678)
-      else $fatal(
-        1, "WRITE FAILED: current reg 15 output: %h; expected reg 15 output: 12345678",
-        dut.RFMem[15]
-      );
+      else $fatal
+        ( 1
+        , "WRITE FAILED: current reg 15 output: %h; expected reg 15 output: 12345678"
+        , dut.RFMem[15]
+        );
 
     //CASE 3 - Write to reg 0
     Addr3 = 0;

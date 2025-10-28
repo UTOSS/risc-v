@@ -9,8 +9,8 @@ module auipc_tb;
   logic reset;
 
   top uut
-    ( .clk ( clk ),
-      .reset( reset )
+    ( .clk ( clk )
+    , .reset( reset )
     );
 
   initial begin

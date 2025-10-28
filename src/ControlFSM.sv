@@ -4,26 +4,24 @@
 `include "src/types.svh"
 `include "src/params.vh"
 
-module ControlFSM(
-
-  input opcode_t opcode,
-  input wire clk,
-  input wire reset,
-    input wire zero_flag,
-  output adr_src_t AdrSrc,
-  output reg IRWrite,
-  output reg RegWrite,
-  output reg PCUpdate,
-    output pc_src_t pc_src,
-  output reg MemWrite,
-  output reg Branch,
-  output alu_src_a_t ALUSrcA,
-  output alu_src_b_t ALUSrcB,
-  output reg [2:0] ALUOp, //to ALU Decoder
-  output result_src_t ResultSrc,
-  output reg [3:0] FSMState
-
-);
+module ControlFSM
+  ( input opcode_t opcode
+  , input wire clk
+  , input wire reset
+  , input wire zero_flag
+  , output adr_src_t AdrSrc
+  , output reg IRWrite
+  , output reg RegWrite
+  , output reg PCUpdate
+  , output pc_src_t pc_src
+  , output reg MemWrite
+  , output reg Branch
+  , output alu_src_a_t ALUSrcA
+  , output alu_src_b_t ALUSrcB
+  , output reg [2:0] ALUOp //to ALU Decoder
+  , output result_src_t ResultSrc
+  , output reg [3:0] FSMState
+  );
 
   //parameterize states (binary encoding)
   //in later systemverilog implementation, change to enum
