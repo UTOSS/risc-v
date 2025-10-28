@@ -8,12 +8,12 @@ module ControlFSM(
 	input opcode_t opcode,
 	input wire clk,
 	input wire reset,
-  input wire zero_flag,
+  	input wire zero_flag,
 	output adr_src_t AdrSrc,
 	output reg IRWrite,
 	output reg RegWrite,
 	output reg PCUpdate,
-  output pc_src_t pc_src,
+  	output pc_src_t pc_src,
 	output reg MemWrite,
 	output reg Branch,
 	output alu_src_a_t ALUSrcA,
@@ -42,6 +42,8 @@ module ControlFSM(
 	parameter LUI = 4'b1011;
 	parameter AUIPC = 4'b1100;
 
+	parameter JALR_CALC  = 4'b1101; // calculate rs1 + imm, store in alu_out
+  	parameter JALR_STEP2 = 4'b1110; // link and use alu_out to update PC
 
 	//declare state registers
 	reg [3:0] current_state, next_state;
@@ -68,6 +70,8 @@ module ControlFSM(
 				else if (opcode == UType_auipc) next_state = AUIPC;
 
 				else if (opcode == UType_lui) next_state = LUI;
+
+				else if (opcode == IType_jalr) next_state = JALR_CALC;
 
 				else next_state = DECODE;
 
@@ -102,6 +106,10 @@ module ControlFSM(
 			MEMWRITE: next_state = FETCH;
 
 			MEMWB: next_state = FETCH;
+
+			JALR_CALC:  next_state = JALR_STEP2; 
+
+  			JALR_STEP2: next_state = ALUWB; 
 
 			default: next_state = FETCH;
 
@@ -177,9 +185,26 @@ module ControlFSM(
 				ALUOp <= 2'b00;
 				ResultSrc <= RESULT_SRC__ALU_OUT;
         		PCUpdate <= 1'b1;
+				pc_src    <= PC_SRC__JUMP;  // new added
 
 			end
 
+			JALR_CALC: begin
+  			  ALUSrcA  <= ALU_SRC_A__RD1;      // rs1
+  			  ALUSrcB  <= ALU_SRC_B__IMM_EXT;  // + imm
+  			  ALUOp    <= 2'b00;             
+  			end
+
+  			JALR_STEP2: begin
+  			  ALUSrcA   <= ALU_SRC_A__OLD_PC;  // Calculate link = pc_old + 4, write back in ALUWB 
+  			  ALUSrcB   <= ALU_SRC_B__4;
+  			  ALUOp     <= 2'b00;
+  			  ResultSrc <= RESULT_SRC__ALU_OUT;
+  			  pc_src    <= PC_SRC__ALU_RESULT; // fetch  (alu_out & ~1) for new PC
+  			  PCUpdate  <= 1'b1;
+  			end
+
+			
 			MEMADR: begin
 
 				ALUSrcA <= ALU_SRC_A__RD1;

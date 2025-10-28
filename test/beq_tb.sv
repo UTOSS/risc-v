@@ -58,7 +58,7 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    assert(uut.fetch.pc_cur    == 32'hFFFFFFF8) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
+    assert(uut.fetch.pc_cur    == 32'hFFFFFFF4) else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     // beq without satisfied condition
     @(posedge clk); #1;

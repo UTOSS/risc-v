@@ -10,6 +10,7 @@ parameter BType = 7'b1100011;
 parameter JType = 7'b1101111;
 parameter UType_auipc = 7'b0010111;
 parameter UType_lui = 7'b0110111;
+parameter IType_jalr = 7'b1100111;
 
 //ALU Operation Control Codes
 parameter ALUAdd = 4'b0000;

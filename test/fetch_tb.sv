@@ -10,19 +10,25 @@ module fetch_tb;
   reg     clk;
   reg     reset;
   reg     cfsm__pc_update;
-  reg     cfsm__pc_src;
+  reg [1:0] cfsm__pc_src;
+  reg     cfsm__ir_write;
   imm_t   imm_ext;
   addr_t  pc_cur;
+  addr_t  pc_old;
+  reg [31:0] alu_result_for_pc;
 
   fetch uut
-    ( .clk             ( clk             )
-    , .reset           ( reset           )
-    , .cfsm__pc_update ( cfsm__pc_update )
-    , .cfsm__pc_src    ( cfsm__pc_src    )
-    , .imm_ext         ( imm_ext         )
+    ( .clk               ( clk               )
+    , .reset             ( reset             )
+    , .cfsm__pc_update   ( cfsm__pc_update   )
+    , .cfsm__pc_src      ( cfsm__pc_src      )
+    , .cfsm__ir_write    ( cfsm__ir_write    )
+    , .alu_result_for_pc ( alu_result_for_pc )
+    , .imm_ext           ( imm_ext           )
 
     // outputs
-    , .pc_cur          ( pc_cur          )
+    , .pc_cur            ( pc_cur            )
+    , .pc_old            ( pc_old            )
     );
 
   initial begin
@@ -34,7 +40,10 @@ module fetch_tb;
 
     // testing incrementing pc naturally
     cfsm__pc_update <= `FALSE;
-    cfsm__pc_src    <= 0;
+    cfsm__pc_src    <= 2'b00;
+    cfsm__ir_write  <= 1'b0;
+    alu_result_for_pc <= 32'h00000000;
+    imm_ext <= '0;
 
     assert(pc_cur  === 32'hxxxxxxxx) else $fatal(1,"`pc_cur` is `%0h`", pc_cur);
 
@@ -110,37 +119,60 @@ module fetch_tb;
     reset <= `FALSE;
 
     // testing pc update via pc_target
-    cfsm__pc_src <= 1;
+    cfsm__pc_update <= `TRUE;
+    cfsm__pc_src <= 2'b01;
     imm_ext      <= 32'h00000100;
+
+    cfsm__ir_write <= 1'b1;
+    #10;
+    cfsm__ir_write <= 1'b0;
 
     #10;
 
     assert(pc_cur  === 32'h00000100) else $fatal(1,"`pc_cur` is `%0h`", pc_cur);
 
+    // latch new pc_old from current pc before next jump
+    cfsm__ir_write <= 1'b1;
+    #10;
+    cfsm__ir_write <= 1'b0;
+
     #10;
 
     assert(pc_cur  === 32'h00000200) else $fatal(1,"`pc_cur` is `%0h`", pc_cur);
 
-    cfsm__pc_src <= 0;
+    cfsm__pc_src <= 2'b00;
 
     #10;
 
     assert(pc_cur  === 32'h00000204) else $fatal(1,"`pc_cur` is `%0h`", pc_cur);
 
     imm_ext <= 32'h00002000; // out of memory bounds
-    cfsm__pc_src <= 1;
+    cfsm__pc_src <= 2'b01;
+
+    // refresh pc_old so jump uses current pc
+    cfsm__ir_write <= 1'b1;
+    #10;
+    cfsm__ir_write <= 1'b0;
 
     #10;
 
     assert(pc_cur  === 32'h00002204) else $fatal(1,"`pc_cur` is `%0h`", pc_cur);
 
     imm_ext <= 32'h0; // zero jump
+    // refresh pc_old so zero jump keeps pc
+    cfsm__ir_write <= 1'b1;
+    #10;
+    cfsm__ir_write <= 1'b0;
 
     #10;
 
     assert(pc_cur  === 32'h00002204) else $fatal(1,"`pc_cur` is `%0h`", pc_cur);
 
     imm_ext <= -32'd1; // negative jump
+    // refresh pc_old to current before applying -1
+    cfsm__ir_write <= 1'b1;
+    #10;
+    cfsm__ir_write <= 1'b0;
 
     #10;
 
