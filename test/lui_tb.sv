@@ -125,6 +125,4 @@ module lui_tb;
 
   `SETUP_VCD_DUMP(lui_tb)
 
-  
-
 endmodule

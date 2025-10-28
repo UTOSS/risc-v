@@ -20,7 +20,7 @@ module Instruction_Decode
   assign opcode = instr[6:0];
 
   //combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
-  always@(*) begin
+  always @(*) begin
 
     if (opcode == RType || opcode == IType_logic) begin //R-Type
 
@@ -29,8 +29,7 @@ module Instruction_Decode
 
     end
 
-    else if (opcode == IType_load ||
-            opcode == SType || opcode == BType) begin
+    else if (opcode == IType_load || opcode == SType || opcode == BType) begin
 
       funct3 = instr[14:12];
       funct7 = 7'b0;
@@ -48,7 +47,7 @@ module Instruction_Decode
 
   // determine ALU op based on the opcode; see Table 7.2 of the digital design and computer
   // architecture book
-  always@(*) begin
+  always @(*) begin
     case (opcode)
       RType:      alu_op = ALU_OP__REGISTER_OPERATION;
       IType_load: alu_op = ALU_OP__MEMORY_ACCESS;
@@ -64,7 +63,7 @@ module Instruction_Decode
 
   //logic for extracting rs1, rs2, and rd registers from 32-bit instruction field
   //The logic depends on the instruction type
-  always@(*) begin
+  always @(*) begin
 
     if (opcode == RType) begin //R-Type
 
@@ -122,8 +121,8 @@ module Instruction_Decode
 
   // case statement for choosing 32-bit immediate format; based on opcode
     // this is essentially the extend module of the processor
-  always@(*) begin
-    case(opcode)
+  always @(*) begin
+    case (opcode)
       IType_logic : imm_ext = {{20{instr[31]}}, instr[31:20]};
       IType_load  : imm_ext = {{20{instr[31]}}, instr[31:20]};
       IType_jalr : imm_ext = {{20{instr[31]}}, instr[31:20]};

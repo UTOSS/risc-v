@@ -50,9 +50,9 @@ module ControlFSM(
   reg [3:0] current_state, next_state;
 
   //Next state logic
-  always@(*)begin
+  always @(*)begin
 
-    case(current_state)
+    case (current_state)
 
       FETCH: next_state = DECODE;
 
@@ -119,7 +119,7 @@ module ControlFSM(
   end
 
   //output logic
-  always@(*) begin
+  always @(*) begin
     Branch <= 1'b0;
     pc_src <= PC_SRC__INCREMENT;
     PCUpdate <= 1'b0;
@@ -129,7 +129,7 @@ module ControlFSM(
 
     FSMState <= current_state;
 
-    case(current_state)
+    case (current_state)
 
       FETCH: begin
 
@@ -221,10 +221,8 @@ module ControlFSM(
         ALUOp <= 2'b01;
         ResultSrc <= RESULT_SRC__ALU_OUT;
         Branch <= 1'b1;
-        if (zero_flag)
-          pc_src <= PC_SRC__JUMP;
-        else
-          pc_src <= PC_SRC__INCREMENT;
+        if (zero_flag) pc_src <= PC_SRC__JUMP;
+        else pc_src <= PC_SRC__INCREMENT;
         PCUpdate <= 1'b1;
 
       end

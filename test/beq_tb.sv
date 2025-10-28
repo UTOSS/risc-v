@@ -40,32 +40,32 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
-    assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
+    assert (uut.opcode == 7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
-    assert(uut.fetch.pc_cur == 32'h00000004)
+    assert (uut.fetch.pc_cur == 32'h00000004)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.imm_ext == 32'hFFFFFFF4)
+    assert (uut.fetch.imm_ext == 32'hFFFFFFF4)
       else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
     wait_till_next_cfsm_state(uut.control_fsm.BRANCHIFEQ);
 
-    assert(uut.alu__zero_flag == `TRUE)
+    assert (uut.alu__zero_flag == `TRUE)
       else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
-    assert(uut.alu.a == 32'h0000002a)
+    assert (uut.alu.a == 32'h0000002a)
       else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
-    assert(uut.alu.b == 32'h0000002a)
+    assert (uut.alu.b == 32'h0000002a)
       else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
 
-    assert(uut.cfsm__pc_src == 1 /* JUMP */)
+    assert (uut.cfsm__pc_src == 1 /* JUMP */)
       else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
 
-    assert(uut.fetch.pc_cur == 32'h00000004)
+    assert (uut.fetch.pc_cur == 32'h00000004)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    assert(uut.fetch.pc_cur == 32'hFFFFFFF4)
+    assert (uut.fetch.pc_cur == 32'hFFFFFFF4)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     // beq without satisfied condition
@@ -81,29 +81,29 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
-    assert(uut.opcode ==  7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
+    assert (uut.opcode == 7'b1100011) else $fatal(1,"`uut.opcode` is `%0b`", uut.opcode);
 
-    assert(uut.fetch.pc_cur  == 32'h00000004)
+    assert (uut.fetch.pc_cur == 32'h00000004)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
-    assert(uut.fetch.imm_ext == 32'h00000010)
+    assert (uut.fetch.imm_ext == 32'h00000010)
       else $fatal(1,"`uut.fetch.imm_ext` is `%0h`", uut.fetch.imm_ext);
 
     wait_till_next_cfsm_state(uut.control_fsm.BRANCHIFEQ);
 
-    assert(uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
-    assert(uut.alu.b == 32'h0000002b) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
+    assert (uut.alu.a == 32'h0000002a) else $fatal(1,"`uut.alu.a` is `%0h`", uut.alu.a);
+    assert (uut.alu.b == 32'h0000002b) else $fatal(1,"`uut.alu.b` is `%0h`", uut.alu.b);
 
-    assert(uut.alu__zero_flag == `FALSE)
+    assert (uut.alu__zero_flag == `FALSE)
       else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
-    assert(uut.cfsm__pc_src == 0 /* +4 */)
+    assert (uut.cfsm__pc_src == 0 /* +4 */)
       else $fatal(1,"`uut.cfsm__pc_src` is `%0b`", uut.cfsm__pc_src);
-    assert(uut.fetch.pc_cur == 32'h00000004)
+    assert (uut.fetch.pc_cur == 32'h00000004)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    assert(uut.fetch.pc_cur    == 32'h00000008)
+    assert (uut.fetch.pc_cur == 32'h00000008)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     @(posedge clk); #1; // check that zero-setting instructions do not result in a jump
@@ -117,17 +117,17 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
-    assert(uut.fetch.pc_cur == 32'h00000004)
+    assert (uut.fetch.pc_cur == 32'h00000004)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     wait_till_next_cfsm_state(uut.control_fsm.EXECUTER);
 
-    assert(uut.alu__zero_flag == `TRUE)
+    assert (uut.alu__zero_flag == `TRUE)
       else $fatal(1,"`uut.alu__zero_flag` is `%0b`", uut.alu__zero_flag);
 
     wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
 
-    assert(uut.fetch.pc_cur == 32'h00000004)
+    assert (uut.fetch.pc_cur == 32'h00000004)
       else $fatal(1,"`uut.fetch.pc_cur` is `%0h`", uut.fetch.pc_cur);
 
     $finish;
