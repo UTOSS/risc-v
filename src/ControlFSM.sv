@@ -113,7 +113,7 @@ module ControlFSM(
 	//output logic
 	always@(*) begin
     Branch <= 1'b0;
-    pc_src <= 1'b0;
+    pc_src <= pc_src_t'(1'b0);
     PCUpdate <= 1'b0;
     IRWrite <= 1'b0;
     MemWrite <= 4'b0;
@@ -196,7 +196,7 @@ module ControlFSM(
 				ALUOp <= 2'b01;
 				ResultSrc <= RESULT_SRC__ALU_OUT;
 				Branch <= 1'b1;
-        		pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
+        		pc_src <= pc_src_t'(zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT);
         		PCUpdate <= 1'b1;
 
 			end

@@ -52,11 +52,11 @@ module MemoryLoader (
                         MemWriteByteAddress = 4'b0011;
                         __tmp_MemData = {16'b0, dataB[15:0]};
                     end
-                    2'd1: begin
+/*                    2'd1: begin
                         mem_load_result = {{16{memory_data[23]}}, memory_data[23:8]};
                         MemWriteByteAddress = 4'b0110;
                         __tmp_MemData = {8'b0, dataB[15:0], 8'b0};
-                    end
+                    end*/
                     2'd2: begin
                         mem_load_result = {{16{memory_data[31]}}, memory_data[31:16]};
                         MemWriteByteAddress = 4'b1100;
