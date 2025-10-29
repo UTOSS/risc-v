@@ -3,29 +3,22 @@
 
 `include "src/types.svh"
 
-module ControlFSM(
+module ControlFSM( //same as single cycle control signals
 
 	input opcode_t opcode,
 	input wire clk,
 	input wire reset,
-    input wire zero_flag,
-	output reg RegWriteW,
+//    input wire zero_flag,
+	output reg RegWriteD,
 	output reg [1:0] immSrcD,
- 	output reg PCSrcE,
-    output reg JumpE,
-	output reg MemWriteM,
-	output reg BranchE,
-	output alu_src_b_t ALUSrcE,
-	output reg [2:0] ALUOpE, //to ALU Decoder
-	output result_src_t ResultSrcE,
-	output result_src_t ResultSrcM,
-
+ 	output reg PCSrcD,
+    output reg JumpD,
+	output reg MemWriteD,
+	output reg BranchD,
+	output alu_src_b_t ALUSrcD,
+	output reg [2:0] ALUOpD, //to ALU Decoder
+	output result_src_t ResultSrcD,
 );
-result_src_t ResultSrcD,
-logic RegWriteD, RegWriteE, RegWriteM;
-logic MemWriteD, MemWriteE;
-logic JumpD;
-logic [2:0] ALUOpD;
 
 
 logic [10:0] control_signals;
@@ -48,21 +41,6 @@ logic [10:0] control_signals;
         end
             
     end
-	
-	always@(posedge clk)//should be the period of every stage
-	begin
-		RegWriteE <= RegWriteD;
-		RegWriteM <= RegWriteE;
-		RegWriteW <= RegWriteM;
-		MemWriteE <= MemWriteD;
-		MemWriteM <= MemWriteE;
-		ResultSrcE <= ResultSrcD;
-		ResultSrcM <= ResultSrcE;
-		BranchE <= BranchD;
-		JumpE <= JumpD;
-		ALUOpE <= ALUOpD;
-		ALUSrcE <= ALUSrcD;
-	end
 
 
 endmodule

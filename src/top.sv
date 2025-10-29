@@ -11,7 +11,13 @@ module top ( input wire clk
   result_src_t cfsm__result_src;
 
   addr_t   pc_cur;
-  addr_t   memory_address;
+
+  addr_t  pc_F;
+  addr_t  pc_D;
+  addr_t  pc_E;
+
+
+//  addr_t   memory_address;
   data_t   memory_data;
   data_t   data;
   instr_t  instruction;
@@ -44,31 +50,72 @@ module top ( input wire clk
   logic [31:0] dataA
 			 ,dataB;
 
+  logic [1:0] immSrcD; //not wired to anywhere; immext is done in fetch
+
   ControlFSM control_fsm
     ( .opcode    ( opcode           )
     , .clk       ( clk              )
     , .reset     ( reset            )
-    , .zero_flag ( alu__zero_flag   )
-    , .AdrSrc    ( cfsm__adr_src    )
-    , .IRWrite   ( cfsm__ir_write   )
-    , .RegWrite  ( cfsm__reg_write  )
-    , .PCUpdate  ( cfsm__pc_update  )
-    , .pc_src    ( cfsm__pc_src     )
-    , .MemWrite  ( __tmp_MemWrite   )
-    , .Branch    ( __tmp_Branch     )
-    , .ALUSrcA   ( __tmp_ALUSrcA    )
-    , .ALUSrcB   ( __tmp_ALUSrcB    )
-    , .ALUOp     ( __tmp_ALUOp      )
-    , .ResultSrc ( cfsm__result_src )
-    , .FSMState  ( __tmp_FSMState   )
+//    , .zero_flag ( alu__zero_flag   )
+//    , .AdrSrc    ( cfsm__adr_src    )
+//    , .IRWrite   ( cfsm__ir_write   )
+    , .RegWriteD  ( cfsm__reg_write  )
+    , .immSrcD    ( immSrcD         )
+//    , .PCUpdate  ( cfsm__pc_update  )
+    , .PCSrcD    ( cfsm__pc_src     )
+    , .JumpD     ( JumpE            )
+    , .MemWriteD  ( __tmp_MemWrite   )
+    , .BranchD    ( __tmp_Branch     )
+    , .ALUSrcD   ( __tmp_ALUSrcB    )
+    , .ALUOpD     ( __tmp_ALUOp      )
+    , .ResultSrcD ( cfsm__result_src_e )
+    , .ResultSrcD ( cfsm__result_src_m )
     );
 
-  fetch fetch
+  //pipeline control signals
+	always@(posedge clk) //D-E
+	begin
+    if (FlushE) begin
+        RegWriteE <= 1'b0;
+        MemWriteE <= 1'b0;
+        ResultSrcE <= 2'b00;
+        BranchE <= 1'b0;
+        JumpE <= 1'b0;
+        ALUOpE <= 3'b000;
+        ALUSrcE <= 2'b00;
+    end
+    else begin
+		RegWriteE <= RegWriteD;
+		MemWriteE <= MemWriteD;
+		ResultSrcE <= ResultSrcD;
+		BranchE <= BranchD;
+		JumpE <= JumpD;
+		ALUOpE <= ALUOpD;
+		ALUSrcE <= ALUSrcD;
+    end
+	end
+
+  always@(posedge clk)
+  begin
+    PCSrcE <= (BranchE & alu__zero_flag) | JumpE;
+  end
+
+  always@(posedge clk) //E-M, M-W
+  begin
+  	RegWriteM <= RegWriteE;
+  	MemWriteM <= MemWriteE;
+    ResultSrcM <= ResultSrcE;
+    alu_resultM <= alu_result;
+    RegWriteW <= RegWriteM;
+  end
+
+  		
+/*  fetch fetch
     ( .clk             ( clk             )
     , .reset           ( reset           )
-    , .cfsm__pc_update ( cfsm__pc_update )
-    , .cfsm__pc_src    ( cfsm__pc_src    )
-    , .cfsm__ir_write  ( cfsm__ir_write  )
+//    , .cfsm__pc_update ( cfsm__pc_update )
+//    , .cfsm__pc_src    ( cfsm__pc_src    )
+//    , .cfsm__ir_write  ( cfsm__ir_write  )
     , .imm_ext         ( imm_ext         )
 
     // outputs
@@ -76,15 +123,18 @@ module top ( input wire clk
     , .pc_old          ( pc_old          )
     );
 
+  */
+/*
   always @(*) begin
     case (cfsm__adr_src)
       ADR_SRC__PC:     memory_address = pc_cur;
       ADR_SRC__RESULT: memory_address = result;
     endcase
   end
+  */
 
   MA memory // instructions and data
-    ( .A   ( memory_address )
+    ( .A   ( alu_resultM   )
     , .WD  ( dataB          )
     , .WE  ( __tmp_MemWrite )
     , .CLK ( clk            )
@@ -93,11 +143,13 @@ module top ( input wire clk
     , .RD  ( memory_data    )
     );
 
+/*
   always @(posedge clk) begin
     if (cfsm__ir_write) begin
       instruction <= memory_data;
     end
   end
+*/
 
   always @(posedge clk) begin
     data <= memory_data;
@@ -127,6 +179,25 @@ module top ( input wire clk
   always @(posedge clk) begin
     alu_out <= alu_result;
   end
+
+  hazard_unit hazard_unit 
+  ( .clk              ( clk             ) 
+	, .Rs1E             ( Rs1E            )
+	, .RdM              ( RdM             ) 
+	, .RdW              ( RdW             )
+	, .RegWriteM        ( RegWrite        ) 
+	, .ResultSrcE       ( ResultSrcE      ) 
+	, .Rs1D             ( Rs1D            )
+	, .Rs2D             ( Rs2D            ) 
+	, .RdE              ( RdE             ) 
+	, .PCSrcE           ( PCSrcE          ) 
+	, .ForwardAE        ( ForwardAE       )
+	, .lwStall          ( lwStall         )
+	, .StallF           ( StallF          )
+	, .StallD           ( StallD          )
+	, .FlushD           ( FlushD          )
+	, .FlushE           ( FlushE          )
+	)
 
   always @(*) begin
     case (__tmp_ALUSrcA)
