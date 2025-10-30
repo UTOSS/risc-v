@@ -7,7 +7,7 @@ module or_tb;
   reg clk;
   reg reset;
 
-  top uut
+  utoss_riscv uut
     ( .clk   ( clk   )
     , .reset ( reset )
     );

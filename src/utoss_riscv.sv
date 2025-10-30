@@ -1,9 +1,10 @@
 `include "src/types.svh"
 
-module top #( parameter MEM_SIZE = 1024 )
-            ( input wire clk
-            , input wire reset
-            );
+module utoss_riscv
+  #( parameter MEM_SIZE = 1024 )
+  ( input wire clk
+  , input wire reset
+  );
 
   wire         cfsm__pc_update;
   wire         cfsm__reg_write;
