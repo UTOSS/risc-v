@@ -13,3 +13,4 @@ quartus/db/
 quartus/incremental_db/
 quartus/output_files/
 quartus/c5_pin_model_dump.txt
+quartus/*.bak
