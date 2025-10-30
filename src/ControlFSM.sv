@@ -2,7 +2,7 @@
 //A Moore Type Finite State Machine for the RV32I Microprocessor Control Unit
 
 `include "src/types.svh"
-`include "src/params.vh"
+`include "src/params.svh"
 
 module ControlFSM
   ( input opcode_t opcode

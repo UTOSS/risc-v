@@ -8,6 +8,9 @@ module MA #( parameter SIZE = 1024 )
 
     reg [31:0] M[0:SIZE -1];
 
+`ifdef UTOSS_RISCV_SYNTHESIS
+    initial $readmemh("fpga/de1-soc/poc.mem", M);
+`else
     initial begin
       string mem_file;
 
@@ -18,6 +21,7 @@ module MA #( parameter SIZE = 1024 )
         $display("memory loaded");
       end
     end
+`endif
 
     assign RD = M[A[31:2]]; // 2 LSBs used for byte addressing
     always @(posedge CLK) begin
