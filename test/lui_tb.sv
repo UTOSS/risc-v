@@ -8,7 +8,7 @@ module lui_tb;
   logic clk;
   logic reset;
 
-  utoss_riscv uut
+  top uut
     ( .clk ( clk )
     , .reset( reset )
     );
@@ -20,7 +20,7 @@ module lui_tb;
 
   task wait_till_next_cfsm_state(input [5:0] expected_state);
     @(posedge clk); #1;
-    `assert_equal(uut.control_fsm.current_state, expected_state)
+    `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   initial begin
@@ -36,85 +36,85 @@ module lui_tb;
     uut.memory.M[42] = 32'hdeadbeef; // have some data at address 0xa8
     uut.memory.M[43] = 32'hcafebabe; // have some data at address 0xac
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     //imm ext should be changed to add a new case
 
-    `assert_equal(uut.opcode, 7'b0110111)
-    `assert_equal(uut.instruction_decode.imm_ext, 32'h00014000)
+    `assert_equal(uut.core.opcode, 7'b0110111)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 32'h00014000)
 
     //This will be a new FSM stage:
     // 1. set SrcA to hardware 0
     // 2. set SrcB to immext
     // 3. set ALU to ADD
 
-    wait_till_next_cfsm_state(uut.control_fsm.LUI);
+    wait_till_next_cfsm_state(uut.core.control_fsm.LUI);
 
-    `assert_equal(uut.alu_input_a, 32'b0)
-    `assert_equal(uut.alu_input_b, 32'h00014000)
-    `assert_equal(uut.__tmp_ALUControl, 4'b0)
-    `assert_equal(uut.alu_result, 32'h00014000)
+    `assert_equal(uut.core.alu_input_a, 32'b0)
+    `assert_equal(uut.core.alu_input_b, 32'h00014000)
+    `assert_equal(uut.core.__tmp_ALUControl, 4'b0)
+    `assert_equal(uut.core.alu_result, 32'h00014000)
 
     //This new state will be connected to ALUWB
 
-    wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
-    `assert_equal(uut.instruction_decode.rd, 1)
+    `assert_equal(uut.core.instruction_decode.rd, 1)
 
     //Exe lui x2, 200
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    `assert_equal(uut.RegFile.RFMem[1], 32'h00014000)
+    `assert_equal(uut.core.RegFile.RFMem[1], 32'h00014000)
     //x1 at this moment should be updated
 
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     //imm ext should be changed to add a new case
 
-    `assert_equal(uut.opcode, 7'b0110111)
-    `assert_equal(uut.instruction_decode.imm_ext, 32'h000c8000)
+    `assert_equal(uut.core.opcode, 7'b0110111)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 32'h000c8000)
 
-    wait_till_next_cfsm_state(uut.control_fsm.LUI);
+    wait_till_next_cfsm_state(uut.core.control_fsm.LUI);
 
-    `assert_equal(uut.alu_input_a, 32'b0)
-    `assert_equal(uut.alu_input_b, 32'h000c8000)
-    `assert_equal(uut.__tmp_ALUControl, 4'b0)
-    `assert_equal(uut.alu_result, 32'h000c8000)
+    `assert_equal(uut.core.alu_input_a, 32'b0)
+    `assert_equal(uut.core.alu_input_b, 32'h000c8000)
+    `assert_equal(uut.core.__tmp_ALUControl, 4'b0)
+    `assert_equal(uut.core.alu_result, 32'h000c8000)
 
-    wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
-    `assert_equal(uut.instruction_decode.rd, 2)
+    `assert_equal(uut.core.instruction_decode.rd, 2)
 
     //Exe lui x3, 1023
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    `assert_equal(uut.RegFile.RFMem[2], 32'h000c8000)
+    `assert_equal(uut.core.RegFile.RFMem[2], 32'h000c8000)
 
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     //imm ext should be changed to add a new case
 
-    `assert_equal(uut.opcode, 7'b0110111)
-    `assert_equal(uut.instruction_decode.imm_ext, 32'h003ff000)
+    `assert_equal(uut.core.opcode, 7'b0110111)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 32'h003ff000)
 
-    wait_till_next_cfsm_state(uut.control_fsm.LUI);
+    wait_till_next_cfsm_state(uut.core.control_fsm.LUI);
 
-    `assert_equal(uut.alu_input_a, 32'b0)
-    `assert_equal(uut.alu_input_b, 32'h003ff000)
-    `assert_equal(uut.__tmp_ALUControl, 4'b0)
-    `assert_equal(uut.alu_result, 32'h003ff000)
+    `assert_equal(uut.core.alu_input_a, 32'b0)
+    `assert_equal(uut.core.alu_input_b, 32'h003ff000)
+    `assert_equal(uut.core.__tmp_ALUControl, 4'b0)
+    `assert_equal(uut.core.alu_result, 32'h003ff000)
 
-    wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
-    `assert_equal(uut.instruction_decode.rd, 3)
+    `assert_equal(uut.core.instruction_decode.rd, 3)
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    `assert_equal(uut.RegFile.RFMem[3], 32'h003ff000)
+    `assert_equal(uut.core.RegFile.RFMem[3], 32'h003ff000)
 
     //If the simulation makes to this point, the simulation passed
 

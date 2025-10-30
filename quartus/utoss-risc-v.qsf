@@ -54,19 +54,6 @@ set_global_assignment -name VERILOG_MACRO UTOSS_RISCV_SYNTHESIS
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name SYSTEMVERILOG_FILE "../fpga/de1-soc/top.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/utoss_riscv.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/utils/MA.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/Instruction_Decode/Instruction_Decode.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/ALU_ALUdecoder/ALUdecoder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/params.svh
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/utils.svh
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/types.svh
-set_global_assignment -name VERILOG_FILE ../src/ALU_ALUdecoder/ALU.v
-set_global_assignment -name VERILOG_FILE ../src/Instruction_Decode/RegisterFile.v
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/Instruction_Decode/MemoryLoader.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/fetch.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../src/ControlFSM.sv
 set_location_assignment PIN_AJ4 -to ADC_CS_N
 set_location_assignment PIN_AK4 -to ADC_DIN
 set_location_assignment PIN_AK3 -to ADC_DOUT
@@ -325,4 +312,17 @@ set_location_assignment PIN_E12 -to VGA_R[6]
 set_location_assignment PIN_F13 -to VGA_R[7]
 set_location_assignment PIN_C10 -to VGA_SYNC_N
 set_location_assignment PIN_D11 -to VGA_VS
+set_global_assignment -name SYSTEMVERILOG_FILE "../envs/de1-soc/top.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "../envs/de1-soc/MA.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/utoss_riscv.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/Instruction_Decode/Instruction_Decode.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/ALU_ALUdecoder/ALUdecoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/params.svh
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/utils.svh
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/types.svh
+set_global_assignment -name VERILOG_FILE ../src/ALU_ALUdecoder/ALU.v
+set_global_assignment -name VERILOG_FILE ../src/Instruction_Decode/RegisterFile.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/Instruction_Decode/MemoryLoader.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/fetch.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/ControlFSM.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

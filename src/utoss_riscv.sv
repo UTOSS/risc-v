@@ -1,9 +1,15 @@
 `include "src/types.svh"
 
 module utoss_riscv
-  #( parameter MEM_SIZE = 1024 )
   ( input wire clk
   , input wire reset
+
+  // memory interface begin
+  , output addr_t memory__address
+  , output data_t memory__write_data
+  , output logic  memory__write_enable
+  , input  data_t memory__read_data
+  // memory interface end
   );
 
   wire         cfsm__pc_update;
@@ -13,8 +19,6 @@ module utoss_riscv
   result_src_t cfsm__result_src;
 
   addr_t   pc_cur;
-  addr_t   memory_address;
-  data_t   memory_data;
   data_t   data;
   instr_t  instruction;
   opcode_t opcode;
@@ -39,7 +43,7 @@ module utoss_riscv
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
-  wire __tmp_MemWrite, __tmp_Branch;
+  wire __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
@@ -48,23 +52,25 @@ module utoss_riscv
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
 
+  assign memory__write_data = dataB;
+
   ControlFSM control_fsm
-    ( .opcode    ( opcode           )
-    , .clk       ( clk              )
-    , .reset     ( reset            )
-    , .zero_flag ( alu__zero_flag   )
-    , .AdrSrc    ( cfsm__adr_src    )
-    , .IRWrite   ( cfsm__ir_write   )
-    , .RegWrite  ( cfsm__reg_write  )
-    , .PCUpdate  ( cfsm__pc_update  )
-    , .pc_src    ( cfsm__pc_src     )
-    , .MemWrite  ( __tmp_MemWrite   )
-    , .Branch    ( __tmp_Branch     )
-    , .ALUSrcA   ( __tmp_ALUSrcA    )
-    , .ALUSrcB   ( __tmp_ALUSrcB    )
-    , .ALUOp     ( __tmp_ALUOp      )
-    , .ResultSrc ( cfsm__result_src )
-    , .FSMState  ( __tmp_FSMState   )
+    ( .opcode    ( opcode               )
+    , .clk       ( clk                  )
+    , .reset     ( reset                )
+    , .zero_flag ( alu__zero_flag       )
+    , .AdrSrc    ( cfsm__adr_src        )
+    , .IRWrite   ( cfsm__ir_write       )
+    , .RegWrite  ( cfsm__reg_write      )
+    , .PCUpdate  ( cfsm__pc_update      )
+    , .pc_src    ( cfsm__pc_src         )
+    , .MemWrite  ( memory__write_enable )
+    , .Branch    ( __tmp_Branch         )
+    , .ALUSrcA   ( __tmp_ALUSrcA        )
+    , .ALUSrcB   ( __tmp_ALUSrcB        )
+    , .ALUOp     ( __tmp_ALUOp          )
+    , .ResultSrc ( cfsm__result_src     )
+    , .FSMState  ( __tmp_FSMState       )
     );
 
   fetch fetch
@@ -83,33 +89,22 @@ module utoss_riscv
 
   always @(*) begin
     case (cfsm__adr_src)
-      ADR_SRC__PC:     memory_address = pc_cur;
-      ADR_SRC__RESULT: memory_address = result;
+      ADR_SRC__PC:     memory__address = pc_cur;
+      ADR_SRC__RESULT: memory__address = result;
     endcase
   end
 
-  MA #( .SIZE ( MEM_SIZE ) )
-    memory // instructions and data
-      ( .A   ( memory_address )
-      , .WD  ( dataB          )
-      , .WE  ( __tmp_MemWrite )
-      , .CLK ( clk            )
-
-      // outputs
-      , .RD  ( memory_data    )
-      );
-
   always @(posedge clk) begin
     if (cfsm__ir_write) begin
-      instruction <= memory_data;
+      instruction <= memory__read_data;
     end
   end
 
   MemoryLoader MemLoad
-  ( .memory_data       ( memory_data     )
-  , .memory_address    ( memory_address  )
-  , .mem_load_result   ( mem_load_result )
-  , .funct3            ( funct3          )
+  ( .memory_data       ( memory__read_data )
+  , .memory_address    ( memory__address   )
+  , .mem_load_result   ( mem_load_result   )
+  , .funct3            ( funct3            )
   );
 
   always @(posedge clk) begin

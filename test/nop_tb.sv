@@ -8,12 +8,12 @@ module nop_tb;
     reg reset;
 
     //instantiate top module
-    utoss_riscv uut ( .clk(clk), .reset(reset) );
+    top uut ( .clk(clk), .reset(reset) );
 
     //helper task to compare current state with the expected current state
     task wait_till_next_cfsm_state(input [5:0] expected_state);
         @(posedge clk); #1;
-        `assert_equal(uut.control_fsm.current_state, expected_state)
+        `assert_equal(uut.core.control_fsm.current_state, expected_state)
     endtask
 
     //generate clock (10ns period)
@@ -30,30 +30,30 @@ module nop_tb;
         uut.memory.M[0] = 32'h00000013; //NOP instruction - addi x0, x0, 0
 
         // set up register file to a known value
-        uut.RegFile.RFMem[0] = 32'h01010101; // x0, hould still be 0 even we try to write it as 0
+        uut.core.RegFile.RFMem[0] = 32'h01010101; // x0, hould still be 0 even we try to write it as 0
 
         //wait until reset makes FSM go to fetch state
-        wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
         reset <= `FALSE;
 
-        wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+        wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
-        `assert_equal(uut.opcode, 7'b0010011)
-        `assert_equal(uut.instruction_decode.rs1, 0)
-        `assert_equal(uut.instruction_decode.rd, 0)
-        `assert_equal(uut.instruction_decode.imm_ext, 0)
+        `assert_equal(uut.core.opcode, 7'b0010011)
+        `assert_equal(uut.core.instruction_decode.rs1, 0)
+        `assert_equal(uut.core.instruction_decode.rd, 0)
+        `assert_equal(uut.core.instruction_decode.imm_ext, 0)
 
-        wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
-        `assert_equal(uut.alu.a, 32'h0)
-        `assert_equal(uut.alu.b, 0)
-        `assert_equal(uut.alu.out, 32'h0)
+        wait_till_next_cfsm_state(uut.core.control_fsm.EXECUTEI);
+        `assert_equal(uut.core.alu.a, 32'h0)
+        `assert_equal(uut.core.alu.b, 0)
+        `assert_equal(uut.core.alu.out, 32'h0)
 
-        wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
+        wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
-        wait_till_next_cfsm_state(uut.control_fsm.FETCH);
-        `assert_equal(uut.RegFile.RFMem[0], 32'h0)
-        `assert_equal(uut.fetch.pc_cur, 4)
+        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+        `assert_equal(uut.core.RegFile.RFMem[0], 32'h0)
+        `assert_equal(uut.core.fetch.pc_cur, 4)
 
         $finish;
 
