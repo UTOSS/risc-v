@@ -1,4 +1,5 @@
 SRC_DIR  := src
+ENVS_DIR := envs
 TB_DIR   := test
 OUTPUT 	 := out/top.vvp
 IVERILOG := iverilog
@@ -6,7 +7,10 @@ IVERILOG := iverilog
 VVP 		 :=vvp
 # = /opt/iverilog-12/bin/vvp
 
-SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v")
+ENV := simulation
+
+SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
+        $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
 
 TB_SRC_PATTERN := test/%_tb.sv
 TB_OUT_PATTERN := out/%_tb.vvp

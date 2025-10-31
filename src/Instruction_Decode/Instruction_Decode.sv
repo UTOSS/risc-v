@@ -1,4 +1,4 @@
-`include "src/params.vh"
+`include "src/params.svh"
 `include "src/types.svh"
 
 module Instruction_Decode
