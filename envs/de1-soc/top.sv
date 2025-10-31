@@ -9,7 +9,7 @@ module top
   logic  memory__write_enable;
   data_t memory__read_data;
 
-  memory_map #( .SIZE ( 8192 ) )
+  memory_map #( .SIZE ( 512 ) )
     memory_map
       ( .clk ( CLOCK_50 )
 
