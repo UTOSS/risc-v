@@ -13,7 +13,8 @@ envs/de1-soc/poc/poc.mem
 envs/de1-soc/poc/poc.elf
 envs/de1-soc/quartus/db/
 envs/de1-soc/quartus/incremental_db/
-envs/de1-soc/quartus/output_files/
+envs/de1-soc/quartus/output_files/*
+!envs/de1-soc/quartus/output_files/utoss-risc-v.cdf
 envs/de1-soc/quartus/c5_pin_model_dump.txt
 envs/de1-soc/quartus/*.bak
 envs/de1-soc/quartus/*.qws
