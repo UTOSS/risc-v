@@ -312,8 +312,8 @@ set_location_assignment PIN_E12 -to VGA_R[6]
 set_location_assignment PIN_F13 -to VGA_R[7]
 set_location_assignment PIN_C10 -to VGA_SYNC_N
 set_location_assignment PIN_D11 -to VGA_VS
+set_global_assignment -name SYSTEMVERILOG_FILE "../envs/de1-soc/memory_map.sv"
 set_global_assignment -name SYSTEMVERILOG_FILE "../envs/de1-soc/top.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "../envs/de1-soc/MA.sv"
 set_global_assignment -name SYSTEMVERILOG_FILE ../src/utoss_riscv.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../src/Instruction_Decode/Instruction_Decode.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../src/ALU_ALUdecoder/ALUdecoder.sv
