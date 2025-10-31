@@ -2,6 +2,8 @@
 
 int main() {
   int cnt = 0;
-  *LEDR = 42 + 42;
+  cnt += 42;
+  cnt += 22;
+  *LEDR = cnt;
   return 0;
 }
