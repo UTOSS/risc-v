@@ -11,7 +11,7 @@ module top
 
   memory_map #( .SIZE ( 8192 ) )
     memory_map
-      ( .clk ( clk )
+      ( .clk ( CLOCK_50 )
 
       , .address      ( memory__address      )
       , .write_data   ( memory__write_data   )
