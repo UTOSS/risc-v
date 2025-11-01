@@ -82,4 +82,3 @@ syntaxrules.inout_with_tri = true
 # TODO syntaxrules.input_with_var = true
 # TODO syntaxrules.output_with_var = true
 syntaxrules.interface_port_with_modport = true
-
