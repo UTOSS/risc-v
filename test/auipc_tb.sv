@@ -9,8 +9,8 @@ module auipc_tb;
   logic reset;
 
   top uut
-    ( .clk ( clk ),
-      .reset( reset )
+    ( .clk ( clk )
+    , .reset( reset )
     );
 
   initial begin
@@ -70,7 +70,7 @@ module auipc_tb;
     //Exe lui x2, 200
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[1], 32'h00014000 + tb_pc_old)
+    `assert_equal(uut.RegFile.RFMem[1], 32'h00014000 + tb_pc_old)
     //x1 at this moment should be updated
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
@@ -94,7 +94,7 @@ module auipc_tb;
     //Exe lui x3, 1023
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[2], 32'h000c8000 + tb_pc_old)
+    `assert_equal(uut.RegFile.RFMem[2], 32'h000c8000 + tb_pc_old)
 
     wait_till_next_cfsm_state(uut.control_fsm.DECODE);
 
@@ -116,7 +116,7 @@ module auipc_tb;
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[3], 32'h003ff000 + tb_pc_old)
+    `assert_equal(uut.RegFile.RFMem[3], 32'h003ff000 + tb_pc_old)
 
     //If the simulation makes to this point, the simulation passed
 

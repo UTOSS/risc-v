@@ -35,8 +35,8 @@ module sw_tb;
     uut.memory.M[13] = 32'h00000000; // will be written by sw x5, 8(x6)
 
     // set up register file
-    uut.instruction_decode.instanceRegFile.RFMem[6] = 44;    // x6 = 44
-    uut.instruction_decode.instanceRegFile.RFMem[5] = 256;   // x5 = 256
+    uut.RegFile.RFMem[6] = 44;    // x6 = 44
+    uut.RegFile.RFMem[5] = 256;   // x5 = 256
 
     wait_till_next_cfsm_state(uut.control_fsm.FETCH);
 
@@ -98,8 +98,8 @@ module sw_tb;
     `assert_equal(uut.memory.M[11], 256)
     `assert_equal(uut.memory.M[12], 256)
     `assert_equal(uut.memory.M[13], 256)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[5], 256)
-    `assert_equal(uut.instruction_decode.instanceRegFile.RFMem[6], 44)
+    `assert_equal(uut.RegFile.RFMem[5], 256)
+    `assert_equal(uut.RegFile.RFMem[6], 44)
 
     $finish;
   end

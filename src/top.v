@@ -40,14 +40,13 @@ module top #( parameter MEM_SIZE = 1024 )
   adr_src_t cfsm__adr_src;
   wire [3:0] __tmp_MemWrite;
   wire __tmp_Branch;
-  wire [1:0] __tmp_ALUSrcA
-           , __tmp_ALUSrcB;
+  wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
-  logic [31:0] dataA
-			 ,dataB;
+  data_t     dataA, dataB;
+  reg  [4:0] rd, rs1, rs2;
 
   logic [3:0] MemWriteByteAddress;
   logic [31:0] __tmp_MemData;
@@ -76,6 +75,7 @@ module top #( parameter MEM_SIZE = 1024 )
     ( .clk             ( clk             )
     , .reset           ( reset           )
     , .cfsm__pc_update ( cfsm__pc_update )
+    , .alu_result_for_pc ( alu_out )
     , .cfsm__pc_src    ( cfsm__pc_src    )
     , .cfsm__ir_write  ( cfsm__ir_write  )
     , .imm_ext         ( imm_ext         )
@@ -125,16 +125,25 @@ module top #( parameter MEM_SIZE = 1024 )
 
   Instruction_Decode instruction_decode
     ( .instr           ( instruction      )
+    , .opcode          ( opcode           )
+    , .funct3          ( funct3           )
+    , .ALUControl      ( __tmp_ALUControl )
+    , .imm_ext         ( imm_ext          )
+    , .rd              ( rd               )
+    , .rs1             ( rs1              )
+    , .rs2             ( rs2              )
+    );
+
+  registerFile RegFile
+    ( .Addr1           ( rs1              )
+    , .Addr2           ( rs2              )
+    , .Addr3           ( rd               )
     , .clk             ( clk              )
     , .reset           ( reset            )
-    , .ResultData      ( result           )
-    , .reg_write       ( cfsm__reg_write  )
-    , .opcode          ( opcode           )
-    , .funct3          ( funct3           ) 
-    , .ALUControl      ( __tmp_ALUControl )
+    , .regWrite        ( cfsm__reg_write  )
+    , .dataIn          ( result           )
     , .baseAddr        ( rd1              )
     , .writeData       ( rd2              )
-    , .imm_ext         ( imm_ext          )
     );
 
   ALU alu
@@ -179,8 +188,8 @@ module top #( parameter MEM_SIZE = 1024 )
   end
 
   always @(posedge clk) begin
-	dataA <= rd1;
-	dataB <= rd2;
+    dataA <= rd1;
+    dataB <= rd2;
   end
 
 endmodule

@@ -1,1 +1,39 @@
-option.textwidth = 200
+
+# Style ruleset begin
+
+option.textwidth = 100
+option.indent = 2
+option.exclude_paths = [
+  "test/utils.svh",
+] # this file contains a complex macro that svlint chokes on
+
+textrules.style_textwidth = true
+textrules.style_semicolon = true
+syntaxrules.tab_character = true
+syntaxrules.style_indent = true
+syntaxrules.multiline_if_begin = true
+syntaxrules.multiline_for_begin = true
+syntaxrules.style_trailingwhitespace = true
+textrules.style_directives = true
+syntaxrules.style_operator_arithmetic = true
+syntaxrules.style_operator_boolean = true
+syntaxrules.style_operator_integer = true
+syntaxrules.style_operator_unary = true
+syntaxrules.style_operator_arithmetic_leading_space = true
+syntaxrules.style_operator_boolean_leading_space = true
+syntaxrules.style_operator_integer_leading_space = true
+
+syntaxrules.style_keyword_0or1space = true
+syntaxrules.style_keyword_0space = true
+syntaxrules.style_keyword_1or2space = true
+syntaxrules.style_keyword_1space = true
+syntaxrules.style_keyword_construct = true
+syntaxrules.style_keyword_datatype = false  # overly restrictive.
+syntaxrules.style_keyword_end = true
+syntaxrules.style_keyword_maybelabel = true
+syntaxrules.style_keyword_new = true
+syntaxrules.style_keyword_newline = true
+syntaxrules.style_commaleading = true
+syntaxrules.eventlist_or = true
+
+# Style ruleset end
