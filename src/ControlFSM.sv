@@ -42,7 +42,7 @@ module ControlFSM
   parameter AUIPC = 4'b1100;
 
   parameter JALR_CALC  = 4'b1101; // calculate rs1 + imm, store in alu_out
-    parameter JALR_STEP2 = 4'b1110; // link and use alu_out to update PC
+  parameter JALR_STEP2 = 4'b1110; // link and use alu_out to update PC
 
   //declare state registers
   reg [3:0] current_state, next_state;
@@ -108,7 +108,7 @@ module ControlFSM
 
       JALR_CALC:  next_state = JALR_STEP2;
 
-        JALR_STEP2: next_state = ALUWB;
+      JALR_STEP2: next_state = ALUWB;
 
       default: next_state = FETCH;
 
@@ -123,7 +123,7 @@ module ControlFSM
     PCUpdate <= 1'b0;
     IRWrite <= 1'b0;
     MemWrite <= 1'b0;
-  RegWrite <= 1'b0;
+    RegWrite <= 1'b0;
 
     FSMState <= current_state;
 
@@ -183,25 +183,25 @@ module ControlFSM
         ALUSrcB <= ALU_SRC_B__4;
         ALUOp <= 2'b00;
         ResultSrc <= RESULT_SRC__ALU_OUT;
-            PCUpdate <= 1'b1;
+        PCUpdate <= 1'b1;
         pc_src    <= PC_SRC__JUMP;  // new added
 
       end
 
       JALR_CALC: begin
-          ALUSrcA  <= ALU_SRC_A__RD1;      // rs1
-          ALUSrcB  <= ALU_SRC_B__IMM_EXT;  // + imm
-          ALUOp    <= 2'b00;
-        end
+        ALUSrcA  <= ALU_SRC_A__RD1;      // rs1
+        ALUSrcB  <= ALU_SRC_B__IMM_EXT;  // + imm
+        ALUOp    <= 2'b00;
+      end
 
-        JALR_STEP2: begin
-          ALUSrcA   <= ALU_SRC_A__OLD_PC;  // Calculate link = pc_old + 4, write back in ALUWB
-          ALUSrcB   <= ALU_SRC_B__4;
-          ALUOp     <= 2'b00;
-          ResultSrc <= RESULT_SRC__ALU_OUT;
-          pc_src    <= PC_SRC__ALU_RESULT; // fetch  (alu_out & ~1) for new PC
-          PCUpdate  <= 1'b1;
-        end
+      JALR_STEP2: begin
+        ALUSrcA   <= ALU_SRC_A__OLD_PC;  // Calculate link = pc_old + 4, write back in ALUWB
+        ALUSrcB   <= ALU_SRC_B__4;
+        ALUOp     <= 2'b00;
+        ResultSrc <= RESULT_SRC__ALU_OUT;
+        pc_src    <= PC_SRC__ALU_RESULT; // fetch  (alu_out & ~1) for new PC
+        PCUpdate  <= 1'b1;
+      end
 
 
       MEMADR: begin
@@ -219,9 +219,11 @@ module ControlFSM
         ALUOp <= 2'b01;
         ResultSrc <= RESULT_SRC__ALU_OUT;
         Branch <= 1'b1;
-        if (zero_flag) pc_src <= PC_SRC__JUMP;
+        if (zero_flag) begin
+          pc_src <= PC_SRC__JUMP;
+          PCUpdate <= 1'b1;
+        end
         else pc_src <= PC_SRC__INCREMENT;
-        PCUpdate <= 1'b1;
 
       end
 
@@ -271,7 +273,9 @@ module ControlFSM
 
     if (reset) current_state <= FETCH;
 
-    else current_state <= next_state;
+    else begin
+      current_state <= next_state;
+    end
 
   end
 endmodule
