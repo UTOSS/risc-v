@@ -15,7 +15,7 @@ module ControlFSM
   , output reg RegWrite
   , output reg PCUpdate
   , output pc_src_t pc_src
-   , output reg [3:0] MemWrite
+  , output reg [3:0] MemWrite
   , output reg Branch
   , output alu_src_a_t ALUSrcA
   , output alu_src_b_t ALUSrcB

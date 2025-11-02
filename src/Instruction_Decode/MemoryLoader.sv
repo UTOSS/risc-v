@@ -1,6 +1,6 @@
 `include "src/types.svh"
 
-module MemoryLoader 
+module MemoryLoader
 ( input  data_t memory_data
 , input  addr_t memory_address
 , input  logic [2:0]  funct3
