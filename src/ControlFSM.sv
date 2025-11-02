@@ -246,7 +246,7 @@ module ControlFSM
             end
             else pc_src <= PC_SRC__INCREMENT;
           end
-
+          
           3'b001: begin
             if (!zero_flag) begin
               pc_src <= PC_SRC__JUMP;
@@ -254,9 +254,7 @@ module ControlFSM
             end
             else pc_src <= PC_SRC__INCREMENT;
           end
-
         endcase
-
       end
 
       BRANCHCOMP: begin
