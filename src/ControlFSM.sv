@@ -235,9 +235,9 @@ module ControlFSM
 
       MEMWRITE: begin
 
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				AdrSrc <= ADR_SRC__RESULT;
-				MemWrite <= MemWriteByteAddress;
+        ResultSrc <= RESULT_SRC__ALU_OUT;
+        AdrSrc <= ADR_SRC__RESULT;
+        MemWrite <= MemWriteByteAddress;
 
       end
 
