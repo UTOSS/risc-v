@@ -46,9 +46,8 @@ module ControlFSM
   parameter JALR_CALC  = 5'b01101; // calculate rs1 + imm, store in alu_out
   parameter JALR_STEP2 = 5'b01110; // link and use alu_out to update PC
 
-  // new states for remaining branch instructions
-  parameter BRANCHIFNEQ = 5'b01111;
-  parameter BRANCHCOMP = 5'b10000; 
+  // new state for remaining branch instructions
+  parameter BRANCHCOMP = 5'b01111; 
 
   //declare state registers
   reg [4:0] current_state, next_state;
@@ -71,11 +70,17 @@ module ControlFSM
         else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
 
         else if (opcode == BType) begin
+
           case (funct3)
+
             3'b000: next_state = BRANCHIFEQ;
-            3'b001: next_state = BRANCHIFNEQ;
+
+            3'b001: next_state = BRANCHIFEQ;
+
             default: next_state = BRANCHCOMP;
+
           endcase
+          
         end
         
         else if (opcode == UType_auipc) next_state = AUIPC;
@@ -109,8 +114,6 @@ module ControlFSM
       end
 
       BRANCHIFEQ: next_state = FETCH;
-
-      BRANCHIFNEQ: next_state = FETCH;
 
       BRANCHCOMP: next_state = FETCH;
 
@@ -235,26 +238,24 @@ module ControlFSM
         ALUOp <= 2'b01;
         ResultSrc <= RESULT_SRC__ALU_OUT;
         Branch <= 1'b1;
-        if (zero_flag) begin
-          pc_src <= PC_SRC__JUMP;
-          PCUpdate <= 1'b1;
-        end
-        else pc_src <= PC_SRC__INCREMENT;
+        case (funct3)
+          3'b000: begin
+            if (zero_flag) begin
+              pc_src <= PC_SRC__JUMP;
+              PCUpdate <= 1'b1;
+            end
+            else pc_src <= PC_SRC__INCREMENT;
+          end
 
-      end
+          3'b001: begin
+            if (!zero_flag) begin
+              pc_src <= PC_SRC__JUMP;
+              PCUpdate <= 1'b1;
+            end
+            else pc_src <= PC_SRC__INCREMENT;
+          end
 
-      BRANCHIFNEQ: begin
-
-        ALUSrcA <= ALU_SRC_A__RD1;
-        ALUSrcB <= ALU_SRC_B__RD2;
-        ALUOp <= 2'b01;
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        Branch <= 1'b1;
-        if (!zero_flag) begin
-          pc_src <= PC_SRC__JUMP;
-          PCUpdate <= 1'b1;
-        end
-        else pc_src <= PC_SRC__INCREMENT;
+        endcase
 
       end
 
