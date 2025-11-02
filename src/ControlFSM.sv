@@ -9,6 +9,8 @@ module ControlFSM
   , input wire clk
   , input wire reset
   , input wire zero_flag
+  , input wire [2:0] funct3
+  , input data_t alu_result
   , output adr_src_t AdrSrc
   , output reg IRWrite
   , output reg RegWrite
@@ -20,32 +22,36 @@ module ControlFSM
   , output alu_src_b_t ALUSrcB
   , output reg [2:0] ALUOp //to ALU Decoder
   , output result_src_t ResultSrc
-  , output reg [3:0] FSMState
+  , output reg [4:0] FSMState
   );
 
   //parameterize states (binary encoding)
   //in later systemverilog implementation, change to enum
-  parameter FETCH = 4'b0000;
-  parameter DECODE = 4'b0001;
-  parameter EXECUTER = 4'b0010;
-  parameter UNCONDJUMP = 4'b0011;
-  parameter EXECUTEI = 4'b0100;
-  parameter MEMADR = 4'b0101;
-  parameter ALUWB = 4'b0110;
-  parameter MEMWRITE = 4'b0111;
-  parameter MEMREAD = 4'b1000;
-  parameter MEMWB = 4'b1001;
-  parameter BRANCHIFEQ = 4'b1010;
+  parameter FETCH = 5'b00000;
+  parameter DECODE = 5'b00001;
+  parameter EXECUTER = 5'b00010;
+  parameter UNCONDJUMP = 5'b00011;
+  parameter EXECUTEI = 5'b00100;
+  parameter MEMADR = 5'b00101;
+  parameter ALUWB = 5'b00110;
+  parameter MEMWRITE = 5'b00111;
+  parameter MEMREAD = 5'b01000;
+  parameter MEMWB = 5'b01001;
+  parameter BRANCHIFEQ = 5'b01010;
 
   //new states for lui and auipc
-  parameter LUI = 4'b1011;
-  parameter AUIPC = 4'b1100;
+  parameter LUI = 5'b01011;
+  parameter AUIPC = 5'b01100;
 
-  parameter JALR_CALC  = 4'b1101; // calculate rs1 + imm, store in alu_out
-  parameter JALR_STEP2 = 4'b1110; // link and use alu_out to update PC
+  parameter JALR_CALC  = 5'b01101; // calculate rs1 + imm, store in alu_out
+  parameter JALR_STEP2 = 5'b01110; // link and use alu_out to update PC
+
+  // new states for remaining branch instructions
+  parameter BRANCHIFNEQ = 5'b01111;
+  parameter BRANCHCOMP = 5'b10000; 
 
   //declare state registers
-  reg [3:0] current_state, next_state;
+  reg [4:0] current_state, next_state;
 
   //Next state logic
   always @(*)begin
@@ -64,8 +70,14 @@ module ControlFSM
 
         else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
 
-        else if (opcode == BType) next_state = BRANCHIFEQ;
-
+        else if (opcode == BType) begin
+          case (funct3)
+            3'b000: next_state = BRANCHIFEQ;
+            3'b001: next_state = BRANCHIFNEQ;
+            default: next_state = BRANCHCOMP;
+          endcase
+        end
+        
         else if (opcode == UType_auipc) next_state = AUIPC;
 
         else if (opcode == UType_lui) next_state = LUI;
@@ -97,6 +109,10 @@ module ControlFSM
       end
 
       BRANCHIFEQ: next_state = FETCH;
+
+      BRANCHIFNEQ: next_state = FETCH;
+
+      BRANCHCOMP: next_state = FETCH;
 
       ALUWB: next_state = FETCH;
 
@@ -220,6 +236,36 @@ module ControlFSM
         ResultSrc <= RESULT_SRC__ALU_OUT;
         Branch <= 1'b1;
         if (zero_flag) begin
+          pc_src <= PC_SRC__JUMP;
+          PCUpdate <= 1'b1;
+        end
+        else pc_src <= PC_SRC__INCREMENT;
+
+      end
+
+      BRANCHIFNEQ: begin
+
+        ALUSrcA <= ALU_SRC_A__RD1;
+        ALUSrcB <= ALU_SRC_B__RD2;
+        ALUOp <= 2'b01;
+        ResultSrc <= RESULT_SRC__ALU_OUT;
+        Branch <= 1'b1;
+        if (!zero_flag) begin
+          pc_src <= PC_SRC__JUMP;
+          PCUpdate <= 1'b1;
+        end
+        else pc_src <= PC_SRC__INCREMENT;
+
+      end
+
+      BRANCHCOMP: begin
+
+        ALUSrcA <= ALU_SRC_A__RD1;
+        ALUSrcB <= ALU_SRC_B__RD2;
+        ALUOp <= 2'b01;
+        ResultSrc <= RESULT_SRC__ALU_OUT;
+        Branch <= 1'b1;
+        if (alu_result == 32'b1) begin
           pc_src <= PC_SRC__JUMP;
           PCUpdate <= 1'b1;
         end

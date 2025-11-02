@@ -18,6 +18,8 @@ module ALU
             4'b0111: out = $signed(a) >>> b[4:0];    // SRA
             4'b1000: out = a | b;                    // OR
             4'b1001: out = a & b;                    // AND
+            4'b1010: out = ($signed(a) >= $signed(b)) ? 32'b1 : 32'b0; // SGE
+            4'b1011: out = (a >= b) ? 32'b1 : 32'b0;  // SGEU
             default: out = 32'b0;
   endcase
   end
