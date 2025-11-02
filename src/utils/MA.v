@@ -1,16 +1,18 @@
-module MA #( parameter SIZE = 1024 )
-           ( input  [31:0] A
-           , input  [31:0] WD
-           , input  [3:0]  WE //changed from 1 bit WE to 4 bit to address byteindex
-           , input  wire   CLK
-           , output [31:0] RD
-           );
+module MA #( 
+  parameter SIZE = 1024 
+)
+( 
+  input  [31:0] A
+, input  [31:0] WD
+, input  [3:0]  WE   //changed from 1 bit WE to 4 bit to address byteindex
+, input  wire   CLK
+, output [31:0] RD
+);
 
-    reg [31:0] M[0:SIZE -1];
+  reg [31:0] M[0:SIZE -1];
 
-    initial begin
-      string mem_file;
-
+  initial begin
+    string mem_file;
 
       if ($value$plusargs("MEM=%s", mem_file)) begin
         $display("loading memory from <%s>", mem_file);
