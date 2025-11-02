@@ -1,16 +1,15 @@
 module MA #( parameter SIZE = 1024 )
-  ( input  [31:0] A
-  , input  [31:0] WD
-  , input  wire   WE
-  , input  wire   CLK
-  , output [31:0] RD
+  ( input  wire   clk
+  , input  addr_t address
+  , input  data_t write_data
+  , input  logic  write_enable
+  , output data_t read_data
   );
 
     reg [31:0] M[0:SIZE -1];
 
     initial begin
       string mem_file;
-
 
       if ($value$plusargs("MEM=%s", mem_file)) begin
         $display("loading memory from <%s>", mem_file);
@@ -19,10 +18,10 @@ module MA #( parameter SIZE = 1024 )
       end
     end
 
-    assign RD = M[A[31:2]]; // 2 LSBs used for byte addressing
-    always @(posedge CLK) begin
-        if (WE) begin
-            M[A[31:2]] <= WD;
+    assign read_data = M[address[31:2]]; // 2 LSBs used for byte addressing
+    always @(posedge clk) begin
+        if (write_enable) begin
+            M[address[31:2]] <= write_data;
         end
     end
 

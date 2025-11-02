@@ -19,7 +19,7 @@ module srli_tb;
 
   task wait_till_next_cfsm_state(input [5:0] expected_state);
     @(posedge clk); #1;
-    `assert_equal(uut.control_fsm.current_state, expected_state)
+    `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   initial begin
@@ -32,80 +32,80 @@ module srli_tb;
 
 
     // set up register file
-    uut.RegFile.RFMem[2] = 42; // x2 = 42; 101010
+    uut.core.RegFile.RFMem[2] = 42; // x2 = 42; 101010
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
-    `assert_equal(uut.opcode, 7'b0010011)
-    `assert_equal(uut.instruction_decode.rs1, 2)
-    `assert_equal(uut.instruction_decode.imm_ext, 32'h1)
+    `assert_equal(uut.core.opcode, 7'b0010011)
+    `assert_equal(uut.core.instruction_decode.rs1, 2)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 32'h1)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
+    wait_till_next_cfsm_state(uut.core.control_fsm.EXECUTEI);
 
-    `assert_equal(uut.RegFile.RFMem[2], 42)
-    `assert_equal(uut.alu.a, 42)
-    `assert_equal(uut.alu.b, 1)
-    `assert_equal(uut.alu.out, 21)
+    `assert_equal(uut.core.RegFile.RFMem[2], 42)
+    `assert_equal(uut.core.alu.a, 42)
+    `assert_equal(uut.core.alu.b, 1)
+    `assert_equal(uut.core.alu.out, 21)
 
-    wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
-    `assert_equal(uut.instruction_decode.rd, 1)
+    `assert_equal(uut.core.instruction_decode.rd, 1)
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    `assert_equal(uut.RegFile.RFMem[1], 21)
-    `assert_equal(uut.RegFile.RFMem[2], 42)
-    `assert_equal(uut.fetch.pc_cur, 4) // starting second instruction already
+    `assert_equal(uut.core.RegFile.RFMem[1], 21)
+    `assert_equal(uut.core.RegFile.RFMem[2], 42)
+    `assert_equal(uut.core.fetch.pc_cur, 4) // starting second instruction already
 
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
-    `assert_equal(uut.opcode, 7'b0010011)
-    `assert_equal(uut.instruction_decode.rs1, 2)
-    `assert_equal(uut.instruction_decode.imm_ext, 32'h2)
+    `assert_equal(uut.core.opcode, 7'b0010011)
+    `assert_equal(uut.core.instruction_decode.rs1, 2)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 32'h2)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
+    wait_till_next_cfsm_state(uut.core.control_fsm.EXECUTEI);
 
-    `assert_equal(uut.RegFile.RFMem[2], 42)
-    `assert_equal(uut.alu.a, 42)
-    `assert_equal(uut.alu.b, 2)
-    `assert_equal(uut.alu.out, 10)
+    `assert_equal(uut.core.RegFile.RFMem[2], 42)
+    `assert_equal(uut.core.alu.a, 42)
+    `assert_equal(uut.core.alu.b, 2)
+    `assert_equal(uut.core.alu.out, 10)
 
-    wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
-    `assert_equal(uut.instruction_decode.rd, 1)
+    `assert_equal(uut.core.instruction_decode.rd, 1)
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    `assert_equal(uut.RegFile.RFMem[1], 10)
-    `assert_equal(uut.RegFile.RFMem[2], 42)
-    `assert_equal(uut.fetch.pc_cur, 8) // starting third instruction already
+    `assert_equal(uut.core.RegFile.RFMem[1], 10)
+    `assert_equal(uut.core.RegFile.RFMem[2], 42)
+    `assert_equal(uut.core.fetch.pc_cur, 8) // starting third instruction already
 
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
-    `assert_equal(uut.opcode, 7'b0010011)
-    `assert_equal(uut.instruction_decode.rs1, 2)
-    `assert_equal(uut.instruction_decode.imm_ext, 32'h3)
+    `assert_equal(uut.core.opcode, 7'b0010011)
+    `assert_equal(uut.core.instruction_decode.rs1, 2)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 32'h3)
 
-    wait_till_next_cfsm_state(uut.control_fsm.EXECUTEI);
+    wait_till_next_cfsm_state(uut.core.control_fsm.EXECUTEI);
 
-    `assert_equal(uut.RegFile.RFMem[2], 42)
-    `assert_equal(uut.alu.a, 42)
-    `assert_equal(uut.alu.b, 3)
-    `assert_equal(uut.alu.out, 5)
+    `assert_equal(uut.core.RegFile.RFMem[2], 42)
+    `assert_equal(uut.core.alu.a, 42)
+    `assert_equal(uut.core.alu.b, 3)
+    `assert_equal(uut.core.alu.out, 5)
 
-    wait_till_next_cfsm_state(uut.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
-    `assert_equal(uut.instruction_decode.rd, 1)
+    `assert_equal(uut.core.instruction_decode.rd, 1)
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    `assert_equal(uut.RegFile.RFMem[1], 5)
-    `assert_equal(uut.RegFile.RFMem[2], 42)
-    `assert_equal(uut.fetch.pc_cur, 12)
+    `assert_equal(uut.core.RegFile.RFMem[1], 5)
+    `assert_equal(uut.core.RegFile.RFMem[2], 42)
+    `assert_equal(uut.core.fetch.pc_cur, 12)
 
     $finish;
   end
