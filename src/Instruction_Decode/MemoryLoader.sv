@@ -1,24 +1,24 @@
 `include "src/types.svh"
 
 module MemoryLoader (
-    input  data_t memory_data,
-    input  addr_t memory_address,
-    input  logic [2:0]  funct3,
-    input  logic [31:0] dataB,
-    output data_t mem_load_result,
-    output logic [3:0] MemWriteByteAddress,
+    input  data_t memory_data, 
+    input  addr_t memory_address, 
+    input  logic [2:0]  funct3, 
+    input  logic [31:0] dataB, 
+    output data_t mem_load_result, 
+    output logic [3:0] MemWriteByteAddress, 
     output logic [31:0] __tmp_MemData
 );
 
     integer byteindex;
     assign byteindex = memory_address[1:0];
 
-    always_comb
+    always@(*) begin
         case (funct3)
             3'b000: begin // lb & sb
                 case (byteindex)
                     2'd0: begin
-                        mem_load_result = {{24{memory_data[7]}},  memory_data[7:0]};
+                        mem_load_result = {{24{memory_data[7]}}, memory_data[7:0]};
                         MemWriteByteAddress = 4'b0001;
                         __tmp_MemData = {24'b0, dataB[7:0]};
                     end
@@ -101,6 +101,7 @@ module MemoryLoader (
                 __tmp_MemData = 31'bx;
             end
         endcase
+    end
 
 
 endmodule
