@@ -254,11 +254,11 @@ module Logger
     $display("Instruction: %s", complete_instruction);
 
     // Display the value read from memory
-    $display("Read Address: 0x%08h", memory_address, " Value: 0x%08h", memory_data);
+    $display("Read Memory Address: 0x%08h", memory_address, " Value: 0x%08h", memory_data);
 
     // If data is being written, display what and where
     if(write_enable) begin
-        $display("Write Address: 0x%08h", memory_address, " Value: 0x%08h", memory_data);
+        $display("Write Memory Address: 0x%08h", memory_address, " Value: 0x%08h", memory_data);
     end
 
     // Display values read from register file
