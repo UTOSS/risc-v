@@ -18,6 +18,10 @@ module Logger
  string source_register2 = "unknown";
  string destination_register = "unknown";
  string complete_instruction = "unknown";
+ wire data_t new_pc;
+ 
+ assign new_pc = pc_cur + imm_ext + 'h4;
+ 
  always @(posedge clk) begin
     // Display the high-level PC and instruction information
     $display("Cycle %d: PC=%h Instruction=%h", cycle, pc_cur, instruction);
@@ -231,17 +235,17 @@ module Logger
     case (opcode)
     RType:         complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", ", source_register2};
     IType_logic:   complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%0h", imm_ext)};
-    IType_load:    complete_instruction = {operation, " ", destination_register, ", ", $sformatf("%0h", imm_ext), "(", source_register1, ")"};
-    SType:         complete_instruction = {operation, " ", source_register2, ", ", $sformatf("%0h", imm_ext), "(", source_register1, ")"};
-    BType:         complete_instruction = {operation, " ", source_register1, ", ", source_register2, ", 0x", $sformatf("%0h", imm_ext)};
-    JType:         complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%0h", imm_ext)};
+    IType_load:    complete_instruction = {operation, " ", destination_register, ", ", $sformatf("%0d", imm_ext), "(", source_register1, ")"};
+    SType:         complete_instruction = {operation, " ", source_register2, ", ", $sformatf("%0d", imm_ext), "(", source_register1, ")"};
+    BType:         complete_instruction = {operation, " ", source_register1, ", ", source_register2, ", 0x", $sformatf("%0h", new_pc)};
+    JType:         complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%0h", new_pc)};
     UType_auipc:   complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%0h", imm_ext)};
     UType_lui:     complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%0h", imm_ext)};
-    IType_jalr:    complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%0h", imm_ext)};
+    IType_jalr:    complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%0h", new_pc)};
     default:       complete_instruction = "unknown";
     endcase
-    $display("Instruction: %s", complete_instruction);
 
+    $display("Instruction: %s", complete_instruction);
     cycle = cycle + 1'b1;
  end
 
