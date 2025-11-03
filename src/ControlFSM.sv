@@ -9,6 +9,7 @@ module ControlFSM
   , input wire clk
   , input wire reset
   , input wire zero_flag
+  , input wire [3:0] MemWriteByteAddress
   , input wire [2:0] funct3
   , input data_t alu_result
   , output adr_src_t AdrSrc
@@ -16,7 +17,7 @@ module ControlFSM
   , output reg RegWrite
   , output reg PCUpdate
   , output pc_src_t pc_src
-  , output reg MemWrite
+  , output reg [3:0] MemWrite
   , output reg Branch
   , output alu_src_a_t ALUSrcA
   , output alu_src_b_t ALUSrcB
@@ -141,7 +142,7 @@ module ControlFSM
     pc_src <= PC_SRC__INCREMENT;
     PCUpdate <= 1'b0;
     IRWrite <= 1'b0;
-    MemWrite <= 1'b0;
+    MemWrite <= 4'b0;
     RegWrite <= 1'b0;
 
     FSMState <= current_state;
@@ -283,7 +284,7 @@ module ControlFSM
 
         ResultSrc <= RESULT_SRC__ALU_OUT;
         AdrSrc <= ADR_SRC__RESULT;
-        MemWrite <= 1'b1;
+        MemWrite <= MemWriteByteAddress;
 
       end
 

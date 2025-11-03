@@ -39,7 +39,8 @@ module top #( parameter MEM_SIZE = 1024 )
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
-  wire __tmp_MemWrite, __tmp_Branch;
+  wire [3:0] __tmp_MemWrite;
+  wire __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
@@ -48,11 +49,15 @@ module top #( parameter MEM_SIZE = 1024 )
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
 
+  logic [3:0] MemWriteByteAddress;
+  logic [31:0] __tmp_MemData;
+
   ControlFSM control_fsm
     ( .opcode     ( opcode           )
     , .clk        ( clk              )
     , .reset      ( reset            )
     , .zero_flag  ( alu__zero_flag   )
+    , .MemWriteByteAddress ( MemWriteByteAddress )
     , .funct3     ( funct3           )
     , .alu_result ( alu_result       )
     , .AdrSrc     ( cfsm__adr_src    )
@@ -93,7 +98,7 @@ module top #( parameter MEM_SIZE = 1024 )
   MA #( .SIZE ( MEM_SIZE ) )
     memory // instructions and data
       ( .A   ( memory_address )
-      , .WD  ( dataB          )
+      , .WD  ( __tmp_MemData  )
       , .WE  ( __tmp_MemWrite )
       , .CLK ( clk            )
 
@@ -108,10 +113,13 @@ module top #( parameter MEM_SIZE = 1024 )
   end
 
   MemoryLoader MemLoad
-  ( .memory_data       ( memory_data     )
-  , .memory_address    ( memory_address  )
-  , .mem_load_result   ( mem_load_result )
-  , .funct3            ( funct3          )
+  ( .memory_data          ( memory_data       )
+  , .memory_address       ( memory_address    )
+  , .mem_load_result      ( mem_load_result   )
+  , .funct3               ( funct3            )
+  , .dataB                ( dataB             )
+  , .MemWriteByteAddress  ( MemWriteByteAddress)
+  , .__tmp_MemData        ( __tmp_MemData     )
   );
 
   always @(posedge clk) begin
