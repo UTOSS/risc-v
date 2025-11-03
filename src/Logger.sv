@@ -238,39 +238,15 @@ module Logger
 
         // Construct the instruction to display
         case (opcode)
-        RType:         complete_instruction = {operation, " ", \
-                                              destination_register, \
-                                              ", ", source_register1, \
-                                              ", ", source_register2};
-        IType_logic:   complete_instruction = {operation, " ", \
-                                              destination_register, \
-                                              ", ", source_register1, \
-                                              ", 0x", $sformatf("%08h", imm_ext)};
-        IType_load:    complete_instruction = {operation, " ", \
-                                              destination_register, \
-                                              ", ", $sformatf("%0d", imm_ext), \
-                                              "(", source_register1, ")"};
-        SType:         complete_instruction = {operation, " ", \
-                                              source_register2, ", ", \
-                                              $sformatf("%0d", imm_ext), \
-                                              "(", source_register1, ")"};
-        BType:         complete_instruction = {operation, " ", \
-                                              source_register1, ", ", \
-                                              source_register2, ", 0x", \
-                                              $sformatf("%08h", new_pc)};
-        JType:         complete_instruction = {operation, " ", \
-                                              destination_register, \
-                                              ", 0x", $sformatf("%08h", new_pc)};
-        UType_auipc:   complete_instruction = {operation, " ", \
-                                              destination_register, \
-                                              ", 0x", $sformatf("%08h", imm_ext)};
-        UType_lui:     complete_instruction = {operation, " ", \
-                                              destination_register, \
-                                              ", 0x", $sformatf("%08h", imm_ext)};
-        IType_jalr:    complete_instruction = {operation, " ", \
-                                              destination_register, \
-                                              ", ", source_register1, \
-                                              ", 0x", $sformatf("%08h", new_pc)};
+        RType:         complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", ", source_register2};
+        IType_logic:   complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%08h", imm_ext)};
+        IType_load:    complete_instruction = {operation, " ", destination_register, ", ", $sformatf("%0d", imm_ext), "(", source_register1, ")"};
+        SType:         complete_instruction = {operation, " ", source_register2, ", ", $sformatf("%0d", imm_ext), "(", source_register1, ")"};
+        BType:         complete_instruction = {operation, " ", source_register1, ", ", source_register2, ", 0x", $sformatf("%08h", new_pc)};
+        JType:         complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%08h", new_pc)};
+        UType_auipc:   complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%08h", imm_ext)};
+        UType_lui:     complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%08h", imm_ext)};
+        IType_jalr:    complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%08h", new_pc)};
         default:       complete_instruction = "unknown";
         endcase
 
