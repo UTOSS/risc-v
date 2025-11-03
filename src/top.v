@@ -201,6 +201,13 @@ module top #( parameter MEM_SIZE = 1024 )
   , .rs2              ( rs2              )
   , .rd               ( rd               )
   , .imm_ext          ( imm_ext          )
+  , .memory_address   ( memory_address   )
+  , .memory_data      ( mem_load_result  )
+  , .write_enable     ( __tmp_MemWrite   )
+  , .rd1              ( rd1              )
+  , .rd2              ( rd2              )
+  , .result           ( result           )
+  , .regWrite         ( cfsm__reg_write  )
   );
   
 endmodule

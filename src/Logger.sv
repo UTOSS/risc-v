@@ -10,6 +10,11 @@ module Logger
   , input logic [6:0] funct7
   , input logic [4:0] rs1, rs2, rd
   , input imm_t imm_ext
+  , input addr_t memory_address
+  , input data_t memory_data
+  , input wire write_enable
+  , input data_t rd1, rd2, result
+  , input wire regWrite
   );
 
  integer cycle = 32'h0;
@@ -21,7 +26,7 @@ module Logger
  wire data_t new_pc;
  
  assign new_pc = pc_cur + imm_ext + 'h4;
- 
+
  always @(posedge clk) begin
     // Display the high-level PC and instruction information
     $display("Cycle %d: PC=%h Instruction=%h", cycle, pc_cur, instruction);
@@ -234,18 +239,42 @@ module Logger
     // Construct the instruction to display
     case (opcode)
     RType:         complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", ", source_register2};
-    IType_logic:   complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%0h", imm_ext)};
+    IType_logic:   complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%08h", imm_ext)};
     IType_load:    complete_instruction = {operation, " ", destination_register, ", ", $sformatf("%0d", imm_ext), "(", source_register1, ")"};
     SType:         complete_instruction = {operation, " ", source_register2, ", ", $sformatf("%0d", imm_ext), "(", source_register1, ")"};
-    BType:         complete_instruction = {operation, " ", source_register1, ", ", source_register2, ", 0x", $sformatf("%0h", new_pc)};
-    JType:         complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%0h", new_pc)};
-    UType_auipc:   complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%0h", imm_ext)};
-    UType_lui:     complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%0h", imm_ext)};
-    IType_jalr:    complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%0h", new_pc)};
+    BType:         complete_instruction = {operation, " ", source_register1, ", ", source_register2, ", 0x", $sformatf("%08h", new_pc)};
+    JType:         complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%08h", new_pc)};
+    UType_auipc:   complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%08h", imm_ext)};
+    UType_lui:     complete_instruction = {operation, " ", destination_register, ", 0x", $sformatf("%08h", imm_ext)};
+    IType_jalr:    complete_instruction = {operation, " ", destination_register, ", ", source_register1, ", 0x", $sformatf("%08h", new_pc)};
     default:       complete_instruction = "unknown";
     endcase
 
+    // Display the parsed instruction
     $display("Instruction: %s", complete_instruction);
+
+    // Display the value read from memory
+    $display("Read Address: 0x%08h", memory_address, " Value: 0x%08h", memory_data);
+
+    // If data is being written, display what and where
+    if(write_enable) begin
+        $display("Write Address: 0x%08h", memory_address, " Value: 0x%08h", memory_data);
+    end
+
+    // Display values read from register file
+    if (rs1 != 5'b00000) begin
+        $display("Read Register: %s", source_register1, " Value: 0x%08h", rd1);
+    end
+
+    if (rs2 != 5'b00000) begin
+        $display("Read Register: %s", source_register2, " Value: 0x%08h", rd2);
+    end 
+
+    // If data is being written to register, display what and where
+    if (regWrite && rd != 5'b00000) begin
+        $display("Write Register: %s", destination_register, " Value: 0x%08h", result);
+    end
+    
     cycle = cycle + 1'b1;
  end
 
