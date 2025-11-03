@@ -29,26 +29,26 @@ module Logger
 
  always @(posedge clk) begin
     // Display the high-level PC and instruction information
-    $display("Cycle %d: PC=%h Instruction=%h", cycle, pc_cur, instruction);
+    $display("Cycle %d: \nPC: %08h \nInstruction (Hex): %08h", cycle, pc_cur, instruction);
     
     // Determine which FSM State we are in
     case (FSM_State)
-        5'b00000: $display("FSM State = FETCH");
-        5'b00001: $display("FSM State = DECODE");
-        5'b00010: $display("FSM State = EXECUTER");
-        5'b00011: $display("FSM State = UNCONDJUMP");
-        5'b00100: $display("FSM State = EXECUTEI");
-        5'b00101: $display("FSM State = MEMADR");
-        5'b00110: $display("FSM State = ALUWB");
-        5'b00111: $display("FSM State = MEMWRITE");
-        5'b01000: $display("FSM State = MEMREAD");
-        5'b01001: $display("FSM State = MEMWB");
-        5'b01010: $display("FSM State = BRANCHIFEQ");
-        5'b01011: $display("FSM State = LUI");
-        5'b01100: $display("FSM State = AUIPC");
-        5'b01101: $display("FSM State = JALR_CALC");
-        5'b01110: $display("FSM State = JALR_STEP2");
-        5'b01111: $display("FSM State = BRANCHCOMP");
+        5'b00000: $display("FSM State: FETCH");
+        5'b00001: $display("FSM State: DECODE");
+        5'b00010: $display("FSM State: EXECUTER");
+        5'b00011: $display("FSM State: UNCONDJUMP");
+        5'b00100: $display("FSM State: EXECUTEI");
+        5'b00101: $display("FSM State: MEMADR");
+        5'b00110: $display("FSM State: ALUWB");
+        5'b00111: $display("FSM State: MEMWRITE");
+        5'b01000: $display("FSM State: MEMREAD");
+        5'b01001: $display("FSM State: MEMWB");
+        5'b01010: $display("FSM State: BRANCHIFEQ");
+        5'b01011: $display("FSM State: LUI");
+        5'b01100: $display("FSM State: AUIPC");
+        5'b01101: $display("FSM State: JALR_CALC");
+        5'b01110: $display("FSM State: JALR_STEP2");
+        5'b01111: $display("FSM State: BRANCHCOMP");
     endcase
 
     // Parse the instruction we are executing
@@ -251,7 +251,7 @@ module Logger
     endcase
 
     // Display the parsed instruction
-    $display("Instruction: %s", complete_instruction);
+    $display("Parsed Instruction: %s", complete_instruction);
 
     // Display the value read from memory
     $display("Read Memory Address: 0x%08h", memory_address, " Value: 0x%08h", memory_data);
@@ -274,6 +274,9 @@ module Logger
     if (regWrite && rd != 5'b00000) begin
         $display("Write Register: %s", destination_register, " Value: 0x%08h", result);
     end
+
+    // Include new line to separate log into packets
+    $display("\n");
     
     cycle = cycle + 1'b1;
  end
