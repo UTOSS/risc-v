@@ -48,7 +48,7 @@ module ControlFSM
   parameter JALR_STEP2 = 5'b01110; // link and use alu_out to update PC
 
   // new state for remaining branch instructions
-  parameter BRANCHCOMP = 5'b01111; 
+  parameter BRANCHCOMP = 5'b01111;
 
   //declare state registers
   reg [4:0] current_state, next_state;
@@ -81,9 +81,9 @@ module ControlFSM
             default: next_state = BRANCHCOMP;
 
           endcase
-          
+
         end
-        
+
         else if (opcode == UType_auipc) next_state = AUIPC;
 
         else if (opcode == UType_lui) next_state = LUI;
@@ -247,7 +247,7 @@ module ControlFSM
             end
             else pc_src <= PC_SRC__INCREMENT;
           end
-          
+
           3'b001: begin
             if (!zero_flag) begin
               pc_src <= PC_SRC__JUMP;

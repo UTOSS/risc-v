@@ -217,5 +217,5 @@ module top #( parameter MEM_SIZE = 1024 )
   , .result           ( result           )
   , .regWrite         ( cfsm__reg_write  )
   );
-  
+
 endmodule
