@@ -7,14 +7,15 @@ module Instruction_Decode
   , output wire [3:0] ALUControl
   , output imm_t imm_ext
   , output reg [2:0] funct3
+  , output reg [6:0] funct7
   , output reg [4:0] rd
   , output reg [4:0] rs1
   , output reg [4:0] rs2
   );
 
   alu_op_t alu_op;
-  //reg [2:0] funct3;
-  reg [6:0] funct7;
+  // reg [2:0] funct3;
+  // reg [6:0] funct7;
   wire [3:0] state;
 
   assign opcode = instr[6:0];
@@ -51,11 +52,11 @@ module Instruction_Decode
     case (opcode)
       RType:      alu_op = ALU_OP__REGISTER_OPERATION;
       IType_load: alu_op = ALU_OP__MEMORY_ACCESS;
-    IType_jalr: alu_op = ALU_OP__MEMORY_ACCESS; // rs1 + imm
+      IType_jalr: alu_op = ALU_OP__MEMORY_ACCESS; // rs1 + imm
       SType:      alu_op = ALU_OP__MEMORY_ACCESS;
       BType:      alu_op = ALU_OP__BRANCH;
-    UType_auipc: alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
-    UType_lui:   alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
+      UType_auipc: alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
+      UType_lui:   alu_op = ALU_OP__MEMORY_ACCESS; // used to add 0 to imm ext
       default:    alu_op = ALU_OP__UNSET;
 
     endcase

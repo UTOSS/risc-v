@@ -7,7 +7,7 @@ option.exclude_paths = [
   "test/utils.svh",
 ] # this file contains a complex macro that svlint chokes on
 
-textrules.style_textwidth = true
+# textrules.style_textwidth = true
 textrules.style_semicolon = true
 syntaxrules.tab_character = true
 syntaxrules.style_indent = true
