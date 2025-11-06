@@ -9,7 +9,18 @@ module ALUdecoder ( input [2:0] funct3
   begin
   case (alu_op)
     ALU_OP__MEMORY_ACCESS: alu_control = 4'b0000; //lw, sw (ADD)
-    ALU_OP__BRANCH: alu_control = 4'b0001; //branch (SUB)
+    ALU_OP__BRANCH:
+    begin
+      case (funct3)
+      3'b000: alu_control = 4'b0001; //beq (SUB)
+      3'b001: alu_control = 4'b0001; // bne (SUB)
+      3'b100: alu_control = 4'b0011; // blt (SLT)
+      3'b110: alu_control = 4'b0100; // bltu (SLTU)
+      3'b101: alu_control = 4'b1010; // bge (SGE)
+      3'b111: alu_control = 4'b1011; // bgeu (SGEU)
+      default: alu_control = 4'b0001; // SUB
+      endcase
+    end
     ALU_OP__REGISTER_OPERATION: //R type
     begin
       case (funct3)
