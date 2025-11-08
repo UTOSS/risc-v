@@ -21,7 +21,7 @@ module ControlFSM
   , output reg Branch
   , output alu_src_a_t ALUSrcA
   , output alu_src_b_t ALUSrcB
-  , output reg [2:0] ALUOp //to ALU Decoder
+  , output alu_op_t ALUOp //to ALU Decoder
   , output result_src_t ResultSrc
   , output reg [4:0] FSMState
   );
@@ -161,7 +161,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__OLD_PC;
         ALUSrcB <= ALU_SRC_B__IMM_EXT;
-        ALUOp <= 2'b00;
+        ALUOp <= ALU_OP__ADD;
 
       end
 
@@ -169,7 +169,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__OLD_PC;
         ALUSrcB <= ALU_SRC_B__IMM_EXT;
-        ALUOp <= 2'b00;
+        ALUOp <= ALU_OP__ADD;
 
       end
 
@@ -177,7 +177,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__ZERO;
         ALUSrcB <= ALU_SRC_B__IMM_EXT;
-        ALUOp <= 2'b00;
+        ALUOp <= ALU_OP__ADD;
 
       end
 
@@ -185,7 +185,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__RD1;
         ALUSrcB <= ALU_SRC_B__RD2;
-        ALUOp <= 2'b10;
+        ALUOp <= ALU_OP__REGISTER_OPERATION;
 
       end
 
@@ -193,7 +193,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__RD1;
         ALUSrcB <= ALU_SRC_B__IMM_EXT;
-        ALUOp <= 2'b11;
+        ALUOp <= ALU_OP__UNSET;
 
       end
 
@@ -201,7 +201,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__OLD_PC;
         ALUSrcB <= ALU_SRC_B__4;
-        ALUOp <= 2'b00;
+        ALUOp <= ALU_OP__ADD;
         ResultSrc <= RESULT_SRC__ALU_OUT;
         PCUpdate <= 1'b1;
         pc_src    <= PC_SRC__JUMP;  // new added
@@ -211,13 +211,13 @@ module ControlFSM
       JALR_CALC: begin
         ALUSrcA  <= ALU_SRC_A__RD1;      // rs1
         ALUSrcB  <= ALU_SRC_B__IMM_EXT;  // + imm
-        ALUOp    <= 2'b00;
+        ALUOp    <= ALU_OP__ADD;
       end
 
       JALR_STEP2: begin
         ALUSrcA   <= ALU_SRC_A__OLD_PC;  // Calculate link = pc_old + 4, write back in ALUWB
         ALUSrcB   <= ALU_SRC_B__4;
-        ALUOp     <= 2'b00;
+        ALUOp     <= ALU_OP__ADD;
         ResultSrc <= RESULT_SRC__ALU_OUT;
         pc_src    <= PC_SRC__ALU_RESULT; // fetch  (alu_out & ~1) for new PC
         PCUpdate  <= 1'b1;
@@ -228,7 +228,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__RD1;
         ALUSrcB <= ALU_SRC_B__IMM_EXT;
-        ALUOp <= 2'b00;
+        ALUOp <= ALU_OP__ADD;
 
       end
 
@@ -236,7 +236,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__RD1;
         ALUSrcB <= ALU_SRC_B__RD2;
-        ALUOp <= 2'b01;
+        ALUOp <= ALU_OP__BRANCH;
         ResultSrc <= RESULT_SRC__ALU_OUT;
         Branch <= 1'b1;
         case (funct3)
@@ -262,7 +262,7 @@ module ControlFSM
 
         ALUSrcA <= ALU_SRC_A__RD1;
         ALUSrcB <= ALU_SRC_B__RD2;
-        ALUOp <= 2'b01;
+        ALUOp <= ALU_OP__BRANCH;
         ResultSrc <= RESULT_SRC__ALU_OUT;
         Branch <= 1'b1;
         if (alu_result == 32'b1) begin
