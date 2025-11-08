@@ -63,20 +63,30 @@ module Instruction_Decode
 
   //logic for extracting rs1, rs2, and rd registers from 32-bit instruction field
   //The logic depends on the instruction type
+
+  reg [4:0] default_rd;
+  reg [4:0] default_rs1;
+  reg [4:0] default_rs2;
+
+
   always @(*) begin
+
+    default_rd = instr[11:7];
+    default_rs1 = instr[19:15];
+    default_rs2 = instr[24:20];
 
     if (opcode == RType) begin //R-Type
 
-      rd = instr[11:7];
-      rs1 = instr[19:15];
-      rs2 = instr[24:20];
+      rd = default_rd;
+      rs1 = default_rs1;
+      rs2 = default_rs2;
 
     end
 
-    else if (opcode == IType_logic || opcode == IType_load) begin //I-Type (where lw is I type)
+    else if (opcode == IType_logic || opcode == IType_load || opcode == IType_jalr) begin //I-Type (where lw is I type)
 
-      rd = instr[11:7];
-      rs1 = instr[19:15];
+      rd = default_rd;
+      rs1 = default_rs1;
       rs2 = 5'b00000;
 
     end
@@ -84,30 +94,30 @@ module Instruction_Decode
     else if (opcode == SType || opcode == BType) begin //S-type and B-Type
 
       rd = 5'b00000;
-      rs1 = instr[19:15];
-      rs2 = instr[24:20];
+      rs1 = default_rs1;
+      rs2 = default_rs2;
 
     end
 
-    else if (opcode == JType) begin //J-Type
+    // else if (opcode == JType) begin //J-Type
 
+    //   rd = instr[11:7];
+    //   rs1 = 5'b00000;
+    //   rs2 = 5'b00000;
+
+    // end
+
+    else if (opcode == UType_auipc || opcode == UType_lui || opcode == JType) begin
       rd = instr[11:7];
       rs1 = 5'b00000;
       rs2 = 5'b00000;
-
     end
 
-    else if (opcode == UType_auipc || opcode == UType_lui) begin
-      rd = instr[11:7];
-      rs1 = 5'b00000;
-      rs2 = 5'b00000;
-    end
-
-    else if (opcode == IType_jalr) begin
-      rd = instr[11:7];
-      rs1 = instr[19:15];
-      rs2 = 5'b00000;
-    end
+    // else if (opcode == IType_jalr) begin
+    //   rd = instr[11:7];
+    //   rs1 = instr[19:15];
+    //   rs2 = 5'b00000;
+    // end
 
     else begin
 
