@@ -41,7 +41,6 @@ module top #( parameter MEM_SIZE = 1024 )
   wire [3:0] __tmp_MemWrite;
   wire __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
-  //wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [3:0] __tmp_FSMState;
