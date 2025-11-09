@@ -26,29 +26,33 @@ module Instruction_Decode
 
   always @(*) begin
 
-    default_funct3 = instr[14:12];
-    default_funct7 = instr[31:25];
+    // default_funct3 = instr[14:12];
+    // default_funct7 = instr[31:25];
+
+    funct3 = 3'b000;
+    funct7 = 7'b0;
+
     case (opcode)
 
     RType, IType_logic: begin //R-Type
 
-      funct3 = default_funct3;
-      funct7 = default_funct7;
+      funct3 = instr[14:12];
+      funct7 = instr[31:25];
 
     end
 
     IType_load, SType, BType: begin
 
-      funct3 = default_funct3;
+      funct3 = instr[14:12];
 
     end
 
-    default: begin // U-Type and J-Type
+    // default: begin // U-Type and J-Type
 
-      funct3 = 3'b000;
-      funct7 = 7'b0;
+    //   funct3 = 3'b000;
+    //   funct7 = 7'b0;
 
-    end
+    // end
     endcase
   end
 
@@ -78,43 +82,48 @@ module Instruction_Decode
 
   always @(*) begin
 
-    default_rd = instr[11:7];
-    default_rs1 = instr[19:15];
-    default_rs2 = instr[24:20];
+    // default_rd = instr[11:7];
+    // default_rs1 = instr[19:15];
+    // default_rs2 = instr[24:20];
+
+    rd = 5'b00000;
+    rs1 = 5'b00000;
+    rs2 = 5'b00000;
+
     case (opcode)
 
         RType: begin //R-Type
 
-        rd = default_rd;
-        rs1 = default_rs1;
-        rs2 = default_rs2;
+        rd = instr[11:7];
+        rs1 = instr[19:15];
+        rs2 = instr[24:20];
 
       end
 
       IType_logic, IType_load, IType_jalr: begin //I-Type (where lw is I type)
 
-        rd = default_rd;
-        rs1 = default_rs1;
+        rd = instr[11:7];
+        rs1 = instr[19:15];
 
       end
 
       SType, BType: begin //S-type and B-Type
-        rs1 = default_rs1;
-        rs2 = default_rs2;
+        rs1 = instr[19:15];
+        rs2 = instr[24:20];
 
       end
 
       UType_auipc, UType_lui, JType: begin
-        rd = default_rd;
+        rd = instr[11:7];
       end
 
-      default: begin
+      // default: begin
 
-        rd = 5'b00000;
-        rs1 = 5'b00000;
-        rs2 = 5'b00000;
+      //   rd = 5'b00000;
+      //   rs1 = 5'b00000;
+      //   rs2 = 5'b00000;
 
-      end
+      // end
     endcase
   end
 
