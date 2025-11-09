@@ -15,7 +15,7 @@ module Instruction_Decode
   alu_op_t alu_op;
   //reg [2:0] funct3;
   reg [6:0] funct7;
-  wire [3:0] state; 
+  wire [3:0] state;
 
   assign opcode = instr[6:0];
 
