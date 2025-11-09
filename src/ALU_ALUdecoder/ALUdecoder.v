@@ -8,7 +8,7 @@ module ALUdecoder ( input [2:0] funct3
   always @(*)
   begin
   case (alu_op)
-    ALU_OP__MEMORY_ACCESS: alu_control = 4'b0000; //lw, sw (ADD)
+    ALU_OP__ADD: alu_control = 4'b0000; //lw, sw (ADD)
     ALU_OP__BRANCH:
     begin
       case (funct3)

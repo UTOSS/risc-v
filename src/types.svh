@@ -13,7 +13,7 @@ typedef logic [6:0] opcode_t;
 
 // based on table 7.2 of digital design and computer architecture book
 typedef enum logic [1:0]
-  { ALU_OP__MEMORY_ACCESS      = 2'b00
+  { ALU_OP__ADD                = 2'b00
   , ALU_OP__BRANCH             = 2'b01
   , ALU_OP__REGISTER_OPERATION = 2'b10
 
