@@ -20,29 +20,40 @@ module Instruction_Decode
   assign opcode = instr[6:0];
 
   //combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
+
+  reg [2:0] default_funct3;
+  reg [6:0] default_funct7;
+
   always @(*) begin
 
-    if (opcode == RType || opcode == IType_logic) begin //R-Type
+    // default_funct3 = instr[14:12];
+    // default_funct7 = instr[31:25];
+
+    funct3 = 3'b000;
+    funct7 = 7'b0;
+
+    case (opcode)
+
+    RType, IType_logic: begin //R-Type
 
       funct3 = instr[14:12];
       funct7 = instr[31:25];
 
     end
 
-    else if (opcode == IType_load || opcode == SType || opcode == BType) begin
+    IType_load, SType, BType: begin
 
       funct3 = instr[14:12];
-      funct7 = 7'b0;
 
     end
 
-    else begin // U-Type and J-Type
+    // default: begin // U-Type and J-Type
 
-      funct3 = 3'b000;
-      funct7 = 7'b0;
+    //   funct3 = 3'b000;
+    //   funct7 = 7'b0;
 
-    end
-
+    // end
+    endcase
   end
 
   // determine ALU op based on the opcode; see Table 7.2 of the digital design and computer
@@ -63,60 +74,57 @@ module Instruction_Decode
 
   //logic for extracting rs1, rs2, and rd registers from 32-bit instruction field
   //The logic depends on the instruction type
+
+  reg [4:0] default_rd;
+  reg [4:0] default_rs1;
+  reg [4:0] default_rs2;
+
+
   always @(*) begin
 
-    if (opcode == RType) begin //R-Type
+    // default_rd = instr[11:7];
+    // default_rs1 = instr[19:15];
+    // default_rs2 = instr[24:20];
 
-      rd = instr[11:7];
-      rs1 = instr[19:15];
-      rs2 = instr[24:20];
+    rd = 5'b00000;
+    rs1 = 5'b00000;
+    rs2 = 5'b00000;
 
-    end
+    case (opcode)
 
-    else if (opcode == IType_logic || opcode == IType_load) begin //I-Type (where lw is I type)
+        RType: begin //R-Type
 
-      rd = instr[11:7];
-      rs1 = instr[19:15];
-      rs2 = 5'b00000;
+        rd = instr[11:7];
+        rs1 = instr[19:15];
+        rs2 = instr[24:20];
 
-    end
+      end
 
-    else if (opcode == SType || opcode == BType) begin //S-type and B-Type
+      IType_logic, IType_load, IType_jalr: begin //I-Type (where lw is I type)
 
-      rd = 5'b00000;
-      rs1 = instr[19:15];
-      rs2 = instr[24:20];
+        rd = instr[11:7];
+        rs1 = instr[19:15];
 
-    end
+      end
 
-    else if (opcode == JType) begin //J-Type
+      SType, BType: begin //S-type and B-Type
+        rs1 = instr[19:15];
+        rs2 = instr[24:20];
 
-      rd = instr[11:7];
-      rs1 = 5'b00000;
-      rs2 = 5'b00000;
+      end
 
-    end
+      UType_auipc, UType_lui, JType: begin
+        rd = instr[11:7];
+      end
 
-    else if (opcode == UType_auipc || opcode == UType_lui) begin
-      rd = instr[11:7];
-      rs1 = 5'b00000;
-      rs2 = 5'b00000;
-    end
+      // default: begin
 
-    else if (opcode == IType_jalr) begin
-      rd = instr[11:7];
-      rs1 = instr[19:15];
-      rs2 = 5'b00000;
-    end
+      //   rd = 5'b00000;
+      //   rs1 = 5'b00000;
+      //   rs2 = 5'b00000;
 
-    else begin
-
-      rd = 5'b00000;
-      rs1 = 5'b00000;
-      rs2 = 5'b00000;
-
-    end
-
+      // end
+    endcase
   end
 
   // case statement for choosing 32-bit immediate format; based on opcode
