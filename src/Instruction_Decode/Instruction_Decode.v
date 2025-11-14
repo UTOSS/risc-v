@@ -56,7 +56,7 @@ module Instruction_Decode
       BType:      alu_op = ALU_OP__BRANCH;
       UType_auipc: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       UType_lui:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-      FENCE:     alu_op = ALU_OP__UNSET;  
+      FENCE:     alu_op = ALU_OP__UNSET;
       default:    alu_op = ALU_OP__UNSET;
 
     endcase
