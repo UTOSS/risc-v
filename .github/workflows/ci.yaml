@@ -136,7 +136,7 @@ jobs:
 
       - name: Run RISCOF
         run: make riscof_run
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Upload RISCOF report
         if: always()
