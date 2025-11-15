@@ -89,6 +89,8 @@ module ControlFSM
 
         else if (opcode == IType_jalr) next_state = JALR_CALC;
 
+        else if (opcode == FENCE)     next_state = FETCH;
+
         else next_state = DECODE;
 
       end
