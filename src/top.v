@@ -19,6 +19,7 @@ module top #( parameter MEM_SIZE = 1024 )
   opcode_t opcode;
   imm_t    imm_ext;
   reg [2:0] funct3;
+  reg [6:0] funct7;
 
   integer byteindex;
 
@@ -43,7 +44,7 @@ module top #( parameter MEM_SIZE = 1024 )
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
-  wire [3:0] __tmp_FSMState;
+  wire [4:0] __tmp_FSMState;
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
 
@@ -127,6 +128,7 @@ module top #( parameter MEM_SIZE = 1024 )
     ( .instr           ( instruction      )
     , .opcode          ( opcode           )
     , .funct3          ( funct3           )
+    , .funct7          ( funct7           )
     , .ALUControl      ( __tmp_ALUControl )
     , .imm_ext         ( imm_ext          )
     , .rd              ( rd               )
@@ -191,5 +193,27 @@ module top #( parameter MEM_SIZE = 1024 )
     dataA <= rd1;
     dataB <= rd2;
   end
+
+  Logger CoreLog
+  (
+    .clk              ( clk              )
+  , .pc_cur           ( pc_cur           )
+  , .instruction      ( instruction      )
+  , .FSM_State        ( __tmp_FSMState   )
+  , .opcode           ( opcode           )
+  , .funct3           ( funct3           )
+  , .funct7           ( funct7           )
+  , .rs1              ( rs1              )
+  , .rs2              ( rs2              )
+  , .rd               ( rd               )
+  , .imm_ext          ( imm_ext          )
+  , .memory_address   ( memory_address   )
+  , .memory_data      ( mem_load_result  )
+  , .write_enable     ( __tmp_MemWrite   )
+  , .rd1              ( rd1              )
+  , .rd2              ( rd2              )
+  , .result           ( result           )
+  , .regWrite         ( cfsm__reg_write  )
+  );
 
 endmodule
