@@ -42,7 +42,6 @@ module top #( parameter MEM_SIZE = 1024 )
   wire [3:0] __tmp_MemWrite;
   wire __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
-  wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [4:0] __tmp_FSMState;
@@ -69,7 +68,6 @@ module top #( parameter MEM_SIZE = 1024 )
     , .Branch     ( __tmp_Branch     )
     , .ALUSrcA    ( __tmp_ALUSrcA    )
     , .ALUSrcB    ( __tmp_ALUSrcB    )
-    , .ALUOp      ( __tmp_ALUOp      )
     , .ResultSrc  ( cfsm__result_src )
     , .FSMState   ( __tmp_FSMState   )
     );
