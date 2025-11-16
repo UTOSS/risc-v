@@ -52,11 +52,12 @@ module Instruction_Decode
     case (opcode)
       RType:      alu_op = ALU_OP__REGISTER_OPERATION;
       IType_load: alu_op = ALU_OP__ADD;
-    IType_jalr: alu_op = ALU_OP__ADD; // rs1 + imm
+      IType_jalr: alu_op = ALU_OP__ADD; // rs1 + imm
       SType:      alu_op = ALU_OP__ADD;
       BType:      alu_op = ALU_OP__BRANCH;
-    UType_auipc: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-    UType_lui:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
+      UType_auipc: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
+      UType_lui:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
+      FENCE:     alu_op = ALU_OP__UNSET;
       default:    alu_op = ALU_OP__UNSET;
 
     endcase
