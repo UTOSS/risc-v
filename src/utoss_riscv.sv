@@ -5,10 +5,10 @@ module utoss_riscv
   , input wire reset
 
   // memory interface begin
-  , output addr_t memory__address
-  , output data_t memory__write_data
-  , output logic  memory__write_enable
-  , input  data_t memory__read_data
+  , output addr_t       memory__address
+  , output data_t       memory__write_data
+  , output logic  [3:0] memory__write_enable
+  , input  data_t       memory__read_data
   // memory interface end
   );
 
@@ -24,6 +24,7 @@ module utoss_riscv
   opcode_t opcode;
   imm_t    imm_ext;
   reg [2:0] funct3;
+  reg [6:0] funct7;
 
   integer byteindex;
 
@@ -45,32 +46,33 @@ module utoss_riscv
   adr_src_t cfsm__adr_src;
   wire __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
-  wire [2:0] __tmp_ALUOp;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
-  wire [3:0] __tmp_FSMState;
+  wire [4:0] __tmp_FSMState;
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
 
-  assign memory__write_data = dataB;
+  logic [3:0] MemWriteByteAddress;
 
   ControlFSM control_fsm
-    ( .opcode    ( opcode               )
-    , .clk       ( clk                  )
-    , .reset     ( reset                )
-    , .zero_flag ( alu__zero_flag       )
-    , .AdrSrc    ( cfsm__adr_src        )
-    , .IRWrite   ( cfsm__ir_write       )
-    , .RegWrite  ( cfsm__reg_write      )
-    , .PCUpdate  ( cfsm__pc_update      )
-    , .pc_src    ( cfsm__pc_src         )
-    , .MemWrite  ( memory__write_enable )
-    , .Branch    ( __tmp_Branch         )
-    , .ALUSrcA   ( __tmp_ALUSrcA        )
-    , .ALUSrcB   ( __tmp_ALUSrcB        )
-    , .ALUOp     ( __tmp_ALUOp          )
-    , .ResultSrc ( cfsm__result_src     )
-    , .FSMState  ( __tmp_FSMState       )
+    ( .opcode     ( opcode               )
+    , .clk        ( clk                  )
+    , .reset      ( reset                )
+    , .zero_flag  ( alu__zero_flag       )
+    , .MemWriteByteAddress ( MemWriteByteAddress )
+    , .funct3     ( funct3               )
+    , .alu_result ( alu_result           )
+    , .AdrSrc     ( cfsm__adr_src        )
+    , .IRWrite    ( cfsm__ir_write       )
+    , .RegWrite   ( cfsm__reg_write      )
+    , .PCUpdate   ( cfsm__pc_update      )
+    , .pc_src     ( cfsm__pc_src         )
+    , .MemWrite   ( memory__write_enable )
+    , .Branch     ( __tmp_Branch         )
+    , .ALUSrcA    ( __tmp_ALUSrcA        )
+    , .ALUSrcB    ( __tmp_ALUSrcB        )
+    , .ResultSrc  ( cfsm__result_src     )
+    , .FSMState   ( __tmp_FSMState       )
     );
 
   fetch fetch
@@ -101,10 +103,13 @@ module utoss_riscv
   end
 
   MemoryLoader MemLoad
-  ( .memory_data       ( memory__read_data )
-  , .memory_address    ( memory__address   )
-  , .mem_load_result   ( mem_load_result   )
-  , .funct3            ( funct3            )
+  ( .memory_data          ( memory__read_data   )
+  , .memory_address       ( memory__address     )
+  , .mem_load_result      ( mem_load_result     )
+  , .funct3               ( funct3              )
+  , .dataB                ( dataB               )
+  , .MemWriteByteAddress  ( MemWriteByteAddress )
+  , .__tmp_MemData        ( memory__write_data  )
   );
 
   always @(posedge clk) begin
@@ -115,6 +120,7 @@ module utoss_riscv
     ( .instr           ( instruction      )
     , .opcode          ( opcode           )
     , .funct3          ( funct3           )
+    , .funct7          ( funct7           )
     , .ALUControl      ( __tmp_ALUControl )
     , .imm_ext         ( imm_ext          )
     , .rd              ( rd               )
@@ -179,5 +185,27 @@ module utoss_riscv
     dataA <= rd1;
     dataB <= rd2;
   end
+
+  Logger CoreLog
+  (
+    .clk              ( clk              )
+  , .pc_cur           ( pc_cur           )
+  , .instruction      ( instruction      )
+  , .FSM_State        ( __tmp_FSMState   )
+  , .opcode           ( opcode           )
+  , .funct3           ( funct3           )
+  , .funct7           ( funct7           )
+  , .rs1              ( rs1              )
+  , .rs2              ( rs2              )
+  , .rd               ( rd               )
+  , .imm_ext          ( imm_ext          )
+  , .memory_address   ( memory__address  )
+  , .memory_data      ( mem_load_result  )
+  , .write_enable     ( memory__write_enable )
+  , .rd1              ( rd1              )
+  , .rd2              ( rd2              )
+  , .result           ( result           )
+  , .regWrite         ( cfsm__reg_write  )
+  );
 
 endmodule

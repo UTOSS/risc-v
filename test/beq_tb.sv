@@ -103,7 +103,7 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    assert (uut.core.fetch.pc_cur == 32'h00000008)
+    assert (uut.core.fetch.pc_cur == 32'h00000004)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
     @(posedge clk); #1; // check that zero-setting instructions do not result in a jump

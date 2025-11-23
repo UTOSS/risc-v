@@ -6,10 +6,10 @@ module top
   , input wire reset
   );
 
-  addr_t memory__address;
-  data_t memory__write_data;
-  logic  memory__write_enable;
-  data_t memory__read_data;
+  addr_t       memory__address;
+  data_t       memory__write_data;
+  logic  [3:0] memory__write_enable;
+  data_t       memory__read_data;
 
   MA #( .SIZE ( MEM_SIZE ) )
     memory
