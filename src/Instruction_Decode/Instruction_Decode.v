@@ -26,9 +26,6 @@ module Instruction_Decode
 
   always @(*) begin
 
-    // default_funct3 = instr[14:12];
-    // default_funct7 = instr[31:25];
-
     funct3 = 3'b000;
     funct7 = 7'b0;
 
@@ -47,12 +44,6 @@ module Instruction_Decode
 
     end
 
-    // default: begin // U-Type and J-Type
-
-    //   funct3 = 3'b000;
-    //   funct7 = 7'b0;
-
-    // end
     endcase
   end
 
@@ -81,10 +72,6 @@ module Instruction_Decode
 
 
   always @(*) begin
-
-    // default_rd = instr[11:7];
-    // default_rs1 = instr[19:15];
-    // default_rs2 = instr[24:20];
 
     rd = 5'b00000;
     rs1 = 5'b00000;
@@ -117,13 +104,6 @@ module Instruction_Decode
         rd = instr[11:7];
       end
 
-      // default: begin
-
-      //   rd = 5'b00000;
-      //   rs1 = 5'b00000;
-      //   rs2 = 5'b00000;
-
-      // end
     endcase
   end
 
