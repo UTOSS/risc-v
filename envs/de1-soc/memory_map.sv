@@ -31,10 +31,10 @@ module memory_map #( parameter SIZE = 1024 )
           if (|write_enable) LEDR <= write_data[9:0];
         end
         default: begin
-          if (write_enable[0]) M[mem_index][7:0]   <= write_data[7:0];
-          if (write_enable[1]) M[mem_index][15:8]  <= write_data[15:8];
-          if (write_enable[2]) M[mem_index][23:16] <= write_data[23:16];
-          if (write_enable[3]) M[mem_index][31:24] <= write_data[31:24];
+          // this is not compliant with our write_enable mechanism, and essentially breaks the
+          // sub-word writing instructions (e.g. sb); however i could not get the per-byte writes on
+          // de1-soc for some reason
+          if (|write_enable) M[mem_index] <= write_data;
         end
       endcase
     end
