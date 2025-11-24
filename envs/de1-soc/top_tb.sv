@@ -3,8 +3,8 @@
 module top_tb;
 
   logic clk;
-  logic [3:0] reset;
-  logic [9:0] ledr;
+  reg [3:0] reset;
+  reg [9:0] ledr;
 
   top uut
     ( .CLOCK_50 ( clk   )
@@ -22,7 +22,9 @@ module top_tb;
 
     #1000;
 
-    assert (ledr === 10'b1000000) else $fatal(1, "Top TB failed");
+    assert (ledr === 10'h40) else $fatal(1, "Top TB failed");
+
+    $finish;
   end
 
   initial begin

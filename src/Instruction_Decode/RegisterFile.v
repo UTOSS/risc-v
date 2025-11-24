@@ -33,7 +33,12 @@ module registerFile
 
   always @(posedge clk) begin
 
-    if (reset) RFMem[0] <= 0; //register r0 should always remain at 0
+    if (reset) begin
+      integer i;
+      for (i = 0; i < 32; i = i + 1) begin
+        RFMem[i] <= 32'd0;
+      end
+    end
 
     if (regWrite && Addr3 != 0) begin
 

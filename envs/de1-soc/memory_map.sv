@@ -16,10 +16,12 @@ module memory_map #( parameter SIZE = 1024 )
 
     localparam LEDR_ADDRESS = 32'h10000000;
 
+    wire [31:0] mem_index = address[31:2] % SIZE;
+
     always @(*) begin
       case (address)
         LEDR_ADDRESS: read_data = {22'b0, LEDR};
-        default: read_data = M[address[31:2]];
+        default: read_data = M[mem_index];
       endcase
     end
 
@@ -27,10 +29,10 @@ module memory_map #( parameter SIZE = 1024 )
       case (address)
         LEDR_ADDRESS: LEDR <= write_data[9:0];
         default: begin
-          if (write_enable[0]) M[address[31:2]][7:0]   <= write_data[7:0];
-          if (write_enable[1]) M[address[31:2]][15:8]  <= write_data[15:8];
-          if (write_enable[2]) M[address[31:2]][23:16] <= write_data[23:16];
-          if (write_enable[3]) M[address[31:2]][31:24] <= write_data[31:24];
+          if (write_enable[0]) M[mem_index][7:0]   <= write_data[7:0];
+          if (write_enable[1]) M[mem_index][15:8]  <= write_data[15:8];
+          if (write_enable[2]) M[mem_index][23:16] <= write_data[23:16];
+          if (write_enable[3]) M[mem_index][31:24] <= write_data[31:24];
         end
       endcase
     end
