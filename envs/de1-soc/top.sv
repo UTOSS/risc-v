@@ -9,7 +9,7 @@ module top
   reg clk_5mhz = 0;
 
   always @(posedge CLOCK_50) begin
-    if (clk_counter == 4'd9) begin
+    if (clk_counter >= 4'd5) begin
       clk_counter <= 0;
       clk_5mhz <= ~clk_5mhz;
     end else begin
