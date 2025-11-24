@@ -186,6 +186,7 @@ module utoss_riscv
     dataB <= rd2;
   end
 
+`ifndef UTOSS_RISCV_SYNTHESIS
   Logger CoreLog
   (
     .clk              ( clk              )
@@ -207,5 +208,6 @@ module utoss_riscv
   , .result           ( result           )
   , .regWrite         ( cfsm__reg_write  )
   );
+`endif
 
 endmodule
