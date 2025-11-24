@@ -1,3 +1,5 @@
+`include "src/types.svh"
+`include "src/params.svh"
 module Logger
 ( input wire clk
 , input addr_t pc_cur
