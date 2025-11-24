@@ -4,10 +4,10 @@ module top
   , output wire [9:0] LEDR
   );
 
-  addr_t memory__address;
-  data_t memory__write_data;
-  logic  memory__write_enable;
-  data_t memory__read_data;
+  addr_t       memory__address;
+  data_t       memory__write_data;
+  logic  [3:0] memory__write_enable;
+  data_t       memory__read_data;
 
   memory_map #( .SIZE ( 512 ) )
     memory_map
