@@ -18,9 +18,19 @@ module top_tb;
   end
 
   initial begin
-    reset <= 4'b1111; #10; reset <= 4'b0000;
+    integer i;
 
-    #1000;
+    reset <= 4'b1111;
+
+    for (i = 0; i < 32; i = i + 1) begin
+      uut.core.RegFile.RFMem[i] = 32'h0;
+    end
+
+    #10;
+
+    reset <= 4'b0000;
+
+    #2000;
 
     assert (ledr === 10'h40) else $fatal(1, "Top TB failed");
 
