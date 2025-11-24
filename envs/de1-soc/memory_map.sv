@@ -12,7 +12,7 @@ module memory_map #( parameter SIZE = 1024 )
     reg [31:0] M[0:SIZE -1];
 
     // need to run make in the poc directory before this command can succeed
-    initial $readmemh("poc/poc.mem", M);
+    initial $readmemh("envs/de1-soc/poc/poc.mem", M);
 
     localparam LEDR_ADDRESS = 32'h10000000;
 
