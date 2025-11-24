@@ -27,7 +27,9 @@ module memory_map #( parameter SIZE = 1024 )
 
     always @(posedge clk) begin
       case (address)
-        LEDR_ADDRESS: LEDR <= write_data[9:0];
+        LEDR_ADDRESS: begin
+          if (|write_enable) LEDR <= write_data[9:0];
+        end
         default: begin
           if (write_enable[0]) M[mem_index][7:0]   <= write_data[7:0];
           if (write_enable[1]) M[mem_index][15:8]  <= write_data[15:8];
