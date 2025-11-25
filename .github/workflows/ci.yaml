@@ -176,5 +176,5 @@ jobs:
         if: steps.build-poc.outcome == 'success'
         with:
           name: de1-soc-tb-vcd
-          path: envs/de1-soc/tb_top.vcd
+          path: envs/de1-soc/top_tb.vcd
           retention-days: 7
