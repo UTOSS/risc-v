@@ -111,13 +111,3 @@ svlint_tb:
 
 .PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb
 
-# tmp
-
-DE1_SOC_SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
-        			  $(shell find $(ENVS_DIR)/de1-soc -name "*.sv" -o -name "*.v")
-
-envs/de1-soc/top_tb.vvp: $(DE1_SOC_SRCS)
-	$(IVERILOG) -g2012 -o $@ $(DE1_SOC_SRCS)
-
-run_de1_soc_top_tb: envs/de1-soc/top_tb.vvp
-	$(VVP) -N $<

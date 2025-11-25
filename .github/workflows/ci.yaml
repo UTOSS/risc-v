@@ -150,3 +150,31 @@ jobs:
             riscof/riscof_work/report.html
             riscof/riscof_work/style.css
           retention-days: 7
+
+  de1-soc:
+    timeout-minutes: 30
+    needs:
+      - build_ci_image
+      - build_and_test
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build PoC
+        id: build-poc
+        run: cd envs/de1-soc/poc && make
+
+      - name: Build and run DE1-SoC testbench
+        run: cd envs/de1-soc && make
+
+      - name: Upload VCD file
+        uses: actions/upload-artifact@v4
+        if: steps.build-poc.outcome == 'success'
+        with:
+          name: de1-soc-tb-vcd
+          path: envs/de1-soc/tb_top.vcd
+          retention-days: 7
