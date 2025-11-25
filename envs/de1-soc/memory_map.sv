@@ -1,3 +1,5 @@
+`include "src/types.svh"
+
 module memory_map #( parameter SIZE = 1024 )
   ( input  wire         clk
 
@@ -12,7 +14,7 @@ module memory_map #( parameter SIZE = 1024 )
     reg [31:0] M[0:SIZE -1];
 
     // need to run make in the poc directory before this command can succeed
-    initial $readmemh("envs/de1-soc/poc/poc.mem", M);
+    initial $readmemh("poc/poc.mem", M);
 
     localparam bit [31:0] LEDR_ADDRESS = 32'h10000000;
 

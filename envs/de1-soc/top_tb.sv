@@ -30,7 +30,7 @@ module top_tb;
 
     reset <= 4'b0000;
 
-    #100000;
+    #10000;
 
     assert (ledr === 10'h40) else $fatal(1, "Top TB failed");
 
