@@ -76,6 +76,9 @@ jobs:
       - name: lint testbench
         run: make svlint_tb
 
+      - name: lint DE1-SoC environment files
+        run: make svlint ENV=de1-soc
+
   build_and_test:
     timeout-minutes: 30
     needs: build_ci_image
