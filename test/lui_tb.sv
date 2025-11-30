@@ -8,7 +8,7 @@ module lui_tb;
   logic clk;
   logic reset;
 
-  utoss_riscv uut
+  top uut
     ( .clk ( clk )
     , .reset( reset )
     );

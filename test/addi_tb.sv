@@ -7,7 +7,7 @@ module addi_tb;
   reg clk;
   reg reset;
 
-  utoss_riscv uut
+  top uut
     ( .clk   ( clk   )
     , .reset ( reset )
     );
