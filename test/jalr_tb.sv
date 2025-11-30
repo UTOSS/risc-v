@@ -9,7 +9,7 @@ module jalr_tb;
   reg reset;
 
   // DUT
-  top uut
+  utoss_riscv uut
     ( .clk   ( clk   )
     , .reset ( reset )
     );

@@ -8,7 +8,7 @@ module memoryload_tb;
   reg reset;
   integer expected_pc = 0;
 
-  top uut
+  utoss_riscv uut
     ( .clk   ( clk   )
     , .reset ( reset )
     );

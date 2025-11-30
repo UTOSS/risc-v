@@ -8,7 +8,7 @@ module nop_tb;
     reg reset;
 
     //instantiate top module
-    top uut ( .clk(clk), .reset(reset) );
+    utoss_riscv uut ( .clk(clk), .reset(reset) );
 
     //helper task to compare current state with the expected current state
     task wait_till_next_cfsm_state(input [5:0] expected_state);

@@ -8,7 +8,7 @@ module auipc_tb;
   logic clk;
   logic reset;
 
-  top uut
+  utoss_riscv uut
     ( .clk ( clk )
     , .reset( reset )
     );
