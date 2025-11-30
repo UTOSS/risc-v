@@ -1,4 +1,4 @@
-`include "src/headers/params.vh"
+`include "src/headers/params.svh"
 `include "src/headers/types.svh"
 
 interface if_to_id_if (input clk);

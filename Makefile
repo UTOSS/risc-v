@@ -49,7 +49,7 @@ run_top: $(OUT_DIR)/top_sim
 $(OUT_DIR)/top_sim: $(SRCS)
 	@mkdir -p $(BUILD_DIR)/top
 	$(VERILATOR) $(VERILATOR_FLAGS) \
-		--top-module top \
+		--top-module utoss_riscv \
 		--Mdir $(BUILD_DIR)/top \
 		-o top_sim \
 		$(SRCS)
