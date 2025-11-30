@@ -13,7 +13,7 @@ module MemoryLoader
     logic [1:0] byteindex;
     assign byteindex = memory_address[1:0];
 
-    typedef enum
+    typedef enum logic [1:0]
     { BYTE = 'b00
     , HALF = 'b01
     , WORD = 'b10
