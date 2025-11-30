@@ -2,12 +2,14 @@
 # Directories and tools
 # ===========================
 SRC_DIR      := src
+ENVS_DIR     := envs
 TB_DIR       := test
 OUT_DIR      := out
 BUILD_DIR    := build
 VERILATOR    := verilator
 TB_VCD_BASE_PATH := $(TB_DIR)/vcd
 
+ENV          := simulation
 RISCOF_DIR           := riscof
 RISCOF_DUT_SRC       := $(RISCOF_DIR)/dut.sv
 RISCOF_DUT_BIN       := $(RISCOF_DIR)/dut_sim
@@ -20,7 +22,8 @@ VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc \
 # ===========================
 # Sources
 # ===========================
-SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v")
+SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
+        $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
 TB_UTILS := $(TB_DIR)/utils.svh
 TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
@@ -37,7 +40,12 @@ $(shell mkdir -p $(BUILD_DIR)/top)
 # ===========================
 all: build_top
 	@echo "Build finished! Try 'make run_top' or 'make run_tb'."
+	
+print_srcs:
+	@echo $(SRCS)
 
+print_tb_srcs:
+	@echo $(TB_SRCS)
 # ===========================
 # Top module
 # ===========================
