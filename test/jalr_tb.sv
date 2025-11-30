@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-`include "src/types.svh"  // for enum literals like PC_SRC__ALU_RESULT
+`include "src/headers/types.svh"  // for enum literals like PC_SRC__ALU_RESULT
 `include "test/utils.svh"
 
 module jalr_only_tb;
