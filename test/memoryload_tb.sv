@@ -20,37 +20,37 @@ module memoryload_tb;
 
   task wait_till_next_cfsm_state(input [5:0] expected_state);
     @(posedge clk); #1;
-    `assert_equal(uut.control_fsm.current_state, expected_state)
+    `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   task check_next_memory_read(input [31:0] expected_addr, input [31:0] expected_word);
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
-    `assert_equal(uut.opcode, 7'b0000011)
-    `assert_equal(uut.instruction_decode.rs1, 2)
-    `assert_equal(uut.instruction_decode.imm_ext, expected_addr - 32'h10)
+    `assert_equal(uut.core.opcode, 7'b0000011)
+    `assert_equal(uut.core.instruction_decode.rs1, 2)
+    `assert_equal(uut.core.instruction_decode.imm_ext, expected_addr - 32'h10)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
 
-    `assert_equal(uut.alu.a, 32'h10)
-    `assert_equal(uut.alu.b, expected_addr - 32'h10)
-    `assert_equal(uut.alu.out, expected_addr)
+    `assert_equal(uut.core.alu.a, 32'h10)
+    `assert_equal(uut.core.alu.b, expected_addr - 32'h10)
+    `assert_equal(uut.core.alu.out, expected_addr)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMREAD);
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMREAD);
 
-    `assert_equal(uut.result, expected_addr)
-    `assert_equal(uut.memory_address, expected_addr)
+    `assert_equal(uut.core.result, expected_addr)
+    `assert_equal(uut.memory__address, expected_addr)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMWB);
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWB);
 
-    `assert_equal(uut.data, expected_word)
-    `assert_equal(uut.result, expected_word)
+    `assert_equal(uut.core.data, expected_word)
+    `assert_equal(uut.core.result, expected_word)
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
-    `assert_equal(uut.RegFile.RFMem[1], expected_word)
+    `assert_equal(uut.core.RegFile.RFMem[1], expected_word)
     expected_pc = expected_pc + 4;
-    `assert_equal(uut.fetch.pc_cur, expected_pc)
+    `assert_equal(uut.core.fetch.pc_cur, expected_pc)
   endtask
 
   initial begin
@@ -107,9 +107,9 @@ module memoryload_tb;
     uut.memory.M[46] = 32'h00800000; // address 0xb8
     uut.memory.M[47] = 32'h80000000; // address 0xbc
 
-    uut.RegFile.RFMem[2] = 32'h10;
+    uut.core.RegFile.RFMem[2] = 32'h10;
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
     reset <= `FALSE;
 
     // signed byte reads
