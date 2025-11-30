@@ -1,5 +1,5 @@
-`include "src/params.vh"
-`include "src/types.svh"
+`include "src/headers/params.vh"
+`include "src/headers/types.svh"
 
 module Instruction_Decode
   ( input wire [31:0] instr
