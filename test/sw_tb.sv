@@ -19,7 +19,7 @@ module sw_tb;
 
   task wait_till_next_cfsm_state(input [5:0] expected_state);
     @(posedge clk); #1;
-    `assert_equal(uut.control_fsm.current_state, expected_state)
+    `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   initial begin
@@ -35,62 +35,62 @@ module sw_tb;
     uut.memory.M[13] = 32'h00000000; // will be written by sw x5, 8(x6)
 
     // set up register file
-    uut.RegFile.RFMem[6] = 44;    // x6 = 44
-    uut.RegFile.RFMem[5] = 256;   // x5 = 256
+    uut.core.RegFile.RFMem[6] = 44;    // x6 = 44
+    uut.core.RegFile.RFMem[5] = 256;   // x5 = 256
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
     reset <= `FALSE;
 
     // --- Instruction 1: sw x5, 0(x6) ---
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
-    `assert_equal(uut.opcode, 7'b0100011)
-    `assert_equal(uut.instruction_decode.rs1, 6)
-    `assert_equal(uut.instruction_decode.rs2, 5)
-    `assert_equal(uut.instruction_decode.imm_ext, 0)
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    `assert_equal(uut.core.opcode, 7'b0100011)
+    `assert_equal(uut.core.instruction_decode.rs1, 6)
+    `assert_equal(uut.core.instruction_decode.rs2, 5)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 0)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
-    `assert_equal(uut.alu.out, 44)
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
+    `assert_equal(uut.core.alu.out, 44)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMWRITE);
-    `assert_equal(uut.memory_address, 44)
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
+    `assert_equal(uut.core.memory__address, 44)
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
     `assert_equal(uut.memory.M[11], 256)
-    `assert_equal(uut.fetch.pc_cur, 4)
+    `assert_equal(uut.core.fetch.pc_cur, 4)
 
     // --- Instruction 2: sw x5, 4(x6) ---
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
-    `assert_equal(uut.instruction_decode.imm_ext, 4)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 4)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
 
-    `assert_equal(uut.alu.out, 48)
+    `assert_equal(uut.core.alu.out, 48)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMWRITE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
     `assert_equal(uut.memory.M[12], 256)
-    `assert_equal(uut.fetch.pc_cur, 8)
+    `assert_equal(uut.core.fetch.pc_cur, 8)
 
     // --- Instruction 3: sw x5, 8(x6) ---
-    wait_till_next_cfsm_state(uut.control_fsm.DECODE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
-    `assert_equal(uut.opcode, 7'b0100011)
-    `assert_equal(uut.instruction_decode.rs1, 6)
-    `assert_equal(uut.instruction_decode.rs2, 5)
-    `assert_equal(uut.instruction_decode.imm_ext, 8)
+    `assert_equal(uut.core.opcode, 7'b0100011)
+    `assert_equal(uut.core.instruction_decode.rs1, 6)
+    `assert_equal(uut.core.instruction_decode.rs2, 5)
+    `assert_equal(uut.core.instruction_decode.imm_ext, 8)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMADR);
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
 
-    `assert_equal(uut.alu.out, 52)
+    `assert_equal(uut.core.alu.out, 52)
 
-    wait_till_next_cfsm_state(uut.control_fsm.MEMWRITE);
+    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
 
-    wait_till_next_cfsm_state(uut.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
     `assert_equal(uut.memory.M[13], 256)
 
@@ -98,8 +98,8 @@ module sw_tb;
     `assert_equal(uut.memory.M[11], 256)
     `assert_equal(uut.memory.M[12], 256)
     `assert_equal(uut.memory.M[13], 256)
-    `assert_equal(uut.RegFile.RFMem[5], 256)
-    `assert_equal(uut.RegFile.RFMem[6], 44)
+    `assert_equal(uut.core.RegFile.RFMem[5], 256)
+    `assert_equal(uut.core.RegFile.RFMem[6], 44)
 
     $finish;
   end
