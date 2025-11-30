@@ -1,5 +1,5 @@
 `include "src/headers/types.svh"
-`include "src/headers/params.vh"
+`include "src/headers/params.svh"
 module Logger
 ( input wire clk
 , input addr_t pc_cur
@@ -23,7 +23,7 @@ module Logger
     string source_register2 = "unknown";
     string destination_register = "unknown";
     string complete_instruction = "unknown";
-    wire data_t new_pc;
+    data_t new_pc;
 
     assign new_pc = pc_cur + imm_ext + 'h4;
 

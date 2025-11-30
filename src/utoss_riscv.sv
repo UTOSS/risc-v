@@ -1,9 +1,16 @@
 `include "src/headers/types.svh"
 
-module top #( parameter MEM_SIZE = 1024 )
-            ( input wire clk
-            , input wire reset
-            );
+module utoss_riscv
+  ( input wire clk
+  , input wire reset
+
+  // memory interface begin
+  , output addr_t       memory__address
+  , output data_t       memory__write_data
+  , output logic  [3:0] memory__write_enable
+  , input  data_t       memory__read_data
+  // memory interface end
+  );
 
   wire         cfsm__pc_update;
   wire         cfsm__reg_write;
@@ -12,8 +19,6 @@ module top #( parameter MEM_SIZE = 1024 )
   result_src_t cfsm__result_src;
 
   addr_t   pc_cur;
-  addr_t   memory_address;
-  data_t   memory_data;
   data_t   data;
   instr_t  instruction;
   opcode_t opcode;
@@ -39,7 +44,6 @@ module top #( parameter MEM_SIZE = 1024 )
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
-  wire [3:0] __tmp_MemWrite;
   wire __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
@@ -49,27 +53,26 @@ module top #( parameter MEM_SIZE = 1024 )
   reg  [4:0] rd, rs1, rs2;
 
   logic [3:0] MemWriteByteAddress;
-  logic [31:0] __tmp_MemData;
 
   ControlFSM control_fsm
-    ( .opcode     ( opcode           )
-    , .clk        ( clk              )
-    , .reset      ( reset            )
-    , .zero_flag  ( alu__zero_flag   )
+    ( .opcode     ( opcode               )
+    , .clk        ( clk                  )
+    , .reset      ( reset                )
+    , .zero_flag  ( alu__zero_flag       )
     , .MemWriteByteAddress ( MemWriteByteAddress )
-    , .funct3     ( funct3           )
-    , .alu_result ( alu_result       )
-    , .AdrSrc     ( cfsm__adr_src    )
-    , .IRWrite    ( cfsm__ir_write   )
-    , .RegWrite   ( cfsm__reg_write  )
-    , .PCUpdate   ( cfsm__pc_update  )
-    , .pc_src     ( cfsm__pc_src     )
-    , .MemWrite   ( __tmp_MemWrite   )
-    , .Branch     ( __tmp_Branch     )
-    , .ALUSrcA    ( __tmp_ALUSrcA    )
-    , .ALUSrcB    ( __tmp_ALUSrcB    )
-    , .ResultSrc  ( cfsm__result_src )
-    , .FSMState   ( __tmp_FSMState   )
+    , .funct3     ( funct3               )
+    , .alu_result ( alu_result           )
+    , .AdrSrc     ( cfsm__adr_src        )
+    , .IRWrite    ( cfsm__ir_write       )
+    , .RegWrite   ( cfsm__reg_write      )
+    , .PCUpdate   ( cfsm__pc_update      )
+    , .pc_src     ( cfsm__pc_src         )
+    , .MemWrite   ( memory__write_enable )
+    , .Branch     ( __tmp_Branch         )
+    , .ALUSrcA    ( __tmp_ALUSrcA        )
+    , .ALUSrcB    ( __tmp_ALUSrcB        )
+    , .ResultSrc  ( cfsm__result_src     )
+    , .FSMState   ( __tmp_FSMState       )
     );
 
   fetch fetch
@@ -88,36 +91,25 @@ module top #( parameter MEM_SIZE = 1024 )
 
   always @(*) begin
     case (cfsm__adr_src)
-      ADR_SRC__PC:     memory_address = pc_cur;
-      ADR_SRC__RESULT: memory_address = result;
+      ADR_SRC__PC:     memory__address = pc_cur;
+      ADR_SRC__RESULT: memory__address = result;
     endcase
   end
 
-  MA #( .SIZE ( MEM_SIZE ) )
-    memory // instructions and data
-      ( .A   ( memory_address )
-      , .WD  ( __tmp_MemData  )
-      , .WE  ( __tmp_MemWrite )
-      , .CLK ( clk            )
-
-      // outputs
-      , .RD  ( memory_data    )
-      );
-
   always @(posedge clk) begin
     if (cfsm__ir_write) begin
-      instruction <= memory_data;
+      instruction <= memory__read_data;
     end
   end
 
   MemoryLoader MemLoad
-  ( .memory_data          ( memory_data       )
-  , .memory_address       ( memory_address    )
-  , .mem_load_result      ( mem_load_result   )
-  , .funct3               ( funct3            )
-  , .dataB                ( dataB             )
-  , .MemWriteByteAddress  ( MemWriteByteAddress)
-  , .__tmp_MemData        ( __tmp_MemData     )
+  ( .memory_data          ( memory__read_data   )
+  , .memory_address       ( memory__address     )
+  , .mem_load_result      ( mem_load_result     )
+  , .funct3               ( funct3              )
+  , .dataB                ( dataB               )
+  , .MemWriteByteAddress  ( MemWriteByteAddress )
+  , .__tmp_MemData        ( memory__write_data  )
   );
 
   always @(posedge clk) begin
@@ -194,6 +186,7 @@ module top #( parameter MEM_SIZE = 1024 )
     dataB <= rd2;
   end
 
+`ifndef UTOSS_RISCV_SYNTHESIS
   Logger CoreLog
   (
     .clk              ( clk              )
@@ -207,13 +200,14 @@ module top #( parameter MEM_SIZE = 1024 )
   , .rs2              ( rs2              )
   , .rd               ( rd               )
   , .imm_ext          ( imm_ext          )
-  , .memory_address   ( memory_address   )
+  , .memory_address   ( memory__address  )
   , .memory_data      ( mem_load_result  )
-  , .write_enable     ( __tmp_MemWrite   )
+  , .write_enable     ( memory__write_enable )
   , .rd1              ( rd1              )
   , .rd2              ( rd2              )
   , .result           ( result           )
   , .regWrite         ( cfsm__reg_write  )
   );
+`endif
 
 endmodule

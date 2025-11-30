@@ -141,10 +141,4 @@ svlint:
 svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
-# ===========================
-# Phony targets
-# ===========================
-.PHONY: all run_top build_top build_tb run_tb new_tb \
-        svlint svlint_tb \
-        riscof_build_dut riscof_validateyaml riscof_clone_archtest \
-        riscof_generate_testlist riscof_run
+.PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb
