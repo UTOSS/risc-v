@@ -18,8 +18,9 @@
     end                                                                 \
   end
 
-`define assert_equal(expected, actual) \
-  assert (expected == actual) else $fatal(1, "Expected `%0h`, got `%0h`", expected, actual);
+// This needs to be on one line or the line number in the error message
+// will be off by one.
+`define assert_equal(actual, expected) assert (expected == actual) else $fatal(1, "Expected `%0h`, got `%0h`", expected, actual);
 
 `include "src/utils.svh"
 
