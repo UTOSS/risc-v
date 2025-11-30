@@ -66,11 +66,6 @@ module Instruction_Decode
   //logic for extracting rs1, rs2, and rd registers from 32-bit instruction field
   //The logic depends on the instruction type
 
-  reg [4:0] default_rd;
-  reg [4:0] default_rs1;
-  reg [4:0] default_rs2;
-
-
   always @(*) begin
 
     rd = 5'b00000;
