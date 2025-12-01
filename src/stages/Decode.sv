@@ -83,7 +83,7 @@ module Decode
     , .writeData       ( rd2              )
     );
 
-    always@(posedge clk)
+    always @(posedge clk)
     if (reset) begin
         ID_to_EX.ALUSrcA <= 'b0;
         ID_to_EX.ALUSrcB <= 'b0;

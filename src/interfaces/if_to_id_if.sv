@@ -5,12 +5,12 @@ interface if_to_id_if (input clk);
     instr_t instruction;
 
     modport Fetch(
-        input clk,
+        input clk, 
         output instruction
     );
 
     modport Decode(
-        input clk,
+        input clk, 
         input instruction
     );
 
