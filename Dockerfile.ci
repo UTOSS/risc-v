@@ -81,7 +81,7 @@ RUN sudo apt-get install git help2man perl python3 make autoconf g++ flex bison 
     libgoogle-perftools-dev numactl perl-doc \
     libfl2 \
     libfl-dev \
-    zlibc zlib1g zlib1g-dev
+    zlib1g zlib1g-dev
 RUN git clone https://github.com/verilator/verilator
 RUN unsetenv VERILATOR_ROOT
 RUN unset VERILATOR_ROOT
