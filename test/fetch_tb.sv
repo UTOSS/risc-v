@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
-`include "src/utils.svh"
-`include "src/types.svh"
+`include "src/headers/utils.svh"
+`include "src/headers/types.svh"
 
 `include "test/utils.svh"
 
@@ -45,7 +45,7 @@ module fetch_tb;
     alu_result_for_pc <= 32'h00000000;
     imm_ext <= '0;
 
-    assert (pc_cur === 32'hxxxxxxxx) else $fatal(1, "`pc_cur` is `%0h`", pc_cur);
+    assert (pc_cur === 32'h00000000) else $fatal(1, "`pc_cur` is `%0h`", pc_cur);
 
     reset <= `TRUE;
     #10;

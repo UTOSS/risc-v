@@ -1,4 +1,4 @@
-`include "src/types.svh"
+`include "src/headers/types.svh"
 
 module memory_map #( parameter SIZE = 1024 )
   ( input  wire         clk
