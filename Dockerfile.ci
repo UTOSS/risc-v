@@ -83,13 +83,8 @@ RUN sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bis
     libfl2 \
     libfl-dev \
     zlib1g zlib1g-dev
-RUN git clone https://github.com/verilator/verilator
-RUN cd verilator
-RUN git pull
-RUN autoconf
-RUN ./configure
-RUN make -j 2
-RUN sudo make install
+RUN git clone https://github.com/verilator/verilator && cd verilator && git pull && autoconf && \
+    ./configure && make -j 2 && sudo make install
 
 # CI needs priviledged access
 USER root
