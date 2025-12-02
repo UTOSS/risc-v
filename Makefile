@@ -8,6 +8,7 @@ VVP 		 :=vvp
 # = /opt/iverilog-12/bin/vvp
 
 ENV := simulation
+TB_MACROS := -DTESTBENCH
 
 SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
         $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
@@ -45,7 +46,7 @@ $(OUTPUT): $(SRCS)
 	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS)
 
 $(TB_OUT_PATTERN): $(TB_SRC_PATTERN) $(TB_UTILS) $(SRCS)
-	$(IVERILOG) -g2012 -o $@ $(SRCS) $<
+	$(IVERILOG) $(TB_MACROS) -g2012 -o $@ $(SRCS) $<
 
 new_tb:
 	@if [ -z "$(name)" ]; then \
