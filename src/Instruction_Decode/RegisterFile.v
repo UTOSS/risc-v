@@ -34,13 +34,13 @@ module registerFile
   always @(posedge clk) begin
 
     if (reset) begin
-  `ifndef TESTBENCH
+`ifndef TESTBENCH
       for (int i = 0; i < 32; i = i + 1) begin
             RFMem[i] <= 32'b0;
         end
-  `else 
+`else 
       RFMem[0] <= 32'b0;
-  `endif
+`endif
     end else if (regWrite && Addr3 != 0) begin
       RFMem[Addr3] <= dataIn; //write into destination register if RegWrite = 1
 
