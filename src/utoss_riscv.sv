@@ -96,14 +96,11 @@ module utoss_riscv
     endcase
   end
 
-  always @(posedge clk) begin
-    if (cfsm__ir_write) begin
-      instruction <= memory__read_data;
-    end
-  end
+  assign instruction = cfsm__ir_write ? memory__read_data : instruction;
 
   MemoryLoader MemLoad
-  ( .memory_data          ( memory__read_data   )
+  ( .clk                  ( clk                 )
+  , .memory_data          ( memory__read_data   )
   , .memory_address       ( memory__address     )
   , .mem_load_result      ( mem_load_result     )
   , .funct3               ( funct3              )
@@ -112,9 +109,7 @@ module utoss_riscv
   , .__tmp_MemData        ( memory__write_data  )
   );
 
-  always @(posedge clk) begin
-    data <= mem_load_result;
-  end
+  assign data = mem_load_result;
 
   Instruction_Decode instruction_decode
     ( .instr           ( instruction      )

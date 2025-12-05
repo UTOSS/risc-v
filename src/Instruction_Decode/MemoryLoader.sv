@@ -1,7 +1,8 @@
 `include "src/types.svh"
 
 module MemoryLoader
-( input  data_t memory_data
+( input  wire   clk
+, input  data_t memory_data
 , input  addr_t memory_address
 , input  logic [2:0]  funct3
 , input  logic [31:0] dataB
@@ -9,9 +10,11 @@ module MemoryLoader
 , output logic [3:0] MemWriteByteAddress
 , output logic [31:0] __tmp_MemData
 );
-
     logic [1:0] byteindex;
-    assign byteindex = memory_address[1:0];
+
+    always @ (posedge clk) begin
+      byteindex <= memory_address[1:0];
+    end
 
     typedef enum logic [1:0]
     { BYTE = 'b00
