@@ -103,6 +103,7 @@ module utoss_riscv
   , .memory_data          ( memory__read_data   )
   , .memory_address       ( memory__address     )
   , .mem_load_result      ( mem_load_result     )
+  , .opcode               ( opcode              )
   , .funct3               ( funct3              )
   , .dataB                ( dataB               )
   , .MemWriteByteAddress  ( MemWriteByteAddress )

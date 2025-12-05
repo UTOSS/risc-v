@@ -4,16 +4,32 @@ module MemoryLoader
 ( input  wire   clk
 , input  data_t memory_data
 , input  addr_t memory_address
+, input  opcode_t opcode
 , input  logic [2:0]  funct3
 , input  logic [31:0] dataB
 , output data_t mem_load_result
 , output logic [3:0] MemWriteByteAddress
 , output logic [31:0] __tmp_MemData
 );
-    logic [1:0] byteindex;
+    logic [1:0] byteindex_for_store;
+    logic [1:0] byteindex_for_load;
 
-    always @ (posedge clk) begin
-      byteindex <= memory_address[1:0];
+    // we need different logic for retrieving byteindex depending on whether we are planning to
+    // store or to load; if we are planning to store -- we need to use the byteindex from the
+    // current memory address, since its the one that alu computed for the store to proceed; however
+    // for load instruction we need to use the memory address from the previous clock cycle since
+    // its the address that was used to retrieve the current memory data
+    assign byteindex_for_store = memory_address[1:0];
+    always @(posedge clk) begin
+      byteindex_for_load <= memory_address[1:0];
+    end
+
+    logic [1:0] byteindex;
+    always @(*) begin
+      case (opcode)
+        SType: byteindex <= byteindex_for_store;
+        IType_load: byteindex <= byteindex_for_load;
+      endcase
     end
 
     typedef enum logic [1:0]
