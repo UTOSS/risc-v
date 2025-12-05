@@ -20,10 +20,10 @@ module memory_map #( parameter SIZE = 1024 )
 
     wire [31:0] mem_index = address[31:2] % SIZE;
 
-    always @(*) begin
+    always @(posedge clk) begin
       case (address)
-        LEDR_ADDRESS: read_data = {22'b0, LEDR};
-        default: read_data = M[mem_index];
+        LEDR_ADDRESS: read_data <= {22'b0, LEDR};
+        default: read_data <= M[mem_index];
       endcase
     end
 
