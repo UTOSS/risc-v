@@ -48,6 +48,9 @@ module ControlFSM
 
   // new state for remaining branch instructions
   parameter BRANCHCOMP = 5'b01111;
+  
+  parameter FETCH_WAIT  = 5'b10000;
+
 
   //declare state registers
   reg [4:0] current_state, next_state;
@@ -57,7 +60,8 @@ module ControlFSM
 
     case (current_state)
 
-      FETCH: next_state = DECODE;
+		FETCH:      next_state = FETCH_WAIT;
+		FETCH_WAIT: next_state = DECODE;
 
       DECODE: begin
 
@@ -139,163 +143,168 @@ module ControlFSM
 
   //output logic
   always @(*) begin
-    Branch <= 1'b0;
-    pc_src <= PC_SRC__INCREMENT;
-    PCUpdate <= 1'b0;
-    IRWrite <= 1'b0;
-    MemWrite <= 4'b0;
-    RegWrite <= 1'b0;
-
-    FSMState <= current_state;
+    Branch = 1'b0;
+    pc_src = PC_SRC__INCREMENT;
+    PCUpdate = 1'b0;
+    IRWrite = 1'b0;
+    MemWrite = 4'b0;
+    RegWrite = 1'b0;
+    AdrSrc    = ADR_SRC__PC;
+    ResultSrc = RESULT_SRC__ALU_OUT;
+    FSMState = current_state;
 
     case (current_state)
 
-      FETCH: begin
+		FETCH: begin
+			AdrSrc   = ADR_SRC__PC;
+		end
+		
+		FETCH_WAIT: begin
+			AdrSrc   = ADR_SRC__PC;            
+			IRWrite  = 1'b1;                   
+			PCUpdate = 1'b1;                   
+			pc_src   = PC_SRC__INCREMENT;      
+		end
 
-        AdrSrc <= ADR_SRC__PC;
-        IRWrite <= 1'b1;
-        PCUpdate <= 1'b1;
-
-      end
 
       DECODE: begin
 
-        ALUSrcA <= ALU_SRC_A__OLD_PC;
-        ALUSrcB <= ALU_SRC_B__IMM_EXT;
+        ALUSrcA = ALU_SRC_A__OLD_PC;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
       end
 
       AUIPC: begin
 
-        ALUSrcA <= ALU_SRC_A__OLD_PC;
-        ALUSrcB <= ALU_SRC_B__IMM_EXT;
+        ALUSrcA = ALU_SRC_A__OLD_PC;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
       end
 
       LUI: begin
 
-        ALUSrcA <= ALU_SRC_A__ZERO;
-        ALUSrcB <= ALU_SRC_B__IMM_EXT;
+        ALUSrcA = ALU_SRC_A__ZERO;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
       end
 
       EXECUTER: begin
 
-        ALUSrcA <= ALU_SRC_A__RD1;
-        ALUSrcB <= ALU_SRC_B__RD2;
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__RD2;
 
       end
 
       EXECUTEI: begin
 
-        ALUSrcA <= ALU_SRC_A__RD1;
-        ALUSrcB <= ALU_SRC_B__IMM_EXT;
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
       end
 
       UNCONDJUMP: begin
 
-        ALUSrcA <= ALU_SRC_A__OLD_PC;
-        ALUSrcB <= ALU_SRC_B__4;
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        PCUpdate <= 1'b1;
-        pc_src    <= PC_SRC__JUMP;  // new added
+        ALUSrcA = ALU_SRC_A__OLD_PC;
+        ALUSrcB = ALU_SRC_B__4;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        PCUpdate = 1'b1;
+        pc_src    = PC_SRC__JUMP;  // new added
 
       end
 
       JALR_CALC: begin
-        ALUSrcA  <= ALU_SRC_A__RD1;      // rs1
-        ALUSrcB  <= ALU_SRC_B__IMM_EXT;  // + imm
+        ALUSrcA  = ALU_SRC_A__RD1;      // rs1
+        ALUSrcB  = ALU_SRC_B__IMM_EXT;  // + imm
       end
 
       JALR_STEP2: begin
-        ALUSrcA   <= ALU_SRC_A__OLD_PC;  // Calculate link = pc_old + 4, write back in ALUWB
-        ALUSrcB   <= ALU_SRC_B__4;
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        pc_src    <= PC_SRC__ALU_RESULT; // fetch  (alu_out & ~1) for new PC
-        PCUpdate  <= 1'b1;
+        ALUSrcA   = ALU_SRC_A__OLD_PC;  // Calculate link = pc_old + 4, write back in ALUWB
+        ALUSrcB   = ALU_SRC_B__4;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        pc_src    = PC_SRC__ALU_RESULT; // fetch  (alu_out & ~1) for new PC
+        PCUpdate  = 1'b1;
       end
 
 
       MEMADR: begin
 
-        ALUSrcA <= ALU_SRC_A__RD1;
-        ALUSrcB <= ALU_SRC_B__IMM_EXT;
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
       end
 
       BRANCHIFEQ: begin
 
-        ALUSrcA <= ALU_SRC_A__RD1;
-        ALUSrcB <= ALU_SRC_B__RD2;
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        Branch <= 1'b1;
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__RD2;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        Branch = 1'b1;
         case (funct3)
           3'b000: begin
             if (zero_flag) begin
-              pc_src <= PC_SRC__JUMP;
-              PCUpdate <= 1'b1;
+              pc_src = PC_SRC__JUMP;
+              PCUpdate = 1'b1;
             end
-            else pc_src <= PC_SRC__INCREMENT;
+            else pc_src = PC_SRC__INCREMENT;
           end
 
           3'b001: begin
             if (!zero_flag) begin
-              pc_src <= PC_SRC__JUMP;
-              PCUpdate <= 1'b1;
+              pc_src = PC_SRC__JUMP;
+              PCUpdate = 1'b1;
             end
-            else pc_src <= PC_SRC__INCREMENT;
+            else pc_src = PC_SRC__INCREMENT;
           end
         endcase
       end
 
       BRANCHCOMP: begin
 
-        ALUSrcA <= ALU_SRC_A__RD1;
-        ALUSrcB <= ALU_SRC_B__RD2;
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        Branch <= 1'b1;
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__RD2;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        Branch = 1'b1;
         if (alu_result == 32'b1) begin
-          pc_src <= PC_SRC__JUMP;
-          PCUpdate <= 1'b1;
+          pc_src = PC_SRC__JUMP;
+          PCUpdate = 1'b1;
         end
-        else pc_src <= PC_SRC__INCREMENT;
+        else pc_src = PC_SRC__INCREMENT;
 
       end
 
       ALUWB: begin
 
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        RegWrite <= 1'b1;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        RegWrite = 1'b1;
 
       end
 
       MEMWRITE: begin
 
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        AdrSrc <= ADR_SRC__RESULT;
-        MemWrite <= MemWriteByteAddress;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        AdrSrc = ADR_SRC__RESULT;
+        MemWrite = MemWriteByteAddress;
 
       end
 
       MEMREAD: begin
 
-        ResultSrc <= RESULT_SRC__ALU_OUT;
-        AdrSrc <= ADR_SRC__RESULT;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        AdrSrc = ADR_SRC__RESULT;
 
       end
 
       MEMWB: begin
 
-        ResultSrc <= RESULT_SRC__DATA;
-        RegWrite <= 1'b1;
+        ResultSrc = RESULT_SRC__DATA;
+        RegWrite = 1'b1;
 
       end
 
       default: begin //by default, we return to FETCH state
 
-        AdrSrc <= ADR_SRC__PC;
-        IRWrite <= 1'b1;
+        AdrSrc = ADR_SRC__PC;
+        IRWrite = 1'b1;
 
       end
 
