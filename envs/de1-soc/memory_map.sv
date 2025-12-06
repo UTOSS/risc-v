@@ -12,6 +12,7 @@ module memory_map #( parameter SIZE = 1024 )
   );
 
     reg [31:0] M[0:SIZE -1];
+	  reg [31:0] mem_rdata;
 
     // need to run make in the poc directory before this command can succeed
     initial $readmemh("poc/poc.mem", M);
@@ -23,11 +24,13 @@ module memory_map #( parameter SIZE = 1024 )
     always @(*) begin
       case (address)
         LEDR_ADDRESS: read_data = {22'b0, LEDR};
-        default: read_data = M[mem_index];
+		  //default: read_data = M[mem_index];
+        default: read_data = mem_rdata;
       endcase
     end
 
     always @(posedge clk) begin
+	   mem_rdata <= M[mem_index];
       case (address)
         LEDR_ADDRESS: begin
           if (|write_enable) LEDR <= write_data[9:0];
