@@ -14,9 +14,9 @@ module MemoryLoader
     assign byteindex = memory_address[1:0];
 
     typedef enum logic [1:0]
-    { BYTE = 'b00
-    , HALF = 'b01
-    , WORD = 'b10
+    { BYTE = 2'b00
+    , HALF = 2'b01
+    , WORD = 2'b10
     } transfersize_t;
 
     logic signed_mode;
