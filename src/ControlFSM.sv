@@ -230,6 +230,8 @@ module ControlFSM
 
         ALUSrcA = ALU_SRC_A__RD1;
         ALUSrcB = ALU_SRC_B__IMM_EXT;
+        AdrSrc    = ADR_SRC__RESULT;
+        ResultSrc = RESULT_SRC__ALU_RESULT;
 
       end
 

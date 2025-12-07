@@ -10,17 +10,29 @@ module memory_map #( parameter SIZE = 1024 )
 
   , output reg    [9:0] LEDR
   );
+  
+	 reg [7:0] M0 [0:SIZE-1];  // byte lane 0
+    reg [7:0] M1 [0:SIZE-1];  // byte lane 1
+    reg [7:0] M2 [0:SIZE-1];  // byte lane 2
+    reg [7:0] M3 [0:SIZE-1];  // byte lane 3
 
-    reg [31:0] M[0:SIZE -1];
-	  reg [31:0] mem_rdata;
+	 reg [31:0] M [0:SIZE-1];
+    reg [31:0] mem_rdata;
 
-    // need to run make in the poc directory before this command can succeed
-    initial $readmemh("poc/poc.mem", M);
+    initial begin
+		$readmemh("poc/poc0.mem", M0);
+		$readmemh("poc/poc1.mem", M1);
+		$readmemh("poc/poc2.mem", M2);
+		$readmemh("poc/poc3.mem", M3);
+	 end
 
     localparam bit [31:0] LEDR_ADDRESS = 32'h10000000;
 
-    wire [31:0] mem_index = address[31:2] % SIZE;
-
+    //wire [31:0] mem_index = address[31:2] % SIZE;
+	 localparam int ADDR_LSB   = 2;
+	 localparam int ADDR_WIDTH = $clog2(SIZE);
+	 wire [ADDR_WIDTH-1:0] mem_index = address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];  // I think this way may save some resources
+	 
     always @(*) begin
       case (address)
         LEDR_ADDRESS: read_data = {22'b0, LEDR};
@@ -30,16 +42,23 @@ module memory_map #( parameter SIZE = 1024 )
     end
 
     always @(posedge clk) begin
-	   mem_rdata <= M[mem_index];
+	   mem_rdata <= { M3[mem_index], M2[mem_index], M1[mem_index], M0[mem_index] };
       case (address)
         LEDR_ADDRESS: begin
           if (|write_enable) LEDR <= write_data[9:0];
         end
         default: begin
-          // this is not compliant with our write_enable mechanism, and essentially breaks the
-          // sub-word writing instructions (e.g. sb); however i could not get the per-byte writes on
-          // de1-soc for some reason
-          if (|write_enable) M[mem_index] <= write_data;
+          if (write_enable[0])
+            M0[mem_index] <= write_data[7:0];
+
+          if (write_enable[1])
+            M1[mem_index] <= write_data[15:8];
+
+          if (write_enable[2])
+            M2[mem_index] <= write_data[23:16];
+
+          if (write_enable[3])
+            M3[mem_index] <= write_data[31:24];
         end
       endcase
     end
