@@ -3,7 +3,7 @@
 `include "src/types.svh"      // <-- bring in enum literals like PC_SRC__JUMP
 `include "test/utils.svh"
 
-module jal_only_tb;
+module jal_tb;
 
   reg clk;
   reg reset;
