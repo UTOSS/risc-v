@@ -128,21 +128,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install RISC-V toolchain
-        run: |
-          sudo apt update
-          sudo apt install -y gcc-riscv64-unknown-elf
-
-      - name: Verify tools
-        run: |
-          which riscv32-unknown-elf-gcc
-          which riscv32-unknown-elf-objdump
-
       - name: Build DUT
         run: make riscof_build_dut
-
-      - name: Ensure DUT executable
-        run: chmod +x riscof/dut_sim
 
       - name: Validate YAML
         run: make riscof_validateyaml
