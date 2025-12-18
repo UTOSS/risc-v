@@ -19,5 +19,8 @@ envs/de1-soc/quartus/output_files/*
 envs/de1-soc/quartus/c5_pin_model_dump.txt
 envs/de1-soc/quartus/*.bak
 envs/de1-soc/quartus/*.qws
-out/
-build/
+
+out/**
+!out/.gitkeep
+build/**
+!build/.gitkeep
