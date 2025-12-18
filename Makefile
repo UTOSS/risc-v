@@ -38,7 +38,6 @@ TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
 # Ensure directories exist
 # ===========================
 $(shell mkdir -p $(OUT_DIR))
-$(shell mkdir -p $(BUILD_DIR)/top)
 
 # ===========================
 # Default
