@@ -8,6 +8,7 @@ riscof/riscv-arch-test/
 riscof/utoss_riscv/__pycache__/
 riscof/sail_cSim/__pycache__
 riscof/config.ini
+riscof/dut_sim
 
 envs/de1-soc/poc/poc.mem
 envs/de1-soc/poc/poc.elf
