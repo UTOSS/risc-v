@@ -77,14 +77,17 @@ RUN mkdir -p /tmp/svlint && \
 
 # build and install Verilator
 USER dev
-WORKDIR /home/dev
+ARG VERILATOR_VERSION=v5.042
+ARG VERILATOR_GIT_REPO=https://github.com/verilator/verilator
 RUN sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bison ccache \
     libgoogle-perftools-dev numactl perl-doc \
     libfl2 \
     libfl-dev \
-    zlib1g zlib1g-dev
-RUN git clone https://github.com/verilator/verilator && cd verilator && git pull && autoconf && \
-    ./configure && make -j 2 && sudo make install
+    zlib1g zlib1g-dev && \
+    cd /tmp && \
+    git clone --depth=1 --branch ${VERILATOR_VERSION} ${VERILATOR_GIT_REPO} && \
+    cd verilator && \
+    autoconf && ./configure && make -j `nproc` && sudo make install
 
 # CI needs priviledged access
 USER root
