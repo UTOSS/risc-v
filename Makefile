@@ -7,7 +7,6 @@ TB_DIR       := test
 OUT_DIR      := out
 BUILD_DIR    := build
 VERILATOR    := verilator
-TB_VCD_BASE_PATH := $(TB_DIR)/vcd
 
 ENV          := simulation
 RISCOF_DIR           := riscof
@@ -39,7 +38,6 @@ TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
 # Ensure directories exist
 # ===========================
 $(shell mkdir -p $(OUT_DIR))
-$(shell mkdir -p $(TB_VCD_BASE_PATH))
 $(shell mkdir -p $(BUILD_DIR)/top)
 
 # ===========================
