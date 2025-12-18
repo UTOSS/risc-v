@@ -35,11 +35,6 @@ TB_UTILS := $(TB_DIR)/utils.svh
 TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
 
 # ===========================
-# Ensure directories exist
-# ===========================
-$(shell mkdir -p $(OUT_DIR))
-
-# ===========================
 # Default
 # ===========================
 all: build_top
