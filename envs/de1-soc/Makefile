@@ -29,6 +29,9 @@ $(OUT_DIR)/top_tb_sim: poc $(LOCAL_SRCS) $(CORE_SRC)
 run_tb: $(OUT_DIR)/top_tb_sim
 	./$<
 
+synthesize:
+	cd quartus && quartus_sh --flow compile utoss-risc-v
+
 clean:
 	rm -rf $(OUT_DIR) $(BUILD_DIR)
 
