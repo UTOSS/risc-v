@@ -59,7 +59,7 @@ RUN cd /tmp && \
     wget ${QUARTUS_PRIME_LITE_DOWNLOAD_URL} && \
     echo ${QUARTUS_PRIME_LITE_HASH} | sha1sum -c && \
     chmod +x ${QUARTUS_PRIME_LITE_INSTALLER_FILENAME} && \
-    ./${QUARTUS_PRIME_LITE_INSTALLER_FILENAME} qinst --cli --accept-eula \
+    ./${QUARTUS_PRIME_LITE_INSTALLER_FILENAME} qinst --cli --accept-eula --bypass \
       --download-dir /tmp/quartus-downloads \
       --install-dir /opt/quartus \
       --auto-install --components quartus,cyclonev \
