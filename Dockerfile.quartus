@@ -18,7 +18,7 @@ RUN cd /tmp && \
       --delete-downloads
 
 # drop folders that are large but not relevant
-RUN rm -rf /opt/quartus/nios2eds opt/quartus/niosv
+RUN rm -rf /opt/quartus/nios2eds /opt/quartus/niosv /opt/quartus/ip/altera
 
 FROM public.ecr.aws/lts/ubuntu:22.04_stable
 
