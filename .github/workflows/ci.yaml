@@ -170,6 +170,10 @@ jobs:
       - name: Build and run DE1-SoC testbench
         run: cd envs/de1-soc && make
 
+      - name: Synthesize
+        id: synthesize
+        run: cd envs/de1-soc && make synthesize
+
       - name: Upload VCD file
         uses: actions/upload-artifact@v4
         if: steps.build-poc.outcome == 'success'
@@ -177,3 +181,10 @@ jobs:
           name: de1-soc-tb-vcd
           path: envs/de1-soc/top_tb.vcd
           retention-days: 7
+
+      - name: Upload SOF
+        uses: actions/upload-artifact@v4
+        if: steps.synthesize.outcome == 'success'
+        with:
+          name: de1-soc-sof
+          path: envs/de1-soc/quartus/output_files/utoss-risc-v.sof
