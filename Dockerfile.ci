@@ -2,7 +2,7 @@ FROM ghcr.io/utoss/risc-v-toolchain:latest AS risc-v-toolchain
 
 FROM public.ecr.aws/lts/ubuntu:22.04_stable AS quartus-installer
 
-RUN apt update && apt install -y wget
+RUN apt update && apt install -y wget libglib2.0-0 libfontconfig1
 
 ARG QUARTUS_PRIME_LITE_VERSION=25.1std
 ARG QUARTUS_PRIME_LITE_VERSION_REVISION=1129
