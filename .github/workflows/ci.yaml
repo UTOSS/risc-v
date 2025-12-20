@@ -20,6 +20,17 @@ jobs:
       image-digest: ${{ steps.build.outputs.digest }}
 
     steps:
+      - name: Free up disk space for Quartus installation
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo apt-get clean
+          docker system prune -af --volumes
+          echo "Available space after cleanup:"
+          df -h
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -139,7 +150,6 @@ jobs:
 
       - name: Run RISCOF
         run: make riscof_run
-        continue-on-error: true
 
       - name: Upload RISCOF report
         if: always()
@@ -171,6 +181,10 @@ jobs:
       - name: Build and run DE1-SoC testbench
         run: cd envs/de1-soc && make
 
+      - name: Synthesize
+        id: synthesize
+        run: cd envs/de1-soc && make synthesize
+
       - name: Upload VCD file
         uses: actions/upload-artifact@v4
         if: steps.build-poc.outcome == 'success'
@@ -178,3 +192,10 @@ jobs:
           name: de1-soc-tb-vcd
           path: envs/de1-soc/top_tb.vcd
           retention-days: 7
+
+      - name: Upload SOF
+        uses: actions/upload-artifact@v4
+        if: steps.synthesize.outcome == 'success'
+        with:
+          name: de1-soc-sof
+          path: envs/de1-soc/quartus/output_files/utoss-risc-v.sof

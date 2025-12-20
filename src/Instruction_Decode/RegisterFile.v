@@ -39,7 +39,7 @@ module registerFile
       for (i = 0; i < 32; i = i + 1) begin
             RFMem[i] <= 32'b0;
         end
-`else 
+`else
       RFMem[0] <= 32'b0;
 `endif
     end else if (regWrite && Addr3 != 0) begin

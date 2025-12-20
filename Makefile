@@ -1,35 +1,44 @@
-SRC_DIR  := src
-ENVS_DIR := envs
-TB_DIR   := test
-OUTPUT 	 := out/top.vvp
-IVERILOG := iverilog
-# /opt/iverilog-12/bin/iverilog
-VVP 		 :=vvp
-# = /opt/iverilog-12/bin/vvp
+# ===========================
+# Directories and tools
+# ===========================
+SRC_DIR      := src
+ENVS_DIR     := envs
+TB_DIR       := test
+OUT_DIR      := out
+BUILD_DIR    := build
+VERILATOR    := verilator
 
-ENV := simulation
-TB_MACROS := -DTESTBENCH
+ENV          := simulation
+RISCOF_DIR           := riscof
+RISCOF_DUT_SRC       := $(RISCOF_DIR)/dut.sv
+RISCOF_DUT_BIN       := $(RISCOF_DIR)/dut_sim
+RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
+RISCOF_CONFIG        := $(RISCOF_DIR)/config.ini
 
+# ===========================
+# Verilator flags
+# ===========================
+VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc \
+	-O3 -Wno-fatal
+
+# Testbench-only defines
+TB_DEFINES := -DTESTBENCH
+
+# ===========================
+# Sources
+# ===========================
 SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
         $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
 
-TB_SRC_PATTERN := test/%_tb.sv
-TB_OUT_PATTERN := out/%_tb.vvp
+TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
+TB_UTILS := $(TB_DIR)/utils.svh
+TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
 
-TB_SRCS := $(wildcard $(subst %,*,$(TB_SRC_PATTERN)))
-TB_VVPS := $(patsubst $(TB_SRC_PATTERN),$(TB_OUT_PATTERN),$(TB_SRCS))
-TB_UTILS := test/utils.svh
-
-TB_VCD_BASE_PATH := test/vcd
-
-RISCOF_DIR := riscof
-RISCOF_DUT_SRC := $(RISCOF_DIR)/dut.sv
-RISCOF_DUT_VVP := $(RISCOF_DIR)/dut.vvp
-RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
-RISCOF_CONFIG := $(RISCOF_DIR)/config.ini
-
+# ===========================
+# Default
+# ===========================
 all: build_top
-	@echo "Build finished! Try 'make run_top' or 'make run_tb' to run the core or testbenches."
+	@echo "Build finished! Try 'make run_top' or 'make run_tb'."
 
 print_srcs:
 	@echo $(SRCS)
@@ -37,52 +46,81 @@ print_srcs:
 print_tb_srcs:
 	@echo $(TB_SRCS)
 
-build_top: $(OUTPUT)
+# ===========================
+# Top module
+# ===========================
+build_top: $(OUT_DIR)/top_sim
 
-run_top: $(OUTPUT)
-	$(VVP) $(OUTPUT)
+run_top: $(OUT_DIR)/top_sim
+	./$<
 
-$(OUTPUT): $(SRCS)
-	$(IVERILOG) -g2012 -o $(OUTPUT) $(SRCS)
+$(OUT_DIR)/top_sim: $(SRCS)
+	@mkdir -p $(BUILD_DIR)/top
+	$(VERILATOR) $(VERILATOR_FLAGS) \
+		--top-module top \
+		--Mdir $(BUILD_DIR)/top \
+		-o top_sim \
+		$(SRCS)
+	cp $(BUILD_DIR)/top/top_sim $@
 
-$(TB_OUT_PATTERN): $(TB_SRC_PATTERN) $(TB_UTILS) $(SRCS)
-	$(IVERILOG) $(TB_MACROS) -g2012 -o $@ $(SRCS) $<
+# ===========================
+# Testbenches
+# ===========================
+build_tb: $(TB_BINS)
 
+run_tb: build_tb
+	@failed=0; \
+	for tb in $(TB_BINS); do \
+		echo "Running $$tb..."; \
+		if ! ./$$tb +VCD_PATH=$(TB_VCD_BASE_PATH); then \
+			echo "\033[31mFAILED: $$tb\033[0m"; \
+			failed=1; \
+		else \
+			echo "\033[32mPASSED: $$tb\033[0m"; \
+		fi; \
+		echo ""; \
+	done; \
+	if [ $$failed -eq 1 ]; then \
+		echo "\033[31mSome testbenches failed!\033[0m"; \
+		exit 1; \
+	else \
+		echo "\033[32mAll testbenches passed!\033[0m"; \
+	fi
+
+# Pattern rule for building individual testbenches
+$(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
+	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
+		--top-module $(basename $(notdir $<)) \
+		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
+		-o $(basename $(notdir $@)) \
+		$(SRCS) $<
+	cp $(BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
+
+# ===========================
+# Create new testbench
+# ===========================
 new_tb:
 	@if [ -z "$(name)" ]; then \
 		echo "Usage: make new_tb name=<testbench_name>"; \
 		exit 1; \
 	fi
-	m4 -D M4__TB_NAME="$(name)_tb" test/tb_template.sv.m4 > test/$(name)_tb.sv
+	m4 -D M4__TB_NAME="$(name)_tb" $(TB_DIR)/tb_template.sv.m4 > $(TB_DIR)/$(name)_tb.sv
 
-build_tb: $(TB_VVPS) $(TB_SRCS) $(TB_UTILS) $(SRCS)
-
-run_tb: build_tb
-	@failed=0;                                                \
-	for tb in $(TB_VVPS); do                                  \
-		echo "Running $$tb...";                                 \
-		if ! $(VVP) -N $$tb +VCD_PATH=$(TB_VCD_BASE_PATH); then \
-			echo "\033[31mFAILED: $$tb\033[0m";                   \
-			failed=1;                                             \
-		else                                                    \
-			echo "\033[32mPASSED: $$tb\033[0m";                   \
-		fi;                                                     \
-		echo "";                                                \
-	done;                                                     \
-	if [ $$failed -eq 1 ]; then                               \
-		echo "\033[31mSome testbenches failed!\033[0m";         \
-		exit 1;                                                 \
-	else                                                      \
-		echo "\033[32mAll testbenches passed!\033[0m";          \
-	fi
-
-$(RISCOF_DUT_VVP): $(SRCS) $(RISCOF_DUT_SRC)
-	$(IVERILOG) -g2012 -o $(RISCOF_DUT_VVP) $(SRCS) $(RISCOF_DUT_SRC)
+# ===========================
+# RISCOF
+# ===========================
+$(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC)
+	$(VERILATOR) $(VERILATOR_FLAGS) \
+		--top-module dut \
+		--Mdir $(BUILD_DIR)/riscof \
+		-o dut_sim \
+		$(SRCS) $(RISCOF_DUT_SRC)
+	cp $(BUILD_DIR)/riscof/dut_sim $(RISCOF_DUT_BIN)
 
 $(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
 	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
 
-riscof_build_dut: $(RISCOF_DUT_VVP)
+riscof_build_dut: $(RISCOF_DUT_BIN)
 
 riscof_validateyaml: $(RISCOF_CONFIG)
 	cd $(RISCOF_DIR) && riscof validateyaml --config=config.ini
@@ -91,24 +129,41 @@ riscof_clone_archtest: $(RISCOF_CONFIG)
 	cd $(RISCOF_DIR) && riscof arch-test --clone
 
 riscof_generate_testlist: $(RISCOF_CONFIG)
-	cd $(RISCOF_DIR) &&                             \
-		riscof testlist                               \
-			--config=config.ini                         \
-			--suite=riscv-arch-test/riscv-test-suite/   \
-			--env=riscv-arch-test/riscv-test-suite/env
+	cd $(RISCOF_DIR) && \
+		riscof testlist --config=config.ini \
+		--suite=riscv-arch-test/riscv-test-suite/ \
+		--env=riscv-arch-test/riscv-test-suite/env
 
 riscof_run: $(RISCOF_CONFIG) riscof_build_dut
-	cd $(RISCOF_DIR) &&                             \
-		riscof run                                    \
-			--config=config.ini                         \
-			--suite=riscv-arch-test/riscv-test-suite/   \
-			--env=riscv-arch-test/riscv-test-suite/env
+	cd $(RISCOF_DIR) && \
+		riscof run --config=config.ini \
+		--suite=riscv-arch-test/riscv-test-suite/ \
+		--env=riscv-arch-test/riscv-test-suite/env
 
+# sidekick image builds
+GITHUB_CONTAINER_REGISTRY=ghcr.io
+GITHUB_ORG_NAME=utoss
+QUARTUS_IMAGE_NAME=${GITHUB_CONTAINER_REGISTRY}/${GITHUB_ORG_NAME}/quartus:latest
+
+docker_build_quartus_image:
+	docker build -f Dockerfile.quartus -t ${QUARTUS_IMAGE_NAME} .
+	docker login ${GITHUB_CONTAINER_REGISTRY}
+	docker push ${QUARTUS_IMAGE_NAME}
+
+
+# ===========================
+# Linting
+# ===========================
 svlint:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
 svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
-.PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb
-
+# ===========================
+# Phony targets
+# ===========================
+.PHONY: all build_top run_top build_tb run_tb new_tb \
+        svlint svlint_tb \
+        riscof_build_dut riscof_validateyaml riscof_clone_archtest \
+        riscof_generate_testlist riscof_run
