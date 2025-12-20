@@ -1,5 +1,7 @@
 FROM ghcr.io/utoss/risc-v-toolchain:latest AS risc-v-toolchain
 
+FROM ghcr.io/utoss/quartus:latest AS quartus
+
 FROM public.ecr.aws/lts/ubuntu:22.04_stable
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -33,6 +35,25 @@ RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison fle
     tar -xzf ${ICARUS_SRC_TAR} && \
     cd iverilog-* && sh autoconf.sh && ./configure && make && make check && sudo make install && \
     cd .. && rm ${ICARUS_SRC_TAR} && rm -rf ./iverilog-*
+
+# build and install Verilator
+USER dev
+ARG VERILATOR_VERSION=v5.042
+ARG VERILATOR_GIT_REPO=https://github.com/verilator/verilator
+RUN sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bison ccache \
+    libgoogle-perftools-dev numactl perl-doc \
+    libfl2 \
+    libfl-dev \
+    zlib1g zlib1g-dev && \
+    cd /tmp && \
+    git clone --depth=1 --branch ${VERILATOR_VERSION} ${VERILATOR_GIT_REPO} && \
+    cd verilator && \
+    autoconf && ./configure && make -j `nproc` && sudo make install
+
+# copy quartus prime lite installation
+USER dev
+COPY --from=quartus /opt/quartus /opt/quartus
+ENV PATH="/opt/quartus/quartus/bin:${PATH}"
 
 # install riscv toolchain
 USER dev

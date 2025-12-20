@@ -8,6 +8,7 @@ riscof/riscv-arch-test/
 riscof/utoss_riscv/__pycache__/
 riscof/sail_cSim/__pycache__
 riscof/config.ini
+riscof/dut_sim
 
 envs/de1-soc/poc/poc.mem
 envs/de1-soc/poc/poc.elf
@@ -18,3 +19,8 @@ envs/de1-soc/quartus/output_files/*
 envs/de1-soc/quartus/c5_pin_model_dump.txt
 envs/de1-soc/quartus/*.bak
 envs/de1-soc/quartus/*.qws
+
+out/**
+!out/.gitkeep
+build/**
+!build/.gitkeep
