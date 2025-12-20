@@ -20,16 +20,16 @@ jobs:
       image-digest: ${{ steps.build.outputs.digest }}
 
     steps:
-      - name: Maximize build space, since Quartus is large
-        uses: easimon/maximize-build-space@c28619d8999a147d5e09c1199f84ff6af6ad5794
-        with:
-          root-reserve-mb: 2048
-          swap-size-mb: 2048
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+      - name: Free up disk space manually
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo apt-get clean
+          docker system prune -af --volumes
+          echo "Available space after cleanup:"
+          df -h
 
       - name: Checkout code
         uses: actions/checkout@v4
