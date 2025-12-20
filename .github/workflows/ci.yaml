@@ -20,7 +20,7 @@ jobs:
       image-digest: ${{ steps.build.outputs.digest }}
 
     steps:
-      - name: Free up disk space manually
+      - name: Free up disk space for Quartus installation
         run: |
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
