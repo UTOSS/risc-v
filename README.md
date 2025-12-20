@@ -32,7 +32,8 @@ Checkout Setting up Developement Environment wiki page.
 ├── README.md -------------------- this file
 ├── svlint.toml ------------------ project-wide config for linting SystemVerilog code
 ├── Dockerfile.ci ---------------- image for CI pipeline with all necessary dependencies
-└── Dockerfile.riscv-toolchain --- sidekick image that builds RISC-V toolchain from source
+├── Dockerfile.riscv-toolchain --- sidekick image that builds RISC-V toolchain from source
+└── Dockerfile.quartus ----------- sidekick image that installs Quartus Prime Lite
 ```
 
 ## Development

@@ -140,6 +140,17 @@ riscof_run: $(RISCOF_CONFIG) riscof_build_dut
 		--suite=riscv-arch-test/riscv-test-suite/ \
 		--env=riscv-arch-test/riscv-test-suite/env
 
+# sidekick image builds
+GITHUB_CONTAINER_REGISTRY=ghcr.io
+GITHUB_ORG_NAME=utoss
+QUARTUS_IMAGE_NAME=${GITHUB_CONTAINER_REGISTRY}/${GITHUB_ORG_NAME}/quartus:latest
+
+docker_build_quartus_image:
+	docker build -f Dockerfile.quartus -t ${QUARTUS_IMAGE_NAME} .
+	docker login ${GITHUB_CONTAINER_REGISTRY}
+	docker push ${QUARTUS_IMAGE_NAME}
+
+
 # ===========================
 # Linting
 # ===========================
