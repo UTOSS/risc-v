@@ -21,7 +21,7 @@ module jal_tb;
   end
 
   // helper: wait one cycle then assert expected FSM state
-  task wait_till_next_cfsm_state(input [3:0] expected_state);
+  task wait_till_next_cfsm_state(input [4:0] expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask

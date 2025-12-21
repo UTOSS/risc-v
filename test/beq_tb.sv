@@ -19,7 +19,7 @@ module beq_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  task wait_till_next_cfsm_state(input [4:0] expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
