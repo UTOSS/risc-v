@@ -10,7 +10,7 @@ riscof/sail_cSim/__pycache__
 riscof/config.ini
 riscof/dut_sim
 
-envs/de1-soc/poc/poc.mem
+envs/de1-soc/poc/poc*.mem
 envs/de1-soc/poc/poc.elf
 envs/de1-soc/quartus/db/
 envs/de1-soc/quartus/incremental_db/
