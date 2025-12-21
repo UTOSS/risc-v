@@ -89,6 +89,7 @@ module jalr_tb;
     // imm = -7 -> 12-bit two's complement 0xFF9
     // encoding -> 0xFF9100E7
     uut.memory.M[0] = 32'hFF9100E7;
+    @(posedge clk); #1; // let memory change propagate (due to clocked reads)
 
     // Registers
     uut.core.RegFile.RFMem[1] = 32'd0;     // x1 cleared

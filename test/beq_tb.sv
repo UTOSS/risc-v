@@ -69,10 +69,10 @@ module beq_tb;
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
     // beq without satisfied condition
-    @(posedge clk); #1;
     reset <= `TRUE;
-
     uut.memory.M[0] = 32'b0000000_00010_00001_000_1000_0_1100011; // beq x1, x2, 0x10
+    @(posedge clk); #1; // let memory change propagate (due to clocked reads)
+
     uut.core.RegFile.RFMem[5'b00001] = 32'h0000002a; // x1 = 42
     uut.core.RegFile.RFMem[5'b00010] = 32'h0000002b; // x2 = 43
 
@@ -110,6 +110,8 @@ module beq_tb;
     reset <= `TRUE;
 
     uut.memory.M[0] = 32'b0100000_00001_00001_000_00001_0110011; // sub x1, x1, x1
+    @(posedge clk); #1; // let memory change propagate (due to clocked reads)
+
     uut.core.RegFile.RFMem[5'b00001] = 32'h00000001; // x1 = 1
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
