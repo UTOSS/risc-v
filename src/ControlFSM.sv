@@ -49,6 +49,10 @@ module ControlFSM
   // new state for remaining branch instructions
   parameter BRANCHCOMP = 5'b01111;
 
+  // special extra step to be performed only after MEMWRITE to "prime" the fetch stage to make sure
+  // it gets the data from the PC and not the address we just wrote to
+  parameter PRIME_FETCH = 5'b10000;
+
   //declare state registers
   reg [4:0] current_state, next_state;
 
@@ -123,7 +127,9 @@ module ControlFSM
 
       MEMREAD: next_state = MEMWB;
 
-      MEMWRITE: next_state = FETCH;
+      MEMWRITE: next_state = PRIME_FETCH;
+
+      PRIME_FETCH: next_state = FETCH;
 
       MEMWB: next_state = FETCH;
 
@@ -276,6 +282,10 @@ module ControlFSM
         AdrSrc <= ADR_SRC__RESULT;
         MemWrite <= MemWriteByteAddress;
 
+      end
+
+      PRIME_FETCH: begin
+        AdrSrc = ADR_SRC__PC;
       end
 
       MEMREAD: begin

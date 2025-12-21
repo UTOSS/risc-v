@@ -55,6 +55,8 @@ module sw_tb;
     wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
     `assert_equal(uut.core.memory__address, 44)
 
+    wait_till_next_cfsm_state(uut.core.control_fsm.PRIME_FETCH);
+
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
     `assert_equal(uut.memory.M[11], 256)
@@ -70,6 +72,8 @@ module sw_tb;
     `assert_equal(uut.core.alu.out, 48)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.PRIME_FETCH);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
@@ -89,6 +93,8 @@ module sw_tb;
     `assert_equal(uut.core.alu.out, 52)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.PRIME_FETCH);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
 
