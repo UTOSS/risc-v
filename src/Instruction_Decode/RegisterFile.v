@@ -35,7 +35,7 @@ module registerFile
 
     if (reset) begin
 `ifndef TESTBENCH
-      integer i;
+		  integer i;
       for (i = 0; i < 32; i = i + 1) begin
             RFMem[i] <= 32'b0;
         end

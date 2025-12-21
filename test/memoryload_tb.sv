@@ -24,6 +24,8 @@ module memoryload_tb;
   endtask
 
   task check_next_memory_read(input [31:0] expected_addr, input [31:0] expected_word);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     `assert_equal(uut.core.opcode, 7'b0000011)

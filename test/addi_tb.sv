@@ -38,6 +38,8 @@ module addi_tb;
 
     reset <= `FALSE;
 
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
     // --- Instruction 1: addi x1, x2, 0 ---
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
     `assert_equal(uut.core.opcode, 7'b0010011)
@@ -53,6 +55,7 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 42)
     `assert_equal(uut.core.fetch.pc_cur, 4)
 
@@ -66,6 +69,7 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 46)
     `assert_equal(uut.core.fetch.pc_cur, 8)
 
@@ -79,6 +83,7 @@ module addi_tb;
     wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 34)
 
     // Final assertions

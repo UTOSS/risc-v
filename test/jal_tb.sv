@@ -21,7 +21,7 @@ module jal_tb;
   end
 
   // helper: wait one cycle then assert expected FSM state
-  task wait_till_next_cfsm_state(input [3:0] expected_state);
+  task wait_till_next_cfsm_state(input [4:0] expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
@@ -39,6 +39,8 @@ module jal_tb;
 
     // Release reset
     reset <= `FALSE;
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     // -------- Single instruction: JAL x1, +16 --------
 
@@ -61,6 +63,7 @@ module jal_tb;
 
     // Back to FETCH: PC should be 16; x1 should be 4
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 32'd4)  // rd = link = 4
     `assert_equal(uut.core.fetch.pc_cur, 32'd16)                                 // PC jumped to 16
 
