@@ -33,6 +33,7 @@ SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
 TB_UTILS := $(TB_DIR)/utils.svh
 TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
+TB_VCD_BASE_PATH := test/vcd
 
 # ===========================
 # Default
