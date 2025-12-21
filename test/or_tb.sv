@@ -34,6 +34,8 @@ module or_tb;
 
     reset <= `FALSE;
 
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     `assert_equal(uut.core.opcode, 7'b0110011)
@@ -53,6 +55,7 @@ module or_tb;
     `assert_equal(uut.core.result, 32'hfbfbfbfb)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 32'hfbfbfbfb)
     `assert_equal(uut.core.fetch.pc_cur, 4)

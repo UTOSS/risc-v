@@ -37,6 +37,8 @@ module nop_tb;
 
         reset <= `FALSE;
 
+        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
         wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
         `assert_equal(uut.core.opcode, 7'b0010011)
@@ -52,6 +54,7 @@ module nop_tb;
         wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
 
         wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
         `assert_equal(uut.core.RegFile.RFMem[0], 32'h0)
         `assert_equal(uut.core.fetch.pc_cur, 4)
 

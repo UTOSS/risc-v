@@ -40,6 +40,8 @@ module lui_tb;
 
     reset <= `FALSE;
 
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     //imm ext should be changed to add a new case
@@ -67,6 +69,7 @@ module lui_tb;
 
     //Exe lui x2, 200
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 32'h00014000)
     //x1 at this moment should be updated
@@ -91,6 +94,7 @@ module lui_tb;
 
     //Exe lui x3, 1023
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[2], 32'h000c8000)
 
@@ -113,6 +117,7 @@ module lui_tb;
     `assert_equal(uut.core.instruction_decode.rd, 3)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[3], 32'h003ff000)
 
