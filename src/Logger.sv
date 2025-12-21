@@ -49,6 +49,7 @@ module Logger
             5'b01101: $display("FSM State: JALR_CALC");
             5'b01110: $display("FSM State: JALR_STEP2");
             5'b01111: $display("FSM State: BRANCHCOMP");
+            5'b10000: $display("FSM State: FETCH_WAIT");
         endcase
 
         // Parse the instruction we are executing
