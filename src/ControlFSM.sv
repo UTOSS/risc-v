@@ -151,6 +151,7 @@ module ControlFSM
     IRWrite <= 1'b0;
     MemWrite <= 4'b0;
     RegWrite <= 1'b0;
+    AdrSrc <= ADR_SRC__PC;
 
     FSMState <= current_state;
 
