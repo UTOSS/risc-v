@@ -4,8 +4,6 @@ module top
   , output wire [9:0] LEDR
   );
 
-`define UTOSS_RISCV_SYNTHESIS 1
-
   addr_t       memory__address;
   data_t       memory__write_data;
   logic  [3:0] memory__write_enable;
