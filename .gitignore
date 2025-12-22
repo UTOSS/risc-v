@@ -13,6 +13,11 @@ riscof/dut_sim
 envs/de1-soc/poc/poc*.mem
 envs/de1-soc/poc/poc.elf
 envs/de1-soc/quartus/db/
+envs/de1-soc/out/**
+!envs/de1-soc/out/.gitkeep
+envs/de1-soc/build/**
+!envs/de1-soc/build/.gitkeep
+
 envs/de1-soc/quartus/incremental_db/
 envs/de1-soc/quartus/output_files/*
 !envs/de1-soc/quartus/output_files/utoss-risc-v.cdf
