@@ -187,6 +187,7 @@ module utoss_riscv
   end
 
 `ifndef UTOSS_RISCV_SYNTHESIS
+`ifndef UTOSS_RISCV_HARDENING
   Logger CoreLog
   (
     .clk              ( clk              )
@@ -208,6 +209,7 @@ module utoss_riscv
   , .result           ( result           )
   , .regWrite         ( cfsm__reg_write  )
   );
+`endif
 `endif
 
 endmodule
