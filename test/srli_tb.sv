@@ -38,6 +38,8 @@ module srli_tb;
 
     reset <= `FALSE;
 
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     `assert_equal(uut.core.opcode, 7'b0010011)
@@ -56,6 +58,7 @@ module srli_tb;
     `assert_equal(uut.core.instruction_decode.rd, 1)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 21)
     `assert_equal(uut.core.RegFile.RFMem[2], 42)
@@ -79,6 +82,7 @@ module srli_tb;
     `assert_equal(uut.core.instruction_decode.rd, 1)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 10)
     `assert_equal(uut.core.RegFile.RFMem[2], 42)
@@ -102,6 +106,7 @@ module srli_tb;
     `assert_equal(uut.core.instruction_decode.rd, 1)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 5)
     `assert_equal(uut.core.RegFile.RFMem[2], 42)

@@ -7,7 +7,6 @@ TB_DIR       := test
 OUT_DIR      := out
 BUILD_DIR    := build
 VERILATOR    := verilator
-TB_VCD_BASE_PATH := $(TB_DIR)/vcd
 
 ENV          := simulation
 RISCOF_DIR           := riscof
@@ -16,36 +15,38 @@ RISCOF_DUT_BIN       := $(RISCOF_DIR)/dut_sim
 RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
 RISCOF_CONFIG        := $(RISCOF_DIR)/config.ini
 
+# ===========================
+# Verilator flags
+# ===========================
 VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc \
 	-O3 -Wno-fatal
+
+# Testbench-only defines
+TB_DEFINES := -DTESTBENCH
 
 # ===========================
 # Sources
 # ===========================
 SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
         $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
+
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
 TB_UTILS := $(TB_DIR)/utils.svh
 TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
-
-# ===========================
-# Ensure directories exist
-# ===========================
-$(shell mkdir -p $(OUT_DIR))
-$(shell mkdir -p $(TB_VCD_BASE_PATH))
-$(shell mkdir -p $(BUILD_DIR)/top)
+TB_VCD_BASE_PATH := test/vcd
 
 # ===========================
 # Default
 # ===========================
 all: build_top
 	@echo "Build finished! Try 'make run_top' or 'make run_tb'."
-	
+
 print_srcs:
 	@echo $(SRCS)
 
 print_tb_srcs:
 	@echo $(TB_SRCS)
+
 # ===========================
 # Top module
 # ===========================
@@ -57,7 +58,7 @@ run_top: $(OUT_DIR)/top_sim
 $(OUT_DIR)/top_sim: $(SRCS)
 	@mkdir -p $(BUILD_DIR)/top
 	$(VERILATOR) $(VERILATOR_FLAGS) \
-		--top-module utoss_riscv \
+		--top-module top \
 		--Mdir $(BUILD_DIR)/top \
 		-o top_sim \
 		$(SRCS)
@@ -89,15 +90,16 @@ run_tb: build_tb
 
 # Pattern rule for building individual testbenches
 $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
-	@mkdir -p $(BUILD_DIR)/$(basename $(notdir $@))
-	$(VERILATOR) $(VERILATOR_FLAGS) \
+	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
 		--top-module $(basename $(notdir $<)) \
 		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
 		-o $(basename $(notdir $@)) \
 		$(SRCS) $<
 	cp $(BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
 
-# Create new testbench from template
+# ===========================
+# Create new testbench
+# ===========================
 new_tb:
 	@if [ -z "$(name)" ]; then \
 		echo "Usage: make new_tb name=<testbench_name>"; \
@@ -109,7 +111,6 @@ new_tb:
 # RISCOF
 # ===========================
 $(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC)
-	@mkdir -p $(BUILD_DIR)/riscof
 	$(VERILATOR) $(VERILATOR_FLAGS) \
 		--top-module dut \
 		--Mdir $(BUILD_DIR)/riscof \
@@ -140,6 +141,17 @@ riscof_run: $(RISCOF_CONFIG) riscof_build_dut
 		--suite=riscv-arch-test/riscv-test-suite/ \
 		--env=riscv-arch-test/riscv-test-suite/env
 
+# sidekick image builds
+GITHUB_CONTAINER_REGISTRY=ghcr.io
+GITHUB_ORG_NAME=utoss
+QUARTUS_IMAGE_NAME=${GITHUB_CONTAINER_REGISTRY}/${GITHUB_ORG_NAME}/quartus:latest
+
+docker_build_quartus_image:
+	docker build -f Dockerfile.quartus -t ${QUARTUS_IMAGE_NAME} .
+	docker login ${GITHUB_CONTAINER_REGISTRY}
+	docker push ${QUARTUS_IMAGE_NAME}
+
+
 # ===========================
 # Linting
 # ===========================
@@ -149,4 +161,10 @@ svlint:
 svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
-.PHONY: all run svlint svlint_tb build_top run_top build_tb run_tb new_tb
+# ===========================
+# Phony targets
+# ===========================
+.PHONY: all build_top run_top build_tb run_tb new_tb \
+        svlint svlint_tb \
+        riscof_build_dut riscof_validateyaml riscof_clone_archtest \
+        riscof_generate_testlist riscof_run

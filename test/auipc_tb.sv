@@ -42,6 +42,8 @@ module auipc_tb;
 
     reset <= `FALSE;
 
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     //imm ext should be changed to add a new case
@@ -69,6 +71,7 @@ module auipc_tb;
 
     //Exe lui x2, 200
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 32'h00014000 + tb_pc_old)
     //x1 at this moment should be updated
@@ -93,6 +96,7 @@ module auipc_tb;
 
     //Exe lui x3, 1023
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[2], 32'h000c8000 + tb_pc_old)
 
@@ -115,6 +119,7 @@ module auipc_tb;
     `assert_equal(uut.core.instruction_decode.rd, 3)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[3], 32'h003ff000 + tb_pc_old)
 

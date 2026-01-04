@@ -101,6 +101,11 @@ module Instruction_Decode
         rd = instr[11:7];
       end
 
+      default: begin
+        rd  = 5'b0;
+        rs1 = 5'b0;
+        rs2 = 5'b0;
+      end
     endcase
   end
 
@@ -116,7 +121,7 @@ module Instruction_Decode
       JType       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
       UType_auipc  : imm_ext = {instr[31:12], 12'b0};
       UType_lui  : imm_ext = {instr[31:12], 12'b0};
-
+      default:     imm_ext = 32'b0;
     endcase
   end
 

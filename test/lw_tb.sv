@@ -42,6 +42,8 @@ module lw_tb;
 
     reset <= `FALSE;
 
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
     `assert_equal(uut.core.opcode, 7'b0000011)
@@ -67,6 +69,7 @@ module lw_tb;
     `assert_equal(uut.core.result, 32'hdeadbeef)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 32'hdeadbeef)
     `assert_equal(uut.core.RegFile.RFMem[2], 32'ha8)
@@ -97,6 +100,7 @@ module lw_tb;
     `assert_equal(uut.core.result, 32'hcafebabe)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 32'hcafebabe)
     `assert_equal(uut.core.RegFile.RFMem[2], 32'ha8)
@@ -127,6 +131,7 @@ module lw_tb;
     `assert_equal(uut.core.result, 32'hbadab00f)
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 32'hbadab00f)
     `assert_equal(uut.core.RegFile.RFMem[2], 32'ha8)

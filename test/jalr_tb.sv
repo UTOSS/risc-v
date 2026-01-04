@@ -21,7 +21,7 @@ module jalr_tb;
   end
 
   // helper: wait to next FSM state and assert it
-  task wait_till_next_cfsm_state(input [3:0] expected_state);
+  task wait_till_next_cfsm_state(input [4:0] expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
@@ -46,6 +46,8 @@ module jalr_tb;
 
     // Release reset
     reset <= `FALSE;
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     // DECODE: opcode/rs1/rd/imm must match
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
@@ -74,6 +76,7 @@ module jalr_tb;
 
     // Back to FETCH: PC should be (100+5)&~1 = 104, x1 should be 4
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 32'd4)
     `assert_equal(uut.core.fetch.pc_cur, 32'd104)
 
@@ -97,6 +100,8 @@ module jalr_tb;
     // Re-enter FETCH, then release reset
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
     reset <= `FALSE;
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     // DECODE checks
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
@@ -122,6 +127,7 @@ module jalr_tb;
     // Writeback then check PC/link
     wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 32'd4)
     `assert_equal(uut.core.fetch.pc_cur, 32'd192)
 

@@ -19,7 +19,7 @@ module beq_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  task wait_till_next_cfsm_state(input [4:0] expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
@@ -37,6 +37,8 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
     reset <= `FALSE;
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
@@ -64,6 +66,7 @@ module beq_tb;
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     assert (uut.core.fetch.pc_cur == 32'hFFFFFFF4)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
@@ -78,6 +81,8 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
     reset <= `FALSE;
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 
@@ -102,6 +107,7 @@ module beq_tb;
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     assert (uut.core.fetch.pc_cur == 32'h00000004)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
@@ -114,6 +120,8 @@ module beq_tb;
 
     wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
     reset <= `FALSE;
+
+    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
 
     wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
 

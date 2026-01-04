@@ -23,7 +23,7 @@ module top
 
   utoss_riscv core
     ( .clk   ( CLOCK_50 )
-    , .reset ( KEY[0]   )
+    , .reset ( ~KEY[0]   )
 
     , .memory__address      ( memory__address      )
     , .memory__write_data   ( memory__write_data   )
