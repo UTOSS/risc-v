@@ -11,6 +11,7 @@ riscof/config.ini
 riscof/dut_sim
 
 envs/de1-soc/poc/poc*.mem
+envs/de1-soc/poc/poc*.mif
 envs/de1-soc/poc/poc.elf
 envs/de1-soc/quartus/db/
 envs/de1-soc/out/**
