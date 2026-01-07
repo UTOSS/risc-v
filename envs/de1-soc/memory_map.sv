@@ -16,6 +16,17 @@ module memory_map #( parameter SIZE = 1024 )
   reg [7:0] M2 [0:SIZE - 1] /* synthesis ram_init_file = "../../poc/poc2.mif" */;  // byte lane 2
   reg [7:0] M3 [0:SIZE - 1] /* synthesis ram_init_file = "../../poc/poc3.mif" */;  // byte lane 3
 
+// only populate memory from MEM files if we are not synthesizing so that the simulation testbench
+// can run
+`ifndef UTOSS_RISCV_SYNTHESIS
+  initial begin
+    $readmemh("poc/poc0.mem", M0);
+    $readmemh("poc/poc1.mem", M1);
+    $readmemh("poc/poc2.mem", M2);
+    $readmemh("poc/poc3.mem", M3);
+  end
+`endif
+
   reg [31:0] M [0:SIZE - 1];
   reg [31:0] mem_rdata;
 
