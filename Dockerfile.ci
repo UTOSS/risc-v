@@ -95,6 +95,17 @@ RUN mkdir -p /tmp/svlint && \
     unzip ${SVLINT_ZIP_NAME} && \
     sudo mv bin/* /usr/local/bin/ && \
     cd .. && rm -r /tmp/svlint
+    
+# build and install Verilator
+USER dev
+WORKDIR /home/dev
+RUN sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bison ccache \
+    libgoogle-perftools-dev numactl perl-doc \
+    libfl2 \
+    libfl-dev \
+    zlib1g zlib1g-dev
+RUN git clone https://github.com/verilator/verilator && cd verilator && git pull && autoconf && \
+    ./configure && make -j 2 && sudo make install
 
 # CI needs priviledged access
 USER root

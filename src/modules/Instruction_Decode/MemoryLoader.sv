@@ -1,4 +1,4 @@
-`include "src/types.svh"
+`include "src/headers/types.svh"
 
 module MemoryLoader
 ( input  data_t memory_data
