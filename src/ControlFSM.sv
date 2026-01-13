@@ -2,250 +2,327 @@
 //A Moore Type Finite State Machine for the RV32I Microprocessor Control Unit
 
 `include "src/types.svh"
+`include "src/params.svh"
 
-module ControlFSM(
+module ControlFSM
+  ( input opcode_t opcode
+  , input wire clk
+  , input wire reset
+  , input wire zero_flag
+  , input wire [3:0] MemWriteByteAddress
+  , input wire [2:0] funct3
+  , input data_t alu_result
+  , output adr_src_t AdrSrc
+  , output reg IRWrite
+  , output reg RegWrite
+  , output reg PCUpdate
+  , output pc_src_t pc_src
+  , output reg [3:0] MemWrite
+  , output reg Branch
+  , output alu_src_a_t ALUSrcA
+  , output alu_src_b_t ALUSrcB
+  , output result_src_t ResultSrc
+  , output reg [4:0] FSMState
+  );
 
-	input opcode_t opcode,
-	input wire clk,
-	input wire reset,
-  input wire zero_flag,
-	output adr_src_t AdrSrc,
-	output reg IRWrite,
-	output reg RegWrite,
-	output reg PCUpdate,
-  output pc_src_t pc_src,
-	output reg MemWrite,
-	output reg Branch,
-	output alu_src_a_t ALUSrcA,
-	output alu_src_b_t ALUSrcB,
-	output reg [2:0] ALUOp, //to ALU Decoder
-	output result_src_t ResultSrc,
-	output reg [3:0] FSMState
+  //parameterize states (binary encoding)
+  //in later systemverilog implementation, change to enum
+  parameter FETCH = 5'b00000;
+  parameter DECODE = 5'b00001;
+  parameter EXECUTER = 5'b00010;
+  parameter UNCONDJUMP = 5'b00011;
+  parameter EXECUTEI = 5'b00100;
+  parameter MEMADR = 5'b00101;
+  parameter ALUWB = 5'b00110;
+  parameter MEMWRITE = 5'b00111;
+  parameter MEMREAD = 5'b01000;
+  parameter MEMWB = 5'b01001;
+  parameter BRANCHIFEQ = 5'b01010;
 
-);
+  //new states for lui and auipc
+  parameter LUI = 5'b01011;
+  parameter AUIPC = 5'b01100;
 
-	//parameterize states (binary encoding)
-	//in later systemverilog implementation, change to enum
-	parameter FETCH = 4'b0000;
-	parameter DECODE = 4'b0001;
-	parameter EXECUTER = 4'b0010;
-	parameter UNCONDJUMP = 4'b0011;
-	parameter EXECUTEI = 4'b0100;
-	parameter MEMADR = 4'b0101;
-	parameter ALUWB = 4'b0110;
-	parameter MEMWRITE = 4'b0111;
-	parameter MEMREAD = 4'b1000;
-	parameter MEMWB = 4'b1001;
-	parameter BRANCHIFEQ = 4'b1010;
+  parameter JALR_CALC  = 5'b01101; // calculate rs1 + imm, store in alu_out
+  parameter JALR_STEP2 = 5'b01110; // link and use alu_out to update PC
 
-	//new states for lui and auipc
-	parameter LUI = 4'b1011;
-	parameter AUIPC = 4'b1100;
+  // new state for remaining branch instructions
+  parameter BRANCHCOMP = 5'b01111;
+  
+  parameter FETCH_WAIT  = 5'b10000;
 
 
-	//declare state registers
-	reg [3:0] current_state, next_state;
+  //declare state registers
+  reg [4:0] current_state, next_state;
 
-	//Next state logic
-	always@(*)begin
+  //Next state logic
+  always @(*)begin
 
-		case(current_state)
+    case (current_state)
 
-			FETCH: next_state = DECODE;
+		FETCH:      next_state = FETCH_WAIT;
+		FETCH_WAIT: next_state = DECODE;
 
-			DECODE: begin
+      DECODE: begin
 
-				if (opcode == JType) next_state = UNCONDJUMP;
+        if (opcode == JType) next_state = UNCONDJUMP;
 
-				else if (opcode == RType) next_state = EXECUTER;
+        else if (opcode == RType) next_state = EXECUTER;
 
-				else if (opcode == IType_logic) next_state = EXECUTEI;
+        else if (opcode == IType_logic) next_state = EXECUTEI;
 
-				else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
+        else if (opcode == IType_load || opcode == SType) next_state = MEMADR;
 
-				else if (opcode == BType) next_state = BRANCHIFEQ;
+        else if (opcode == BType) begin
 
-				else if (opcode == UType_auipc) next_state = AUIPC;
+          case (funct3)
 
-				else if (opcode == UType_lui) next_state = LUI;
+            3'b000: next_state = BRANCHIFEQ;
 
-				else next_state = DECODE;
+            3'b001: next_state = BRANCHIFEQ;
 
-			end
+            default: next_state = BRANCHCOMP;
 
-			AUIPC: next_state = ALUWB;
+          endcase
 
-			LUI: next_state = ALUWB;
+        end
 
-			UNCONDJUMP: next_state = ALUWB;
+        else if (opcode == UType_auipc) next_state = AUIPC;
 
-			EXECUTER: next_state = ALUWB;
+        else if (opcode == UType_lui) next_state = LUI;
 
-			EXECUTEI: next_state = ALUWB;
+        else if (opcode == IType_jalr) next_state = JALR_CALC;
 
-			MEMADR: begin
+        else if (opcode == FENCE)     next_state = FETCH;
 
-				if (opcode == IType_load) next_state = MEMREAD;
+        else next_state = DECODE;
 
-				else if (opcode == SType) next_state = MEMWRITE;
+      end
 
-				else next_state = MEMADR;
+      AUIPC: next_state = ALUWB;
 
-			end
+      LUI: next_state = ALUWB;
 
-			BRANCHIFEQ: next_state = FETCH;
+      UNCONDJUMP: next_state = ALUWB;
 
-			ALUWB: next_state = FETCH;
+      EXECUTER: next_state = ALUWB;
 
-			MEMREAD: next_state = MEMWB;
+      EXECUTEI: next_state = ALUWB;
 
-			MEMWRITE: next_state = FETCH;
+      MEMADR: begin
 
-			MEMWB: next_state = FETCH;
+        if (opcode == IType_load) next_state = MEMREAD;
 
-			default: next_state = FETCH;
+        else if (opcode == SType) next_state = MEMWRITE;
 
-		endcase
+        else next_state = MEMADR;
 
-	end
+      end
 
-	//output logic
-	always@(*) begin
-    Branch <= 1'b0;
-    pc_src <= 1'b0;
-    PCUpdate <= 1'b0;
-    IRWrite <= 1'b0;
-    MemWrite <= 1'b0;
+      BRANCHIFEQ: next_state = FETCH;
 
-		FSMState <= current_state;
+      BRANCHCOMP: next_state = FETCH;
 
-		case(current_state)
+      ALUWB: next_state = FETCH;
 
-			FETCH: begin
+      MEMREAD: next_state = MEMWB;
 
-				AdrSrc <= ADR_SRC__PC;
-				IRWrite <= 1'b1;
-        PCUpdate <= 1'b1;
+      MEMWRITE: next_state = FETCH;
 
-			end
+      MEMWB: next_state = FETCH;
 
-			DECODE: begin
+      JALR_CALC:  next_state = JALR_STEP2;
 
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+      JALR_STEP2: next_state = ALUWB;
 
-			end
+      default: next_state = FETCH;
 
-			AUIPC: begin
-				
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+    endcase
 
-			end
+  end
 
-			LUI: begin
-				
-				ALUSrcA <= ALU_SRC_A__ZERO;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+  //output logic
+  always @(*) begin
+    Branch = 1'b0;
+    pc_src = PC_SRC__INCREMENT;
+    PCUpdate = 1'b0;
+    IRWrite = 1'b0;
+    MemWrite = 4'b0;
+    RegWrite = 1'b0;
+    AdrSrc    = ADR_SRC__PC;
+    ResultSrc = RESULT_SRC__ALU_OUT;
+    FSMState = current_state;
 
-			end
+    case (current_state)
 
-			EXECUTER: begin
+		FETCH: begin
+			AdrSrc   = ADR_SRC__PC;
+		end
+		
+		FETCH_WAIT: begin
+			AdrSrc   = ADR_SRC__PC;            
+			IRWrite  = 1'b1;                   
+			PCUpdate = 1'b1;                   
+			pc_src   = PC_SRC__INCREMENT;      
+		end
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__RD2;
-				ALUOp <= 2'b10;
 
-			end
+      DECODE: begin
 
-			EXECUTEI: begin
+        ALUSrcA = ALU_SRC_A__OLD_PC;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b11;
+      end
 
-			end
+      AUIPC: begin
 
-			UNCONDJUMP: begin
+        ALUSrcA = ALU_SRC_A__OLD_PC;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
-				ALUSrcA <= ALU_SRC_A__OLD_PC;
-				ALUSrcB <= ALU_SRC_B__4;
-				ALUOp <= 2'b00;
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-        PCUpdate <= 1'b1;
+      end
 
-			end
+      LUI: begin
 
-			MEMADR: begin
+        ALUSrcA = ALU_SRC_A__ZERO;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__IMM_EXT;
-				ALUOp <= 2'b00;
+      end
 
-			end
+      EXECUTER: begin
 
-			BRANCHIFEQ: begin
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__RD2;
 
-				ALUSrcA <= ALU_SRC_A__RD1;
-				ALUSrcB <= ALU_SRC_B__RD2;
-				ALUOp <= 2'b01;
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				Branch <= 1'b1;
-        pc_src <= zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
-        PCUpdate <= 1'b1;
+      end
 
-			end
+      EXECUTEI: begin
 
-			ALUWB: begin
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
 
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				RegWrite <= 1'b1;
+      end
 
-			end
+      UNCONDJUMP: begin
 
-			MEMWRITE: begin
+        ALUSrcA = ALU_SRC_A__OLD_PC;
+        ALUSrcB = ALU_SRC_B__4;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        PCUpdate = 1'b1;
+        pc_src    = PC_SRC__JUMP;  // new added
 
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				AdrSrc <= ADR_SRC__RESULT;
-				MemWrite <= 1'b1;
+      end
 
-			end
+      JALR_CALC: begin
+        ALUSrcA  = ALU_SRC_A__RD1;      // rs1
+        ALUSrcB  = ALU_SRC_B__IMM_EXT;  // + imm
+      end
 
-			MEMREAD: begin
+      JALR_STEP2: begin
+        ALUSrcA   = ALU_SRC_A__OLD_PC;  // Calculate link = pc_old + 4, write back in ALUWB
+        ALUSrcB   = ALU_SRC_B__4;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        pc_src    = PC_SRC__ALU_RESULT; // fetch  (alu_out & ~1) for new PC
+        PCUpdate  = 1'b1;
+      end
 
-				ResultSrc <= RESULT_SRC__ALU_OUT;
-				AdrSrc <= ADR_SRC__RESULT;
 
-			end
+      MEMADR: begin
 
-			MEMWB: begin
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__IMM_EXT;
+        AdrSrc    = ADR_SRC__RESULT;
+        ResultSrc = RESULT_SRC__ALU_RESULT;
 
-				ResultSrc <= RESULT_SRC__DATA;
-				RegWrite <= 1'b1;
+      end
 
-			end
+      BRANCHIFEQ: begin
 
-			default: begin //by default, we return to FETCH state
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__RD2;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        Branch = 1'b1;
+        case (funct3)
+          3'b000: begin
+            if (zero_flag) begin
+              pc_src = PC_SRC__JUMP;
+              PCUpdate = 1'b1;
+            end
+            else pc_src = PC_SRC__INCREMENT;
+          end
 
-				AdrSrc <= ADR_SRC__PC;
-				IRWrite <= 1'b1;
+          3'b001: begin
+            if (!zero_flag) begin
+              pc_src = PC_SRC__JUMP;
+              PCUpdate = 1'b1;
+            end
+            else pc_src = PC_SRC__INCREMENT;
+          end
+        endcase
+      end
 
-			end
+      BRANCHCOMP: begin
 
+        ALUSrcA = ALU_SRC_A__RD1;
+        ALUSrcB = ALU_SRC_B__RD2;
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        Branch = 1'b1;
+        if (alu_result == 32'b1) begin
+          pc_src = PC_SRC__JUMP;
+          PCUpdate = 1'b1;
+        end
+        else pc_src = PC_SRC__INCREMENT;
 
-		endcase
+      end
 
-	end
+      ALUWB: begin
 
-	//State transition logic (sequential)
-	always @ (posedge clk) begin
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        RegWrite = 1'b1;
 
-		if (reset) current_state <= FETCH;
+      end
 
-		else current_state <= next_state;
+      MEMWRITE: begin
 
-	end
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        AdrSrc = ADR_SRC__RESULT;
+        MemWrite = MemWriteByteAddress;
+
+      end
+
+      MEMREAD: begin
+
+        ResultSrc = RESULT_SRC__ALU_OUT;
+        AdrSrc = ADR_SRC__RESULT;
+
+      end
+
+      MEMWB: begin
+
+        ResultSrc = RESULT_SRC__DATA;
+        RegWrite = 1'b1;
+
+      end
+
+      default: begin //by default, we return to FETCH state
+
+        AdrSrc = ADR_SRC__PC;
+        IRWrite = 1'b1;
+
+      end
+
+
+    endcase
+
+  end
+
+  //State transition logic (sequential)
+  always @ (posedge clk) begin
+
+    if (reset) current_state <= FETCH;
+
+    else begin
+      current_state <= next_state;
+    end
+
+  end
 endmodule
