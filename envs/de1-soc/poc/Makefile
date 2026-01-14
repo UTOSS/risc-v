@@ -2,7 +2,7 @@ RISCV_PREFIX  := riscv32-unknown-elf
 RISCV_GCC     := $(RISCV_PREFIX)-gcc
 RISCV_OBJCOPY := $(RISCV_PREFIX)-objcopy
 
-all: poc0.mem poc1.mem poc2.mem poc3.mem
+all: poc0.mif poc1.mif poc2.mif poc3.mif
 
 poc.elf: poc.c link.ld
 	$(RISCV_GCC) -march=rv32i -mabi=ilp32 -mno-relax \
@@ -27,7 +27,17 @@ poc0.mem poc1.mem poc2.mem poc3.mem: poc.mem
 	        } \
 	      }' poc.mem
 
+%.mif: %.mem
+	@echo "Converting $< to $@..."
+	@echo "WIDTH=8;" > $@
+	@echo "DEPTH=512;" >> $@
+	@echo "ADDRESS_RADIX=HEX;" >> $@
+	@echo "DATA_RADIX=HEX;" >> $@
+	@echo "CONTENT BEGIN" >> $@
+	@awk 'BEGIN{addr=0} {if($$0 != "") {printf "%X : %s;\n", addr, $$0; addr++}}' $< >> $@
+	@echo "END;" >> $@
+
 clean:
-	rm -f poc.elf poc.mem poc0.mem poc1.mem poc2.mem poc3.mem
+	rm -f poc.elf poc.mem poc0.mif poc1.mif poc2.mif poc3.mif
 
 .PHONY: clean

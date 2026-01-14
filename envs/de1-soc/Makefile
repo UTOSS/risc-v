@@ -35,6 +35,9 @@ run_tb: $(OUT_DIR)/top_tb_sim
 synthesize:
 	cd quartus && quartus_sh --flow compile utoss-risc-v
 
+refresh_ram:
+	cd quartus && quartus_cdb utoss-risc-v --update_mif && quartus_asm utoss-risc-v
+
 clean:
 	rm -rf $(OUT_DIR) $(BUILD_DIR)
 
