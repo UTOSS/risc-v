@@ -1,4 +1,5 @@
 `include "src/types.svh"
+import pkg_control_fsm::state_t;
 
 module utoss_riscv
   ( input wire clk

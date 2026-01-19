@@ -4,6 +4,7 @@
 `include "src/types.svh"
 
 `include "test/utils.svh"
+import pkg_control_fsm::*;
 
 module beq_tb;
   reg clk;

@@ -2,6 +2,7 @@
 # Directories and tools
 # ===========================
 SRC_DIR      := src
+PKG_DIR      := packages
 ENVS_DIR     := envs
 TB_DIR       := test
 OUT_DIR      := out
@@ -27,7 +28,8 @@ TB_DEFINES := -DTESTBENCH
 # ===========================
 # Sources
 # ===========================
-SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
+SRCS := $(shell find ${SRC_DIR}/$(PKG_DIR) -name "*.sv" -o -name "*.v") \
+		$(shell find $(SRC_DIR) \( -name "*.sv" -o -name "*.v" \) -not -path "${SRC_DIR}/${PKG_DIR}/*") \
         $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
 
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)

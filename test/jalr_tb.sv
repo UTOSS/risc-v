@@ -2,6 +2,7 @@
 
 `include "src/types.svh"  // for enum literals like PC_SRC__ALU_RESULT
 `include "test/utils.svh"
+import pkg_control_fsm::*;
 
 module jalr_tb;
 

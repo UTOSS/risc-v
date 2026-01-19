@@ -2,6 +2,7 @@
 
 `include "test/utils.svh"
 `include "src/utils.svh"
+import pkg_control_fsm::*;
 
 module lui_tb;
 

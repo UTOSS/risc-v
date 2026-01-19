@@ -3,6 +3,7 @@
 
 `include "src/types.svh"
 `include "src/params.svh"
+import pkg_control_fsm::*;
 
 module ControlFSM
   ( input opcode_t opcode

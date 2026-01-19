@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 
 `include "test/utils.svh"
+import pkg_control_fsm::*;
 
 module sw_tb;
 

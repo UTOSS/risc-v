@@ -4,7 +4,9 @@ BASE_INCLUDE_DIR := ../../
 OUT_DIR          := out
 BUILD_DIR        := build
 
-CORE_SRC   := $(shell find $(BASE_INCLUDE_DIR)src -name "*.sv" -o -name "*.v")
+CORE_SRC   := $(shell find $(BASE_INCLUDE_DIR)src/packages -name "*.sv" -o -name "*.v") \
+			  $(shell find $(BASE_INCLUDE_DIR)src \( -name "*.sv" -o -name "*.v" \) -not -path "$(BASE_INCLUDE_DIR)src/packages/*")
+
 LOCAL_SRCS := $(wildcard *.sv)
 
 VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc \
