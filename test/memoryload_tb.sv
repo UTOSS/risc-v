@@ -24,31 +24,31 @@ module memoryload_tb;
   endtask
 
   task check_next_memory_read(input [31:0] expected_addr, input [31:0] expected_word);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
 
     `assert_equal(uut.core.opcode, 7'b0000011)
     `assert_equal(uut.core.instruction_decode.rs1, 2)
     `assert_equal(uut.core.instruction_decode.imm_ext, expected_addr - 32'h10)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
+    wait_till_next_cfsm_state(MEMADR);
 
     `assert_equal(uut.core.alu.a, 32'h10)
     `assert_equal(uut.core.alu.b, expected_addr - 32'h10)
     `assert_equal(uut.core.alu.out, expected_addr)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMREAD);
+    wait_till_next_cfsm_state(MEMREAD);
 
     `assert_equal(uut.core.result, expected_addr)
     `assert_equal(uut.memory__address, expected_addr)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWB);
+    wait_till_next_cfsm_state(MEMWB);
 
     `assert_equal(uut.core.data, expected_word)
     `assert_equal(uut.core.result, expected_word)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
 
     `assert_equal(uut.core.RegFile.RFMem[1], expected_word)
     expected_pc = expected_pc + 4;
@@ -111,7 +111,7 @@ module memoryload_tb;
 
     uut.core.RegFile.RFMem[2] = 32'h10;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
     reset <= `FALSE;
 
     // signed byte reads

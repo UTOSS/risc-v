@@ -4,7 +4,7 @@ module Logger
 ( input wire clk
 , input addr_t pc_cur
 , input instr_t instruction
-, input wire [4:0] FSM_State
+, input state_t FSM_State
 , input wire [6:0] opcode
 , input logic [2:0] funct3
 , input logic [6:0] funct7
