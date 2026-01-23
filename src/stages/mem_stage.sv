@@ -1,6 +1,6 @@
 `include "src/headers/types.svh"
 
-module Mem_Stage 
+module Mem_Stage
   ( input wire inRegWriteM
   , input reg [1:0] inResultSrcM
   , input reg [4:0] inRdM
@@ -18,7 +18,7 @@ module Mem_Stage
   , output logic [3:0] MemWriteByteAddress
   );
 
-  MemoryLoader memory_loader 
+  MemoryLoader memory_loader
     ( .memory_data (dataFromMemory)
     , .memory_address (ALUResultM)
     , .funct3 (funct3)
