@@ -1,4 +1,4 @@
-`include "src/types.svh"
+`include "src/headers/types.svh"
 
 module Mem_Stage (
     input wire inRegWriteM, 
