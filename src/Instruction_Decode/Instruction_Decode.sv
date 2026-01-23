@@ -45,11 +45,6 @@ module Instruction_Decode
 
     end
 
-    default: begin
-      funct3 = 3'b000;
-      funct7 = 7'b0;
-    end
-
     endcase
   end
 

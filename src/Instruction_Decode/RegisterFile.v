@@ -9,43 +9,44 @@
 //rd --> a register inside RF memory, holding address of register to be written into
 
 module registerFile
-  ( input  [4:0]  Addr1
-  , input  [4:0]  Addr2
-  , input  [4:0]  Addr3
-  , input         clk
-  , input         regWrite
-  , input  [31:0] dataIn
-  , input         reset
-  , output wire [31:0] baseAddr
-  , output wire [31:0] writeData
-  , output logic [31:0] dbg_regs [0:31]   // NEW
+  ( input [4:0] Addr1 //rs1 field (holds addr of one of 32 registers) - first source register
+  , input [4:0] Addr2 //rs2 field - second source register (holds data to be stored)
+  , input [4:0] Addr3 //rd field - desination register
+  , input clk
+  , input regWrite
+  , input [31:0] dataIn
+  , input reset
+  , output wire [31:0] baseAddr //data read line #1 - from first source register
+  , output wire [31:0] writeData //data read line #2 - from second source register
   );
 
+  //declare 32 registers in Register File, with 32 bits each 32 bits deep (32 addresses) and 32 bits
+  //wide (32 bits at each register) note that RFMem[0:31] means there are 32 elements (with addr for
+  //each element), each of which are 32-bit regs
   reg [31:0] RFMem [0:31] /* synthesis ramstyle = M10K*/;
 
+  // x0 always 0, read out 32-bit contents of rs1 register
   assign baseAddr  = (Addr1 == 5'd0) ? 32'd0 : RFMem[Addr1];
+
+  // x0 always 0 on read, read out 32-bit contents of rs2 register
   assign writeData = (Addr2 == 5'd0) ? 32'd0 : RFMem[Addr2];
 
-  genvar i;
-  generate
-    for (i=0;i<32;i=i+1) begin : DBG
-      always_comb dbg_regs[i] = (i==0) ? 32'd0 : RFMem[i];
-    end
-  endgenerate
-
   always @(posedge clk) begin
+
     if (reset) begin
 `ifndef TESTBENCH
-      integer k;
-      for (k = 0; k < 32; k = k + 1) begin
-        RFMem[k] <= 32'b0;
-      end
+		  integer i;
+      for (i = 0; i < 32; i = i + 1) begin
+            RFMem[i] <= 32'b0;
+        end
 `else
       RFMem[0] <= 32'b0;
 `endif
     end else if (regWrite && Addr3 != 0) begin
-      RFMem[Addr3] <= dataIn;
+      RFMem[Addr3] <= dataIn; //write into destination register if RegWrite = 1
+
     end
+
   end
 
 endmodule

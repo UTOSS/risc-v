@@ -24,6 +24,4 @@
 
 `include "src/utils.svh"
 
-`include "src/utils.svh"
-
 `endif
