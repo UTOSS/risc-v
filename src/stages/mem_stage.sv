@@ -20,7 +20,7 @@ module Mem_Stage
 
 MemoryLoader memory_loader 
  ( .memory_data (dataFromMemory)
- , .memory_address (ALUResultM),
+ , .memory_address (ALUResultM)
  , .funct3 (funct3)
  , .dataB ( WriteDataM )
  , .mem_load_result ( ReadDataM )
