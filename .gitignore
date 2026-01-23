@@ -1,8 +1,6 @@
 *.vvp
 *.vcd
 
-.devcontainer/
-
 riscof/riscof_work/
 riscof/riscv-arch-test/
 riscof/utoss_riscv/__pycache__/

@@ -1,0 +1,150 @@
+FROM ghcr.io/utoss/risc-v-toolchain:latest AS risc-v-toolchain
+
+FROM public.ecr.aws/lts/ubuntu:22.04_stable
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG KEYRING_PATH=/usr/share/keyrings
+ARG APT_SOURCES_PATH=/etc/apt/sources.list.d
+
+# update and upgrade
+RUN apt update && apt upgrade -y
+
+# install essentialls
+RUN apt update && \
+    apt install -y \
+    man make build-essential git zsh vim curl wget procps gnupg gnupg2 ca-certificates zip \
+    software-properties-common
+
+# unminimize the system
+RUN bash -c "yes | unminimize"
+
+# create dev sudo user
+RUN useradd --create-home dev && \
+    usermod --append --groups sudo dev && \
+    apt update && apt install -y sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# install dumb init system
+USER root
+RUN apt update && apt install -y dumb-init
+
+# setup oh-my-zsh
+USER dev
+ARG DOCKER_OHMYZSH_SCRIPT_NAME=zsh-in-docker.sh
+ARG DOCKER_OHMYZSH_SCRIPT_URL=https://github.com/deluan/zsh-in-docker/releases/download/v1.1.3/${DOCKER_OHMYZSH_SCRIPT_NAME}
+ARG DOCKER_OHMYZSH_SCRIPT_HASH="ffa8175332ef01b500ace59d03ce7e2f3a7453651e9a37060974bb6536f0706b  ${DOCKER_OHMYZSH_SCRIPT_NAME}"
+RUN cd /tmp && \
+    wget ${DOCKER_OHMYZSH_SCRIPT_URL} && \
+    echo ${DOCKER_OHMYZSH_SCRIPT_HASH} | sha256sum -c && \
+    chmod +x ./${DOCKER_OHMYZSH_SCRIPT_NAME} && \
+    ./${DOCKER_OHMYZSH_SCRIPT_NAME} -t robbyrussell -p git -p ssh-agent && \
+    rm ./${DOCKER_OHMYZSH_SCRIPT_NAME}
+
+# build and install icarus verilog
+USER dev
+ARG ICARUS_SRC_TAR=s20251012.tar.gz
+ARG ICARUS_SRC_URL=https://github.com/steveicarus/iverilog/archive/refs/tags/${ICARUS_SRC_TAR}
+ARG ICARUS_SRC_HASH="97776c5dd1ee09157f7cb9f48978c7687b9157b09fa7029c0f9378aac9a6f58c  ${ICARUS_SRC_TAR}"
+RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison flex && \
+    cd /tmp && \
+    wget ${ICARUS_SRC_URL} && \
+    echo ${ICARUS_SRC_HASH} | sha256sum -c && \
+    tar -xzf ${ICARUS_SRC_TAR} && \
+    cd iverilog-* && sh autoconf.sh && ./configure && make && make check && sudo make install && \
+    cd .. && rm ${ICARUS_SRC_TAR} && rm -rf ./iverilog-*
+
+# build and install Verilator
+USER dev
+ARG VERILATOR_VERSION=v5.042
+ARG VERILATOR_GIT_REPO=https://github.com/verilator/verilator
+RUN sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bison ccache \
+    libgoogle-perftools-dev numactl perl-doc \
+    libfl2 \
+    libfl-dev \
+    zlib1g zlib1g-dev && \
+    cd /tmp && \
+    git clone --depth=1 --branch ${VERILATOR_VERSION} ${VERILATOR_GIT_REPO} && \
+    cd verilator && \
+    autoconf && ./configure && make -j `nproc` && sudo make install && \
+    cd .. && rm -rf verilator
+
+# install quartus prime lite
+USER root
+ARG QUARTUS_PRIME_LITE_VERSION=25.1std
+ARG QUARTUS_PRIME_LITE_VERSION_REVISION=1129
+ARG QUARTUS_PRIME_LITE_INSTALLER_FILENAME=qinst-lite-linux-${QUARTUS_PRIME_LITE_VERSION}-${QUARTUS_PRIME_LITE_VERSION_REVISION}.run
+ARG QUARTUS_PRIME_LITE_DOWNLOAD_URL=https://download.altera.com/akdlm/software/acdsinst/${QUARTUS_PRIME_LITE_VERSION}/${QUARTUS_PRIME_LITE_VERSION_REVISION}/qinst/${QUARTUS_PRIME_LITE_INSTALLER_FILENAME}
+ARG QUARTUS_PRIME_LITE_HASH="ead5d78346c7080adad724ec8c50534aa1d91eac  ${QUARTUS_PRIME_LITE_INSTALLER_FILENAME}"
+RUN cd /tmp && \
+    wget ${QUARTUS_PRIME_LITE_DOWNLOAD_URL} && \
+    echo ${QUARTUS_PRIME_LITE_HASH} | sha1sum -c && \
+    chmod +x ${QUARTUS_PRIME_LITE_INSTALLER_FILENAME} && \
+    ./${QUARTUS_PRIME_LITE_INSTALLER_FILENAME} qinst --cli --accept-eula \
+      --download-dir /tmp/quartus-downloads \
+      --install-dir /opt/quartus \
+      --auto-install --components quartus,cyclonev \
+      --delete-downloads && \
+    rm -rf quartus-downloads && \
+    rm ${QUARTUS_PRIME_LITE_INSTALLER_FILENAME}
+ENV PATH="/opt/quartus/quartus/bin:${PATH}"
+
+# install cocotb
+USER dev
+RUN sudo apt update && sudo apt install -y python3 python3-pip libpython3-dev && \
+  pip3 install cocotb~=1.9
+
+# install svlint
+USER dev
+ARG SVLINT_VERSION=0.9.3
+ARG SVLINT_ZIP_NAME=svlint-v${SVLINT_VERSION}-x86_64-lnx.zip
+ARG SVLINT_ZIP_URL=https://github.com/dalance/svlint/releases/download/v${SVLINT_VERSION}/${SVLINT_ZIP_NAME}
+ARG SVLINT_ZIP_HASH="df44caa38e0cddd09bafa93365d489e47f4823bdda26aa923028c2f06df90456  ${SVLINT_ZIP_NAME}"
+RUN mkdir -p /tmp/svlint && \
+    cd /tmp/svlint && \
+    wget ${SVLINT_ZIP_URL} && \
+    echo ${SVLINT_ZIP_HASH} | sha256sum -c && \
+    unzip ${SVLINT_ZIP_NAME} && \
+    sudo mv bin/* /usr/local/bin/ && \
+    cd .. && rm -r /tmp/svlint
+
+# install svls
+USER dev
+ARG SVLS_VERSION=0.2.12
+ARG SVLS_ZIP_NAME=svls-v${SVLS_VERSION}-x86_64-lnx.zip
+ARG SVLS_ZIP_URL=https://github.com/dalance/svls/releases/download/v${SVLS_VERSION}/${SVLS_ZIP_NAME}
+ARG SVLS_ZIP_HASH="bebdb42731d3d186c7de4263651f0cf06f346f492b30398a128465f50136f33f  ${SVLS_ZIP_NAME}"
+RUN mkdir -p /tmp/svls && \
+    cd /tmp/svls && \
+    wget ${SVLS_ZIP_URL} && \
+    echo ${SVLS_ZIP_HASH} | sha256sum -c && \
+    unzip ${SVLS_ZIP_NAME} && \
+    sudo mv svls /usr/local/bin/ && \
+    cd .. && rm -r /tmp/svls
+
+# install riscv toolchain
+USER dev
+COPY --from=risc-v-toolchain /opt/riscv /opt/riscv
+ENV PATH="/opt/riscv/bin:${PATH}"
+
+# install SAIL simulator
+USER dev
+ARG SAIL_RISCV_VERSION=0.7
+ARG SAIL_RISCV_ZIP_NAME=sail_riscv-Linux-x86_64.tar.gz
+ARG SAIL_RISCV_ZIP_URL=https://github.com/riscv/sail-riscv/releases/download/${SAIL_RISCV_VERSION}/${SAIL_RISCV_ZIP_NAME}
+ARG SAIL_RISCV_ZIP_HASH="6b8c3abc3126ce14911a3dec46ff540a60841ef090898f72c4c6f9b0b825efab  ${SAIL_RISCV_ZIP_NAME}"
+RUN mkdir -p /tmp/sail-riscv && \
+    cd /tmp/sail-riscv && \
+    wget ${SAIL_RISCV_ZIP_URL} && \
+    echo ${SAIL_RISCV_ZIP_HASH} | sha256sum -c && \
+    tar -xzf ${SAIL_RISCV_ZIP_NAME} && \
+    sudo mv sail_riscv-Linux-x86_64/bin/* /usr/local/bin/ && \
+    cd .. && sudo rm -r /tmp/sail-riscv && \
+    cd /usr/local/bin && \
+    sudo mv riscv_sim_rv32d riscv_sim_RV32 && \
+    sudo mv riscv_sim_rv64d riscv_sim_RV64
+
+# install riscof
+USER dev
+RUN pip3 install riscof
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
