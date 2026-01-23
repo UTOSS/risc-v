@@ -1,5 +1,7 @@
 FROM ghcr.io/utoss/risc-v-toolchain:latest AS risc-v-toolchain
 
+FROM ghcr.io/utoss/quartus:latest AS quartus
+
 FROM public.ecr.aws/lts/ubuntu:22.04_stable
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -68,24 +70,9 @@ RUN sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bis
     autoconf && ./configure && make -j `nproc` && sudo make install && \
     cd .. && rm -rf verilator
 
-# install quartus prime lite
-USER root
-ARG QUARTUS_PRIME_LITE_VERSION=25.1std
-ARG QUARTUS_PRIME_LITE_VERSION_REVISION=1129
-ARG QUARTUS_PRIME_LITE_INSTALLER_FILENAME=qinst-lite-linux-${QUARTUS_PRIME_LITE_VERSION}-${QUARTUS_PRIME_LITE_VERSION_REVISION}.run
-ARG QUARTUS_PRIME_LITE_DOWNLOAD_URL=https://download.altera.com/akdlm/software/acdsinst/${QUARTUS_PRIME_LITE_VERSION}/${QUARTUS_PRIME_LITE_VERSION_REVISION}/qinst/${QUARTUS_PRIME_LITE_INSTALLER_FILENAME}
-ARG QUARTUS_PRIME_LITE_HASH="ead5d78346c7080adad724ec8c50534aa1d91eac  ${QUARTUS_PRIME_LITE_INSTALLER_FILENAME}"
-RUN cd /tmp && \
-    wget ${QUARTUS_PRIME_LITE_DOWNLOAD_URL} && \
-    echo ${QUARTUS_PRIME_LITE_HASH} | sha1sum -c && \
-    chmod +x ${QUARTUS_PRIME_LITE_INSTALLER_FILENAME} && \
-    ./${QUARTUS_PRIME_LITE_INSTALLER_FILENAME} qinst --cli --accept-eula \
-      --download-dir /tmp/quartus-downloads \
-      --install-dir /opt/quartus \
-      --auto-install --components quartus,cyclonev \
-      --delete-downloads && \
-    rm -rf quartus-downloads && \
-    rm ${QUARTUS_PRIME_LITE_INSTALLER_FILENAME}
+# copy quartus prime lite installation
+USER dev
+COPY --from=quartus /opt/quartus /opt/quartus
 ENV PATH="/opt/quartus/quartus/bin:${PATH}"
 
 # install cocotb
