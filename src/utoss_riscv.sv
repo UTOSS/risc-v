@@ -4,12 +4,13 @@ module utoss_riscv
   ( input wire clk
   , input wire reset
 
-  // memory interface begin
   , output addr_t       memory__address
   , output data_t       memory__write_data
   , output logic  [3:0] memory__write_enable
   , input  data_t       memory__read_data
-  // memory interface end
+
+  , output logic [31:0] dbg_regs [0:31]   
+  , output addr_t       dbg_pc           
   );
 
   wire         cfsm__pc_update;
@@ -25,7 +26,7 @@ module utoss_riscv
   imm_t    imm_ext;
   reg [2:0] funct3;
   reg [6:0] funct7;
-
+	
   integer byteindex;
 
   data_t result;
@@ -53,7 +54,8 @@ module utoss_riscv
   reg  [4:0] rd, rs1, rs2;
 
   logic [3:0] MemWriteByteAddress;
-
+	
+  assign dbg_pc = pc_cur;
   ControlFSM control_fsm
     ( .opcode     ( opcode               )
     , .clk        ( clk                  )
@@ -138,6 +140,7 @@ module utoss_riscv
     , .dataIn          ( result           )
     , .baseAddr        ( rd1              )
     , .writeData       ( rd2              )
+	 , .dbg_regs        ( dbg_regs )
     );
 
   ALU alu
