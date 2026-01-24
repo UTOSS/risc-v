@@ -1,3 +1,5 @@
+FROM ghcr.io/utoss/verilator:latest AS verilator
+
 FROM ghcr.io/utoss/risc-v-toolchain:latest AS risc-v-toolchain
 
 FROM ghcr.io/utoss/quartus:latest AS quartus
@@ -57,18 +59,7 @@ RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison fle
 
 # build and install Verilator
 USER dev
-ARG VERILATOR_VERSION=v5.042
-ARG VERILATOR_GIT_REPO=https://github.com/verilator/verilator
-RUN sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bison ccache \
-    libgoogle-perftools-dev numactl perl-doc \
-    libfl2 \
-    libfl-dev \
-    zlib1g zlib1g-dev && \
-    cd /tmp && \
-    git clone --depth=1 --branch ${VERILATOR_VERSION} ${VERILATOR_GIT_REPO} && \
-    cd verilator && \
-    autoconf && ./configure && make -j `nproc` && sudo make install && \
-    cd .. && rm -rf verilator
+COPY --from=verilator /usr/local/bin/verilator /usr/local/bin/verilator
 
 # copy quartus prime lite installation
 USER dev
