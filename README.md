@@ -3,7 +3,10 @@ UTOSS' starter multicycle RISC-V core.
 
 ## Getting Started
 
-Checkout Setting up Developement Environment wiki page.
+Checkout Setting up Developement Environment wiki page if you wuld like to develop locally. You cant
+also create a
+[Codespace](https://docs.github.com/en/codespaces/about-codespaces/what-are-codespaces) which will
+use our [devcontainer image](.devcontainer/Dockerfile) with all the necessary tools preinstalled.
 
 ## Project structure
 
