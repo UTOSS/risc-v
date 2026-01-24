@@ -2,22 +2,19 @@
 
 module uart_rx #
 (
-    parameter DATA_WIDTH = 8,
-    parameter DIV = 434 // 50e6/115200 ≈ 434
+    parameter DATA_WIDTH = 8
+    , parameter DIV = 434 // 50e6/115200 ≈ 434
 )
 (
-    input  wire    clk, 
-    input  wire    rst, 
-
-    output logic [DATA_WIDTH-1:0]  o_data,  
-    output logic                   o_valid, 
-    input  wire                    i_ready, 
-
-    input  wire                   i_rxd, 
-
-    output logic                  o_busy, 
-    output logic                  o_overrun_error, 
-    output logic                  o_frame_error
+    input  wire    clk
+    , input  wire    rst
+    , output logic [DATA_WIDTH - 1:0]  o_data
+    , output logic o_valid
+    , input  wire i_ready
+    , input  wire i_rxd
+    , output logic                  o_busy
+    , output logic                  o_overrun_error
+    , output logic                  o_frame_error
 );
 
     reg rxd_q0;
@@ -74,7 +71,7 @@ module uart_rx #
                     if (start_fall) begin
                         o_busy <= 1'b1;
                         state    <= STATE_START;
-                        timer    <= (DIV/2) - 1; // center
+                        timer    <= (DIV / 2) - 1; // center
                     end
                 end
 

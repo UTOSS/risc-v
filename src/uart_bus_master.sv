@@ -7,25 +7,21 @@
 //HALT: A5 13 CHK   (CHK=0x12)
 //R_ACK:90 R_RD:91
 module uart_bus_master (
-    input  wire  clk, 
-    input  wire  rst, 
-
-    input  wire [7:0]  rx_data, 
-    input  wire rx_valid, 
-    output wire rx_ready, 
-
-    output logic [7:0] tx_data, 
-    output logic tx_valid, 
-    input  wire  tx_ready, 
-
-    output logic [31:0] bus_addr, 
-    output logic [31:0] bus_write_data, 
-    output logic [3:0]  bus_write_enable, 
-    input  wire [31:0]  bus_read_data, 
-
-    output logic hold_core, 
-    input  logic [31:0] dbg_regs [0:31], 
-    input  logic [31:0] dbg_pc
+    input  wire  clk
+    , input  wire rst
+    , input  wire [7:0]  rx_data
+    , input  wire rx_valid
+    , output wire rx_ready
+    , output logic [7:0] tx_data
+    , output logic tx_valid
+    , input  wire  tx_ready
+    , output logic [31:0] bus_addr
+    , output logic [31:0] bus_write_data
+    , output logic [3:0]  bus_write_enable
+    , input  wire [31:0]  bus_read_data
+    , output logic hold_core
+    , input  logic [31:0] dbg_regs [0:31]
+    , input  logic [31:0] dbg_pc
 );
 
     assign rx_ready = (state != STATE_SEND);
@@ -37,12 +33,12 @@ module uart_bus_master (
     localparam byte CMD_RD32 = 8'h11;
     localparam byte CMD_RUN  = 8'h12;
     localparam byte CMD_HALT = 8'h13;
-	 localparam byte CMD_RDREG = 8'h14;  
+    localparam byte CMD_RDREG = 8'h14;  
 	 
 
     localparam byte R_ACK = 8'h90;
     localparam byte R_RD  = 8'h91;
-	 localparam byte R_RDREG   = 8'h92; 
+    localparam byte R_RDREG   = 8'h92; 
 
     localparam byte STATUS_OK   = 8'h00;
     localparam byte STATUS_CHK  = 8'h01;
@@ -50,22 +46,22 @@ module uart_bus_master (
     localparam byte STATUS_CMD  = 8'h03;
 
     typedef enum logic [4:0] {
-        STATE_WAIT_SOF = 5'd0,
-        STATE_CMD      = 5'd1,
-        STATE_A0       = 5'd2,
-        STATE_A1       = 5'd3,
-        STATE_A2       = 5'd4,
-        STATE_A3       = 5'd5,
-        STATE_D0       = 5'd6,
-        STATE_D1       = 5'd7,
-        STATE_D2       = 5'd8,
-        STATE_D3       = 5'd9,
-        STATE_CHK      = 5'd10,
-        STATE_DO_WR    = 5'd11,
-        STATE_DO_RD0   = 5'd12,
-        STATE_DO_RD1   = 5'd13,
-        STATE_SEND     = 5'd14,
-		  STATE_REG   = 5'd15
+        STATE_WAIT_SOF = 5'd0
+        , STATE_CMD      = 5'd1
+        , STATE_A0       = 5'd2
+        , STATE_A1       = 5'd3
+        , STATE_A2       = 5'd4
+        , STATE_A3       = 5'd5
+        , STATE_D0       = 5'd6
+        , STATE_D1       = 5'd7
+        , STATE_D2       = 5'd8
+        , STATE_D3       = 5'd9
+        , STATE_CHK      = 5'd10
+        , STATE_DO_WR    = 5'd11
+        , STATE_DO_RD0   = 5'd12
+        , STATE_DO_RD1   = 5'd13
+        , STATE_SEND     = 5'd14
+        , STATE_REG   = 5'd15
     } state_t;
 
     state_t state;

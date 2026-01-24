@@ -2,23 +2,23 @@
 
 module uart_tx #
 (
-    parameter DATA_WIDTH = 8,
-    parameter DIV = 434 // 50e6/115200 ≈ 434
+    parameter DATA_WIDTH = 8
+    , parameter DIV = 434 // 50e6/115200 ≈ 434
 )
 (
-    input  wire   clk,
-    input  wire   rst,
-    input  wire [DATA_WIDTH-1:0]  i_data,
-    input  wire   i_valid,
-    output logic  o_ready,
-    output logic  o_txd,
-    output logic  o_busy
+    input  wire   clk
+    , input  wire   rst
+    , input  wire [DATA_WIDTH - 1:0]  i_data
+    , input  wire   i_valid
+    , output logic  o_ready
+    , output logic  o_txd
+    , output logic  o_busy
 );
 
     // 1 start + DATA_WIDTH data + 1 stop
     localparam integer FRAME_BITS = DATA_WIDTH + 2;
 
-    reg [FRAME_BITS-1:0] data_reg = {FRAME_BITS{1'b1}};
+    reg [FRAME_BITS - 1:0] data_reg = {FRAME_BITS{1'b1}};
     reg [3:0] bit_idx;
     reg [18:0] timer;
 
@@ -59,10 +59,10 @@ module uart_tx #
                         timer <= timer - 1'b1;
                     end else begin
                         bit_idx <= bit_idx + 1'b1;
-                        data_reg <= {1'b1, data_reg[FRAME_BITS-1:1]}; //shift 1 bit so that LSB is the data out
+                        data_reg <= {1'b1, data_reg[FRAME_BITS - 1:1]}; //shift 1 bit so that LSB is the data out
                         o_txd <= data_reg[1];
                         timer <= DIV - 1;
-                        if (bit_idx == FRAME_BITS-1) begin
+                        if (bit_idx == FRAME_BITS - 1) begin
                             state <= STATE_IDLE;
                         end
                     end
