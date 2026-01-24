@@ -52,7 +52,7 @@ uart_rx_inst (
     , .rst(rst)
     , .o_data(o_data_m)
     , .o_valid(o_valid_m)
-    , i_ready(i_ready_m)
+    , .i_ready(i_ready_m)
     , .i_rxd(i_rxd)
     , .o_busy(o_rx_busy)
     , .o_overrun_error(o_rx_overrun_error)
