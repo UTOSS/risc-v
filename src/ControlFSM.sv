@@ -156,9 +156,9 @@ module ControlFSM
     FETCH: begin
       AdrSrc   = ADR_SRC__PC;
     end
-		
+
     FETCH_WAIT: begin
-      AdrSrc   = ADR_SRC__PC;    
+      AdrSrc   = ADR_SRC__PC;
       IRWrite  = 1'b1;
       PCUpdate = 1'b1;
       pc_src   = PC_SRC__INCREMENT;

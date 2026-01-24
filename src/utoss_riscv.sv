@@ -4,13 +4,13 @@ module utoss_riscv
   ( input wire clk
   , input wire reset
 
-  , output addr_t       memory__address
-  , output data_t       memory__write_data
+  , output addr_t  memory__address
+  , output data_t  memory__write_data
   , output logic  [3:0] memory__write_enable
-  , input  data_t       memory__read_data
+  , input  data_t  memory__read_data
 
-  , output logic [31:0] dbg_regs [0:31]   
-  , output addr_t       dbg_pc
+  , output logic [31:0] dbg_regs [0:31]
+  , output addr_t dbg_pc
   );
 
   wire         cfsm__pc_update;
@@ -140,7 +140,7 @@ module utoss_riscv
     , .dataIn          ( result           )
     , .baseAddr        ( rd1              )
     , .writeData       ( rd2              )
-    ,.dbg_regs        ( dbg_regs )
+    , .dbg_regs        ( dbg_regs )
     );
 
   ALU alu

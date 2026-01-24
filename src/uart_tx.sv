@@ -16,7 +16,7 @@ module uart_tx #
 );
 
     // 1 start + DATA_WIDTH data + 1 stop
-    localparam integer FRAME_BITS = DATA_WIDTH + 2;
+    localparam int FRAME_BITS = DATA_WIDTH + 2;
 
     reg [FRAME_BITS - 1:0] data_reg = {FRAME_BITS{1'b1}};
     reg [3:0] bit_idx;

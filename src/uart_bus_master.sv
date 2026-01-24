@@ -1,6 +1,6 @@
 //protocol:  A: address D: data
-//SOF: A5  
-//command number(10-13) 
+//SOF: A5
+//command number(10-13)
 //WRITE32: A5 10 A0 A1 A2 A3 D0 D1 D2 D3 CHK
 //READ32:  A5 11 A0 A1 A2 A3 CHK
 //RUN: A5 12 CHK   (CHK=0x12)
@@ -25,7 +25,7 @@ module uart_bus_master (
 );
 
     assign rx_ready = (state != STATE_SEND);
-	 
+
     localparam byte SOF  = 8'hA5;
     localparam byte RSOF = 8'h5A;
 
@@ -33,12 +33,12 @@ module uart_bus_master (
     localparam byte CMD_RD32 = 8'h11;
     localparam byte CMD_RUN  = 8'h12;
     localparam byte CMD_HALT = 8'h13;
-    localparam byte CMD_RDREG = 8'h14;  
+    localparam byte CMD_RDREG = 8'h14;
 	 
 
     localparam byte R_ACK = 8'h90;
     localparam byte R_RD  = 8'h91;
-    localparam byte R_RDREG   = 8'h92; 
+    localparam byte R_RDREG   = 8'h92;
 
     localparam byte STATUS_OK   = 8'h00;
     localparam byte STATUS_CHK  = 8'h01;
@@ -120,7 +120,7 @@ module uart_bus_master (
     end
     endtask
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk)
         if (rst) begin
             bus_addr  <= 32'd0;
             bus_write_data <= 32'd0;
@@ -138,17 +138,16 @@ module uart_bus_master (
             resp_len  <= 3'd0;
             resp_idx  <= 3'd0;
 
-            hold_core <= 1'b1; 
+            hold_core <= 1'b1;
         end else begin
             bus_write_enable <= 4'b0000;
-				
             if (tx_valid && tx_ready) tx_valid <= 1'b0;
 
             if (state == STATE_SEND) begin
                 if (!tx_valid && tx_ready) begin
                     tx_data  <= resp[resp_idx];
                     tx_valid <= 1'b1;
-                    if (resp_idx == resp_len-1) begin
+                    if (resp_idx == resp_len - 1) begin
                         state <= STATE_WAIT_SOF;
                         resp_idx <= 3'd0;
                     end else begin
@@ -174,21 +173,21 @@ module uart_bus_master (
                     end
 
                     STATE_A0: if (rx_valid & rx_ready) begin 
-                                addr[7:0]   <= rx_data; 
-                                chk_calc <= chk_calc ^ rx_data; 
-                                state <= STATE_A1; 
+                                addr[7:0]   <= rx_data;
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_A1;
 						  end
 						  
-                    STATE_A1: if (rx_valid & rx_ready) begin 
-                                addr[15:8]  <= rx_data; 
-                                chk_calc <= chk_calc ^ rx_data; 
-                                state <= STATE_A2; 
+                    STATE_A1: if (rx_valid & rx_ready) begin
+                                addr[15:8]  <= rx_data;
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_A2;
 						  end
 						  
-                    STATE_A2: if (rx_valid & rx_ready) begin 
-                                addr[23:16] <= rx_data; 
-                                chk_calc <= chk_calc ^ rx_data; 
-                                state <= STATE_A3; 
+                    STATE_A2: if (rx_valid & rx_ready) begin
+                                addr[23:16] <= rx_data;
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_A3;
 					     end
 						  
                     STATE_A3: if (rx_valid & rx_ready) begin
@@ -198,28 +197,28 @@ module uart_bus_master (
                         else state <= STATE_CHK; // RD32 no data packet
                     end
 
-                    STATE_D0: if (rx_valid & rx_ready) begin 
-                                wdata[7:0]   <= rx_data; 
-                                chk_calc <= chk_calc ^ rx_data; 
-                                state <= STATE_D1; 
+                    STATE_D0: if (rx_valid & rx_ready) begin
+                                wdata[7:0]   <= rx_data;
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_D1;
 						  end
 						  
-                    STATE_D1: if (rx_valid & rx_ready) begin 
-                                wdata[15:8]  <= rx_data; 
-                                chk_calc <= chk_calc ^ rx_data; 
-                                state <= STATE_D2; 
+                    STATE_D1: if (rx_valid & rx_ready) begin
+                                wdata[15:8]  <= rx_data;
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_D2;
 						  end
 						  
-                    STATE_D2: if (rx_valid & rx_ready) begin 
-                                wdata[23:16] <= rx_data; 
-                                chk_calc <= chk_calc ^ rx_data; 
-                                state <= STATE_D3; 
+                    STATE_D2: if (rx_valid & rx_ready) begin
+                                wdata[23:16] <= rx_data;
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_D3;
 						  end
 						  
-                    STATE_D3: if (rx_valid & rx_ready) begin 
-                                wdata[31:24] <= rx_data; 
-                                chk_calc <= chk_calc ^ rx_data; 
-                                state <= STATE_CHK; 
+                    STATE_D3: if (rx_valid & rx_ready) begin
+                                wdata[31:24] <= rx_data;
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_CHK;
 						  end
 
 						  STATE_REG: if (rx_valid & rx_ready) begin
@@ -262,17 +261,17 @@ module uart_bus_master (
                     STATE_DO_WR: begin
                         bus_addr  <= addr;
                         bus_write_data <= wdata;
-                        bus_write_enable <= 4'b1111;  
+                        bus_write_enable <= 4'b1111;
                         prepare_ack(STATUS_OK);
                     end
 
                     STATE_DO_RD0: begin
-                        bus_addr <= addr;     
-                        state <= STATE_DO_RD1;      
+                        bus_addr <= addr;
+                        state <= STATE_DO_RD1;
                     end
 
                     STATE_DO_RD1: begin
-                        prepare_rd(bus_read_data); 
+                        prepare_rd(bus_read_data);
                     end
 
                     default: state <= STATE_WAIT_SOF;

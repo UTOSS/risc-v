@@ -25,18 +25,18 @@ module uart_rx #
     wire start_fall = (rxd_q1_d == 1'b1) && (rxd_q1 == 1'b0);
 
     typedef enum logic [1:0] {
-    STATE_IDLE  = 2'd0, 
-    STATE_START = 2'd1, 
-    STATE_DATA  = 2'd2, 
-    STATE_STOP  = 2'd3
-	 } uart_state_t;
+    STATE_IDLE  = 2'd0
+    , STATE_START = 2'd1
+    , STATE_DATA  = 2'd2
+    , STATE_STOP  = 2'd3
+    } uart_state_t;
     uart_state_t  state = STATE_IDLE;
 
     reg [18:0] timer;
     reg [3:0]  bit_idx;
     reg [DATA_WIDTH-1:0] data_reg;
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk) 
         if (rst) begin
             o_data  <= 0;
             o_valid <= 0;
@@ -84,11 +84,11 @@ module uart_rx #
                             state         <= STATE_DATA;
                             bit_idx    <= 0;
                             data_reg <= 0;
-                            timer      <= DIV - 1; 
+                            timer      <= DIV - 1;
                         end else begin
                             ///starting bit not 0, error
                             state <= STATE_IDLE;
-									 o_frame_error <= 1'b1;
+                            o_frame_error <= 1'b1;
                         end
                     end
                 end
@@ -100,7 +100,7 @@ module uart_rx #
                     end else begin
                         data_reg[bit_idx] <= rxd_q1; // LSB first
 
-                        if (bit_idx == DATA_WIDTH-1) begin
+                        if (bit_idx == DATA_WIDTH - 1) begin
                             state    <= STATE_STOP;
                             timer <= DIV - 1;
                         end else begin
@@ -130,6 +130,5 @@ module uart_rx #
                 default: state <= STATE_IDLE;
             endcase
         end
-    end
 
 endmodule
