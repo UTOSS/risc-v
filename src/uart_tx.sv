@@ -6,13 +6,13 @@ module uart_tx #
     parameter DIV = 434 // 50e6/115200 ≈ 434
 )
 (
-    input  wire                   clk,
-    input  wire                   rst,
+    input  wire   clk,
+    input  wire   rst,
     input  wire [DATA_WIDTH-1:0]  i_data,
-    input  wire                   i_valid,
-    output logic                  o_ready,
-    output logic                  o_txd,
-    output logic                  o_busy
+    input  wire   i_valid,
+    output logic  o_ready,
+    output logic  o_txd,
+    output logic  o_busy
 );
 
     // 1 start + DATA_WIDTH data + 1 stop

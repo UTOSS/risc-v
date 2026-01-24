@@ -6,18 +6,17 @@ module uart_rx #
     parameter DIV = 434 // 50e6/115200 ≈ 434
 )
 (
-    input  wire                   clk,
-    input  wire                   rst,
+    input  wire    clk, 
+    input  wire    rst, 
 
+    output logic [DATA_WIDTH-1:0]  o_data,  
+    output logic                   o_valid, 
+    input  wire                    i_ready, 
 
-    output logic [DATA_WIDTH-1:0]  o_data, 
-    output logic                   o_valid,
-    input  wire                    i_ready,  
+    input  wire                   i_rxd, 
 
-    input  wire                   i_rxd,
-
-    output logic                  o_busy,
-    output logic                  o_overrun_error,
+    output logic                  o_busy, 
+    output logic                  o_overrun_error, 
     output logic                  o_frame_error
 );
 
@@ -29,9 +28,9 @@ module uart_rx #
     wire start_fall = (rxd_q1_d == 1'b1) && (rxd_q1 == 1'b0);
 
     typedef enum logic [1:0] {
-    STATE_IDLE  = 2'd0,
-    STATE_START = 2'd1,
-    STATE_DATA  = 2'd2,
+    STATE_IDLE  = 2'd0, 
+    STATE_START = 2'd1, 
+    STATE_DATA  = 2'd2, 
     STATE_STOP  = 2'd3
 	 } uart_state_t;
     uart_state_t  state = STATE_IDLE;

@@ -7,25 +7,25 @@
 //HALT: A5 13 CHK   (CHK=0x12)
 //R_ACK:90 R_RD:91
 module uart_bus_master (
-    input  wire        clk,
-    input  wire        rst,
-	 
-    input  wire [7:0]  rx_data,
-    input  wire        rx_valid,
-    output wire        rx_ready, 
-	 
+    input  wire  clk, 
+    input  wire  rst, 
+
+    input  wire [7:0]  rx_data, 
+    input  wire rx_valid, 
+    output wire rx_ready, 
+
     output logic [7:0] tx_data, 
-    output logic       tx_valid,
-    input  wire        tx_ready,
+    output logic tx_valid, 
+    input  wire  tx_ready, 
 
-    output logic [31:0] bus_addr,
-    output logic [31:0] bus_write_data,
+    output logic [31:0] bus_addr, 
+    output logic [31:0] bus_write_data, 
     output logic [3:0]  bus_write_enable, 
-    input  wire [31:0]  bus_read_data,
+    input  wire [31:0]  bus_read_data, 
 
-    output logic        hold_core,
-	 input  logic [31:0] dbg_regs [0:31],
-	 input  logic [31:0] dbg_pc
+    output logic hold_core, 
+    input  logic [31:0] dbg_regs [0:31], 
+    input  logic [31:0] dbg_pc
 );
 
     assign rx_ready = (state != STATE_SEND);
@@ -69,7 +69,7 @@ module uart_bus_master (
     } state_t;
 
     state_t state;
-	 logic [4:0] reg_idx;
+    logic [4:0] reg_idx;
     logic [7:0]  cmd;
     logic [31:0] addr;
     logic [31:0] wdata;
@@ -108,7 +108,7 @@ module uart_bus_master (
         end
     endtask
 
-	 task automatic prepare_rdreg(input logic [31:0] d);
+    task automatic prepare_rdreg(input logic [31:0] d);
     begin
         // 5A 92 d0 d1 d2 d3 chk
         resp[0] = RSOF;
@@ -122,7 +122,7 @@ module uart_bus_master (
         resp_idx = 3'd0;
         state = STATE_SEND;
     end
-	 endtask
+    endtask
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -173,26 +173,26 @@ module uart_bus_master (
                         wdata    <= 32'd0;
 
                         if (rx_data == CMD_RUN || rx_data == CMD_HALT) state <= STATE_CHK;
-								else if (rx_data == CMD_RDREG) state <= STATE_REG;
+                            else if (rx_data == CMD_RDREG) state <= STATE_REG;
                         else state <= STATE_A0;
                     end
 
                     STATE_A0: if (rx_valid & rx_ready) begin 
-								addr[7:0]   <= rx_data; 
-								chk_calc <= chk_calc ^ rx_data; 
-								state <= STATE_A1; 
+                                addr[7:0]   <= rx_data; 
+                                chk_calc <= chk_calc ^ rx_data; 
+                                state <= STATE_A1; 
 						  end
 						  
                     STATE_A1: if (rx_valid & rx_ready) begin 
-								addr[15:8]  <= rx_data; 
-								chk_calc <= chk_calc ^ rx_data; 
-								state <= STATE_A2; 
+                                addr[15:8]  <= rx_data; 
+                                chk_calc <= chk_calc ^ rx_data; 
+                                state <= STATE_A2; 
 						  end
 						  
                     STATE_A2: if (rx_valid & rx_ready) begin 
-								addr[23:16] <= rx_data; 
-								chk_calc <= chk_calc ^ rx_data; 
-								state <= STATE_A3; 
+                                addr[23:16] <= rx_data; 
+                                chk_calc <= chk_calc ^ rx_data; 
+                                state <= STATE_A3; 
 					     end
 						  
                     STATE_A3: if (rx_valid & rx_ready) begin
@@ -203,33 +203,33 @@ module uart_bus_master (
                     end
 
                     STATE_D0: if (rx_valid & rx_ready) begin 
-								wdata[7:0]   <= rx_data; 
-								chk_calc <= chk_calc ^ rx_data; 
-								state <= STATE_D1; 
+                                wdata[7:0]   <= rx_data; 
+                                chk_calc <= chk_calc ^ rx_data; 
+                                state <= STATE_D1; 
 						  end
 						  
                     STATE_D1: if (rx_valid & rx_ready) begin 
-								wdata[15:8]  <= rx_data; 
-								chk_calc <= chk_calc ^ rx_data; 
-								state <= STATE_D2; 
+                                wdata[15:8]  <= rx_data; 
+                                chk_calc <= chk_calc ^ rx_data; 
+                                state <= STATE_D2; 
 						  end
 						  
                     STATE_D2: if (rx_valid & rx_ready) begin 
-								wdata[23:16] <= rx_data; 
-								chk_calc <= chk_calc ^ rx_data; 
-								state <= STATE_D3; 
+                                wdata[23:16] <= rx_data; 
+                                chk_calc <= chk_calc ^ rx_data; 
+                                state <= STATE_D3; 
 						  end
 						  
                     STATE_D3: if (rx_valid & rx_ready) begin 
-								wdata[31:24] <= rx_data; 
-								chk_calc <= chk_calc ^ rx_data; 
-								state <= STATE_CHK; 
+                                wdata[31:24] <= rx_data; 
+                                chk_calc <= chk_calc ^ rx_data; 
+                                state <= STATE_CHK; 
 						  end
 
 						  STATE_REG: if (rx_valid & rx_ready) begin
-							  reg_idx  <= rx_data[4:0];
-							  chk_calc <= chk_calc ^ rx_data;
-							  state <= STATE_CHK;
+                                reg_idx  <= rx_data[4:0];
+                                chk_calc <= chk_calc ^ rx_data;
+                                state <= STATE_CHK;
 						  end
 
                     STATE_CHK: if (rx_valid & rx_ready) begin
@@ -253,9 +253,9 @@ module uart_bus_master (
                                     if (!hold_core) prepare_ack(STATUS_BUSY);
                                     else state <= STATE_DO_RD0;
                                 end
-										  CMD_RDREG: begin
-												prepare_rdreg(dbg_regs[reg_idx]);
-										  end
+                                CMD_RDREG: begin
+                                    prepare_rdreg(dbg_regs[reg_idx]);
+                                end
                                 default: begin
                                     prepare_ack(STATUS_CMD);
                                 end
