@@ -50,9 +50,7 @@ module ControlFSM
   parameter BRANCHCOMP = 5'b01111;
   
   parameter FETCH_WAIT  = 5'b10000;
-
-  parameter FETCH_WAIT  = 5'b10000;
-
+  
   //declare state registers
   reg [4:0] current_state, next_state;
 
