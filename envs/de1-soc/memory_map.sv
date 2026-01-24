@@ -36,10 +36,10 @@ module memory_map #( parameter SIZE = 1024 )
 
     localparam int ADDR_LSB   = 2;
     localparam int ADDR_WIDTH = $clog2(SIZE);
-    wire [ADDR_WIDTH-1:0] mem_index = address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
+    wire [ADDR_WIDTH - 1 : 0] mem_index = address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
 
     wire dbg_reg_hit = (address[31:12] == DBG_REG_BASE[31:12]) && (address[11:7] == 5'd0); //between REG_BASE and use only 31 words
-    wire [4:0] dbg_reg_idx = address[6:2]; 
+    wire [4:0] dbg_reg_idx = address[6:2];
 
     always @(*) begin
       case (address)

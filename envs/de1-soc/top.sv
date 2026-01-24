@@ -19,11 +19,11 @@ module top (
     wire       tx_busy, rx_busy, rx_overrun, rx_frame;
 
     uart  #(
-		    .DATA_WIDTH(8),
-			 .CLK_HZ(50000000),
-			 .BAUD(115200)
-	 )
-	 u_uart (
+            .DATA_WIDTH(8)
+            , .CLK_HZ(50000000)
+            , .BAUD(115200)
+    )
+    u_uart (
         .clk(CLOCK_50)
         , .rst(rst)
         , .i_data_s(uart_tx_data)
@@ -83,9 +83,9 @@ module top (
     assign bus_write_enable = hold_core ? dbg_write_enable : core_write_enable;
 
     memory_map #( 
-			.SIZE(512) 
-	 )
-	 u_mem (
+           .SIZE(512) 
+    )
+    u_mem (
         .clk(CLOCK_50)
         , .address(bus_addr)
         , .write_data(bus_write_data)
