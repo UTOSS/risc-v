@@ -26,7 +26,7 @@ module registerFile
   assign baseAddr  = (Addr1 == 5'd0) ? 32'd0 : RFMem[Addr1];
   assign writeData = (Addr2 == 5'd0) ? 32'd0 : RFMem[Addr2];
 
-always_comb begin
+always@(*) begin
     dbg_regs[0] = 32'd0;
     for (int i = 1; i < 32; i++) begin
         dbg_regs[i] = RFMem[i];

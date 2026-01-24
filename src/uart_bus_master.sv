@@ -34,8 +34,6 @@ module uart_bus_master (
     localparam byte CMD_RUN  = 8'h12;
     localparam byte CMD_HALT = 8'h13;
     localparam byte CMD_RDREG = 8'h14;
-	 
-
     localparam byte R_ACK = 8'h90;
     localparam byte R_RD  = 8'h91;
     localparam byte R_RDREG   = 8'h92;
@@ -120,7 +118,7 @@ module uart_bus_master (
     end
     endtask
 
-    always_ff @(posedge clk)
+    always @(posedge clk) begin
         if (rst) begin
             bus_addr  <= 32'd0;
             bus_write_data <= 32'd0;
@@ -172,24 +170,24 @@ module uart_bus_master (
                         else state <= STATE_A0;
                     end
 
-                    STATE_A0: if (rx_valid & rx_ready) begin 
+                    STATE_A0: if (rx_valid & rx_ready) begin
                                 addr[7:0]   <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_A1;
-						  end
-						  
+                    end
+
                     STATE_A1: if (rx_valid & rx_ready) begin
                                 addr[15:8]  <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_A2;
-						  end
-						  
+                    end
+ 
                     STATE_A2: if (rx_valid & rx_ready) begin
                                 addr[23:16] <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_A3;
-					     end
-						  
+                    end
+
                     STATE_A3: if (rx_valid & rx_ready) begin
                         addr[31:24] <= rx_data;
                         chk_calc    <= chk_calc ^ rx_data;
@@ -201,37 +199,37 @@ module uart_bus_master (
                                 wdata[7:0]   <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_D1;
-						  end
-						  
+                    end
+
                     STATE_D1: if (rx_valid & rx_ready) begin
                                 wdata[15:8]  <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_D2;
-						  end
-						  
+                    end
+
                     STATE_D2: if (rx_valid & rx_ready) begin
                                 wdata[23:16] <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_D3;
-						  end
-						  
+                    end
+
                     STATE_D3: if (rx_valid & rx_ready) begin
                                 wdata[31:24] <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_CHK;
-						  end
+                    end
 
 						  STATE_REG: if (rx_valid & rx_ready) begin
                                 reg_idx  <= rx_data[4:0];
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_CHK;
-						  end
+                    end
 
                     STATE_CHK: if (rx_valid & rx_ready) begin
                         if (rx_data != chk_calc) begin
                             prepare_ack(STATUS_CHK);
                         end else begin
-                            unique case (cmd)
+                            case (cmd)
                                 CMD_HALT: begin
                                     hold_core <= 1'b1;
                                     prepare_ack(STATUS_OK);
@@ -278,6 +276,7 @@ module uart_bus_master (
                 endcase
             end
         end
+    end
 
 endmodule
 

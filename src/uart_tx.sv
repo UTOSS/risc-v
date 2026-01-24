@@ -25,7 +25,7 @@ module uart_tx #
     typedef enum logic {STATE_IDLE, STATE_SEND} uart_tx_state_t;
     uart_tx_state_t state;
 
-    always_ff @(posedge clk) begin
+    always @(posedge clk) begin
         if (rst) begin
             o_ready <= 1'b1;
             o_txd <= 1'b1;
