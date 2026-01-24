@@ -31,7 +31,7 @@ module memory_map #( parameter SIZE = 1024 )
     reg [31:0] mem_rdata;
 
     localparam bit [31:0] LEDR_ADDRESS = 32'h1000_0000;
-    localparam bit [31:0] DBG_REG_BASE = 32'h2000_0000; // x0..x31 
+    localparam bit [31:0] DBG_REG_BASE = 32'h2000_0000; // x0..x31
     localparam bit [31:0] DBG_PC_ADDR  = 32'h2000_0080; // to see where is the current pc
 
     localparam int ADDR_LSB   = 2;

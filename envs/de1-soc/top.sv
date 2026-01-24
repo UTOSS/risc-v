@@ -82,8 +82,8 @@ module top (
     assign bus_write_data = hold_core ? dbg_write_data : core_write_data;
     assign bus_write_enable = hold_core ? dbg_write_enable : core_write_enable;
 
-    memory_map #( 
-           .SIZE(512) 
+    memory_map #(
+           .SIZE(512)
     )
     u_mem (
         .clk(CLOCK_50)
