@@ -57,9 +57,14 @@ RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison fle
     cd iverilog-* && sh autoconf.sh && ./configure && make && make check && sudo make install && \
     cd .. && rm ${ICARUS_SRC_TAR} && rm -rf ./iverilog-*
 
-# build and install Verilator
+# copy Verilator installation
 USER dev
-COPY --from=verilator /usr/local/bin/verilator /usr/local/bin/verilator
+COPY --from=verilator /usr/local/bin/ /usr/local/bin/
+COPY --from=verilator /usr/local/share/verilator/ /usr/local/share/verilator/
+
+# install verilator runtime deps
+USER dev
+RUN sudo apt update && sudo apt install -y ccache
 
 # copy quartus prime lite installation
 USER dev

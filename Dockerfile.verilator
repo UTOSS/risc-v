@@ -14,4 +14,5 @@ RUN apt update && apt install -y git help2man perl python3 make autoconf g++ fle
 
 FROM public.ecr.aws/lts/ubuntu:22.04_stable
 
-COPY --from=builder /usr/local/bin/verilator /usr/local/bin/verilator
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+COPY --from=builder /usr/local/share/verilator/ /usr/local/share/verilator/
