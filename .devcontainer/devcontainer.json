@@ -1,6 +1,6 @@
 {
   "name": "utoss-risc-v-devcontainer",
-  "dockerFile": "Dockerfile",
+  "image": "ghcr.io/utoss/risc-v-devcontainer",
   "remoteUser": "dev",
   "postStartCommand": "bash -c '.devcontainer/scripts/post-start.sh ${containerWorkspaceFolder}'",
   "customizations": {
