@@ -48,9 +48,8 @@ module ControlFSM
 
   // new state for remaining branch instructions
   parameter BRANCHCOMP = 5'b01111;
-  
   parameter FETCH_WAIT  = 5'b10000;
-  
+
   //declare state registers
   reg [4:0] current_state, next_state;
 
@@ -59,8 +58,8 @@ module ControlFSM
 
     case (current_state)
 
-		FETCH:      next_state = FETCH_WAIT;
-		FETCH_WAIT: next_state = DECODE;
+    FETCH:      next_state = FETCH_WAIT;
+    FETCH_WAIT: next_state = DECODE;
 
       DECODE: begin
 
@@ -154,20 +153,19 @@ module ControlFSM
 
     case (current_state)
 
-		FETCH: begin
-			AdrSrc   = ADR_SRC__PC;
-		end
+    FETCH: begin
+      AdrSrc   = ADR_SRC__PC;
+    end
 		
-		FETCH_WAIT: begin
-			AdrSrc   = ADR_SRC__PC;            
-			IRWrite  = 1'b1;                   
-			PCUpdate = 1'b1;                   
-			pc_src   = PC_SRC__INCREMENT;      
-		end
+    FETCH_WAIT: begin
+      AdrSrc   = ADR_SRC__PC;    
+      IRWrite  = 1'b1;
+      PCUpdate = 1'b1;
+      pc_src   = PC_SRC__INCREMENT;
+    end
 
 
       DECODE: begin
-
         ALUSrcA = ALU_SRC_A__OLD_PC;
         ALUSrcB = ALU_SRC_B__IMM_EXT;
 
