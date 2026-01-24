@@ -34,9 +34,9 @@ module uart_rx #
 
     reg [18:0] timer;
     reg [3:0]  bit_idx;
-    reg [DATA_WIDTH-1:0] data_reg;
+    reg [DATA_WIDTH - 1:0] data_reg;
 
-    always_ff @(posedge clk) 
+    always @(posedge clk) begin
         if (rst) begin
             o_data  <= 0;
             o_valid <= 0;
@@ -130,5 +130,6 @@ module uart_rx #
                 default: state <= STATE_IDLE;
             endcase
         end
+    end
 
 endmodule

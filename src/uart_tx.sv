@@ -23,7 +23,7 @@ module uart_tx #
     reg [18:0] timer;
 
     typedef enum logic {STATE_IDLE, STATE_SEND} uart_tx_state_t;
-	 uart_tx_state_t state;
+    uart_tx_state_t state;
 
     always_ff @(posedge clk) begin
         if (rst) begin
