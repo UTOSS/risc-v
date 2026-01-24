@@ -181,7 +181,7 @@ module uart_bus_master (
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_A2;
                     end
- 
+
                     STATE_A2: if (rx_valid & rx_ready) begin
                                 addr[23:16] <= rx_data;
                                 chk_calc <= chk_calc ^ rx_data;
@@ -219,7 +219,7 @@ module uart_bus_master (
                                 state <= STATE_CHK;
                     end
 
-						  STATE_REG: if (rx_valid & rx_ready) begin
+                    STATE_REG: if (rx_valid & rx_ready) begin
                                 reg_idx  <= rx_data[4:0];
                                 chk_calc <= chk_calc ^ rx_data;
                                 state <= STATE_CHK;
