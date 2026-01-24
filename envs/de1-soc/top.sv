@@ -1,10 +1,9 @@
 module top (
-    input  wire        CLOCK_50,
-    input  wire [3:0]  KEY,
-    output wire [9:0]  LEDR,
-
-    input  wire        UART_TX,   // PC->FPGA (rxd)
-    output wire        UART_RX    // FPGA->PC (txd)
+    input  wire CLOCK_50
+    , input  wire [3:0]  KEY
+    , output wire [9:0]  LEDR
+    , input  wire  UART_TX
+    , output wire  UART_RX    // FPGA->PC (txd)
 );
 
     wire rst = ~KEY[0];
@@ -23,7 +22,7 @@ module top (
 		    .DATA_WIDTH(8),
 			 .CLK_HZ(50000000),
 			 .BAUD(115200)
-	 ) 
+	 )
 	 u_uart (
         .clk(CLOCK_50)
         , .rst(rst)
@@ -85,7 +84,7 @@ module top (
 
     memory_map #( 
 			.SIZE(512) 
-	 ) 
+	 )
 	 u_mem (
         .clk(CLOCK_50)
         , .address(bus_addr)
