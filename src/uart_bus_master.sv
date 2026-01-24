@@ -278,7 +278,6 @@ module uart_bus_master (
                 endcase
             end
         end
-    end
 
 endmodule
 
