@@ -1,4 +1,4 @@
-`include "src/types.svh"
+`include "src/headers/types.svh"
 
 module Execute
   ( id_to_ex_if.Execute ID_to_EX
