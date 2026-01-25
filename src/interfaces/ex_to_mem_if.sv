@@ -13,7 +13,7 @@ interface ex_to_mem_if (input clk);
     logic [2:0] funct3;
 
     data_t alu_result;
-    logic [4:0] rd; 
+    logic [4:0] rd;
     data_t rd2;
 
     modport Execute
