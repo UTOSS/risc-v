@@ -13,7 +13,7 @@ module Execute
   );
 
   data_t alu_input_b;
-  
+
   always @(*) begin
     case (ID_to_EX.ALUSrcB)
       ALU_SRC_B__RD2:     alu_input_b = ID_to_EX.rd2;
@@ -21,7 +21,7 @@ module Execute
       default:            alu_input_b = 'x;
     endcase
   end
-  
+
   assign pc_target = ID_to_EX.imm_ext + inPCPlus4E;
 
   ALU alu
