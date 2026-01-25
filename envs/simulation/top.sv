@@ -11,6 +11,9 @@ module top
   logic  [3:0] memory__write_enable;
   data_t       memory__read_data;
 
+  addr_t       imem__address;
+  data_t       imem__data;
+
   MA #( .SIZE ( MEM_SIZE ) )
     memory
       ( .clk          ( clk                  )
@@ -18,6 +21,15 @@ module top
       , .write_data   ( memory__write_data   )
       , .write_enable ( memory__write_enable )
       , .read_data    ( memory__read_data    )
+      );
+
+  MA #( .SIZE ( MEM_SIZE ) )
+    imem
+      ( .clk          ( clk           )
+      , .address      ( imem__address )
+      , .write_data   ( 32'hxxxx_xxxx )
+      , .write_enable ( 4'b0000       )
+      , .read_data    ( imem__data    )
       );
 
   utoss_riscv core
@@ -28,6 +40,9 @@ module top
     , .memory__write_data   ( memory__write_data   )
     , .memory__write_enable ( memory__write_enable )
     , .memory__read_data    ( memory__read_data    )
+
+    , .imem__address        ( imem__address        )
+    , .imem__data           ( imem__data           )
     );
 
 endmodule
