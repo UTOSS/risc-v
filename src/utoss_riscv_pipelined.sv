@@ -20,7 +20,14 @@ module utoss_riscv_pipelined
   // data memory interface end
   );
 
-  // common declarations
+  // common declarations begin
+
+  mem_to_wb_if mem_to_wb_if();
+
+  data_t      wb_result;
+  logic [4:0] wb_rd;
+
+  // common declarations end
 
   // fetch stage start (@thatlittlegit)
 
@@ -39,6 +46,15 @@ module utoss_riscv_pipelined
   // memory stage end
 
   // writeback stage begin (@TheDeepestSpace)
+
+  write_back wb
+    ( .clk         ( clk   )
+    , .reset       ( reset )
+
+    , .from_memory ( mem_to_wb_if.to_write_back )
+    , .result      ( wb_result                  )
+    , .rd          ( wb_rd                      )
+    );
 
   // writeback stage end
 
