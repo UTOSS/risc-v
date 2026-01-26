@@ -64,6 +64,19 @@ $(OUT_DIR)/top_sim: $(SRCS)
 		$(SRCS)
 	cp $(BUILD_DIR)/top/top_sim $@
 
+# Temporary pipelining integration-related targets
+
+build_pipelined: $(OUT_DIR)/pipelined_sim
+
+$(OUT_DIR)/pipelined_sim: $(SRCS)
+	@mkdir -p $(BUILD_DIR)/top
+	$(VERILATOR) $(VERILATOR_FLAGS) \
+		--top-module utoss_riscv_pipelined \
+		--Mdir $(BUILD_DIR)/pipelined \
+		-o pipelined_sim \
+		$(SRCS)
+	cp $(BUILD_DIR)/pipelined/pipelined_sim $@
+
 # ===========================
 # Testbenches
 # ===========================
