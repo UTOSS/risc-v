@@ -169,11 +169,17 @@ jobs:
     steps:
       - name: Check all jobs status
         run: |
-          if [[ "${{ needs.svlint.result }}" != "success" || \
-                "${{ needs.build_and_test.result }}" != "success" || \
-                "${{ needs.riscof.result }}" != "success" || \
-                "${{ needs.de1-soc.result }}" != "success" ]]; then
-            echo "One or more required jobs failed:"
+          # Check if any job failed or was cancelled
+          # Note: skipped status is treated as success since jobs are only skipped intentionally
+          if [[ "${{ needs.svlint.result }}" == "failure" || \
+                "${{ needs.svlint.result }}" == "cancelled" || \
+                "${{ needs.build_and_test.result }}" == "failure" || \
+                "${{ needs.build_and_test.result }}" == "cancelled" || \
+                "${{ needs.riscof.result }}" == "failure" || \
+                "${{ needs.riscof.result }}" == "cancelled" || \
+                "${{ needs.de1-soc.result }}" == "failure" || \
+                "${{ needs.de1-soc.result }}" == "cancelled" ]]; then
+            echo "One or more required jobs failed or were cancelled:"
             echo "  svlint: ${{ needs.svlint.result }}"
             echo "  build_and_test: ${{ needs.build_and_test.result }}"
             echo "  riscof: ${{ needs.riscof.result }}"
