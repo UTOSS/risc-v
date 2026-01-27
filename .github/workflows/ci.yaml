@@ -155,3 +155,29 @@ jobs:
         with:
           name: de1-soc-sof
           path: envs/de1-soc/quartus/output_files/utoss-risc-v.sof
+
+  # This job ensures all CI checks pass before allowing PR merges
+  # Mark this job as required in branch protection settings
+  required:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - svlint
+      - build_and_test
+      - riscof
+      - de1-soc
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.svlint.result }}" != "success" || \
+                "${{ needs.build_and_test.result }}" != "success" || \
+                "${{ needs.riscof.result }}" != "success" || \
+                "${{ needs.de1-soc.result }}" != "success" ]]; then
+            echo "One or more required jobs failed:"
+            echo "  svlint: ${{ needs.svlint.result }}"
+            echo "  build_and_test: ${{ needs.build_and_test.result }}"
+            echo "  riscof: ${{ needs.riscof.result }}"
+            echo "  de1-soc: ${{ needs.de1-soc.result }}"
+            exit 1
+          fi
+          echo "All required jobs passed successfully!"
