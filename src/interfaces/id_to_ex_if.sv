@@ -19,6 +19,9 @@ interface id_to_ex_if (input clk);
     logic [6:0] funct7;
     data_t rd1;
     data_t rd2;
+    logic [4:0] rd;
+    logic [4:0] rs1;
+    logic [4:0] rs2;
     imm_t imm_ext;
 
     modport Decode
@@ -40,6 +43,9 @@ interface id_to_ex_if (input clk);
     , output funct7
     , output rd1
     , output rd2
+    , output rd
+    , output rs1
+    , output rs2
     , output imm_ext
     );
 
@@ -62,6 +68,9 @@ interface id_to_ex_if (input clk);
     , input funct7
     , input rd1
     , input rd2
+    , input rd
+    , input rs1
+    , input rs2
     , input imm_ext
     );
 

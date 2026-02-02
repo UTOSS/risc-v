@@ -22,6 +22,8 @@ module utoss_riscv_pipelined
 
   // common declarations begin
 
+  if_to_id_if.Decode if_to_id_if();
+  id_to_ex_if.Decode id_to_ex_if();
   mem_to_wb_if mem_to_wb_if();
 
   data_t      wb_result;
@@ -34,6 +36,18 @@ module utoss_riscv_pipelined
   // fetch stage end
 
   // decode stage begin (@marwannismail)
+  // TODO: move zero flag to Fetch stage
+  // TODO: remove ALU result from control FSM (should not be added to Fetch stage according to the draw.io diagram note)
+  Decode decode
+    ( .IF_to_ID    (  if_to_id_if  )
+    , .clk         (  clk          )
+    , .reset       (  reset        )
+    , .data        (  wb_result    )
+    , .rd          (  wb_rd        )
+    , .zero_flag   (  zero_flag    )
+    , .alu_result  (  alu_result   )
+    , .ID_to_EX    (  id_to_ex_if  )
+    );
 
   // decode stage end
 

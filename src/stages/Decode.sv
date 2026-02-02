@@ -5,6 +5,7 @@ module Decode
   ( if_to_id_if.Decode IF_to_ID
   , input wire clk
   , input wire reset
+  , input wire [4:0] rd
   , input data_t data
   , input wire zero_flag
   , input data_t alu_result
@@ -32,7 +33,7 @@ module Decode
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [4:0] __tmp_FSMState;
-  reg  [4:0] rd, rs1, rs2;
+  reg  [4:0] rs1, rs2;
 
   logic [3:0] MemWriteByteAddress;
 
@@ -42,7 +43,7 @@ module Decode
     ( .opcode     ( opcode           )
     , .clk        ( clk              )
     , .reset      ( reset            )
-    , .zero_flag  ( zero_flag   )
+    , .zero_flag  ( zero_flag        )
     , .MemWriteByteAddress ( MemWriteByteAddress )
     , .funct3     ( funct3           )
     , .alu_result ( alu_result       )
@@ -102,6 +103,9 @@ module Decode
         ID_to_EX.funct7 <= 'b0;
         ID_to_EX.rd1 <= 'b0;
         ID_to_EX.rd2 <= 'b0;
+        ID_to_EX.rd <= 'b0;
+        ID_to_EX.rs1 <= 'b0;
+        ID_to_EX.rs2 <= 'b0;
         ID_to_EX.imm_ext <= 'b0;
     end
     else begin
@@ -122,6 +126,9 @@ module Decode
         ID_to_EX.funct7 <= funct7;
         ID_to_EX.rd1 <= rd1;
         ID_to_EX.rd2 <= rd2;
+        ID_to_EX.rd <= rd;
+        ID_to_EX.rs1 <= rs1;
+        ID_to_EX.rs2 <= rs2;
         ID_to_EX.imm_ext <= imm_ext;
     end
 
