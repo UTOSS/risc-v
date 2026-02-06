@@ -5,7 +5,7 @@ module Decode
   ( if_to_id_if.Decode IF_to_ID
   , input wire clk
   , input wire reset
-  , input wire [4:0] rd
+  , input wire [4:0] rd_wb // rd from writeback
   , input data_t data
   , input wire zero_flag
   , input data_t alu_result
@@ -22,6 +22,8 @@ module Decode
   imm_t    imm_ext;
   reg [2:0] funct3;
   reg [6:0] funct7;
+
+  wire [4:0] rd;
 
   data_t rd1;
   data_t rd2;
@@ -76,7 +78,7 @@ module Decode
   registerFile RegFile
     ( .Addr1           ( rs1              )
     , .Addr2           ( rs2              )
-    , .Addr3           ( rd               )
+    , .Addr3           ( rd_wb            )
     , .clk             ( clk              )
     , .reset           ( reset            )
     , .regWrite        ( cfsm__reg_write  )

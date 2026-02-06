@@ -43,7 +43,7 @@ module utoss_riscv_pipelined
     , .clk         (  clk          )
     , .reset       (  reset        )
     , .data        (  wb_result    )
-    , .rd          (  wb_rd        )
+    , .rd_wb       (  wb_rd        )
     , .zero_flag   (  zero_flag    )
     , .alu_result  (  alu_result   )
     , .ID_to_EX    (  id_to_ex_if  )
