@@ -24,7 +24,10 @@ module utoss_riscv_pipelined
 
   if_to_id_if  if_to_id_out_if();
   if_to_id_if  if_to_id_reg_if();
-  id_to_ex_if  id_to_ex_if();
+
+  id_to_ex_if  id_to_ex_out_if();
+  id_to_ex_if  id_to_ex_reg_if();
+
   mem_to_wb_if mem_to_wb_if();
 
   data_t      wb_result;
@@ -54,12 +57,84 @@ module utoss_riscv_pipelined
     , .rd_wb       ( wb_rd           )
     , .zero_flag   ( zero_flag       )
     , .alu_result  ( alu_result      )
-    , .ID_to_EX    ( id_to_ex_if     )
+    , .ID_to_EX    ( id_to_ex_out_if )
     );
 
   // decode stage end
 
   // execute stage begin (@MSh-786 and tandr3w)
+
+  // TODO: convert into packed structs to make this more elegant
+  always_ff @ (posedge clk)
+    if (reset)
+      { id_to_ex_reg_if.ALUSrcA
+      , id_to_ex_reg_if.ALUSrcB
+      , id_to_ex_reg_if.ResultSrc
+      , id_to_ex_reg_if.AdrSrc
+      , id_to_ex_reg_if.pc_update
+      , id_to_ex_reg_if.pc_src
+      , id_to_ex_reg_if.IRWrite
+      , id_to_ex_reg_if.Branch
+      , id_to_ex_reg_if.MemWriteByteAddress
+      , id_to_ex_reg_if.FSMState
+      , id_to_ex_reg_if.MemWrite
+      , id_to_ex_reg_if.RegWrite
+      , id_to_ex_reg_if.ALUControl
+      , id_to_ex_reg_if.funct3
+      , id_to_ex_reg_if.funct7
+      , id_to_ex_reg_if.rd1
+      , id_to_ex_reg_if.rd2
+      , id_to_ex_reg_if.rd
+      , id_to_ex_reg_if.rs1
+      , id_to_ex_reg_if.rs2
+      , id_to_ex_reg_if.imm_ext
+      } <= '0;
+    else
+      { id_to_ex_reg_if.ALUSrcA
+      , id_to_ex_reg_if.ALUSrcB
+      , id_to_ex_reg_if.ResultSrc
+      , id_to_ex_reg_if.AdrSrc
+      , id_to_ex_reg_if.pc_update
+      , id_to_ex_reg_if.pc_src
+      , id_to_ex_reg_if.IRWrite
+      , id_to_ex_reg_if.Branch
+      , id_to_ex_reg_if.MemWriteByteAddress
+      , id_to_ex_reg_if.FSMState
+      , id_to_ex_reg_if.MemWrite
+      , id_to_ex_reg_if.RegWrite
+      , id_to_ex_reg_if.ALUControl
+      , id_to_ex_reg_if.funct3
+      , id_to_ex_reg_if.funct7
+      , id_to_ex_reg_if.rd1
+      , id_to_ex_reg_if.rd2
+      , id_to_ex_reg_if.rd
+      , id_to_ex_reg_if.rs1
+      , id_to_ex_reg_if.rs2
+      , id_to_ex_reg_if.imm_ext
+      }
+      <=
+      { id_to_ex_out_if.ALUSrcA
+      , id_to_ex_out_if.ALUSrcB
+      , id_to_ex_out_if.ResultSrc
+      , id_to_ex_out_if.AdrSrc
+      , id_to_ex_out_if.pc_update
+      , id_to_ex_out_if.pc_src
+      , id_to_ex_out_if.IRWrite
+      , id_to_ex_out_if.Branch
+      , id_to_ex_out_if.MemWriteByteAddress
+      , id_to_ex_out_if.FSMState
+      , id_to_ex_out_if.MemWrite
+      , id_to_ex_out_if.RegWrite
+      , id_to_ex_out_if.ALUControl
+      , id_to_ex_out_if.funct3
+      , id_to_ex_out_if.funct7
+      , id_to_ex_out_if.rd1
+      , id_to_ex_out_if.rd2
+      , id_to_ex_out_if.rd
+      , id_to_ex_out_if.rs1
+      , id_to_ex_out_if.rs2
+      , id_to_ex_out_if.imm_ext
+      };
 
   // execute stage end
 
