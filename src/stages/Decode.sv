@@ -29,7 +29,8 @@ module Decode
   adr_src_t cfsm__adr_src;
   wire [3:0] __tmp_MemWrite;
   wire __tmp_Branch;
-  wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
+  alu_src_a_t __tmp_ALUSrcA;
+  alu_src_b_t __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [4:0] __tmp_FSMState;
@@ -86,12 +87,12 @@ module Decode
 
     always @(posedge clk)
     if (reset) begin
-        ID_to_EX.ALUSrcA <= 'b0;
-        ID_to_EX.ALUSrcB <= 'b0;
-        ID_to_EX.ResultSrc <= 'b0;
-        ID_to_EX.AdrSrc <= 'b0;
+        ID_to_EX.ALUSrcA <= alu_src_a_t'('0);
+        ID_to_EX.ALUSrcB <= alu_src_b_t'('0);
+        ID_to_EX.ResultSrc <= result_src_t'('0);
+        ID_to_EX.AdrSrc <= adr_src_t'('0);
         ID_to_EX.pc_update <= 'b0;
-        ID_to_EX.pc_src <= 'b0;
+        ID_to_EX.pc_src <= pc_src_t'('0);
         ID_to_EX.IRWrite <= 'b0;
         ID_to_EX.Branch <= 'b0;
         ID_to_EX.MemWriteByteAddress <= 'b0;
