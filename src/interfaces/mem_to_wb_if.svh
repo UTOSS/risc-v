@@ -4,7 +4,7 @@
 interface mem_to_wb_if();
 
   result_src_t cfsm__result_src;
-
+  logic RegWriteW;
   data_t read_data;
   data_t alu_result;
   logic [4:0] rd;
@@ -14,6 +14,7 @@ interface mem_to_wb_if();
     , input read_data
     , input alu_result
     , input rd
+    , input RegWriteW
     );
 
   modport to_write_back
@@ -21,6 +22,7 @@ interface mem_to_wb_if();
     , output read_data
     , output alu_result
     , output rd
+    , output RegWriteW
     );
 
 endinterface
