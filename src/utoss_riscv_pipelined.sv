@@ -22,8 +22,8 @@ module utoss_riscv_pipelined
 
   // common declarations begin
 
-  if_to_id_if if_to_id_if();
-  id_to_ex_if id_to_ex_if();
+  if_to_id_if  if_to_id_if();
+  id_to_ex_if  id_to_ex_if();
   mem_to_wb_if mem_to_wb_if();
 
   data_t      wb_result;
