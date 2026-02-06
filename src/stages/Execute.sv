@@ -37,27 +37,27 @@ module Execute
     always @(posedge clk)
     if (reset) begin
         EX_to_MEM.ResultSrc <= 'b0;
-        EX_to_MEM.AdrSrc <= 'b0;
-        EX_to_MEM.pc_src <= 'b0;
-        EX_to_MEM.IRWrite <= 'b0;
-        EX_to_MEM.MemWriteByteAddress <= 'b0;
+        // EX_to_MEM.AdrSrc <= 'b0;
+        // EX_to_MEM.pc_src <= 'b0;
+        // EX_to_MEM.IRWrite <= 'b0;
+        // EX_to_MEM.MemWriteByteAddress <= 'b0;
         EX_to_MEM.MemWrite <= 'b0;
         EX_to_MEM.RegWrite <= 'b0;
         EX_to_MEM.funct3 <= 'b0;
-        EX_to_MEM.rd2 <= 'b0;
+        // EX_to_MEM.rd2 <= 'b0;
         EX_to_MEM.rd <= 'b0;
         EX_to_MEM.alu_result <= 'b0;
     end
     else begin
         EX_to_MEM.ResultSrc <= ID_to_EX.ResultSrc;
-        EX_to_MEM.AdrSrc <= ID_to_EX.AdrSrc;
-        EX_to_MEM.pc_src <= ID_to_EX.pc_src;
-        EX_to_MEM.IRWrite <= ID_to_EX.IRWrite;
-        EX_to_MEM.MemWriteByteAddress <= ID_to_EX.MemWriteByteAddress;
+        // EX_to_MEM.AdrSrc <= ID_to_EX.AdrSrc;
+        // EX_to_MEM.pc_src <= ID_to_EX.pc_src;
+        // EX_to_MEM.IRWrite <= ID_to_EX.IRWrite;
+        // EX_to_MEM.MemWriteByteAddress <= ID_to_EX.MemWriteByteAddress;
         EX_to_MEM.MemWrite <= ID_to_EX.MemWrite;
         EX_to_MEM.RegWrite <= ID_to_EX.RegWrite;
         EX_to_MEM.funct3 <= ID_to_EX.funct3;
-        EX_to_MEM.rd2 <= ID_to_EX.rd2;
+        // EX_to_MEM.rd2 <= ID_to_EX.rd2;
         EX_to_MEM.rd <= ID_to_EX.rd;
         EX_to_MEM.alu_result <= alu_result;
     end
