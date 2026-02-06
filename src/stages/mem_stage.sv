@@ -1,19 +1,20 @@
 `include "src/headers/types.svh"
 
 module Mem_Stage
-  ( input wire inRegWriteM
-  , input reg [1:0] inResultSrcM
-  , input reg [4:0] inRdM
-  , input instr_t inPCPlus4M
+  ( input logic [3:0] MemWriteM //interface
+  , input wire inRegWriteM //interface
+  , input reg [1:0] inResultSrcM //interface
+  , input reg [4:0] inRdM //interface
+  // , input instr_t inPCPlus4M //interface
   , input data_t dataFromMemory
-  , input logic [2:0] funct3
-  , input addr_t ALUResultM
-  , input data_t WriteDataM
+  , input logic [2:0] funct3//interface
+  , input addr_t ALUResultM //interface
+  , input data_t WriteDataM //interface
   , output data_t ReadDataM
   , output wire outRegWriteM
   , output reg [1:0] outResultSrcM
   , output data_t dataToMemory
-  , output instr_t outPCPlus4M
+  // , output instr_t outPCPlus4M
   , output reg [4:0] outRdM
   , output logic [3:0] MemWriteByteAddress
   );
@@ -31,6 +32,6 @@ module Mem_Stage
   assign outRegWriteM = inRegWriteM;
   assign outResultSrcM = inResultSrcM;
   assign outRdM = inRdM;
-  assign outPCPlus4M = inPCPlus4M;
+  // assign outPCPlus4M = inPCPlus4M;
 
 endmodule
