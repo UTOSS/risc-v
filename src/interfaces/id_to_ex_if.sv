@@ -1,7 +1,7 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 
-interface id_to_ex_if (input clk);
+interface id_to_ex_if;
     alu_src_a_t ALUSrcA;
     alu_src_b_t ALUSrcB;
     result_src_t ResultSrc;
@@ -25,8 +25,7 @@ interface id_to_ex_if (input clk);
     imm_t imm_ext;
 
     modport Decode
-    ( input clk
-    , output ALUSrcA
+    ( output ALUSrcA
     , output ALUSrcB
     , output ResultSrc
     , output AdrSrc
@@ -50,8 +49,7 @@ interface id_to_ex_if (input clk);
     );
 
     modport Execute
-    ( input clk
-    , input ALUSrcA
+    ( input ALUSrcA
     , input ALUSrcB
     , input ResultSrc
     , input AdrSrc
