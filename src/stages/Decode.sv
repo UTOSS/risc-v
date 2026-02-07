@@ -9,7 +9,7 @@ module Decode
   , input data_t data
   , input wire zero_flag
   , input data_t alu_result
-  , id_to_ex_if.Decode ID_to_EX
+  , output id_to_ex_t ID_to_EX
   );
 
   wire         cfsm__pc_update;
