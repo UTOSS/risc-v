@@ -15,6 +15,7 @@ interface ex_to_mem_if (input clk);
     data_t alu_result;
     logic [4:0] rd;
     data_t rd2;
+    addr_t pc_cur;
 
     modport Execute
     ( input clk
@@ -29,6 +30,7 @@ interface ex_to_mem_if (input clk);
     , output alu_result
     , output rd
     , output rd2
+    , output pc_cur
     );
 
     modport Memory
@@ -44,6 +46,7 @@ interface ex_to_mem_if (input clk);
     , input alu_result
     , input rd
     , input rd2
+    , input pc_cur
     );
 
 endinterface

@@ -8,6 +8,7 @@ typedef struct packed {
   adr_src_t    AdrSrc;
   logic        pc_update;
   pc_src_t     pc_src;
+  addr_t       pc_cur;
   logic        IRWrite;
   logic        Branch;
   logic [3:0]  MemWriteByteAddress;

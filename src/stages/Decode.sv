@@ -110,6 +110,7 @@ module Decode
         ID_to_EX.rs1 <= 'b0;
         ID_to_EX.rs2 <= 'b0;
         ID_to_EX.imm_ext <= 'b0;
+        ID_to_EX.pc_cur <= 'b0;
     end
     else begin
         ID_to_EX.ALUSrcA <= __tmp_ALUSrcA;
@@ -133,6 +134,7 @@ module Decode
         ID_to_EX.rs1 <= rs1;
         ID_to_EX.rs2 <= rs2;
         ID_to_EX.imm_ext <= imm_ext;
+        ID_to_EX.pc_cur <= IF_to_ID.pc_cur;
     end
 
 endmodule

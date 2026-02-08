@@ -1,11 +1,9 @@
 `include "src/headers/types.svh"
 
 module Execute
-  ( id_to_ex_if.Execute ID_to_EX
+  ( input id_to_ex_t ID_to_EX
   , input wire clk
   , input wire reset
-  , input addr_t inPCPlus4E
-  , output addr_t outPCPlus4E
   , output wire zero_flag
   , output data_t alu_result
   , output addr_t pc_target
@@ -22,7 +20,7 @@ module Execute
     endcase
   end
 
-  assign pc_target = ID_to_EX.imm_ext + inPCPlus4E;
+  assign pc_target = ID_to_EX.imm_ext + ID_to_EX.pc_cur;
 
   ALU alu
     ( .a              ( ID_to_EX.rd1        )
@@ -32,13 +30,11 @@ module Execute
     , .zeroE          ( zero_flag           )
     );
 
-  assign outPCPlus4E = inPCPlus4E;
-
     always @(posedge clk)
     if (reset) begin
-        EX_to_MEM.ResultSrc <= 'b0;
-        EX_to_MEM.AdrSrc <= 'b0;
-        EX_to_MEM.pc_src <= 'b0;
+        EX_to_MEM.ResultSrc <= result_src_t'('b0);
+        EX_to_MEM.AdrSrc <= adr_src_t'('b0);
+        EX_to_MEM.pc_src <= pc_src_t'('b0);
         EX_to_MEM.IRWrite <= 'b0;
         EX_to_MEM.MemWriteByteAddress <= 'b0;
         EX_to_MEM.MemWrite <= 'b0;
@@ -47,6 +43,7 @@ module Execute
         EX_to_MEM.rd2 <= 'b0;
         EX_to_MEM.rd <= 'b0;
         EX_to_MEM.alu_result <= 'b0;
+        EX_to_MEM.pc_cur <= 'b0;
     end
     else begin
         EX_to_MEM.ResultSrc <= ID_to_EX.ResultSrc;
@@ -60,6 +57,7 @@ module Execute
         EX_to_MEM.rd2 <= ID_to_EX.rd2;
         EX_to_MEM.rd <= ID_to_EX.rd;
         EX_to_MEM.alu_result <= alu_result;
+        EX_to_MEM.pc_cur <= ID_to_EX.pc_cur;
     end
 
 endmodule
