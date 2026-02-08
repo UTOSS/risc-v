@@ -97,9 +97,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build top
-        id: build-top
-        run: make build_top
+      - name: Build pipelined implementation
+        id: build-pipelined
+        run: make build_pipelined
 
   riscof:
     if: false # temporarily disabling during initial pipelineing integration
