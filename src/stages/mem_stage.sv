@@ -30,11 +30,20 @@ module Mem_Stage
     , .MemWriteByteAddress ( MemWriteByteAddress )
     , .__tmp_MemData (dataToMemory)
     );
-
-  assign MEM_to_WB.RegWriteW = EX_to_MEM.RegWrite; //
-  assign MEM_to_WB.cfsm__result_src = EX_to_MEM.ResultSrc;
-  assign MEM_to_WB.rd = EX_to_MEM.rd;
-  assign MEM_to_WB.alu_result = EX_to_MEM.alu_result;
+//maybe need regwrite in mem_to_wb interface
+  always @(posedge clk)
+  if (reset) begin
+  MEM_to_WB.RegWriteW <= 'b0; //
+  MEM_to_WB.cfsm__result_src <= 'b0;
+  MEM_to_WB.rd <= 'b0;
+  MEM_to_WB.alu_result <= 'b0;
+  end
+  else begin
+  MEM_to_WB.RegWriteW <= EX_to_MEM.RegWrite; //
+  MEM_to_WB.cfsm__result_src <= EX_to_MEM.ResultSrc;
+  MEM_to_WB.rd <= EX_to_MEM.rd;
+  MEM_to_WB.alu_result <= EX_to_MEM.alu_result;
+  end
   // assign outPCPlus4M = inPCPlus4M;
 
 endmodule
