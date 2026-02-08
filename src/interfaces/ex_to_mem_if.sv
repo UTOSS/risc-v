@@ -6,7 +6,7 @@ interface ex_to_mem_if (input clk);
     // adr_src_t AdrSrc;
     // pc_src_t pc_src;
     // logic IRWrite;
-    logic [3:0] MemWrite;//
+    //logic [3:0] MemWrite;//
     logic RegWrite;//
     result_src_t ResultSrc;//
     // logic [3:0] MemWriteByteAddress;
@@ -22,7 +22,7 @@ interface ex_to_mem_if (input clk);
     // , output AdrSrc
     // , output pc_src
     // , output IRWrite
-    , output MemWrite
+    //, output MemWrite
     , output RegWrite
     , output ResultSrc
     // , output MemWriteByteAddress
@@ -38,7 +38,7 @@ interface ex_to_mem_if (input clk);
     // , input AdrSrc
     // , input pc_src
     // , input IRWrite
-    , input MemWrite
+    //, input MemWrite
     , input RegWrite
     , input ResultSrc
     // , input MemWriteByteAddress

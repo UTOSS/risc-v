@@ -2,6 +2,7 @@
 
 module Mem_Stage
 ( ex_to_mem_if.Memory EX_to_MEM
+  , input wire MemWriteM
   // ( input logic [3:0] MemWriteM //interface
   // , input wire inRegWriteM //interface
   // , input reg [1:0] inResultSrcM //interface
@@ -20,16 +21,18 @@ module Mem_Stage
   // , output data_t ReadDataM //interface
   // , output reg [4:0] outRdM//interface
   );
-
+  logic [3:0] tempMemWriteByteAddress;
   MemoryLoader memory_loader
     ( .memory_data (dataFromMemory)
     , .memory_address (ALUResultM)
     , .funct3 (funct3)
     , .dataB ( WriteDataM )
     , .mem_load_result ( MEM_to_WB.read_data )
-    , .MemWriteByteAddress ( MemWriteByteAddress )
+    , .MemWriteByteAddress ( tempMemWriteByteAddress )
     , .__tmp_MemData (dataToMemory)
     );
+
+assign MemWriteByteAddress = (MemWrite == 'b0) ? 4'b0 : tempMemWriteByteAddress;
 //maybe need regwrite in mem_to_wb interface
   always @(posedge clk)
   if (reset) begin
