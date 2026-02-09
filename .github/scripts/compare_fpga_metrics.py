@@ -25,26 +25,38 @@ def parse_fit_summary(file_path):
         content = f.read()
     
     # Parse various resource metrics
-    # Example patterns from Quartus .fit.summary files
+    # Patterns updated to match Quartus Prime 25.1 output format
     patterns = {
-        'logic_elements': r'Logic elements\s*;\s*([\d,]+)',
+        # Try "Total logic elements" first, fall back to "Logic elements"
+        'logic_elements': r'Total logic elements\s*;\s*([\d,]+)',
+        'logic_elements_alt': r'(?<!Total )Logic elements\s*;\s*([\d,]+)',
+        # ALM is for older versions, might not be present in newer Quartus
         'alm': r'ALM needed\s*\[[^\]]+\]\s*;\s*([\d,]+)',
-        'registers': r'Dedicated logic registers\s*;\s*([\d,]+)',
+        # Updated to match "Total registers"
+        'registers': r'Total registers\s*;\s*([\d,]+)',
         'memory_bits': r'Total block memory bits\s*;\s*([\d,]+)',
-        'dsp_blocks': r'DSP block 9-bit elements\s*;\s*([\d,]+)',
+        # Updated to match "Total DSP Blocks"
+        'dsp_blocks': r'Total DSP Blocks\s*;\s*([\d,]+)',
         'pins': r'Total pins\s*;\s*([\d,]+)',
         'plls': r'Total PLLs\s*;\s*([\d,]+)',
     }
     
     for key, pattern in patterns.items():
+        # Skip alternate patterns if we already found the main one
+        if key.endswith('_alt') and key.replace('_alt', '') in metrics:
+            continue
+            
         match = re.search(pattern, content, re.IGNORECASE)
         if match:
             # Remove commas from numbers
             value_str = match.group(1).replace(',', '')
             try:
-                metrics[key] = int(value_str)
+                # Store without _alt suffix
+                metric_key = key.replace('_alt', '')
+                metrics[metric_key] = int(value_str)
             except ValueError:
-                metrics[key] = value_str
+                metric_key = key.replace('_alt', '')
+                metrics[metric_key] = value_str
     
     return metrics
 
