@@ -28,7 +28,7 @@ def parse_fit_summary(file_path):
     # Example patterns from Quartus .fit.summary files
     patterns = {
         'logic_elements': r'Logic elements\s*;\s*([\d,]+)',
-        'alm': r'ALM needed\s*\[=A-C\+D\+E\]\s*;\s*([\d,]+)',
+        'alm': r'ALM needed\s*\[[^\]]+\]\s*;\s*([\d,]+)',
         'registers': r'Dedicated logic registers\s*;\s*([\d,]+)',
         'memory_bits': r'Total block memory bits\s*;\s*([\d,]+)',
         'dsp_blocks': r'DSP block 9-bit elements\s*;\s*([\d,]+)',
