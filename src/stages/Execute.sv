@@ -32,7 +32,7 @@ module Execute
 
     always @(posedge clk)
     if (reset) begin
-        EX_to_MEM.ResultSrc <= 'b0;
+        EX_to_MEM.ResultSrc <= result_src_t'('b0);
         // EX_to_MEM.AdrSrc <= 'b0;
         // EX_to_MEM.pc_src <= 'b0;
         // EX_to_MEM.IRWrite <= 'b0;
