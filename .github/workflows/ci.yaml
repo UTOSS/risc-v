@@ -155,3 +155,13 @@ jobs:
         with:
           name: de1-soc-sof
           path: envs/de1-soc/quartus/output_files/utoss-risc-v.sof
+
+      - name: Upload Quartus reports
+        uses: actions/upload-artifact@v4
+        if: steps.synthesize.outcome == 'success'
+        with:
+          name: de1-soc-quartus-reports
+          path: |
+            envs/de1-soc/quartus/output_files/utoss-risc-v.sta.summary
+            envs/de1-soc/quartus/output_files/utoss-risc-v.fit.summary
+          retention-days: 7
