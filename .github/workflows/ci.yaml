@@ -9,7 +9,6 @@ on:
 permissions:
   contents: read
   packages: write
-  pull-requests: write
 
 jobs:
   build_ci_image:
@@ -172,6 +171,8 @@ jobs:
     timeout-minutes: 10
     needs: de1-soc
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Checkout code
