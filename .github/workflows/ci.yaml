@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   packages: write
+  pull-requests: write
 
 jobs:
   build_ci_image:
@@ -165,3 +166,96 @@ jobs:
             envs/de1-soc/quartus/output_files/utoss-risc-v.sta.summary
             envs/de1-soc/quartus/output_files/utoss-risc-v.fit.summary
           retention-days: 7
+
+  fpga_metrics_comment:
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+    needs: de1-soc
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download PR Quartus reports
+        uses: actions/download-artifact@v4
+        with:
+          name: de1-soc-quartus-reports
+          path: pr-reports
+
+      - name: Download main branch Quartus reports
+        uses: dawidd6/action-download-artifact@v3
+        continue-on-error: true
+        id: download-main
+        with:
+          workflow: ci.yaml
+          branch: main
+          name: de1-soc-quartus-reports
+          path: main-reports
+          check_artifacts: true
+          search_artifacts: true
+
+      - name: Compare FPGA metrics
+        id: compare
+        run: |
+          # Check if main branch reports exist
+          if [ -f "main-reports/utoss-risc-v.fit.summary" ]; then
+            BASE_FIT="main-reports/utoss-risc-v.fit.summary"
+          else
+            BASE_FIT="none"
+          fi
+          
+          if [ -f "main-reports/utoss-risc-v.sta.summary" ]; then
+            BASE_STA="main-reports/utoss-risc-v.sta.summary"
+          else
+            BASE_STA="none"
+          fi
+          
+          # PR reports should always exist
+          PR_FIT="pr-reports/utoss-risc-v.fit.summary"
+          PR_STA="pr-reports/utoss-risc-v.sta.summary"
+          
+          # Run comparison script
+          python3 .github/scripts/compare_fpga_metrics.py "$BASE_FIT" "$PR_FIT" "$BASE_STA" "$PR_STA" > comparison.md
+          
+          # Output for next step
+          echo "COMPARISON_FILE=comparison.md" >> $GITHUB_OUTPUT
+
+      - name: Post comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const comparison = fs.readFileSync('comparison.md', 'utf8');
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🔧 FPGA Resource Usage and Timing Report')
+            );
+            
+            const commentBody = comparison;
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
