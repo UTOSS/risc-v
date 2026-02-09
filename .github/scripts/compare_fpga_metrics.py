@@ -137,8 +137,26 @@ def generate_markdown_report(base_fit, pr_fit, base_sta, pr_sta):
     lines.append("## 🔧 FPGA Resource Usage and Timing Report")
     lines.append("")
     
+    # Check if we have any data at all
+    has_fit_data = (base_fit and len(base_fit) > 0) or (pr_fit and len(pr_fit) > 0)
+    has_sta_data = (base_sta and len(base_sta) > 0) or (pr_sta and len(pr_sta) > 0)
+    
+    if not has_fit_data and not has_sta_data:
+        lines.append("⚠️ **No metrics could be extracted from the summary files.**")
+        lines.append("")
+        lines.append("This may indicate:")
+        lines.append("- The synthesis did not complete successfully")
+        lines.append("- The summary file format has changed")
+        lines.append("- The summary files are empty or missing")
+        lines.append("")
+        lines.append("Please check the synthesis logs for more information.")
+        lines.append("")
+        lines.append("---")
+        lines.append("*This report compares FPGA synthesis results between the main branch and this PR.*")
+        return "\n".join(lines)
+    
     # Resource usage section
-    if base_fit and pr_fit:
+    if base_fit and pr_fit and len(base_fit) > 0 and len(pr_fit) > 0:
         fit_diff = calculate_diff(base_fit, pr_fit)
         
         lines.append("### 📊 Resource Usage")
@@ -182,7 +200,7 @@ def generate_markdown_report(base_fit, pr_fit, base_sta, pr_sta):
                 lines.append(f"| {display_name} | {base_str} | {pr_str} | {change_str} |")
         
         lines.append("")
-    elif pr_fit:
+    elif pr_fit and len(pr_fit) > 0:
         lines.append("### 📊 Resource Usage")
         lines.append("")
         lines.append("*No baseline data available from main branch for comparison.*")
@@ -209,7 +227,7 @@ def generate_markdown_report(base_fit, pr_fit, base_sta, pr_sta):
         lines.append("")
     
     # Timing section
-    if base_sta and pr_sta:
+    if base_sta and pr_sta and len(base_sta) > 0 and len(pr_sta) > 0:
         sta_diff = calculate_diff(base_sta, pr_sta)
         
         lines.append("### ⏱️ Timing Analysis")
@@ -257,7 +275,7 @@ def generate_markdown_report(base_fit, pr_fit, base_sta, pr_sta):
                 lines.append(f"| {display_name} | {base_str} | {pr_str} | {change_str} |")
         
         lines.append("")
-    elif pr_sta:
+    elif pr_sta and len(pr_sta) > 0:
         lines.append("### ⏱️ Timing Analysis")
         lines.append("")
         lines.append("*No baseline data available from main branch for comparison.*")
