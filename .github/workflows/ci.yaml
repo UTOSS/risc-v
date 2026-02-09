@@ -198,6 +198,8 @@ jobs:
 
       - name: Compare FPGA metrics
         id: compare
+        env:
+          MAIN_WORKFLOW_RUN_ID: ${{ steps.download-main.outputs.run_id }}
         run: .github/scripts/compare_metrics_diff.sh
 
       - name: Post comment on PR

@@ -4,6 +4,13 @@
 
 set -e
 
+# Get the workflow run ID from environment (passed from the workflow)
+MAIN_RUN_ID="${MAIN_WORKFLOW_RUN_ID:-}"
+MAIN_RUN_URL=""
+if [ -n "$MAIN_RUN_ID" ]; then
+  MAIN_RUN_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${MAIN_RUN_ID}"
+fi
+
 # Check if main branch reports exist
 if [ -f "main-reports/utoss-risc-v.fit.summary" ]; then
   BASE_FIT="main-reports/utoss-risc-v.fit.summary"
@@ -47,10 +54,15 @@ echo "Found PR synthesis reports"
   echo "### 📊 Fitter Summary (.fit.summary)"
   echo ""
   if [ -n "$BASE_FIT" ]; then
-    echo "\`\`\`diff"
-    # Use diff with git-style output, or fall back to simple diff
-    diff -u "$BASE_FIT" "$PR_FIT" | tail -n +3 || echo "No changes detected"
-    echo "\`\`\`"
+    # Generate diff and capture output
+    DIFF_OUTPUT=$(diff -u "$BASE_FIT" "$PR_FIT" | tail -n +3 || true)
+    if [ -z "$DIFF_OUTPUT" ]; then
+      echo "*No changes detected*"
+    else
+      echo "\`\`\`diff"
+      echo "$DIFF_OUTPUT"
+      echo "\`\`\`"
+    fi
   else
     echo "*No baseline available from main branch*"
     echo ""
@@ -68,9 +80,15 @@ echo "Found PR synthesis reports"
   echo "### ⏱️ Timing Analysis Summary (.sta.summary)"
   echo ""
   if [ -n "$BASE_STA" ]; then
-    echo "\`\`\`diff"
-    diff -u "$BASE_STA" "$PR_STA" | tail -n +3 || echo "No changes detected"
-    echo "\`\`\`"
+    # Generate diff and capture output
+    DIFF_OUTPUT=$(diff -u "$BASE_STA" "$PR_STA" | tail -n +3 || true)
+    if [ -z "$DIFF_OUTPUT" ]; then
+      echo "*No changes detected*"
+    else
+      echo "\`\`\`diff"
+      echo "$DIFF_OUTPUT"
+      echo "\`\`\`"
+    fi
   else
     echo "*No baseline available from main branch*"
     echo ""
@@ -85,7 +103,11 @@ echo "Found PR synthesis reports"
   echo ""
   
   echo "---"
-  echo "*Comparing synthesis results from main branch vs. this PR*"
+  if [ -n "$MAIN_RUN_URL" ]; then
+    echo "*Comparing synthesis results from [main branch run]($MAIN_RUN_URL) vs. this PR*"
+  else
+    echo "*Comparing synthesis results from main branch vs. this PR*"
+  fi
 } > comparison.md
 
 echo "=== Generated comparison report ==="
