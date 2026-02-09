@@ -7,6 +7,7 @@ module Execute
   , output wire zero_flag
   , output data_t alu_result
   , output addr_t pc_target
+  , ex_to_if_if.Execute EX_to_IF
   , ex_to_mem_if.Execute EX_to_MEM
   );
 
@@ -44,6 +45,10 @@ module Execute
         EX_to_MEM.rd <= 'b0;
         EX_to_MEM.alu_result <= 'b0;
         EX_to_MEM.pc_cur <= 'b0;
+        EX_to_IF.imm_ext <= 'b0;
+        EX_to_IF.pc_src <= PC_SRC__INCREMENT;
+        EX_to_IF.alu_result_for_pc <= 'b0;
+        EX_to_IF.pc_old <= 'b0;
     end
     else begin
         EX_to_MEM.ResultSrc <= ID_to_EX.ResultSrc;
@@ -58,6 +63,10 @@ module Execute
         EX_to_MEM.rd <= ID_to_EX.rd;
         EX_to_MEM.alu_result <= alu_result;
         EX_to_MEM.pc_cur <= ID_to_EX.pc_cur;
+        EX_to_IF.imm_ext <= ID_to_EX.imm_ext;
+        EX_to_IF.pc_src <= ID_to_EX.pc_src;
+        EX_to_IF.alu_result_for_pc <= alu_result;
+        EX_to_IF.pc_old <= ID_to_EX.pc_cur;
     end
 
 endmodule
