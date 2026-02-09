@@ -1,70 +1,48 @@
-# FPGA Metrics Comparison Script
+# GitHub Actions Scripts
 
-This script compares FPGA synthesis metrics between two builds by parsing Quartus `.fit.summary` and `.sta.summary` files.
+This directory contains scripts used by GitHub Actions workflows.
 
-## Usage
+## fpga_metrics_comment/
 
-```bash
-./compare_fpga_metrics.py <base_fit> <pr_fit> <base_sta> <pr_sta>
-```
+Scripts for the `fpga_metrics_comment` CI job that compares FPGA synthesis metrics between the main branch and pull requests.
 
-Arguments:
-- `base_fit`: Path to the base (main branch) `.fit.summary` file, or "none" if not available
-- `pr_fit`: Path to the PR `.fit.summary` file
-- `base_sta`: Path to the base (main branch) `.sta.summary` file, or "none" if not available
-- `pr_sta`: Path to the PR `.sta.summary` file
+### Active Scripts
 
-## Output
+- **`compare_metrics_diff.sh`** - Generates a diff-based comparison report of Quartus synthesis results
+- **`post_comment.js`** - Posts/updates PR comments with the comparison report
 
-The script outputs a markdown-formatted report comparing:
+### Legacy Scripts (for future enhancement)
 
-### Resource Usage
-- Logic Elements
-- ALMs (Adaptive Logic Modules)
-- Registers
-- Memory Bits
-- DSP Blocks
-- Pins
-- PLLs (Phase-Locked Loops)
+- **`compare_fpga_metrics.py`** - Semantic parsing of synthesis metrics (not currently used)
+- **`compare_metrics.sh`** - Old comparison script (replaced by `compare_metrics_diff.sh`)
 
-### Timing Analysis
-- Setup Slack
-- Hold Slack
-- Recovery Slack
-- Removal Slack
-- Fmax (Maximum Frequency)
+## How It Works
 
-## Integration with CI
-
-This script is automatically run by the GitHub Actions workflow when a pull request is created or updated. The workflow:
-
-1. Runs synthesis on the PR branch
-2. Downloads synthesis reports from the latest main branch build
-3. Compares the metrics using this script
-4. Posts a comment on the PR with the comparison results
+1. The CI runs synthesis on the PR branch and uploads `.fit.summary` and `.sta.summary` files as artifacts
+2. The workflow downloads artifacts from the latest main branch synthesis
+3. `compare_metrics_diff.sh` generates a unified diff between the two versions
+4. `post_comment.js` posts or updates a PR comment with the diff
 
 ## Example Output
 
 ```markdown
-## 🔧 FPGA Resource Usage and Timing Report
+## 🔧 FPGA Synthesis Report
 
-### 📊 Resource Usage
+### 📊 Fitter Summary (.fit.summary)
 
-| Resource | Base (main) | PR | Change |
-|----------|-------------|-----|--------|
-| Logic Elements | 2,468 | 2,578 | +110 📈 |
-| ALMs | 1,234 | 1,289 | +55 📈 |
-...
-
-### ⏱️ Timing Analysis
-
-| Metric | Base (main) | PR | Change |
-|--------|-------------|-----|--------|
-| Setup Slack (ns) | 0.234 | 0.189 | -0.045 ⚠️ |
-...
+```diff
+@@ -5,7 +5,7 @@
+ Family : Cyclone V
+ Device : 5CSEMA5F31C6
+-Total registers : 1255
++Total registers : 1300
 ```
 
-Visual indicators:
-- 📈 / 📉 : Resource usage increase/decrease
-- ✅ : Timing improvement
-- ⚠️ : Timing degradation
+### ⏱️ Timing Analysis Summary (.sta.summary)
+
+*No changes detected*
+
+---
+*Comparing synthesis results from [main branch run](https://github.com/UTOSS/risc-v/actions/runs/12345) vs. this PR*
+```
+
