@@ -14,7 +14,7 @@ module.exports = async ({github, context}) => {
   
   const botComment = comments.find(comment => 
     comment.user.type === 'Bot' && 
-    comment.body.includes('🔧 FPGA Resource Usage and Timing Report')
+    comment.body.includes('🔧 DE1-SoC Synthesis Report Summary Diff')
   );
   
   const commentBody = comparison;

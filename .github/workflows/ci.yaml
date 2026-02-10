@@ -166,7 +166,7 @@ jobs:
             envs/de1-soc/quartus/output_files/utoss-risc-v.fit.summary
           retention-days: 7
 
-  fpga_metrics_comment:
+  de1-soc-synthesis-metrics-diff:
     if: github.event_name == 'pull_request'
     timeout-minutes: 10
     needs: de1-soc
@@ -198,13 +198,11 @@ jobs:
 
       - name: Compare FPGA metrics
         id: compare
-        env:
-          MAIN_WORKFLOW_RUN_ID: ${{ steps.download-main.outputs.run_id }}
-        run: .github/scripts/fpga_metrics_comment/compare_metrics_diff.sh
+        run: .github/scripts/de1-soc-synthesis-metrics-diff/compare_metrics_diff.sh
 
       - name: Post comment on PR
         uses: actions/github-script@v7
         with:
           script: |
-            const script = require('./.github/scripts/fpga_metrics_comment/post_comment.js');
+            const script = require('./.github/scripts/de1-soc-synthesis-metrics-diff/post_comment.js');
             await script({github, context});

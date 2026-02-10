@@ -4,13 +4,6 @@
 
 set -e
 
-# Get the workflow run ID from environment (passed from the workflow)
-MAIN_RUN_ID="${MAIN_WORKFLOW_RUN_ID:-}"
-MAIN_RUN_URL=""
-if [ -n "$MAIN_RUN_ID" ]; then
-  MAIN_RUN_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${MAIN_RUN_ID}"
-fi
-
 # Check if main branch reports exist
 if [ -f "main-reports/utoss-risc-v.fit.summary" ]; then
   BASE_FIT="main-reports/utoss-risc-v.fit.summary"
@@ -47,7 +40,7 @@ echo "Found PR synthesis reports"
 
 # Generate comparison report
 {
-  echo "## 🔧 FPGA Synthesis Report"
+  echo "## 🔧 DE1-SoC Synthesis Report Summary Diff"
   echo ""
   
   # FIT Summary comparison
@@ -103,11 +96,7 @@ echo "Found PR synthesis reports"
   echo ""
   
   echo "---"
-  if [ -n "$MAIN_RUN_URL" ]; then
-    echo "*Comparing synthesis results from [main branch run]($MAIN_RUN_URL) vs. this PR*"
-  else
-    echo "*Comparing synthesis results from main branch vs. this PR*"
-  fi
+  echo "*Comparing synthesis results from main branch vs. this PR*"
 } > comparison.md
 
 echo "=== Generated comparison report ==="
