@@ -28,10 +28,9 @@ module utoss_riscv_pipelined
   id_to_ex_t  id_to_ex_out;
   id_to_ex_t  id_to_ex_reg;
 
-  ex_to_if_if  ex_to_if_if();
-
-  ex_to_mem_t ex_to_mem_reg;
+  ex_to_if_t  ex_to_if_out;
   ex_to_mem_t ex_to_mem_out;
+  ex_to_mem_t ex_to_mem_reg;
 
   addr_t pc_target;
   logic  zero_flag;
@@ -48,7 +47,7 @@ module utoss_riscv_pipelined
 
   fetch_stage u_fetch_stage
     ( .IF_to_ID ( if_to_id_out )
-    , .EX_to_IF ( ex_to_if_if  )
+    , .EX_to_IF ( ex_to_if_out )
 
     , .clk   ( clk   )
     , .reset ( reset )

@@ -7,7 +7,7 @@ module Execute
   , output wire zero_flag
   , output data_t alu_result
   , output addr_t pc_target
-  , ex_to_if_if.Execute EX_to_IF
+  , output ex_to_if_t EX_to_IF
   , output ex_to_mem_t EX_to_MEM
   );
 

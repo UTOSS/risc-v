@@ -3,7 +3,8 @@
 
 module fetch_stage
   ( output if_to_id_t IF_to_ID
-  , ex_to_if_if.Fetch EX_to_IF
+  , input ex_to_if_t  EX_to_IF
+
   , input wire clk
   , input wire reset
 
