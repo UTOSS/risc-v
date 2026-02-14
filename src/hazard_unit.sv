@@ -1,6 +1,7 @@
 module hazard_unit
   ( input wire clk
   , input wire Rs1E
+  , input wire Rs2E
   , input wire RdM
   , input wire RdW
   , input wire RegWriteM
@@ -9,7 +10,8 @@ module hazard_unit
   , input wire Rs2D
   , input wire RdE
   , input wire PCSrcE
-  , output reg [1:0] ForwardAE
+  , output hazard_forward_a_t ForwardAE
+  , output hazard_forward_b_t ForwardBE
   , output reg lwStall
   , output reg StallF
   , output reg StallD
@@ -21,10 +23,23 @@ module hazard_unit
   assign ResultSrcE0 = ResultSrcE[0];
 
 //Forward
+// TODO: check if we need to do this combinationally
   always @ (posedge clk) begin
-    if (((Rs1E == RdM) & RegWriteM) & (Rs1E != 0)) ForwardAE <= 2'b10;
-    else if (((Rs1E == RdW) & RegWriteM) & (Rs1E != 0)) ForwardAE <= 2'b01;
-    else ForwardAE <= 2'b00;
+    if (((Rs1E == RdM) & RegWriteM) & (Rs1E != 0))
+      ForwardAE <= HAZARD_FORWARD_A__MEMORY_ALU_RESULT;
+    else if (((Rs1E == RdW) & RegWriteM) & (Rs1E != 0))
+      ForwardAE <= HAZARD_FORWARD_A__WRITE_BACK_RESULT;
+    else
+      ForwardAE <= HAZARD_FORWARD_A__EXECUTE_RD1;
+  end
+
+  always @ (posedge clk) begin
+    if (Rs2E != 0 && Rs2E == RdM && RegWriteW)
+      ForwardBE <= HAZARD_FORWARD_B__MEMORY_ALU_RESULT;
+    else if (Rs2E != 0 && Rs2E == RdW && RegWriteM)
+      ForwardBE <= HAZARD_FORWARD_A__WRITE_BACK_RESULT;
+    else
+      ForwardBE <= HAZARD_FORWARD_B__EXECUTE_RD2;
   end
 
 //Stall when a load hazard occurs

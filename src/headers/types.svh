@@ -70,4 +70,16 @@ typedef enum logic [1:0]
   , PC_SRC__ALU_RESULT = 2'b10
   } pc_src_t;
 
+typedef enum logic [1:0]
+  { HAZARD_FORWARD_A__EXECUTE_RD1       = 2'b00
+  , HAZARD_FORWARD_A__WRITE_BACK_RESULT = 2'b01
+  , HAZARD_FORWARD_A__MEMORY_ALU_RESULT = 2'b10
+  } hazard_forward_a_t;
+
+typedef enum logic [1:0]
+  { HAZARD_FORWARD_B__EXECUTE_RD2       = 2'b00
+  , HAZARD_FORWARD_B__WRITE_BACK_RESULT = 2'b01
+  , HAZARD_FORWARD_B__MEMORY_ALU_RESULT = 2'b10
+  } hazard_forward_b_t;
+
 `endif
