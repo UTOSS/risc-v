@@ -174,3 +174,54 @@ jobs:
         with:
           name: de1-soc-sof
           path: envs/de1-soc/quartus/output_files/utoss-risc-v.sof
+
+      - name: Upload Quartus reports
+        uses: actions/upload-artifact@v4
+        if: steps.synthesize.outcome == 'success'
+        with:
+          name: de1-soc-quartus-reports
+          path: |
+            envs/de1-soc/quartus/output_files/utoss-risc-v.sta.summary
+            envs/de1-soc/quartus/output_files/utoss-risc-v.fit.summary
+          retention-days: 7
+
+  de1-soc-synthesis-metrics-diff:
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+    needs: de1-soc
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download PR Quartus reports
+        uses: actions/download-artifact@v4
+        with:
+          name: de1-soc-quartus-reports
+          path: pr-reports
+
+      - name: Download main branch Quartus reports
+        uses: dawidd6/action-download-artifact@v3
+        continue-on-error: true
+        id: download-main
+        with:
+          workflow: ci.yaml
+          branch: main
+          name: de1-soc-quartus-reports
+          path: main-reports
+          check_artifacts: true
+          search_artifacts: true
+
+      - name: Compare FPGA metrics
+        id: compare
+        run: .github/scripts/de1-soc-synthesis-metrics-diff/compare_metrics_diff.sh
+
+      - name: Post comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const script = require('./.github/scripts/de1-soc-synthesis-metrics-diff/post_comment.js');
+            await script({github, context});
