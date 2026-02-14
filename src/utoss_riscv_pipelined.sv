@@ -59,8 +59,6 @@ module utoss_riscv_pipelined
 
   // decode stage begin (@marwannismail)
 
-  // TODO: this will blow up on us for large interfaces; i think we might need to use packed structs
-  // to make cross-stage register assignments more elegant
   always_ff @ (posedge clk)
     if (reset) if_to_id_reg <= '0;
     else       if_to_id_reg <= if_to_id_out;
