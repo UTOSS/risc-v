@@ -6,7 +6,7 @@ module write_back
   ( input var logic clk
   , input var logic reset
 
-  , mem_to_wb_if.from_memory from_memory
+  , input mem_to_wb_t from_memory
 
   , output var data_t      result
   , output var logic [4:0] rd

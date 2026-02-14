@@ -36,7 +36,8 @@ module utoss_riscv_pipelined
   logic  zero_flag;
   data_t alu_result;
 
-  mem_to_wb_if mem_to_wb_if();
+  mem_to_wb_t mem_to_wb_out;
+  mem_to_wb_t mem_to_wb_reg;
 
   data_t      wb_result;
   logic [4:0] wb_rd;
@@ -107,13 +108,17 @@ module utoss_riscv_pipelined
 
   // writeback stage begin (@TheDeepestSpace)
 
+  always_ff @ (posedge clk)
+    if (reset) mem_to_wb_reg <= '0;
+    else       mem_to_wb_reg <= mem_to_wb_out;
+
   write_back wb
     ( .clk         ( clk   )
     , .reset       ( reset )
 
-    , .from_memory ( mem_to_wb_if.to_write_back )
-    , .result      ( wb_result                  )
-    , .rd          ( wb_rd                      )
+    , .from_memory ( mem_to_wb_reg )
+    , .result      ( wb_result     )
+    , .rd          ( wb_rd         )
     );
 
   // writeback stage end
