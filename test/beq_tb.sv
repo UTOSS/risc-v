@@ -3,7 +3,7 @@
 `include "src/headers/utils.svh"
 `include "src/headers/types.svh"
 
-`include "test/utils.svh"
+import pkg_control_fsm::*;
 
 module beq_tb;
   reg clk;
@@ -35,12 +35,12 @@ module beq_tb;
     // initialize registers
     uut.core.RegFile.RFMem[5'b00100] = 32'h0000002a; // x4 = 42
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
 
     assert (uut.core.opcode == 7'b1100011) else $fatal(1, "`uut.core.opcode` is `%0b`", uut.core.opcode);
 
@@ -49,7 +49,7 @@ module beq_tb;
     assert (uut.core.fetch.imm_ext == 32'hFFFFFFF4)
       else $fatal(1, "`uut.core.fetch.imm_ext` is `%0h`", uut.core.fetch.imm_ext);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.BRANCHIFEQ);
+    wait_till_next_cfsm_state(BRANCHIFEQ);
 
     assert (uut.core.alu__zero_flag == `TRUE)
       else $fatal(1, "`uut.core.alu__zero_flag` is `%0b`", uut.core.alu__zero_flag);
@@ -65,8 +65,8 @@ module beq_tb;
     assert (uut.core.fetch.pc_cur == 32'h00000004)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     assert (uut.core.fetch.pc_cur == 32'hFFFFFFF4)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
@@ -79,12 +79,12 @@ module beq_tb;
     uut.core.RegFile.RFMem[5'b00001] = 32'h0000002a; // x1 = 42
     uut.core.RegFile.RFMem[5'b00010] = 32'h0000002b; // x2 = 43
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
 
     assert (uut.core.opcode == 7'b1100011) else $fatal(1, "`uut.core.opcode` is `%0b`", uut.core.opcode);
 
@@ -93,7 +93,7 @@ module beq_tb;
     assert (uut.core.fetch.imm_ext == 32'h00000010)
       else $fatal(1, "`uut.core.fetch.imm_ext` is `%0h`", uut.core.fetch.imm_ext);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.BRANCHIFEQ);
+    wait_till_next_cfsm_state(BRANCHIFEQ);
 
     assert (uut.core.alu.a == 32'h0000002a) else $fatal(1, "`uut.core.alu.a` is `%0h`", uut.core.alu.a);
     assert (uut.core.alu.b == 32'h0000002b) else $fatal(1, "`uut.core.alu.b` is `%0h`", uut.core.alu.b);
@@ -106,8 +106,8 @@ module beq_tb;
     assert (uut.core.fetch.pc_cur == 32'h00000004)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     assert (uut.core.fetch.pc_cur == 32'h00000004)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
@@ -118,22 +118,22 @@ module beq_tb;
     uut.memory.M[0] = 32'b0100000_00001_00001_000_00001_0110011; // sub x1, x1, x1
     uut.core.RegFile.RFMem[5'b00001] = 32'h00000001; // x1 = 1
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
 
     assert (uut.core.fetch.pc_cur == 32'h00000004)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.EXECUTER);
+    wait_till_next_cfsm_state(EXECUTER);
 
     assert (uut.core.alu__zero_flag == `TRUE)
       else $fatal(1, "`uut.core.alu__zero_flag` is `%0b`", uut.core.alu__zero_flag);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(ALUWB);
 
     assert (uut.core.fetch.pc_cur == 32'h00000004)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);

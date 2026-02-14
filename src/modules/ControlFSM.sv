@@ -3,6 +3,9 @@
 
 `include "src/headers/types.svh"
 `include "src/headers/params.svh"
+`include "src/packages/pkg_control_fsm.svh"
+
+import pkg_control_fsm::*;
 
 module ControlFSM
   ( input opcode_t opcode
@@ -22,38 +25,11 @@ module ControlFSM
   , output alu_src_a_t ALUSrcA
   , output alu_src_b_t ALUSrcB
   , output result_src_t ResultSrc
-  , output reg [4:0] FSMState
+  , output state_t FSMState
   );
 
-  //parameterize states (binary encoding)
-  //in later systemverilog implementation, change to enum
-  parameter FETCH = 5'b00000;
-  parameter DECODE = 5'b00001;
-  parameter EXECUTER = 5'b00010;
-  parameter UNCONDJUMP = 5'b00011;
-  parameter EXECUTEI = 5'b00100;
-  parameter MEMADR = 5'b00101;
-  parameter ALUWB = 5'b00110;
-  parameter MEMWRITE = 5'b00111;
-  parameter MEMREAD = 5'b01000;
-  parameter MEMWB = 5'b01001;
-  parameter BRANCHIFEQ = 5'b01010;
-
-  //new states for lui and auipc
-  parameter LUI = 5'b01011;
-  parameter AUIPC = 5'b01100;
-
-  parameter JALR_CALC  = 5'b01101; // calculate rs1 + imm, store in alu_out
-  parameter JALR_STEP2 = 5'b01110; // link and use alu_out to update PC
-
-  // new state for remaining branch instructions
-  parameter BRANCHCOMP = 5'b01111;
-
-  parameter FETCH_WAIT  = 5'b10000;
-
-
   //declare state registers
-  reg [4:0] current_state, next_state;
+  state_t current_state, next_state;
 
   //Next state logic
   always @(*)begin
