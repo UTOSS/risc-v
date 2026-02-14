@@ -1,5 +1,7 @@
 `include "src/types.svh"
 `include "src/params.svh"
+`include "src/packages/pkg_control_fsm.svh"
+
 import pkg_control_fsm::state_t;
 
 module Logger

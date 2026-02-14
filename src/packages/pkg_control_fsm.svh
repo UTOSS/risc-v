@@ -1,3 +1,6 @@
+`ifndef PKG_CONTROL_FSM_VH
+`define PKG_CONTROL_FSM_VH
+
 package pkg_control_fsm;
 
     // parameterize states (binary encoding)
@@ -24,3 +27,5 @@ package pkg_control_fsm;
     } state_t;
 
 endpackage: pkg_control_fsm
+
+`endif
