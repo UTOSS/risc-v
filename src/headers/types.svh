@@ -51,11 +51,18 @@ typedef enum logic
 
 // represents the possible sources of the result fed into PC, RF, or memory as selected by the
 // Control FSM; See Figure 7.46 of the digital design and computer architecture book
+// TODO: remove after pipelining integration is complete
 typedef enum logic [1:0]
   { RESULT_SRC__ALU_OUT    = 2'b00
   , RESULT_SRC__DATA       = 2'b01
   , RESULT_SRC__ALU_RESULT = 2'b10
   } result_src_t;
+
+typedef enum logic [1:0]
+  { WRITE_BACK_RESULT_SRC__ALU_RESULT = 2'b00
+  , WRITE_BACK_RESULT_SRC__READ_DATA  = 2'b01
+  , WRITE_BACK_RESULT_SRC__PC_PLUS_4  = 2'b10
+  } write_back_result_src_t;
 
 typedef enum logic [1:0]
   { PC_SRC__INCREMENT = 2'b00

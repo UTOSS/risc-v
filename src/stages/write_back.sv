@@ -17,9 +17,10 @@ module write_back
   // TODO: `REULST_SRC__ALU_OUT` is no longer covered, revisit during integration
   always_comb
     case (from_memory.cfsm__result_src)
-      RESULT_SRC__DATA:       result = from_memory.read_data;
-      RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;
-      default:                result = 32'hxxxxxxxx;
+      WRITE_BACK_RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;
+      WRITE_BACK_RESULT_SRC__READ_DATA:  result = from_memory.read_data;
+      WRITE_BACK_RESULT_SRC__PC_PLUS_4:  result = 32'hx; // TODO: address
+      default:                           result = 32'hxxxxxxxx;
     endcase
 
 endmodule
