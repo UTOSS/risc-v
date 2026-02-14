@@ -28,6 +28,7 @@ module utoss_riscv_pipelined
   id_to_ex_t   id_to_ex_out;
   id_to_ex_t   id_to_ex_reg;
 
+  ex_to_if_if  ex_to_if_if();
   ex_to_mem_if ex_to_mem_if();
 
   addr_t pc_target;
@@ -42,6 +43,17 @@ module utoss_riscv_pipelined
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
+
+  fetch_stage u_fetch_stage
+    ( .IF_to_ID ( if_to_id_out )
+    , .EX_to_IF ( ex_to_if_if  )
+
+    , .clk   ( clk   )
+    , .reset ( reset )
+
+    , .imem__address ( memory_instr__address  )
+    , .imem__data    ( memory_data__read_data )
+    );
 
   // fetch stage end
 
