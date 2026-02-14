@@ -1,4 +1,7 @@
 `include "src/types.svh"
+`include "src/packages/pkg_control_fsm.svh"
+
+import pkg_control_fsm::state_t;
 
 module utoss_riscv
   ( input wire clk
@@ -48,7 +51,7 @@ module utoss_riscv
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
-  wire [4:0] __tmp_FSMState;
+  state_t __tmp_FSMState;
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
 

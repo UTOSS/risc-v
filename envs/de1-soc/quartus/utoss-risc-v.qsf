@@ -313,7 +313,7 @@ set_location_assignment PIN_F13 -to VGA_R[7]
 set_location_assignment PIN_C10 -to VGA_SYNC_N
 set_location_assignment PIN_D11 -to VGA_VS
 
-set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/Logger.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/packages/pkg_control_fsm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/utils.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/types.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/params.svh

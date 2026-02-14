@@ -2,6 +2,8 @@
 
 `include "test/utils.svh"
 
+import pkg_control_fsm::*;
+
 module nop_tb;
 
     reg clk;
@@ -33,28 +35,28 @@ module nop_tb;
         uut.core.RegFile.RFMem[0] = 32'h01010101; // x0, hould still be 0 even we try to write it as 0
 
         //wait until reset makes FSM go to fetch state
-        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+        wait_till_next_cfsm_state(FETCH);
 
         reset <= `FALSE;
 
-        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+        wait_till_next_cfsm_state(FETCH_WAIT);
 
-        wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+        wait_till_next_cfsm_state(DECODE);
 
         `assert_equal(uut.core.opcode, 7'b0010011)
         `assert_equal(uut.core.instruction_decode.rs1, 0)
         `assert_equal(uut.core.instruction_decode.rd, 0)
         `assert_equal(uut.core.instruction_decode.imm_ext, 0)
 
-        wait_till_next_cfsm_state(uut.core.control_fsm.EXECUTEI);
+        wait_till_next_cfsm_state(EXECUTEI);
         `assert_equal(uut.core.alu.a, 32'h0)
         `assert_equal(uut.core.alu.b, 0)
         `assert_equal(uut.core.alu.out, 32'h0)
 
-        wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
+        wait_till_next_cfsm_state(ALUWB);
 
-        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-        wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+        wait_till_next_cfsm_state(FETCH);
+        wait_till_next_cfsm_state(FETCH_WAIT);
         `assert_equal(uut.core.RegFile.RFMem[0], 32'h0)
         `assert_equal(uut.core.fetch.pc_cur, 4)
 

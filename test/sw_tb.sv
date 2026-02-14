@@ -2,6 +2,8 @@
 
 `include "test/utils.svh"
 
+import pkg_control_fsm::*;
+
 module sw_tb;
 
   reg clk;
@@ -38,64 +40,64 @@ module sw_tb;
     uut.core.RegFile.RFMem[6] = 44;    // x6 = 44
     uut.core.RegFile.RFMem[5] = 256;   // x5 = 256
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
 
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     // --- Instruction 1: sw x5, 0(x6) ---
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
     `assert_equal(uut.core.opcode, 7'b0100011)
     `assert_equal(uut.core.instruction_decode.rs1, 6)
     `assert_equal(uut.core.instruction_decode.rs2, 5)
     `assert_equal(uut.core.instruction_decode.imm_ext, 0)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
+    wait_till_next_cfsm_state(MEMADR);
     `assert_equal(uut.core.alu.out, 44)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
+    wait_till_next_cfsm_state(MEMWRITE);
     `assert_equal(uut.core.memory__address, 44)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     `assert_equal(uut.memory.M[11], 256)
     `assert_equal(uut.core.fetch.pc_cur, 4)
 
     // --- Instruction 2: sw x5, 4(x6) ---
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
 
     `assert_equal(uut.core.instruction_decode.imm_ext, 4)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
+    wait_till_next_cfsm_state(MEMADR);
 
     `assert_equal(uut.core.alu.out, 48)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
+    wait_till_next_cfsm_state(MEMWRITE);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     `assert_equal(uut.memory.M[12], 256)
     `assert_equal(uut.core.fetch.pc_cur, 8)
 
     // --- Instruction 3: sw x5, 8(x6) ---
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
 
     `assert_equal(uut.core.opcode, 7'b0100011)
     `assert_equal(uut.core.instruction_decode.rs1, 6)
     `assert_equal(uut.core.instruction_decode.rs2, 5)
     `assert_equal(uut.core.instruction_decode.imm_ext, 8)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMADR);
+    wait_till_next_cfsm_state(MEMADR);
 
     `assert_equal(uut.core.alu.out, 52)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.MEMWRITE);
+    wait_till_next_cfsm_state(MEMWRITE);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     `assert_equal(uut.memory.M[13], 256)
 
