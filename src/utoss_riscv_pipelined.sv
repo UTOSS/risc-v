@@ -22,8 +22,8 @@ module utoss_riscv_pipelined
 
   // common declarations begin
 
-  if_to_id_if  if_to_id_out_if();
-  if_to_id_if  if_to_id_reg_if();
+  if_to_id_t  if_to_id_out;
+  if_to_id_t  if_to_id_reg;
 
   id_to_ex_t   id_to_ex_out;
   id_to_ex_t   id_to_ex_reg;
@@ -50,20 +50,20 @@ module utoss_riscv_pipelined
   // TODO: this will blow up on us for large interfaces; i think we might need to use packed structs
   // to make cross-stage register assignments more elegant
   always_ff @ (posedge clk)
-    if (reset) if_to_id_reg_if.instruction <= '0;
-    else       if_to_id_reg_if.instruction <= if_to_id_out_if.instruction;
+    if (reset) if_to_id_reg <= '0;
+    else       if_to_id_reg <= if_to_id_out;
 
   // TODO: move zero flag to Fetch stage
   // TODO: remove ALU result from control FSM (should not be added to Fetch stage according to the draw.io diagram note)
   Decode decode
-    ( .IF_to_ID    ( if_to_id_reg_if )
-    , .clk         ( clk             )
-    , .reset       ( reset           )
-    , .data        ( wb_result       )
-    , .rd_wb       ( wb_rd           )
-    , .zero_flag   ( zero_flag       )
-    , .alu_result  ( alu_result      )
-    , .ID_to_EX    ( id_to_ex_out    )
+    ( .IF_to_ID    ( if_to_id_reg )
+    , .clk         ( clk          )
+    , .reset       ( reset        )
+    , .data        ( wb_result    )
+    , .rd_wb       ( wb_rd        )
+    , .zero_flag   ( zero_flag    )
+    , .alu_result  ( alu_result   )
+    , .ID_to_EX    ( id_to_ex_out )
     );
 
   // decode stage end

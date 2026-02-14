@@ -2,7 +2,7 @@
 `include "src/headers/types.svh"
 
 module Decode
-  ( if_to_id_if.Decode IF_to_ID
+  ( input if_to_id_t IF_to_ID
   , input wire clk
   , input wire reset
   , input wire [4:0] rd_wb // rd from writeback

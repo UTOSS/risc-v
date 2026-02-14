@@ -2,7 +2,7 @@
 `include "src/headers/types.svh"
 
 module fetch_stage
-  ( if_to_id_if.Fetch IF_to_ID
+  ( output if_to_id_t IF_to_ID
   , ex_to_if_if.Fetch EX_to_IF
   , input wire clk
   , input wire reset
