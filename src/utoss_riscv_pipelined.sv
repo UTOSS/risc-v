@@ -25,8 +25,8 @@ module utoss_riscv_pipelined
   if_to_id_t  if_to_id_out;
   if_to_id_t  if_to_id_reg;
 
-  id_to_ex_t   id_to_ex_out;
-  id_to_ex_t   id_to_ex_reg;
+  id_to_ex_t  id_to_ex_out;
+  id_to_ex_t  id_to_ex_reg;
 
   ex_to_if_if  ex_to_if_if();
   ex_to_mem_if ex_to_mem_if();
