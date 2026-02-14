@@ -2,7 +2,6 @@
 
 `include "src/types.svh"      // <-- bring in enum literals like PC_SRC__JUMP
 `include "test/utils.svh"
-`include "src/packages/pkg_control_fsm.svh"
 
 import pkg_control_fsm::*;
 

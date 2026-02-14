@@ -1,7 +1,6 @@
 `timescale 1ns/1ps
 
 `include "test/utils.svh"
-`include "src/packages/pkg_control_fsm.svh"
 
 import pkg_control_fsm::*;
 
