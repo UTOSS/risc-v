@@ -13,6 +13,9 @@ VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc \
 
 all: run_tb
 
+# ===========================
+# Sub-project
+# ===========================
 poc:
 	$(MAKE) -C poc
 

@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
-`include "src/utils.svh"
-`include "src/types.svh"
+`include "src/headers/utils.svh"
+`include "src/headers/types.svh"
 
 `include "test/utils.svh"
 

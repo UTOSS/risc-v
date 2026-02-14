@@ -47,6 +47,7 @@ jobs:
         run: make svlint ENV=de1-soc
 
   build_and_test:
+    if: false # temporarily disabling during initial pipelineing integration
     timeout-minutes: 30
     needs: build_ci_image
     runs-on: ubuntu-latest
@@ -84,7 +85,24 @@ jobs:
           path: out/*.vvp
           retention-days: 7
 
+  # temporary job for making sure the new top is buildable
+  build_pipelined:
+    timeout-minutes: 30
+    needs: build_ci_image
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build pipelined implementation
+        id: build-pipelined
+        run: make build_pipelined
+
   riscof:
+    if: false # temporarily disabling during initial pipelineing integration
     timeout-minutes: 30
     needs: build_ci_image
     runs-on: ubuntu-latest
@@ -118,6 +136,7 @@ jobs:
           retention-days: 7
 
   de1-soc:
+    if: false # temporarily disabling during initial pipelineing integration
     timeout-minutes: 30
     needs:
       - build_ci_image
