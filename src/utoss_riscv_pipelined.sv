@@ -29,7 +29,9 @@ module utoss_riscv_pipelined
   id_to_ex_t  id_to_ex_reg;
 
   ex_to_if_if  ex_to_if_if();
-  ex_to_mem_if ex_to_mem_if();
+
+  ex_to_mem_t ex_to_mem_reg;
+  ex_to_mem_t ex_to_mem_out;
 
   addr_t pc_target;
   logic  zero_flag;
@@ -85,18 +87,22 @@ module utoss_riscv_pipelined
     else       id_to_ex_reg <= id_to_ex_out;
 
   Execute execute
-    ( .ID_to_EX      ( id_to_ex_reg )
-    , .clk           ( clk          )
-    , .reset         ( reset        )
-    , .zero_flag     ( zero_flag    )
-    , .alu_result    ( alu_result   )
-    , .pc_target     ( pc_target    )
-    , .EX_to_MEM     ( ex_to_mem_if )
+    ( .ID_to_EX      ( id_to_ex_reg  )
+    , .clk           ( clk           )
+    , .reset         ( reset         )
+    , .zero_flag     ( zero_flag     )
+    , .alu_result    ( alu_result    )
+    , .pc_target     ( pc_target     )
+    , .EX_to_MEM     ( ex_to_mem_out )
     );
 
   // execute stage end
 
   // memory stage begin (@Invisipac)
+
+  always_ff @ (posedge clk)
+    if (reset) ex_to_mem_reg <= '0;
+    else       ex_to_mem_reg <= ex_to_mem_out;
 
   // memory stage end
 

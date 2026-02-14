@@ -8,7 +8,7 @@ module Execute
   , output data_t alu_result
   , output addr_t pc_target
   , ex_to_if_if.Execute EX_to_IF
-  , ex_to_mem_if.Execute EX_to_MEM
+  , output ex_to_mem_t EX_to_MEM
   );
 
   data_t alu_input_b;
