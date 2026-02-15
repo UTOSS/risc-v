@@ -1,3 +1,6 @@
+`ifndef ID_TO_EX_IF__HG
+`define ID_TO_EX_IF__HG
+
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 
@@ -25,3 +28,5 @@ typedef struct packed {
   logic [4:0]  rs2;
   imm_t        imm_ext;
 } id_to_ex_t;
+
+`endif

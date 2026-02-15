@@ -1,5 +1,7 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
+`include "src/interfaces/if_to_id_if.svh"
+`include "src/interfaces/ex_to_if_if.svh"
 
 module fetch_stage
   ( output if_to_id_t IF_to_ID

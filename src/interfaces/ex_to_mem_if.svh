@@ -1,3 +1,6 @@
+`ifndef EX_TO_MEM_IF__HG
+`define EX_TO_MEM_IF__HG
+
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 
@@ -16,3 +19,5 @@ typedef struct packed {
   // data_t rd2;
   addr_t      pc_cur;
 } ex_to_mem_t;
+
+`endif

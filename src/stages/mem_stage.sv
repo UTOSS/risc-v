@@ -1,4 +1,6 @@
 `include "src/headers/types.svh"
+`include "src/interfaces/ex_to_mem_if.svh"
+`include "src/interfaces/mem_to_wb_if.svh"
 
 module Mem_Stage
 ( ex_to_mem_if.Memory EX_to_MEM

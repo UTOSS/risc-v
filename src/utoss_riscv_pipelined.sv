@@ -1,4 +1,9 @@
 `include "src/headers/types.svh"
+`include "src/interfaces/if_to_id_if.svh"
+`include "src/interfaces/id_to_ex_if.svh"
+`include "src/interfaces/ex_to_mem_if.svh"
+`include "src/interfaces/ex_to_if_if.svh"
+`include "src/interfaces/mem_to_wb_if.svh"
 
 // pipelined implementation of our core
 module utoss_riscv_pipelined

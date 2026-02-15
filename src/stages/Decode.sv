@@ -1,5 +1,7 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
+`include "src/interfaces/if_to_id_if.svh"
+`include "src/interfaces/id_to_ex_if.svh"
 
 module Decode
   ( input if_to_id_t IF_to_ID
