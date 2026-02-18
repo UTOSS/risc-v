@@ -1,3 +1,5 @@
+`include "src/headers/types.svh"
+
 module hazard_unit
   ( input wire clk
   , input wire Rs1E
@@ -5,6 +7,7 @@ module hazard_unit
   , input wire RdM
   , input wire RdW
   , input wire RegWriteM
+  , input wire RegWriteW
   , input wire [1:0] ResultSrcE
   , input wire Rs1D
   , input wire Rs2D
@@ -16,7 +19,7 @@ module hazard_unit
   , output reg StallF
   , output reg StallD
   , output reg FlushD
-  , output reg Flush
+  , output reg FlushE
   );
 
   wire ResultSrcE0;
@@ -37,7 +40,7 @@ module hazard_unit
     if (Rs2E != 0 && Rs2E == RdM && RegWriteW)
       ForwardBE <= HAZARD_FORWARD_B__MEMORY_ALU_RESULT;
     else if (Rs2E != 0 && Rs2E == RdW && RegWriteM)
-      ForwardBE <= HAZARD_FORWARD_A__WRITE_BACK_RESULT;
+      ForwardBE <= HAZARD_FORWARD_B__WRITE_BACK_RESULT;
     else
       ForwardBE <= HAZARD_FORWARD_B__EXECUTE_RD2;
   end
