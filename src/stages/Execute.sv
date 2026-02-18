@@ -34,42 +34,21 @@ module Execute
     , .zeroE          ( zero_flag           )
     );
 
-    always @(posedge clk)
-    if (reset) begin
-        EX_to_MEM.ResultSrc <= result_src_t'('b0);
-        // EX_to_MEM.AdrSrc <= 'b0;
-        // EX_to_MEM.pc_src <= 'b0;
-        // EX_to_MEM.IRWrite <= 'b0;
-        // EX_to_MEM.MemWriteByteAddress <= 'b0;
-        // EX_to_MEM.MemWrite <= 'b0;
-        EX_to_MEM.RegWrite <= 'b0;
-        EX_to_MEM.funct3 <= 'b0;
-        // EX_to_MEM.rd2 <= 'b0;
-        EX_to_MEM.rd <= 'b0;
-        EX_to_MEM.alu_result <= 'b0;
-        EX_to_MEM.pc_cur <= 'b0;
-        EX_to_IF.imm_ext <= 'b0;
-        EX_to_IF.pc_src <= PC_SRC__INCREMENT;
-        EX_to_IF.alu_result_for_pc <= 'b0;
-        EX_to_IF.pc_old <= 'b0;
-    end
-    else begin
-        EX_to_MEM.ResultSrc <= ID_to_EX.ResultSrc;
-        // EX_to_MEM.AdrSrc <= ID_to_EX.AdrSrc;
-        // EX_to_MEM.pc_src <= ID_to_EX.pc_src;
-        // EX_to_MEM.IRWrite <= ID_to_EX.IRWrite;
-        // EX_to_MEM.MemWriteByteAddress <= ID_to_EX.MemWriteByteAddress;
-        // EX_to_MEM.MemWrite <= ID_to_EX.MemWrite;
-        EX_to_MEM.RegWrite <= ID_to_EX.RegWrite;
-        EX_to_MEM.funct3 <= ID_to_EX.funct3;
-        // EX_to_MEM.rd2 <= ID_to_EX.rd2;
-        EX_to_MEM.rd <= ID_to_EX.rd;
-        EX_to_MEM.alu_result <= alu_result;
-        EX_to_MEM.pc_cur <= ID_to_EX.pc_cur;
-        EX_to_IF.imm_ext <= ID_to_EX.imm_ext;
-        EX_to_IF.pc_src <= ID_to_EX.pc_src;
-        EX_to_IF.alu_result_for_pc <= alu_result;
-        EX_to_IF.pc_old <= ID_to_EX.pc_cur;
-    end
+  assign EX_to_MEM.ResultSrc        = ID_to_EX.ResultSrc;
+  // assign EX_to_MEM.AdrSrc = ID_to_EX.AdrSrc;
+  // assign EX_to_MEM.pc_src = ID_to_EX.pc_src;
+  // assign EX_to_MEM.IRWrite = ID_to_EX.IRWrite;
+  // assign EX_to_MEM.MemWriteByteAddress = ID_to_EX.MemWriteByteAddress;
+  // assign EX_to_MEM.MemWrite = ID_to_EX.MemWrite;
+  assign EX_to_MEM.RegWrite         = ID_to_EX.RegWrite;
+  assign EX_to_MEM.funct3           = ID_to_EX.funct3;
+  // assign EX_to_MEM.rd2 <= ID_to_EX.rd2;
+  assign EX_to_MEM.rd               = ID_to_EX.rd;
+  assign EX_to_MEM.alu_result       = alu_result;
+  assign EX_to_MEM.pc_cur           = ID_to_EX.pc_cur;
+  assign EX_to_IF.imm_ext           = ID_to_EX.imm_ext;
+  assign EX_to_IF.pc_src            = ID_to_EX.pc_src;
+  assign EX_to_IF.alu_result_for_pc = alu_result;
+  assign EX_to_IF.pc_old            = ID_to_EX.pc_cur;
 
 endmodule
