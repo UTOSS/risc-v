@@ -130,6 +130,31 @@ module utoss_riscv_pipelined
 
   // hazard module begin (@DanielTaoHuang123)
 
+  hazard_forward_a_t hz_forward_a;
+  hazard_forward_b_t hz_forward_b;
+  logic lwStall, StallF, StallD, FlushD, FlushE;
+
+  hazard_unit u_hazard_unit
+    ( .clk ( clk )
+
+    , .Rs1E      ( id_to_ex_reg.rs1        )
+    , .Rs2E      ( id_to_ex_reg.rs2        )
+    , .RdM       ( ex_to_mem_reg.rd        )
+    , .RdW       ( mem_to_wb_reg.rd        )
+    , .RdE       ( id_to_ex_reg.rd         )
+    , .RegWriteM ( ex_to_mem_reg.RegWrite  )
+    , .RegWriteW ( mem_to_wb_reg.RegWriteW )
+    , .PCSrcE    ( 'x                      ) // TODO: find actual signal
+
+    , .ForwardAE ( hz_forward_a )
+    , .ForwardBE ( hz_forward_b )
+    , .lwStall   ( lwStall      )
+    , .StallF    ( StallF       )
+    , .StallD    ( StallD       )
+    , .FlushD    ( FlushD       )
+    , .FlushE    ( FlushE       )
+    );
+
   // hazard module end
 
 endmodule
