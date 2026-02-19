@@ -59,7 +59,7 @@ module Decode
     , .mem_write  ( cfsm__mem_write  )
     , .jump       ( cfsm__jump       )
     , .branch     ( cfsm__branch     )
-    , .alu_src    ( __tmp_ALUSrcB    )
+    , .alu_src_b  ( __tmp_ALUSrcB    )
     );
 
   // TODO: remove once we are sure all the signals are properly passed to execute stage
