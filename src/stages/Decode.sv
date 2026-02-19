@@ -14,11 +14,14 @@ module Decode
   , output id_to_ex_t ID_to_EX
   );
 
-  wire         cfsm__pc_update;
-  wire         cfsm__reg_write;
-  wire         cfsm__ir_write;
-  pc_src_t     cfsm__pc_src;
-  result_src_t cfsm__result_src;
+  wire                    cfsm__pc_update;
+  wire                    cfsm__reg_write;
+  wire                    cfsm__ir_write;
+  pc_src_t                cfsm__pc_src;
+  write_back_result_src_t cfsm__result_src;
+  wire                    cfsm__mem_write;
+  wire                    cfsm__jump;
+  wire                    cfsm__branch;
 
   opcode_t opcode;
   imm_t    imm_ext;
@@ -44,26 +47,42 @@ module Decode
 
   instr_t instruction = IF_to_ID.instruction;
 
-  ControlFSM control_fsm
-    ( .opcode     ( opcode           )
-    , .clk        ( clk              )
-    , .reset      ( reset            )
-    , .zero_flag  ( zero_flag        )
-    , .MemWriteByteAddress ( MemWriteByteAddress )
-    , .funct3     ( funct3           )
-    , .alu_result ( alu_result       )
-    , .AdrSrc     ( cfsm__adr_src    )
-    , .IRWrite    ( cfsm__ir_write   )
-    , .RegWrite   ( cfsm__reg_write  )
-    , .PCUpdate   ( cfsm__pc_update  )
-    , .pc_src     ( cfsm__pc_src     )
-    , .MemWrite   ( __tmp_MemWrite   )
-    , .Branch     ( __tmp_Branch     )
-    , .ALUSrcA    ( __tmp_ALUSrcA    )
-    , .ALUSrcB    ( __tmp_ALUSrcB    )
-    , .ResultSrc  ( cfsm__result_src )
-    , .FSMState   ( __tmp_FSMState   )
+  control_fsm_pipelined u_ctrl
+    ( .clk   ( clk   )
+    , .reset ( reset )
+
+    , .opcode ( opcode )
+    , .func3  ( func3  )
+
+    , .reg_write  ( cfsm__reg_write  )
+    , .result_src ( cfsm__result_src )
+    , .mem_write  ( cfsm__mem_write  )
+    , .jump       ( cfsm__jump       )
+    , .branch     ( cfsm__branch     )
+    , .alu_src    ( __tmp_ALUSrcB    )
     );
+
+  // TODO: remove once we are sure all the signals are properly passed to execute stage
+  // ControlFSM control_fsm
+  //   ( .opcode     ( opcode           )
+  //   , .clk        ( clk              )
+  //   , .reset      ( reset            )
+  //   , .zero_flag  ( zero_flag        )
+  //   , .MemWriteByteAddress ( MemWriteByteAddress )
+  //   , .funct3     ( funct3           )
+  //   , .alu_result ( alu_result       )
+  //   , .AdrSrc     ( cfsm__adr_src    )
+  //   , .IRWrite    ( cfsm__ir_write   )
+  //   , .RegWrite   ( cfsm__reg_write  )
+  //   , .PCUpdate   ( cfsm__pc_update  )
+  //   , .pc_src     ( cfsm__pc_src     )
+  //   , .MemWrite   ( __tmp_MemWrite   )
+  //   , .Branch     ( __tmp_Branch     )
+  //   , .ALUSrcA    ( __tmp_ALUSrcA    )
+  //   , .ALUSrcB    ( __tmp_ALUSrcB    )
+  //   , .ResultSrc  ( cfsm__result_src )
+  //   , .FSMState   ( __tmp_FSMState   )
+  //   );
 
   Instruction_Decode instruction_decode
     ( .instr           ( instruction      )

@@ -22,7 +22,7 @@ module control_fsm_pipelined
     case (opcode)
       RType, IType_logic:
         result_src = WRITE_BACK_RESULT_SRC__ALU_RESULT;
-      IType_Load:
+      IType_load:
         result_src = WRITE_BACK_RESULT_SRC__READ_DATA;
       IType_jalr:
         result_src = WRITE_BACK_RESULT_SRC__PC_PLUS_4;
