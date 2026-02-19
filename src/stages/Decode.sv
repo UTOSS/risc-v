@@ -34,7 +34,7 @@ module Decode
   wire [3:0] __tmp_MemWrite;
   wire __tmp_Branch;
   alu_src_a_t __tmp_ALUSrcA;
-  alu_src_b_t __tmp_ALUSrcB;
+  execute_alu_src_b_t __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   wire [4:0] __tmp_FSMState;

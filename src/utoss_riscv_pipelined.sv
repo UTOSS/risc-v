@@ -92,13 +92,20 @@ module utoss_riscv_pipelined
     else       id_to_ex_reg <= id_to_ex_out;
 
   Execute execute
-    ( .ID_to_EX      ( id_to_ex_reg  )
-    , .clk           ( clk           )
-    , .reset         ( reset         )
-    , .zero_flag     ( zero_flag     )
-    , .alu_result    ( alu_result    )
-    , .pc_target     ( pc_target     )
-    , .EX_to_MEM     ( ex_to_mem_out )
+    ( .ID_to_EX ( id_to_ex_reg  )
+    , .clk      ( clk           )
+    , .reset    ( reset         )
+
+    , .hz_forward_a ( hz_forward_a )
+    , .hz_forward_b ( hz_forward_b )
+
+    , .wb_result      ( wb_result                )
+    , .mem_alu_result ( ex_to_mem_reg.alu_result )
+
+    , .zero_flag  ( zero_flag     )
+    , .alu_result ( alu_result    )
+    , .pc_target  ( pc_target     )
+    , .EX_to_MEM  ( ex_to_mem_out )
     );
 
   // execute stage end
