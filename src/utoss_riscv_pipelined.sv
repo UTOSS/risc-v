@@ -137,8 +137,8 @@ module utoss_riscv_pipelined
 
   // hazard module begin (@DanielTaoHuang123)
 
-  hazard_forward_a_t hz_forward_a;
-  hazard_forward_b_t hz_forward_b;
+  pkg_hazard_unit::forward_a_t hz_forward_a;
+  pkg_hazard_unit::forward_b_t hz_forward_b;
   logic lwStall, StallF, StallD, FlushD, FlushE;
 
   hazard_unit u_hazard_unit

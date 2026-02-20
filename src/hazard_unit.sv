@@ -1,4 +1,6 @@
-`include "src/headers/types.svh"
+`include "src/packages/pkg_hazard_unit.svh"
+
+import pkg_hazard_unit::*;
 
 module hazard_unit
   ( input wire clk
@@ -13,8 +15,8 @@ module hazard_unit
   , input wire Rs2D
   , input wire RdE
   , input wire PCSrcE
-  , output hazard_forward_a_t ForwardAE
-  , output hazard_forward_b_t ForwardBE
+  , output forward_a_t ForwardAE
+  , output forward_b_t ForwardBE
   , output reg lwStall
   , output reg StallF
   , output reg StallD
@@ -29,20 +31,20 @@ module hazard_unit
 // TODO: check if we need to do this combinationally
   always @ (posedge clk) begin
     if (((Rs1E == RdM) & RegWriteM) & (Rs1E != 0))
-      ForwardAE <= HAZARD_FORWARD_A__MEMORY_ALU_RESULT;
+      ForwardAE <= FORWARD_A__MEMORY_ALU_RESULT;
     else if (((Rs1E == RdW) & RegWriteM) & (Rs1E != 0))
-      ForwardAE <= HAZARD_FORWARD_A__WRITE_BACK_RESULT;
+      ForwardAE <= FORWARD_A__WRITE_BACK_RESULT;
     else
-      ForwardAE <= HAZARD_FORWARD_A__EXECUTE_RD1;
+      ForwardAE <= FORWARD_A__EXECUTE_RD1;
   end
 
   always @ (posedge clk) begin
     if (Rs2E != 0 && Rs2E == RdM && RegWriteW)
-      ForwardBE <= HAZARD_FORWARD_B__MEMORY_ALU_RESULT;
+      ForwardBE <= FORWARD_B__MEMORY_ALU_RESULT;
     else if (Rs2E != 0 && Rs2E == RdW && RegWriteM)
-      ForwardBE <= HAZARD_FORWARD_B__WRITE_BACK_RESULT;
+      ForwardBE <= FORWARD_B__WRITE_BACK_RESULT;
     else
-      ForwardBE <= HAZARD_FORWARD_B__EXECUTE_RD2;
+      ForwardBE <= FORWARD_B__EXECUTE_RD2;
   end
 
 //Stall when a load hazard occurs
