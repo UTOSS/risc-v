@@ -70,8 +70,9 @@ module Execute
   assign EX_to_MEM.alu_result       = alu_result;
   assign EX_to_MEM.pc_cur           = ID_to_EX.pc_cur;
   assign EX_to_IF.imm_ext           = ID_to_EX.imm_ext;
-  assign EX_to_IF.pc_src            = ID_to_EX.pc_src;
+  assign EX_to_IF.pc_src            = ID_to_EX.Jump | (zero_flag & ID_to_EX.Branch);
   assign EX_to_IF.alu_result_for_pc = alu_result;
   assign EX_to_IF.pc_old            = ID_to_EX.pc_cur;
-
+  assign EX_to_IF.pc_plus_4         = ID_to_EX.pc_plus_4;
+  
 endmodule

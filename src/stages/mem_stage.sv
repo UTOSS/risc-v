@@ -48,6 +48,7 @@ assign MemWriteByteAddress = (MemWrite == 'b0) ? 4'b0 : tempMemWriteByteAddress;
   MEM_to_WB.cfsm__result_src <= EX_to_MEM.ResultSrc;
   MEM_to_WB.rd <= EX_to_MEM.rd;
   MEM_to_WB.alu_result <= EX_to_MEM.alu_result;
+  MEM_to_WB.pc_plus_4 <= EX_to_MEM.pc_plus_4;
   end
   // assign outPCPlus4M = inPCPlus4M;
 

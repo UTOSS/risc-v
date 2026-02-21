@@ -7,6 +7,7 @@ typedef struct packed {
   data_t                  read_data;
   data_t                  alu_result;
   logic [4:0]             rd;
+  addr_t                  pc_plus_4;
 } mem_to_wb_t;
 
 `endif

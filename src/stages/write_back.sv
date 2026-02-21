@@ -19,7 +19,7 @@ module write_back
     case (from_memory.cfsm__result_src)
       WRITE_BACK_RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;
       WRITE_BACK_RESULT_SRC__READ_DATA:  result = from_memory.read_data;
-      WRITE_BACK_RESULT_SRC__PC_PLUS_4:  result = 32'hx; // TODO: address
+      WRITE_BACK_RESULT_SRC__PC_PLUS_4:  result = from_memory.pc_plus_4; // TODO: address
       default:                           result = 32'hxxxxxxxx;
     endcase
 

@@ -18,6 +18,7 @@ typedef struct packed {
   logic [4:0]             rd;
   // data_t rd2;
   addr_t                  pc_cur;
+  addr_t                  pc_plus_4;
 } ex_to_mem_t;
 
 `endif
