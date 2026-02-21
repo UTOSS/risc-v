@@ -8,20 +8,17 @@ module Decode
   , input wire clk
   , input wire reset
   , input wire [4:0] rd_wb // rd from writeback
+  , input wire RegWriteW // regWrite from writeback stage
   , input data_t data
-  , input wire zero_flag
-  , input data_t alu_result
   , output id_to_ex_t ID_to_EX
   );
 
-  wire                    cfsm__pc_update;
   wire                    cfsm__reg_write;
-  wire                    cfsm__ir_write;
-  pc_src_t                cfsm__pc_src;
   write_back_result_src_t cfsm__result_src;
   wire                    cfsm__mem_write;
   wire                    cfsm__jump;
   wire                    cfsm__branch;
+  execute_alu_src_b_t     cfsm__ALUSrcB;
 
   opcode_t opcode;
   imm_t    imm_ext;
@@ -33,19 +30,12 @@ module Decode
   data_t rd1;
   data_t rd2;
 
-  adr_src_t cfsm__adr_src;
-  wire [3:0] __tmp_MemWrite;
-  wire __tmp_Branch;
-  alu_src_a_t __tmp_ALUSrcA;
-  execute_alu_src_b_t __tmp_ALUSrcB;
-  wire [3:0] __tmp_ALUControl;
-  wire [1:0] __tmp_ResultSrc;
-  wire [4:0] __tmp_FSMState;
-  reg  [4:0] rs1, rs2;
+  reg  [4:0] rs1;
+  reg  [4:0] rs2;
 
-  logic [3:0] MemWriteByteAddress;
-
-  instr_t instruction = IF_to_ID.instruction;
+  instr_t instruction;
+  
+  assign instruction = IF_to_ID.instruction;
 
   control_fsm_pipelined u_ctrl
     ( .clk   ( clk   )
@@ -102,27 +92,28 @@ module Decode
     , .Addr3           ( rd_wb            )
     , .clk             ( clk              )
     , .reset           ( reset            )
-    , .regWrite        ( cfsm__reg_write  )
-    , .dataIn          ( data           )
+    , .regWrite        ( RegWriteW        )
+    , .dataIn          ( data             )
     , .baseAddr        ( rd1              )
     , .writeData       ( rd2              )
     );
 
-    assign ID_to_EX.ALUSrcA             = __tmp_ALUSrcA;
+    // assign ID_to_EX.ALUSrcA             = __tmp_ALUSrcA;
     assign ID_to_EX.ALUSrcB             = __tmp_ALUSrcB;
     assign ID_to_EX.ResultSrc           = cfsm__result_src;
-    assign ID_to_EX.AdrSrc              = cfsm__adr_src;
-    assign ID_to_EX.pc_update           = cfsm__pc_update;
-    assign ID_to_EX.pc_src              = cfsm__pc_src;
-    assign ID_to_EX.IRWrite             = cfsm__ir_write;
+    // assign ID_to_EX.AdrSrc              = cfsm__adr_src;
+    // assign ID_to_EX.pc_update           = cfsm__pc_update;
+    // assign ID_to_EX.pc_src              = cfsm__pc_src;
+    // assign ID_to_EX.IRWrite             = cfsm__ir_write;
     assign ID_to_EX.Branch              = __tmp_Branch;
-    assign ID_to_EX.MemWriteByteAddress = MemWriteByteAddress;
-    assign ID_to_EX.FSMState            = __tmp_FSMState;
+    assign ID_to_EX.Jump                = cfsm__jump;
+    // assign ID_to_EX.MemWriteByteAddress = MemWriteByteAddress;
+    // assign ID_to_EX.FSMState            = __tmp_FSMState;
     assign ID_to_EX.MemWrite            = __tmp_MemWrite;
     assign ID_to_EX.RegWrite            = cfsm__reg_write;
     assign ID_to_EX.ALUControl          = __tmp_ALUControl;
-    assign ID_to_EX.funct3              = funct3;
-    assign ID_to_EX.funct7              = funct7;
+    // assign ID_to_EX.funct3              = funct3;
+    // assign ID_to_EX.funct7              = funct7;
     assign ID_to_EX.rd1                 = rd1;
     assign ID_to_EX.rd2                 = rd2;
     assign ID_to_EX.rd                  = rd;
@@ -130,5 +121,6 @@ module Decode
     assign ID_to_EX.rs2                 = rs2;
     assign ID_to_EX.imm_ext             = imm_ext;
     assign ID_to_EX.pc_cur              = IF_to_ID.pc_cur;
+    assign ID_to_EX.pc_plus_4           = IF_to_ID.pc_plus_4;
 
 endmodule
