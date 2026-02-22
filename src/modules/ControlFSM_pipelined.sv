@@ -5,7 +5,7 @@ module control_fsm_pipelined
   , input var logic reset
 
   , input opcode_t opcode
-  , input var logic [2:0] func3
+  , input var logic [2:0] funct3
 
   , output var logic               reg_write
   , output write_back_result_src_t result_src

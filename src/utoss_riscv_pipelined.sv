@@ -46,7 +46,7 @@ module utoss_riscv_pipelined
 
   data_t      wb_result;
   logic [4:0] wb_rd;
-  reg [2:0] funct3;
+  reg [2:0]   funct3;
 
   // common declarations end
 
@@ -160,7 +160,7 @@ module utoss_riscv_pipelined
     , .RdE       ( id_to_ex_reg.rd         )
     , .RegWriteM ( ex_to_mem_reg.RegWrite  )
     , .RegWriteW ( mem_to_wb_reg.RegWriteW )
-    , .PCSrcE    ( EX_to_IF.pc_src         )
+    , .PCSrcE    ( ex_to_if_out.pc_src         )
 
     , .ForwardAE ( hz_forward_a )
     , .ForwardBE ( hz_forward_b )

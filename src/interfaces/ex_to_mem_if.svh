@@ -10,6 +10,7 @@ typedef struct packed {
   // logic IRWrite;
   // logic [3:0] MemWrite;
   logic                   RegWrite;
+  logic                   MemWrite;
   write_back_result_src_t ResultSrc;
   // logic [3:0] MemWriteByteAddress;
   

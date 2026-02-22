@@ -36,13 +36,13 @@ module top
     ( .clk    ( clk    )
     , .reset  ( reset  )
 
-    , .memory__address      ( memory__address      )
-    , .memory__write_data   ( memory__write_data   )
-    , .memory__write_enable ( memory__write_enable )
-    , .memory__read_data    ( memory__read_data    )
+    , .memory_data__address      ( memory__address      )
+    , .memory_data__write_data   ( memory__write_data   )
+    , .memory_data__write_enable ( memory__write_enable )
+    , .memory_data__read_data    ( memory__read_data    )
 
-    , .imem__address        ( imem__address        )
-    , .imem__data           ( imem__data           )
+    , .memory_instr__address      ( imem__address        )
+    , .memory_instr__read_data    ( imem__data           )
     );
 
 endmodule

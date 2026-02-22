@@ -15,12 +15,14 @@ module Mem_Stage
   data_t WriteDataM;
   data_t ALUResultM;
   logic [4:0] RdM;
+  logic MemWrite;
 
   logic [3:0] MemWriteByteAddress;
 
   assign WriteDataM = EX_to_MEM.WriteDataE;
   assign ALUResultM = EX_to_MEM.alu_result;
   assign RdM = EX_to_MEM.rd;
+  assign MemWrite = EX_to_MEM.MemWrite;
 
   logic [3:0] tempMemWriteByteAddress;
   MemoryLoader memory_loader
@@ -39,7 +41,7 @@ module Mem_Stage
   assign MEM_to_WB.RegWriteW = EX_to_MEM.RegWrite;
   assign MEM_to_WB.cfsm__result_src = EX_to_MEM.ResultSrc;
   assign MEM_to_WB.rd = EX_to_MEM.rd;
-  assign MEM_to_WB.alu_result = EX_to_MEM_alu_result;
+  assign MEM_to_WB.alu_result = EX_to_MEM.alu_result;
   assign MEM_to_WB.pc_plus_4 = EX_to_MEM.pc_plus_4;
 
 endmodule

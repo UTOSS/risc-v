@@ -20,6 +20,7 @@ module Decode
   wire                    cfsm__jump;
   wire                    cfsm__branch;
   execute_alu_src_b_t     cfsm__ALUSrcB;
+  wire [3:0]              __tmp_ALUControl;
 
   opcode_t opcode;
   imm_t    imm_ext;
@@ -38,11 +39,11 @@ module Decode
   assign instruction = IF_to_ID.instruction;
 
   control_fsm_pipelined u_ctrl
-    ( .clk   ( clk   )
-    , .reset ( reset )
+    ( .clk      ( clk   )
+    , .reset    ( reset )
 
-    , .opcode ( opcode )
-    , .func3  ( func3  )
+    , .opcode  ( opcode )
+    , .funct3  ( funct3  )
 
     , .reg_write  ( cfsm__reg_write  )
     , .result_src ( cfsm__result_src )

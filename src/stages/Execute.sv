@@ -72,7 +72,7 @@ module Execute
   // assign EX_to_MEM.pc_src = ID_to_EX.pc_src;
   // assign EX_to_MEM.IRWrite = ID_to_EX.IRWrite;
   // assign EX_to_MEM.MemWriteByteAddress = ID_to_EX.MemWriteByteAddress;
-  // assign EX_to_MEM.MemWrite = ID_to_EX.MemWrite;
+  assign EX_to_MEM.MemWrite         = ID_to_EX.MemWrite;
   assign EX_to_MEM.RegWrite         = ID_to_EX.RegWrite;
   // assign EX_to_MEM.funct3           = ID_to_EX.funct3;
   assign EX_to_MEM.WriteDataE       = WriteDataE;

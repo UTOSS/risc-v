@@ -17,12 +17,14 @@ module fetch_stage
   addr_t pc_plus_4;
 
   always @ (posedge clk)
-    if (reset)
+    if (reset) begin
       pc_cur <= 0;
       pc_plus_4 <= 0;
-    else
+    end
+    else begin
       pc_cur <= imem__address;
       pc_plus_4 <= pc_cur + 32'h4;
+    end
 
   always @ (posedge clk)
     case (EX_to_IF.pc_src)
