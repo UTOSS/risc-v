@@ -105,6 +105,7 @@ module utoss_riscv_pipelined
     , .alu_result ( alu_result    )
     , .pc_target  ( pc_target     ) // TODO: Bring this into the Fetch stage
     , .EX_to_MEM  ( ex_to_mem_out )
+    , .EX_to_IF   ( ex_to_if_out  )
     );
 
   // execute stage end
