@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-`include "src/types.svh"      // <-- bring in enum literals like PC_SRC__JUMP
+`include "src/headers/types.svh"      // <-- bring in enum literals like PC_SRC__JUMP
 `include "test/utils.svh"
 
 import pkg_control_fsm::*;
