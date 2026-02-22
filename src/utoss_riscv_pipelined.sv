@@ -69,6 +69,7 @@ module utoss_riscv_pipelined
 
   always_ff @ (posedge clk)
     if (reset) if_to_id_reg <= '0;
+    else if (FlushD) if_to_id_reg <= '0; 
     else       if_to_id_reg <= if_to_id_out;
 
   Decode decode
@@ -88,6 +89,7 @@ module utoss_riscv_pipelined
 
   always_ff @ (posedge clk)
     if (reset) id_to_ex_reg <= '0;
+    else if (FlushE) id_to_ex_reg <= '0;
     else       id_to_ex_reg <= id_to_ex_out;
 
   Execute execute
@@ -167,10 +169,11 @@ module utoss_riscv_pipelined
     , .lwStall   ( lwStall      )
     , .StallF    ( StallF       )
     , .StallD    ( StallD       )
-    , .FlushD    ( FlushD       )
+    , .FlushD    ( FlushD       ) 
     , .FlushE    ( FlushE       )
     );
 
   // hazard module end
+
 
 endmodule
