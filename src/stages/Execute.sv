@@ -28,6 +28,13 @@ module Execute
   data_t alu_input_b;
   data_t WriteDataE;
 
+  logic JumpE;
+  logic BranchE;
+  
+
+  assign JumpE = ID_to_EX.Jump;
+  assign BranchE = ID_to_EX.Branch;
+
   always_comb
     case (hz_forward_a)
       FORWARD_A__EXECUTE_RD1:       alu_input_a = ID_to_EX.rd1;
@@ -81,7 +88,7 @@ module Execute
   assign EX_to_MEM.alu_result       = alu_result;
   assign EX_to_MEM.pc_cur           = ID_to_EX.pc_cur;
   assign EX_to_IF.imm_ext           = ID_to_EX.imm_ext;
-  assign EX_to_IF.pc_src            = ID_to_EX.Jump | (zero_flag & ID_to_EX.Branch);
+  assign EX_to_IF.pc_src            = (JumpE | (zero_flag & BranchE)) ? PC_SRC__ALU_RESULT: PC_SRC__INCREMENT;
   assign EX_to_IF.alu_result_for_pc = alu_result;
   assign EX_to_IF.pc_old            = ID_to_EX.pc_cur;
   assign EX_to_IF.pc_plus_4         = ID_to_EX.pc_plus_4;

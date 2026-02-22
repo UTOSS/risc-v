@@ -160,7 +160,7 @@ module utoss_riscv_pipelined
     , .RdE       ( id_to_ex_reg.rd         )
     , .RegWriteM ( ex_to_mem_reg.RegWrite  )
     , .RegWriteW ( mem_to_wb_reg.RegWriteW )
-    , .PCSrcE    ( ex_to_if_out.pc_src         )
+    , .PCSrcE    ( ex_to_if_out.pc_src     )
 
     , .ForwardAE ( hz_forward_a )
     , .ForwardBE ( hz_forward_b )
