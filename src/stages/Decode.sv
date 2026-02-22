@@ -10,6 +10,7 @@ module Decode
   , input wire [4:0] rd_wb // rd from writeback
   , input wire RegWriteW // regWrite from writeback stage
   , input data_t data
+  , output reg [2:0] funct3
   , output id_to_ex_t ID_to_EX
   );
 
@@ -22,7 +23,6 @@ module Decode
 
   opcode_t opcode;
   imm_t    imm_ext;
-  reg [2:0] funct3;
   reg [6:0] funct7;
 
   wire [4:0] rd;

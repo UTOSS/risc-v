@@ -26,6 +26,7 @@ module Execute
 
   data_t alu_input_a;
   data_t alu_input_b;
+  data_t WriteDataE;
 
   always_comb
     case (hz_forward_a)
@@ -39,9 +40,18 @@ module Execute
     case (ID_to_EX.ALUSrcB)
       EXECUTE_ALU_SRC_B__RD2:
         case (hz_forward_b)
-          FORWARD_B__EXECUTE_RD2:       alu_input_b = ID_to_EX.rd2;
-          FORWARD_B__WRITE_BACK_RESULT: alu_input_b = wb_result;
-          FORWARD_B__MEMORY_ALU_RESULT: alu_input_b = mem_alu_result;
+          FORWARD_B__EXECUTE_RD2:  begin
+              alu_input_b = ID_to_EX.rd2;
+              WriteDataE = alu_input_b;
+          end
+          FORWARD_B__WRITE_BACK_RESULT:  begin
+              alu_input_b = wb_result;
+              WriteDataE = alu_input_b;
+          end
+          FORWARD_B__MEMORY_ALU_RESULT:  begin
+              alu_input_b = mem_alu_result;
+              WriteDataE = alu_input_b;
+          end
         endcase
       EXECUTE_ALU_SRC_B__IMM_EXT:       alu_input_b = ID_to_EX.imm_ext;
       default:                          alu_input_b = 'x;
@@ -64,7 +74,8 @@ module Execute
   // assign EX_to_MEM.MemWriteByteAddress = ID_to_EX.MemWriteByteAddress;
   // assign EX_to_MEM.MemWrite = ID_to_EX.MemWrite;
   assign EX_to_MEM.RegWrite         = ID_to_EX.RegWrite;
-  assign EX_to_MEM.funct3           = ID_to_EX.funct3;
+  // assign EX_to_MEM.funct3           = ID_to_EX.funct3;
+  assign EX_to_MEM.WriteDataE       = WriteDataE;
   // assign EX_to_MEM.rd2 <= ID_to_EX.rd2;
   assign EX_to_MEM.rd               = ID_to_EX.rd;
   assign EX_to_MEM.alu_result       = alu_result;

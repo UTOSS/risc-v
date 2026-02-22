@@ -46,6 +46,7 @@ module utoss_riscv_pipelined
 
   data_t      wb_result;
   logic [4:0] wb_rd;
+  reg [2:0] funct3;
 
   // common declarations end
 
@@ -58,8 +59,8 @@ module utoss_riscv_pipelined
     , .clk   ( clk   )
     , .reset ( reset )
 
-    , .imem__address ( memory_instr__address  )
-    , .imem__data    ( memory_data__read_data )
+    , .imem__address ( memory_instr__address   )
+    , .imem__data    ( memory_instr__read_data )
     );
 
   // fetch stage end
@@ -76,6 +77,7 @@ module utoss_riscv_pipelined
     ( .IF_to_ID    ( if_to_id_reg               )
     , .clk         ( clk                        )
     , .reset       ( reset                      )
+    , .funct3      ( funct3                     )
     , .data        ( wb_result                  )
     , .rd_wb       ( wb_rd                      )
     , .RegWriteW   ( mem_to_wb_reg.RegWriteW    )
@@ -115,6 +117,14 @@ module utoss_riscv_pipelined
     if (reset) ex_to_mem_reg <= '0;
     else       ex_to_mem_reg <= ex_to_mem_out;
 
+  Mem_Stage memory_stage
+  ( .EX_to_MEM        ( ex_to_mem_reg )
+  , .funct3           ( funct3        )
+  , .dataFromMemory   (memory_data__read_data)
+  , .dataToMemory     (memory_data__write_data)
+  // , .MemWriteByteAddress () // TODO: Is this required?
+  , .MEM_to_WB        (mem_to_wb_out)
+  );
   // memory stage end
 
   // writeback stage begin (@TheDeepestSpace)

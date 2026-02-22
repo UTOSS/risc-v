@@ -12,9 +12,9 @@ typedef struct packed {
   logic                   RegWrite;
   write_back_result_src_t ResultSrc;
   // logic [3:0] MemWriteByteAddress;
-  logic [2:0]             funct3;
-
+  
   data_t                  alu_result;
+  data_t                  WriteDataE;
   logic [4:0]             rd;
   // data_t rd2;
   addr_t                  pc_cur;
