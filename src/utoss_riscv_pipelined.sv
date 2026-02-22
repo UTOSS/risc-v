@@ -71,8 +71,6 @@ module utoss_riscv_pipelined
     if (reset) if_to_id_reg <= '0;
     else       if_to_id_reg <= if_to_id_out;
 
-  // TODO: move zero flag to Fetch stage
-  // TODO: remove ALU result from control FSM (should not be added to Fetch stage according to the draw.io diagram note)
   Decode decode
     ( .IF_to_ID    ( if_to_id_reg               )
     , .clk         ( clk                        )
@@ -125,6 +123,7 @@ module utoss_riscv_pipelined
   // , .MemWriteByteAddress () // TODO: Is this required?
   , .MEM_to_WB        (mem_to_wb_out)
   );
+
   // memory stage end
 
   // writeback stage begin (@TheDeepestSpace)
@@ -160,7 +159,7 @@ module utoss_riscv_pipelined
     , .RdE       ( id_to_ex_reg.rd         )
     , .RegWriteM ( ex_to_mem_reg.RegWrite  )
     , .RegWriteW ( mem_to_wb_reg.RegWriteW )
-    , .PCSrcE    ( EX_to_IF.pc_src         ) // TODO: find actual signal
+    , .PCSrcE    ( EX_to_IF.pc_src         )
 
     , .ForwardAE ( hz_forward_a )
     , .ForwardBE ( hz_forward_b )
