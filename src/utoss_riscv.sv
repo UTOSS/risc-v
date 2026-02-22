@@ -29,7 +29,9 @@ module utoss_riscv
   reg [2:0] funct3;
   reg [6:0] funct7;
 
+/* verilator lint_off UNUSEDSIGNAL */
   integer byteindex;
+/* verilator lint_on UNUSEDSIGNAL */
 
   data_t result;
   data_t mem_load_result;
@@ -47,10 +49,18 @@ module utoss_riscv
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   wire __tmp_Branch;
+  /* verilator lint_on UNUSEDSIGNAL */
+  
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   wire [1:0] __tmp_ResultSrc;
+  /* verilator lint_on UNUSEDSIGNAL */
+
   state_t __tmp_FSMState;
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
