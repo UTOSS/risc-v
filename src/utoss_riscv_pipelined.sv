@@ -69,8 +69,8 @@ module utoss_riscv_pipelined
 
   always_ff @ (posedge clk)
     if (reset) if_to_id_reg <= '0;
-    else if (FlushD) if_to_id_reg <= '0; 
-    else       if_to_id_reg <= if_to_id_out;
+    else if (FlushD)  if_to_id_reg <= '0; 
+    else if (!StallD) if_to_id_reg <= if_to_id_out;
 
   Decode decode
     ( .IF_to_ID    ( if_to_id_reg               )
@@ -167,7 +167,7 @@ module utoss_riscv_pipelined
     , .ForwardAE ( hz_forward_a )
     , .ForwardBE ( hz_forward_b )
     , .lwStall   ( lwStall      )
-    , .StallF    ( StallF       )
+    , .StallF    ( StallF       ) //TODO: add this as an input to fetch stage to stall the PC update
     , .StallD    ( StallD       )
     , .FlushD    ( FlushD       ) 
     , .FlushE    ( FlushE       )
