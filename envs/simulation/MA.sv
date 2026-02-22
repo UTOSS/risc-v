@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+
+
 module MA #( parameter SIZE = 1024 )
   ( input  wire         clk
 

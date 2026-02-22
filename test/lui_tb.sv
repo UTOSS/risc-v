@@ -3,6 +3,7 @@
 `include "test/utils.svh"
 `include "src/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
 
 module lui_tb;
@@ -20,13 +21,16 @@ module lui_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  /* verilator lint_off UNUSEDSIGNAL */
+  task wait_till_next_cfsm_state(input state_t expected_state);
+  /* verilator lint_on UNUSEDSIGNAL */
+
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   initial begin
-    reset <= `TRUE;
+    reset = `TRUE;
 
     //Set up memory
     //lui rd, imm -> machine code: imm[31:12] | 11 rd 7 | 6 op 0
@@ -40,7 +44,7 @@ module lui_tb;
 
     wait_till_next_cfsm_state(FETCH);
 
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -131,5 +135,5 @@ module lui_tb;
   end
 
   `SETUP_VCD_DUMP(lui_tb)
-
+/* verilator lint_on IMPORTSTAR */
 endmodule

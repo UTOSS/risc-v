@@ -4,6 +4,8 @@
 `include "src/types.svh"
 `include "src/params.svh"
 `include "src/packages/pkg_control_fsm.svh"
+`timescale 1ns/1ps
+
 
 /* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;

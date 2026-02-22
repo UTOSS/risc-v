@@ -2,6 +2,7 @@
 
 `include "test/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
 
 module srli_tb;
@@ -19,13 +20,16 @@ module srli_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  /* verilator lint_off UNUSEDSIGNAL */
+  task wait_till_next_cfsm_state(input state_t expected_state);
+  /* verilator lint_on UNUSEDSIGNAL */
+
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   initial begin
-    reset <= `TRUE;
+    reset = `TRUE;
 
     // set up instructions and data memory
     uut.memory.M[ 0] = 32'h00115093; // srli x1, x2, 1
@@ -38,7 +42,7 @@ module srli_tb;
 
     wait_till_next_cfsm_state(FETCH);
 
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -119,4 +123,5 @@ module srli_tb;
 
   `SETUP_VCD_DUMP(srli_tb)
 
+/* verilator lint_on IMPORTSTAR */
 endmodule

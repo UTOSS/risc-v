@@ -2,6 +2,7 @@
 `define PARAMS_VH
 
 // Opcodes
+/* verilator lint_off UNUSEDPARAM */
 parameter RType = 7'b0110011;
 parameter IType_logic = 7'b0010011;
 parameter IType_load = 7'b0000011;
@@ -12,6 +13,7 @@ parameter UType_auipc = 7'b0010111;
 parameter UType_lui = 7'b0110111;
 parameter IType_jalr = 7'b1100111;
 parameter FENCE    = 7'b0001111;
+/* verilator lint_on UNUSEDPARAM */
 
 //ALU Operation Control Codes
 /* verilator lint_off UNUSEDPARAM */

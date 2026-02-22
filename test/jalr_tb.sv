@@ -3,6 +3,7 @@
 `include "src/types.svh"  // for enum literals like PC_SRC__ALU_RESULT
 `include "test/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
 
 module jalr_tb;
@@ -23,7 +24,9 @@ module jalr_tb;
   end
 
   // helper: wait to next FSM state and assert it
-  task wait_till_next_cfsm_state(input [4:0] expected_state);
+  /* verilator lint_off UNUSEDSIGNAL */
+  task wait_till_next_cfsm_state(input state_t expected_state);
+  /* verilator lint_on UNUSEDSIGNAL */
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
@@ -31,7 +34,7 @@ module jalr_tb;
   // --- Test 1: JALR x1, x2, +5 (rs1=100) -> target=(100+5)&~1 = 104; link=4 ---
   initial begin
     // Hold reset
-    reset <= `TRUE;
+    reset = `TRUE;
 
     // Program @0x00000000:
     //   JALR x1, x2, +5
@@ -47,7 +50,7 @@ module jalr_tb;
     wait_till_next_cfsm_state(FETCH);
 
     // Release reset
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -87,7 +90,7 @@ module jalr_tb;
     @(posedge clk); #1;
 
     // --- Test 2: JALR x1, x2, -7 (rs1=200) -> target=(200-7)&~1 = 192; link=4 ---
-    reset <= `TRUE;
+    reset = `TRUE;
 
     // Overwrite program @0x00000000:
     //   JALR x1, x2, -7
@@ -101,7 +104,7 @@ module jalr_tb;
 
     // Re-enter FETCH, then release reset
     wait_till_next_cfsm_state(FETCH);
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -138,4 +141,5 @@ module jalr_tb;
 
   `SETUP_VCD_DUMP(jalr_only_tb)
 
+/* verilator lint_on IMPORTSTAR */
 endmodule

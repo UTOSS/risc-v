@@ -1,5 +1,6 @@
 `include "src/params.svh"
 `include "src/types.svh"
+`timescale 1ns/1ps
 
 module Instruction_Decode
   ( input wire [31:0] instr
