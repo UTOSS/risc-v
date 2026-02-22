@@ -1,5 +1,6 @@
 `include "src/params.svh"
 `include "src/types.svh"
+`timescale 1ns/1ps
 
 module Instruction_Decode
   ( input wire [31:0] instr
@@ -16,15 +17,21 @@ module Instruction_Decode
   alu_op_t alu_op;
   // reg [2:0] funct3;
   // reg [6:0] funct7;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   wire [3:0] state;
+  /* verilator lint_on UNUSEDSIGNAL */
+
 
   assign opcode = instr[6:0];
 
   //combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
 
+  /* verilator lint_off UNUSEDSIGNAL */
   reg [2:0] default_funct3;
   reg [6:0] default_funct7;
-
+  /* verilator lint_on UNUSEDSIGNAL */
+  
   always @(*) begin
 
     funct3 = 3'b000;
@@ -44,7 +51,7 @@ module Instruction_Decode
       funct3 = instr[14:12];
 
     end
-
+    default: ;
     endcase
   end
 
@@ -61,7 +68,6 @@ module Instruction_Decode
       UType_lui:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       FENCE:     alu_op = ALU_OP__UNSET;
       default:    alu_op = ALU_OP__UNSET;
-
     endcase
   end
 

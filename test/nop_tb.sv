@@ -2,6 +2,7 @@
 
 `include "test/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
 
 module nop_tb;
@@ -13,7 +14,10 @@ module nop_tb;
     top uut ( .clk(clk), .reset(reset) );
 
     //helper task to compare current state with the expected current state
-    task wait_till_next_cfsm_state(input [5:0] expected_state);
+    /* verilator lint_off UNUSEDSIGNAL */
+    task wait_till_next_cfsm_state(input state_t expected_state);
+    /* verilator lint_on UNUSEDSIGNAL */
+
         @(posedge clk); #1;
         `assert_equal(uut.core.control_fsm.current_state, expected_state)
     endtask
@@ -26,7 +30,7 @@ module nop_tb;
 
     initial begin
 
-        reset <= `TRUE;
+        reset = `TRUE;
 
         //pre-write NOP instruction into instruction memory
         uut.memory.M[0] = 32'h00000013; //NOP instruction - addi x0, x0, 0
@@ -37,7 +41,7 @@ module nop_tb;
         //wait until reset makes FSM go to fetch state
         wait_till_next_cfsm_state(FETCH);
 
-        reset <= `FALSE;
+        reset = `FALSE;
 
         wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -66,5 +70,5 @@ module nop_tb;
 
     `SETUP_VCD_DUMP(nop_tb)
 
-
+/* verilator lint_on IMPORTSTAR */
 endmodule

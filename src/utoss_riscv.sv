@@ -1,7 +1,7 @@
 `include "src/types.svh"
 `include "src/packages/pkg_control_fsm.svh"
+`timescale 1ns/1ps
 
-import pkg_control_fsm::state_t;
 
 module utoss_riscv
   ( input wire clk
@@ -14,6 +14,8 @@ module utoss_riscv
   , input  data_t       memory__read_data
   // memory interface end
   );
+
+  import pkg_control_fsm::state_t;
 
   wire         cfsm__pc_update;
   wire         cfsm__reg_write;
@@ -29,7 +31,9 @@ module utoss_riscv
   reg [2:0] funct3;
   reg [6:0] funct7;
 
+/* verilator lint_off UNUSEDSIGNAL */
   integer byteindex;
+/* verilator lint_on UNUSEDSIGNAL */
 
   data_t result;
   data_t mem_load_result;
@@ -47,10 +51,18 @@ module utoss_riscv
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   wire __tmp_Branch;
+  /* verilator lint_on UNUSEDSIGNAL */
+  
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   wire [1:0] __tmp_ResultSrc;
+  /* verilator lint_on UNUSEDSIGNAL */
+
   state_t __tmp_FSMState;
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
@@ -206,7 +218,7 @@ module utoss_riscv
   , .imm_ext          ( imm_ext          )
   , .memory_address   ( memory__address  )
   , .memory_data      ( mem_load_result  )
-  , .write_enable     ( memory__write_enable )
+  , .write_enable     ( memory__write_enable[0] )
   , .rd1              ( rd1              )
   , .rd2              ( rd2              )
   , .result           ( result           )

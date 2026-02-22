@@ -18,8 +18,7 @@ RISCOF_CONFIG        := $(RISCOF_DIR)/config.ini
 # ===========================
 # Verilator flags
 # ===========================
-VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc \
-	-O3 -Wno-fatal
+VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3
 
 # Testbench-only defines
 TB_DEFINES := -DTESTBENCH

@@ -3,7 +3,11 @@
 `include "test/utils.svh"
 `include "src/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off INITIALDLY */
 import pkg_control_fsm::*;
+/* verilator lint_on IMPORTSTAR */
 
 module auipc_tb;
 
@@ -20,7 +24,7 @@ module auipc_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  task wait_till_next_cfsm_state(input state_t expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
@@ -133,5 +137,7 @@ module auipc_tb;
   end
 
   `SETUP_VCD_DUMP(auipc_tb)
-
+/* verilator lint_on IMPORTSTAR */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on INITIALDLY */
 endmodule

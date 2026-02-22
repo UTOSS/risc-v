@@ -11,7 +11,10 @@ module alu_branchifeq_tb;
   logic [31:0] A;
   logic [31:0] B;
   logic [31:0] out;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   logic zeroE;
+  /* verilator lint_on UNUSEDSIGNAL */
 
     ALUdecoder ALU_decoder
       ( .funct3(funct3)

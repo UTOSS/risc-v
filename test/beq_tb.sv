@@ -4,7 +4,9 @@
 `include "src/utils.svh"
 `include "src/types.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
+/* verilator lint_on IMPORTSTAR */
 
 module beq_tb;
   reg clk;
@@ -19,16 +21,16 @@ module beq_tb;
     clk = 0;
     forever #5 clk = ~clk;
   end
-
-  task wait_till_next_cfsm_state(input [4:0] expected_state);
+  /* verilator lint_off UNUSEDSIGNAL */
+  task wait_till_next_cfsm_state(input state_t expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
-
+  /* verilator lint_on UNUSEDSIGNAL */
   initial begin
 
     // initialize instruction memory
-    reset <= `TRUE;
+    reset = `TRUE;
 
     // initialize memory
     uut.memory.M[0] = 32'hFE420AE3; // beq x4, x4, -0xc
@@ -37,7 +39,7 @@ module beq_tb;
     uut.core.RegFile.RFMem[5'b00100] = 32'h0000002a; // x4 = 42
 
     wait_till_next_cfsm_state(FETCH);
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -74,14 +76,14 @@ module beq_tb;
 
     // beq without satisfied condition
     @(posedge clk); #1;
-    reset <= `TRUE;
+    reset = `TRUE;
 
     uut.memory.M[0] = 32'b0000000_00010_00001_000_1000_0_1100011; // beq x1, x2, 0x10
     uut.core.RegFile.RFMem[5'b00001] = 32'h0000002a; // x1 = 42
     uut.core.RegFile.RFMem[5'b00010] = 32'h0000002b; // x2 = 43
 
     wait_till_next_cfsm_state(FETCH);
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -114,13 +116,13 @@ module beq_tb;
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
     @(posedge clk); #1; // check that zero-setting instructions do not result in a jump
-    reset <= `TRUE;
+    reset = `TRUE;
 
     uut.memory.M[0] = 32'b0100000_00001_00001_000_00001_0110011; // sub x1, x1, x1
     uut.core.RegFile.RFMem[5'b00001] = 32'h00000001; // x1 = 1
 
     wait_till_next_cfsm_state(FETCH);
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 

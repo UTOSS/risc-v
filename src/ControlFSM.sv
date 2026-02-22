@@ -4,8 +4,12 @@
 `include "src/types.svh"
 `include "src/params.svh"
 `include "src/packages/pkg_control_fsm.svh"
+`timescale 1ns/1ps
 
+
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
+/* lint_on IMPORTSTAR */
 
 module ControlFSM
   ( input opcode_t opcode
@@ -118,6 +122,8 @@ module ControlFSM
   end
 
   //output logic
+
+  /* verilator lint_off LATCH */
   always @(*) begin
     Branch = 1'b0;
     pc_src = PC_SRC__INCREMENT;
@@ -233,6 +239,7 @@ module ControlFSM
             end
             else pc_src = PC_SRC__INCREMENT;
           end
+          default: ;
         endcase
       end
 
@@ -290,6 +297,7 @@ module ControlFSM
     endcase
 
   end
+  /* verilator lint_off LATCH */
 
   //State transition logic (sequential)
   always @ (posedge clk) begin
