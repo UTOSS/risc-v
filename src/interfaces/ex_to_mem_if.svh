@@ -13,7 +13,6 @@ typedef struct packed {
   logic                   MemWrite;
   write_back_result_src_t ResultSrc;
   // logic [3:0] MemWriteByteAddress;
-  
   data_t                  alu_result;
   data_t                  WriteDataE;
   logic [4:0]             rd;

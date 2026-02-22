@@ -35,7 +35,7 @@ module Decode
   reg  [4:0] rs2;
 
   instr_t instruction;
-  
+
   assign instruction = IF_to_ID.instruction;
 
   control_fsm_pipelined u_ctrl

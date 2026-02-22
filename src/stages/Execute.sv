@@ -92,5 +92,5 @@ module Execute
   assign EX_to_IF.alu_result_for_pc = alu_result;
   assign EX_to_IF.pc_old            = ID_to_EX.pc_cur;
   assign EX_to_IF.pc_plus_4         = ID_to_EX.pc_plus_4;
-  
+
 endmodule
