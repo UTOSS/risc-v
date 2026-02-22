@@ -103,7 +103,7 @@ module utoss_riscv_pipelined
 
     , .zero_flag  ( zero_flag     )
     , .alu_result ( alu_result    )
-    , .pc_target  ( pc_target     )
+    , .pc_target  ( pc_target     ) // TODO: Bring this into the Fetch stage
     , .EX_to_MEM  ( ex_to_mem_out )
     );
 

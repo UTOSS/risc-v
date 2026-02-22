@@ -49,30 +49,8 @@ module Decode
     , .mem_write  ( cfsm__mem_write  )
     , .jump       ( cfsm__jump       )
     , .branch     ( cfsm__branch     )
-    , .alu_src_b  ( __tmp_ALUSrcB    )
+    , .alu_src_b  ( cfsm__ALUSrcB    )
     );
-
-  // TODO: remove once we are sure all the signals are properly passed to execute stage
-  // ControlFSM control_fsm
-  //   ( .opcode     ( opcode           )
-  //   , .clk        ( clk              )
-  //   , .reset      ( reset            )
-  //   , .zero_flag  ( zero_flag        )
-  //   , .MemWriteByteAddress ( MemWriteByteAddress )
-  //   , .funct3     ( funct3           )
-  //   , .alu_result ( alu_result       )
-  //   , .AdrSrc     ( cfsm__adr_src    )
-  //   , .IRWrite    ( cfsm__ir_write   )
-  //   , .RegWrite   ( cfsm__reg_write  )
-  //   , .PCUpdate   ( cfsm__pc_update  )
-  //   , .pc_src     ( cfsm__pc_src     )
-  //   , .MemWrite   ( __tmp_MemWrite   )
-  //   , .Branch     ( __tmp_Branch     )
-  //   , .ALUSrcA    ( __tmp_ALUSrcA    )
-  //   , .ALUSrcB    ( __tmp_ALUSrcB    )
-  //   , .ResultSrc  ( cfsm__result_src )
-  //   , .FSMState   ( __tmp_FSMState   )
-  //   );
 
   Instruction_Decode instruction_decode
     ( .instr           ( instruction      )
@@ -98,22 +76,13 @@ module Decode
     , .writeData       ( rd2              )
     );
 
-    // assign ID_to_EX.ALUSrcA             = __tmp_ALUSrcA;
-    assign ID_to_EX.ALUSrcB             = __tmp_ALUSrcB;
+    assign ID_to_EX.ALUSrcB             = cfsm__ALUSrcB;
     assign ID_to_EX.ResultSrc           = cfsm__result_src;
-    // assign ID_to_EX.AdrSrc              = cfsm__adr_src;
-    // assign ID_to_EX.pc_update           = cfsm__pc_update;
-    // assign ID_to_EX.pc_src              = cfsm__pc_src;
-    // assign ID_to_EX.IRWrite             = cfsm__ir_write;
-    assign ID_to_EX.Branch              = __tmp_Branch;
+    assign ID_to_EX.Branch              = cfsm__branch;
     assign ID_to_EX.Jump                = cfsm__jump;
-    // assign ID_to_EX.MemWriteByteAddress = MemWriteByteAddress;
-    // assign ID_to_EX.FSMState            = __tmp_FSMState;
-    assign ID_to_EX.MemWrite            = __tmp_MemWrite;
+    assign ID_to_EX.MemWrite            = cfsm__mem_write;
     assign ID_to_EX.RegWrite            = cfsm__reg_write;
     assign ID_to_EX.ALUControl          = __tmp_ALUControl;
-    // assign ID_to_EX.funct3              = funct3;
-    // assign ID_to_EX.funct7              = funct7;
     assign ID_to_EX.rd1                 = rd1;
     assign ID_to_EX.rd2                 = rd2;
     assign ID_to_EX.rd                  = rd;
