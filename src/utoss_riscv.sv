@@ -1,8 +1,6 @@
 `include "src/types.svh"
 `include "src/packages/pkg_control_fsm.svh"
 
-import pkg_control_fsm::state_t;
-
 module utoss_riscv
   ( input wire clk
   , input wire reset
@@ -14,6 +12,8 @@ module utoss_riscv
   , input  data_t       memory__read_data
   // memory interface end
   );
+
+  import pkg_control_fsm::state_t;
 
   wire         cfsm__pc_update;
   wire         cfsm__reg_write;
