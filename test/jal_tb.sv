@@ -3,6 +3,8 @@
 `include "src/types.svh"      // <-- bring in enum literals like PC_SRC__JUMP
 `include "test/utils.svh"
 
+import pkg_control_fsm::*;
+
 module jal_tb;
 
   reg clk;
@@ -35,23 +37,23 @@ module jal_tb;
     uut.memory.M[0] = 32'h010000EF;
 
     // Enter FETCH first (with reset asserted)
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
 
     // Release reset
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     // -------- Single instruction: JAL x1, +16 --------
 
     // DECODE: verify opcode, rd and immediate
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
     `assert_equal(uut.core.opcode, 7'b1101111)                    // JType (JAL)
     `assert_equal(uut.core.instruction_decode.rd,  5'd1)          // rd = x1
     `assert_equal(uut.core.instruction_decode.imm_ext, 32'sd16)   // imm = +16
 
     // UNCONDJUMP: link = pc_old + 4, PC updates by pc + imm
-    wait_till_next_cfsm_state(uut.core.control_fsm.UNCONDJUMP);
+    wait_till_next_cfsm_state(UNCONDJUMP);
     `assert_equal(uut.core.alu.a, 32'd0)    // pc_old at address 0
     `assert_equal(uut.core.alu.b, 32'd4)
     `assert_equal(uut.core.alu.out, 32'd4)  // link value
@@ -59,11 +61,11 @@ module jal_tb;
     `assert_equal(uut.core.cfsm__pc_src, PC_SRC__JUMP)  // <-- enum literal, no hierarchy
 
     // ALUWB: write link back to rd (x1)
-    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(ALUWB);
 
     // Back to FETCH: PC should be 16; x1 should be 4
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 32'd4)  // rd = link = 4
     `assert_equal(uut.core.fetch.pc_cur, 32'd16)                                 // PC jumped to 16
 

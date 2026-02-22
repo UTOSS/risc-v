@@ -1,10 +1,14 @@
 `include "src/types.svh"
 `include "src/params.svh"
+`include "src/packages/pkg_control_fsm.svh"
+
+import pkg_control_fsm::state_t;
+
 module Logger
 ( input wire clk
 , input addr_t pc_cur
 , input instr_t instruction
-, input wire [4:0] FSM_State
+, input state_t FSM_State
 , input wire [6:0] opcode
 , input logic [2:0] funct3
 , input logic [6:0] funct7
@@ -31,26 +35,8 @@ module Logger
         // Display the high-level PC and instruction information
         $display("Cycle %d: \nPC: %08h \nInstruction (Hex): %08h", cycle, pc_cur, instruction);
 
-        // Determine which FSM State we are in
-        case (FSM_State)
-            5'b00000: $display("FSM State: FETCH");
-            5'b00001: $display("FSM State: DECODE");
-            5'b00010: $display("FSM State: EXECUTER");
-            5'b00011: $display("FSM State: UNCONDJUMP");
-            5'b00100: $display("FSM State: EXECUTEI");
-            5'b00101: $display("FSM State: MEMADR");
-            5'b00110: $display("FSM State: ALUWB");
-            5'b00111: $display("FSM State: MEMWRITE");
-            5'b01000: $display("FSM State: MEMREAD");
-            5'b01001: $display("FSM State: MEMWB");
-            5'b01010: $display("FSM State: BRANCHIFEQ");
-            5'b01011: $display("FSM State: LUI");
-            5'b01100: $display("FSM State: AUIPC");
-            5'b01101: $display("FSM State: JALR_CALC");
-            5'b01110: $display("FSM State: JALR_STEP2");
-            5'b01111: $display("FSM State: BRANCHCOMP");
-            5'b10000: $display("FSM State: FETCH_WAIT");
-        endcase
+        // Display the FSM State we are in
+        $display("FSM State: %s", FSM_State.name());
 
         // Parse the instruction we are executing
         case (opcode)
