@@ -3,12 +3,12 @@
 `include "src/interfaces/mem_to_wb_if.svh"
 
 module Mem_Stage
-( ex_to_mem_t EX_to_MEM
+  ( input ex_to_mem_t EX_to_MEM
   , input wire [2:0] funct3
   , input data_t dataFromMemory
   , output data_t dataToMemory
   // , output logic [3:0] MemWriteByteAddress
-  , mem_to_wb_t MEM_to_WB
+  , output mem_to_wb_t MEM_to_WB
   );
 
   // Inputs from EX_to_MEM interface
