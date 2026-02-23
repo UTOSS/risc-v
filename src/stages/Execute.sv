@@ -31,7 +31,7 @@ module Execute
 
   logic JumpE;
   logic BranchE;
-  
+
 
   assign JumpE = ID_to_EX.Jump;
   assign BranchE = ID_to_EX.Branch;

@@ -28,7 +28,7 @@ module hazard_unit
   assign ResultSrcE0 = ResultSrcE[0];
 
 //Forward
-// TODO: check if we need to do this combinationally 
+// TODO: check if we need to do this combinationally
 // probably need to do it combinationally to avoid unnecessary stalls
   always @ (posedge clk) begin
     if (((Rs1E == RdM) & RegWriteM) & (Rs1E != 0))
