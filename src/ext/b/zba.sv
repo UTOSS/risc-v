@@ -7,7 +7,6 @@
 
 module zba(input [31:0] reg1
   , input [31:0] reg2
-  , input [1:0] inst // two bit register, distinguish instruction
   , input [2:0] funct3 // extra function inputs
   , input [6:0] funct7
   , output reg[31:0] out
@@ -16,25 +15,30 @@ module zba(input [31:0] reg1
 always @(*)
 begin
 
-    case (inst)
+    case (funct7)
+        7'b0100000: begin
 
-// sh1add behaviour
+                case (funct3)
 
-    2'b00: out = (reg1 << 1) + reg2;
+                // sh1add behaviour
 
-// sh2add behaviour
+                    3'b010: out = (reg1 << 1) + reg2;
 
-    2'b01: out = (reg1 << 2) + reg2;
+                // sh2add behaviour
 
-// sh3add
+                    3'b100: out = (reg1 << 2) + reg2;
 
-    2'b10: out = (reg1 << 3) + reg2;
+                // sh3add
 
-// other
+                    3'b110: out = (reg1 << 3) + reg2;
 
-    default: out = 32'd0;
+                // other
 
+                    default: out = 32'd0;
+            endcase
+        end
     endcase
+
 end
 
 endmodule
