@@ -134,10 +134,16 @@ module Instruction_Decode
     , .alu_control(ALUControl)
     );
 
-  `ifdef UTOSS_RISCV__ENABLE_B_EXT
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
 
-      
+  BALUdecoder instanceBALUDec
+    ( .funct3(funct3)
+    , .funct7(funct7)
+    , .opcode(opcode)
+    , .rd(rd)
+    , .b_alu_control(state)
+    );
 
-  `endif
+`endif
 
 endmodule
