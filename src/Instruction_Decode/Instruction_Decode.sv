@@ -141,7 +141,7 @@ module Instruction_Decode
     , .funct7(funct7)
     , .opcode(opcode)
     , .rd(rd)
-    , .b_alu_control(state)
+    , .b_alu_control(state) // this should be updated accordingly in the future
     );
 
 `endif
