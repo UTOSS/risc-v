@@ -8,6 +8,7 @@ module MA #( parameter SIZE = 1024 )
 
   reg [31:0] M[0:SIZE -1];
 
+`ifndef UTOSS_RISCV_HARDENING
   initial begin
     string mem_file;
 
@@ -17,6 +18,7 @@ module MA #( parameter SIZE = 1024 )
       $display("memory loaded");
     end
   end
+`endif
 
   always @(posedge clk) begin
     read_data <= M[address[31:2]]; // 2 LSBs used for byte addressing

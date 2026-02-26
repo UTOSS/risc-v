@@ -1,0 +1,18 @@
+FROM public.ecr.aws/lts/ubuntu:22.04_stable AS builder
+
+ARG VERILATOR_VERSION=v5.042
+ARG VERILATOR_GIT_REPO=https://github.com/verilator/verilator
+RUN apt update && apt install -y git help2man perl python3 make autoconf g++ flex bison ccache \
+    libgoogle-perftools-dev numactl perl-doc \
+    libfl2 \
+    libfl-dev \
+    zlib1g zlib1g-dev && \
+    cd /tmp && \
+    git clone --depth=1 --branch ${VERILATOR_VERSION} ${VERILATOR_GIT_REPO} && \
+    cd verilator && \
+    autoconf && ./configure && make -j `nproc` && make install
+
+FROM public.ecr.aws/lts/ubuntu:22.04_stable
+
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+COPY --from=builder /usr/local/share/verilator/ /usr/local/share/verilator/

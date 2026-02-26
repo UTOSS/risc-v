@@ -12,64 +12,20 @@ permissions:
 
 jobs:
   build_ci_image:
-    timeout-minutes: 30
-    runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
-      image-primary-tag: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-      image-digest: ${{ steps.build.outputs.digest }}
+    uses: ./.github/workflows/docker-image.yml
+    with:
+      image-name: ghcr.io/utoss/risc-v
+      dockerfile: ./Dockerfile.ci
+      tag-prefix: ci-
+    secrets: inherit
 
-    steps:
-      - name: Free up disk space for Quartus installation
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo apt-get clean
-          docker system prune -af --volumes
-          echo "Available space after cleanup:"
-          df -h
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/utoss/risc-v
-          tags: |
-            type=ref,event=branch,prefix=ci-branch-
-            type=ref,event=pr,prefix=ci-pr-
-            type=raw,value=latest,prefix=ci-,enable={{is_default_branch}}
-
-      - name: Build and push Docker image
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile.ci
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64
-          cache-from: |
-            type=gha
-            type=registry,ref=ghcr.io/utoss/risc-v:buildcache
-          cache-to: |
-            type=gha,mode=max
-            type=registry,ref=ghcr.io/utoss/risc-v:buildcache,mode=max
+  build_devcontainer_image:
+    uses: ./.github/workflows/docker-image.yml
+    with:
+      image-name: ghcr.io/utoss/risc-v-devcontainer
+      dockerfile: .devcontainer/Dockerfile
+      tag-prefix: ""
+    secrets: inherit
 
   svlint:
     needs: build_ci_image
@@ -199,3 +155,54 @@ jobs:
         with:
           name: de1-soc-sof
           path: envs/de1-soc/quartus/output_files/utoss-risc-v.sof
+
+      - name: Upload Quartus reports
+        uses: actions/upload-artifact@v4
+        if: steps.synthesize.outcome == 'success'
+        with:
+          name: de1-soc-quartus-reports
+          path: |
+            envs/de1-soc/quartus/output_files/utoss-risc-v.sta.summary
+            envs/de1-soc/quartus/output_files/utoss-risc-v.fit.summary
+          retention-days: 7
+
+  de1-soc-synthesis-metrics-diff:
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+    needs: de1-soc
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download PR Quartus reports
+        uses: actions/download-artifact@v4
+        with:
+          name: de1-soc-quartus-reports
+          path: pr-reports
+
+      - name: Download main branch Quartus reports
+        uses: dawidd6/action-download-artifact@v3
+        continue-on-error: true
+        id: download-main
+        with:
+          workflow: ci.yaml
+          branch: main
+          name: de1-soc-quartus-reports
+          path: main-reports
+          check_artifacts: true
+          search_artifacts: true
+
+      - name: Compare FPGA metrics
+        id: compare
+        run: .github/scripts/de1-soc-synthesis-metrics-diff/compare_metrics_diff.sh
+
+      - name: Post comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const script = require('./.github/scripts/de1-soc-synthesis-metrics-diff/post_comment.js');
+            await script({github, context});

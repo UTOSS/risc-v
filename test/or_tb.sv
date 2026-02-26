@@ -2,6 +2,8 @@
 
 `include "test/utils.svh"
 
+import pkg_control_fsm::*;
+
 module or_tb;
 
   reg clk;
@@ -30,13 +32,13 @@ module or_tb;
     uut.core.RegFile.RFMem[2] = 32'hf0f0f0f0; // x2
     uut.core.RegFile.RFMem[3] = 32'h0b0b0b0b; // x3
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
 
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
 
     `assert_equal(uut.core.opcode, 7'b0110011)
     `assert_equal(uut.core.instruction_decode.rd, 1)
@@ -44,18 +46,18 @@ module or_tb;
     `assert_equal(uut.core.instruction_decode.rs2, 3)
     `assert_equal(uut.core.instruction_decode.ALUControl, 4'b1000)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.EXECUTER);
+    wait_till_next_cfsm_state(EXECUTER);
 
     `assert_equal(uut.core.alu.a,   32'hf0f0f0f0)
     `assert_equal(uut.core.alu.b,   32'h0b0b0b0b)
     `assert_equal(uut.core.alu.out, 32'hfbfbfbfb)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(ALUWB);
 
     `assert_equal(uut.core.result, 32'hfbfbfbfb)
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     `assert_equal(uut.core.RegFile.RFMem[1], 32'hfbfbfbfb)
     `assert_equal(uut.core.fetch.pc_cur, 4)

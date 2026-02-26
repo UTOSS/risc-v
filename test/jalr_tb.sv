@@ -3,6 +3,8 @@
 `include "src/types.svh"  // for enum literals like PC_SRC__ALU_RESULT
 `include "test/utils.svh"
 
+import pkg_control_fsm::*;
+
 module jalr_tb;
 
   reg clk;
@@ -42,29 +44,29 @@ module jalr_tb;
     uut.core.RegFile.RFMem[2] = 32'd100;  // x2 = 100
 
     // Enter FETCH with reset asserted (for stable pc_old=0)
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
 
     // Release reset
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     // DECODE: opcode/rs1/rd/imm must match
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
     `assert_equal(uut.core.opcode, 7'b1100111)                  // JALR opcode
     `assert_equal(uut.core.instruction_decode.rs1, 5'd2)        // rs1 = x2
     `assert_equal(uut.core.instruction_decode.rd,  5'd1)        // rd  = x1
     `assert_equal(uut.core.instruction_decode.imm_ext, 32'sd5)  // imm = +5
 
     // JALR_CALC: ALU computes (rs1+imm) = 105
-    wait_till_next_cfsm_state(uut.core.control_fsm.JALR_CALC);
+    wait_till_next_cfsm_state(JALR_CALC);
     `assert_equal(uut.core.alu.a, 32'd100)
     `assert_equal(uut.core.alu.b, 32'd5)
     `assert_equal(uut.core.alu.out, 32'd105)
 
     // JALR_STEP2: PC updates from previous ALU result (with LSB cleared);
     //             ALU computes link = pc_old + 4 (pc_old=0 here)
-    wait_till_next_cfsm_state(uut.core.control_fsm.JALR_STEP2);
+    wait_till_next_cfsm_state(JALR_STEP2);
     `assert_equal(uut.core.cfsm__pc_update, 1'b1)
     `assert_equal(uut.core.cfsm__pc_src, PC_SRC__ALU_RESULT)
     `assert_equal(uut.core.alu.a, 32'd0)     // link base = pc_old
@@ -72,11 +74,11 @@ module jalr_tb;
     `assert_equal(uut.core.alu.out, 32'd4)   // link value
 
     // ALUWB: write link (4) into rd (x1)
-    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
+    wait_till_next_cfsm_state(ALUWB);
 
     // Back to FETCH: PC should be (100+5)&~1 = 104, x1 should be 4
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 32'd4)
     `assert_equal(uut.core.fetch.pc_cur, 32'd104)
 
@@ -98,26 +100,26 @@ module jalr_tb;
     uut.core.RegFile.RFMem[2] = 32'd200;   // x2 = 200
 
     // Re-enter FETCH, then release reset
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
+    wait_till_next_cfsm_state(FETCH);
     reset <= `FALSE;
 
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(FETCH_WAIT);
 
     // DECODE checks
-    wait_till_next_cfsm_state(uut.core.control_fsm.DECODE);
+    wait_till_next_cfsm_state(DECODE);
     `assert_equal(uut.core.opcode, 7'b1100111)
     `assert_equal(uut.core.instruction_decode.rs1, 5'd2)
     `assert_equal(uut.core.instruction_decode.rd,  5'd1)
     `assert_equal(uut.core.instruction_decode.imm_ext, -32'sd7)
 
     // JALR_CALC: 200 + (-7) = 193
-    wait_till_next_cfsm_state(uut.core.control_fsm.JALR_CALC);
+    wait_till_next_cfsm_state(JALR_CALC);
     `assert_equal(uut.core.alu.a, 32'd200)
     `assert_equal(uut.core.alu.b, -32'sd7)
     `assert_equal(uut.core.alu.out, 32'd193)
 
     // JALR_STEP2: PC from ALU_RESULT (193 & ~1 = 192); link = pc_old + 4 = 4
-    wait_till_next_cfsm_state(uut.core.control_fsm.JALR_STEP2);
+    wait_till_next_cfsm_state(JALR_STEP2);
     `assert_equal(uut.core.cfsm__pc_update, 1'b1)
     `assert_equal(uut.core.cfsm__pc_src, PC_SRC__ALU_RESULT)
     `assert_equal(uut.core.alu.a, 32'd0)
@@ -125,9 +127,9 @@ module jalr_tb;
     `assert_equal(uut.core.alu.out, 32'd4)
 
     // Writeback then check PC/link
-    wait_till_next_cfsm_state(uut.core.control_fsm.ALUWB);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH);
-    wait_till_next_cfsm_state(uut.core.control_fsm.FETCH_WAIT);
+    wait_till_next_cfsm_state(ALUWB);
+    wait_till_next_cfsm_state(FETCH);
+    wait_till_next_cfsm_state(FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 32'd4)
     `assert_equal(uut.core.fetch.pc_cur, 32'd192)
 

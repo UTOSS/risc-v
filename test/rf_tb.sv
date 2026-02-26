@@ -2,6 +2,8 @@
 
 `include "test/utils.svh"
 
+import pkg_control_fsm::*;
+
 module rf_tb;
 
   //DUT inputs
