@@ -1,11 +1,12 @@
 `include "src/types.svh"
 
-module BALUdecoder( input[2:0] funct3
-                  , input[6:0] funct7
-                  , input[6:0] opcode
-                  , input[4:0] rd
-                  , output reg [3:0] b_alu_control
-);
+module BALUdecoder
+  ( input [2:0] funct3
+  , input [6:0] funct7
+  , input [6:0] opcode
+  , input [4:0] rd
+  , output reg [3:0] b_alu_control
+  );
 
 always @(*)
 
