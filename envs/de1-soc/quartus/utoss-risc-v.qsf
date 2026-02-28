@@ -312,6 +312,8 @@ set_location_assignment PIN_E12 -to VGA_R[6]
 set_location_assignment PIN_F13 -to VGA_R[7]
 set_location_assignment PIN_C10 -to VGA_SYNC_N
 set_location_assignment PIN_D11 -to VGA_VS
+set_location_assignment PIN_D9 -to UART_RX
+set_location_assignment PIN_E9 -to UART_TX
 
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/packages/pkg_control_fsm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/utils.svh
@@ -319,12 +321,16 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/types.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/params.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ALU_ALUdecoder/ALUdecoder.sv
 set_global_assignment -name VERILOG_FILE ../../../src/ALU_ALUdecoder/ALU.v
-set_global_assignment -name VERILOG_FILE ../../../src/Instruction_Decode/RegisterFile.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/Instruction_Decode/RegisterFile.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/Instruction_Decode/MemoryLoader.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/Instruction_Decode/Instruction_Decode.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/utoss_riscv.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/fetch.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ControlFSM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/uart_bus_master.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/uart_rx.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/uart_tx.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/uart.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../memory_map.sv
 set_global_assignment -name SDC_FILE "utoss-risc-v.sdc"
