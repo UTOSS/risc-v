@@ -1,7 +1,7 @@
 import serial
 import time
 
-COM = "COM4"
+COM = "COM8" # change to your device's serial port
 BAUD = 115200
 TIMEOUT = 1.0
 
