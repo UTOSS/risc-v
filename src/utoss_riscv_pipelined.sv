@@ -56,8 +56,9 @@ module utoss_riscv_pipelined
     ( .IF_to_ID ( if_to_id_out )
     , .EX_to_IF ( ex_to_if_out )
 
-    , .clk   ( clk   )
-    , .reset ( reset )
+    , .clk    ( clk    )
+    , .reset  ( reset  )
+    , .StallF ( StallF )
 
     , .imem__address ( memory_instr__address   )
     , .imem__data    ( memory_instr__read_data )

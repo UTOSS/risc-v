@@ -9,6 +9,7 @@ module fetch_stage
 
   , input wire clk
   , input wire reset
+  , input wire StallF
 
   , output addr_t imem__address
   , input data_t imem__data
@@ -27,11 +28,13 @@ module fetch_stage
     end
 
   always @ (posedge clk)
-    case (EX_to_IF.pc_src)
-      PC_SRC__INCREMENT:  imem__address <= pc_plus_4;
-      PC_SRC__JUMP:       imem__address <= EX_to_IF.pc_old + EX_to_IF.imm_ext;
-      PC_SRC__ALU_RESULT: imem__address <= {EX_to_IF.alu_result_for_pc[31:1], 1'b0};
-    endcase
+    if (!StallF) begin
+      case (EX_to_IF.pc_src)
+        PC_SRC__INCREMENT:  imem__address <= pc_plus_4;
+        PC_SRC__JUMP:       imem__address <= EX_to_IF.pc_old + EX_to_IF.imm_ext;
+        PC_SRC__ALU_RESULT: imem__address <= {EX_to_IF.alu_result_for_pc[31:1], 1'b0};
+      endcase
+    end
 
   assign IF_to_ID.instruction = imem__data;
   assign IF_to_ID.pc_cur = pc_cur;
