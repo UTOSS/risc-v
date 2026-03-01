@@ -1,4 +1,4 @@
-`include "src/types.svh"
+`include "src/headers/types.svh"
 
 module ALUdecoder ( input [2:0] funct3
                   , input [6:0] funct7

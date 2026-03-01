@@ -1,4 +1,4 @@
-`include "src/types.svh"
+`include "src/headers/types.svh"
 
 module top
   #( parameter MEM_SIZE = 1024 )
