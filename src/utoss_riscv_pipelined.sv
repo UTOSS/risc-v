@@ -168,7 +168,7 @@ module utoss_riscv_pipelined
     , .ForwardAE ( hz_forward_a )
     , .ForwardBE ( hz_forward_b )
     , .lwStall   ( lwStall      )
-    , .StallF    ( StallF       ) //TODO: add this as an input to fetch stage to stall the PC update
+    , .StallF    ( StallF       )
     , .StallD    ( StallD       )
     , .FlushD    ( FlushD       )
     , .FlushE    ( FlushE       )
