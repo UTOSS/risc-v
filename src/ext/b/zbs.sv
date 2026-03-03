@@ -12,10 +12,10 @@
 //  - R/I distinction handled in decoder
 
 module zbs (
-    input logic [31:0] reg1 , // rs1 operand
-    input logic [31:0] reg2 , // rs2 or immediate (bit index source)
-    input logic [1:0] inst ,  // operation selector
-    output logic [31:0] out
+    input logic [31:0] reg1 // rs1 operand
+    , input logic [31:0] reg2 // rs2 or immediate (bit index source)
+    , input logic [1:0] inst // operation selector
+    , output logic [31:0] out //result
 );
 
     logic [4:0] index;
