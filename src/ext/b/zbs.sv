@@ -7,44 +7,43 @@
 //  - bext / bexti
 //
 // Design note:
-//  - This module is purely functional.
-//  - reg2[4:0] is treated as the bit index.
-//  - R/I distinction is handled in the decoder.
+//  - Purely combinational ALU block
+//  - reg2[4:0] used as bit index
+//  - R/I distinction handled in decoder
 
 module zbs (
-    input  logic [31:0] reg1 , // rs1 operand
-    input  logic [31:0] reg2 , // rs2 or immediate (bit index source)
-    input  logic [1:0]  inst , // operation selector
-    output logic [31:0] out    // result
+    input  logic [31:0] reg1 ,
+    input  logic [31:0] reg2 ,
+    input  logic [1:0] inst ,
+    output logic [31:0] out
 );
 
     logic [4:0] index ;
     logic [31:0] mask ;
 
     always_comb
-        begin
-            index = reg2[4:0];
-            mask  = 32'h1 << index;
+        index = reg2[4:0] ;
 
-            // Zbs operation selector
-            case (inst)
+    always_comb
+        mask = 32'h1 << index ;
 
-                // 000 : bclr / bclri  → clear selected bit
-                3'b000 : out = reg1 & ~mask;
+    always_comb
+        case (inst)
 
-                // 001 : bset / bseti  → set selected bit
-                3'b001 : out = reg1 | mask;
+            // 00 : bclr
+            2'b00 : out = reg1 & ~mask ;
 
-                // 010 : binv / binvi  → invert selected bit
-                3'b010 : out = reg1 ^ mask;
+            // 01 : bset
+            2'b01 : out = reg1 | mask ;
 
-                // 011 : bext / bexti  → extract selected bit (to bit[0])
-                3'b011 : out = (reg1 >> index) & 32'h1;
+            // 10 : binv
+            2'b10 : out = reg1 ^ mask ;
 
-                // others → safe default
-                default : out = 32'd0;
+            // 11 : bext
+            2'b11 : out = (reg1 >> index) & 32'h1 ;
 
-            endcase
-        end
+            default : out = 32'd0 ;
+
+        endcase
 
 endmodule
