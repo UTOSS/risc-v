@@ -1,70 +1,50 @@
 // Zbs: Single-Bit Operations (RV32)
-// Implements the RV32 Zbs (Bit-Manipulation Single-Bit) instructions:
-//   - bclr  / bclri : Clear bit
-//   - bset  / bseti : Set bit
-//   - binv  / binvi : Invert bit
-//   - bext  / bexti : Extract bit (result placed in bit[0])
-// The decoder is responsible for selecting the correct operands:
-//   - For register-form instructions:
-//       reg2 = rs2
-//   - For immediate-form instructions:
-//       reg2[4:0] = shamt
-// Therefore, this module simply treats reg2[4:0] as the bit index.
 //
-// inst encoding (local mini-ALU selector):
-//   3'b000 : bclr  / bclri
-//   3'b001 : bset  / bseti
-//   3'b010 : binv  / binvi
-//   3'b011 : bext  / bexti
-//   3'b100-111 : reserved
+// Implements:
+//  - bclr / bclri
+//  - bset / bseti
+//  - binv / binvi
+//  - bext / bexti
 //
-// Notes:
-//   - RV32 => XLEN = 32
-//   - Bit index is masked to 5 bits (0–31)
-//   - All logic is purely combinational
+// Design note:
+//  - This module is purely functional.
+//  - reg2[4:0] is treated as the bit index.
+//  - R/I distinction is handled in the decoder.
 
 module zbs (
-    input  logic [31:0] reg1,   // rs1 operand
-    input  logic [31:0] reg2,   // rs2 or immediate (index source)
-    input  logic [2:0]  inst,   // operation selector
-    output logic [31:0] out     // result
+    input  logic [31:0] reg1 , // rs1 operand
+    input  logic [31:0] reg2 , // rs2 or immediate (bit index source)
+    input  logic [1:0]  inst , // operation selector
+    output logic [31:0] out    // result
 );
 
-    // Extract bit index (only lower 5 bits used in RV32)
-    logic [4:0]  index;
+    logic [4:0] index ;
+    logic [31:0] mask ;
 
-    // Bit mask for single-bit operations
-    logic [31:0] mask;
+    always_comb
+        begin
+            index = reg2[4:0];
+            mask  = 32'h1 << index;
 
-    // Combinational ALU logic
-    always_comb begin
-    
-        // reg2 may come from rs2 or immediate (handled externally)
-        index = reg2[4:0];
+            // Zbs operation selector
+            case (inst)
 
-        // Generate one-hot mask: 1 << index
-        mask  = 32'h1 << index;
+                // 000 : bclr / bclri  → clear selected bit
+                3'b000 : out = reg1 & ~mask;
 
-        // Perform selected single-bit operation
-        unique case (inst)
+                // 001 : bset / bseti  → set selected bit
+                3'b001 : out = reg1 | mask;
 
-            // Clear selected bit
-            3'b000: out = reg1 & ~mask;
+                // 010 : binv / binvi  → invert selected bit
+                3'b010 : out = reg1 ^ mask;
 
-            // Set selected bit
-            3'b001: out = reg1 |  mask;
+                // 011 : bext / bexti  → extract selected bit (to bit[0])
+                3'b011 : out = (reg1 >> index) & 32'h1;
 
-            // Invert selected bit
-            3'b010: out = reg1 ^  mask;
+                // others → safe default
+                default : out = 32'd0;
 
-            // Extract selected bit into bit[0]
-            // Upper bits are zero
-            3'b011: out = (reg1 >> index) & 32'h1;
-
-            // Default safe output
-            default: out = 32'd0;
-
-        endcase
-    end
+            endcase
+        end
 
 endmodule
