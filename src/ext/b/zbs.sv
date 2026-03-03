@@ -11,38 +11,38 @@
 //  - reg2[4:0] used as bit index
 //  - R/I distinction handled in decoder
 
-module zbs (
-    input  logic [31:0] reg1 ,
-    input  logic [31:0] reg2 ,
-    input  logic [1:0] inst ,
+module zbs(
+    input logic [31:0] reg1,
+    input logic [31:0] reg2,
+    input logic [1:0] inst,
     output logic [31:0] out
 );
 
-    logic [4:0] index ;
-    logic [31:0] mask ;
+    logic [4:0] index;
+    logic [31:0] mask;
 
     always_comb
-        index = reg2[4:0] ;
+        index = reg2[4:0];
 
     always_comb
-        mask = 32'h1 << index ;
+        mask = 32'h1 << index;
 
     always_comb
-        case (inst)
+        case(inst)
 
             // 00 : bclr
-            2'b00 : out = reg1 & ~mask ;
+            2'b00: out = reg1 & ~mask;
 
             // 01 : bset
-            2'b01 : out = reg1 | mask ;
+            2'b01: out = reg1 | mask;
 
             // 10 : binv
-            2'b10 : out = reg1 ^ mask ;
+            2'b10: out = reg1 ^ mask;
 
             // 11 : bext
-            2'b11 : out = (reg1 >> index) & 32'h1 ;
+            2'b11: out = (reg1 >> index) & 32'h1;
 
-            default : out = 32'd0 ;
+            default: out = 32'd0;
 
         endcase
 
