@@ -11,11 +11,11 @@
 //  - reg2[4:0] used as bit index
 //  - R/I distinction handled in decoder
 
-module zbs(
-    input logic [31:0] reg1, // rs1 operand
-    input logic [31:0] reg2, // rs2 or immediate (bit index source)
-    input logic [1:0] inst, // operation selector
-    output logic [31:0] out // result
+module zbs (
+    input logic [31:0] reg1 , // rs1 operand
+    input logic [31:0] reg2 , // rs2 or immediate (bit index source)
+    input logic [1:0] inst ,  // operation selector
+    output logic [31:0] out
 );
 
     logic [4:0] index;
@@ -28,7 +28,7 @@ module zbs(
         mask = 32'h1 << index;
 
     always_comb
-        case(inst)
+        case (inst)
 
             // 00 : bclr / bclri  → clear selected bit
             2'b00: out = reg1 & ~mask;
