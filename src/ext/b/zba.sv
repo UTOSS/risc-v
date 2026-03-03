@@ -9,10 +9,10 @@ module zba(input [31:0] reg1
   , input [31:0] reg2
   , input [2:0] funct3 // extra function inputs
   , input [6:0] funct7
-  , output reg[31:0] out
+  , output logic[31:0] out
   );
 
-always @(*)
+always_comb
 begin
 
     case (funct7)
