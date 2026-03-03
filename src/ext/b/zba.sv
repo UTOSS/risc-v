@@ -14,7 +14,6 @@ module zba(input [31:0] reg1
   );
 
 always_comb
-begin
 
     case (inst)
 
@@ -35,6 +34,5 @@ begin
     default: out = 32'd0;
 
     endcase
-end
 
 endmodule
