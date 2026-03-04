@@ -1,7 +1,7 @@
 `include "src/headers/types.svh"
 
 module top
-  #( parameter MEM_SIZE = 1024 )
+  #( parameter MEM_SIZE = 1024 ) //maybe change to 2048 if using dual port?
   ( input wire clk
   , input wire reset
   );
@@ -14,23 +14,35 @@ module top
   addr_t       imem__address;
   data_t       imem__data;
 
-  MA #( .SIZE ( MEM_SIZE ) )
+  dual_port #( .SIZE ( 2048 ) )
     memory
-      ( .clk          ( clk                  )
-      , .address      ( memory__address      )
-      , .write_data   ( memory__write_data   )
-      , .write_enable ( memory__write_enable )
-      , .read_data    ( memory__read_data    )
+      ( .clk                      ( clk                  )
+      , .address                  ( memory__address      )
+      , .instruction_address      ( imem__address        )
+      , .write_data               ( memory__write_data   )
+      , .write_enable             ( memory__write_enable )
+      , .read_data                ( memory__read_data    )
+      , .instruction_read_data    (imem__data            )
       );
 
-  MA #( .SIZE ( MEM_SIZE ) )
-    imem
-      ( .clk          ( clk           )
-      , .address      ( imem__address )
-      , .write_data   ( 32'hxxxx_xxxx )
-      , .write_enable ( 4'b0000       )
-      , .read_data    ( imem__data    )
-      );
+  // MA #( .SIZE ( MEM_SIZE ) )
+  //   memory
+  //     ( .clk          ( clk                  )
+  //     , .address      ( memory__address      )
+  //     , .write_data   ( memory__write_data   )
+  //     , .write_enable ( memory__write_enable )
+  //     , .read_data    ( memory__read_data    )
+  //     );
+
+  // MA #( .SIZE ( MEM_SIZE ) )
+  //   imem
+  //     ( .clk          ( clk           )
+  //     , .address      ( imem__address )
+  //     , .write_data   ( 32'hxxxx_xxxx )
+  //     , .write_enable ( 4'b0000       )
+  //     , .read_data    ( imem__data    )
+  //     );
+  // MA
 
   utoss_riscv_pipelined core
     ( .clk    ( clk    )
