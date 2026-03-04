@@ -1,0 +1,15 @@
+`ifndef EX_TO_IF_IF__HG
+`define EX_TO_IF_IF__HG
+
+`include "src/headers/params.svh"
+`include "src/headers/types.svh"
+
+typedef struct packed {
+  pc_src_t pc_src;
+  addr_t   pc_old;
+  addr_t   pc_plus_4;
+  imm_t    imm_ext;
+  addr_t   alu_result_for_pc;
+} ex_to_if_t;
+
+`endif

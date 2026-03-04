@@ -1,4 +1,4 @@
-`include "src/types.svh"
+`include "src/headers/types.svh"
 `include "src/packages/pkg_control_fsm.svh"
 
 import pkg_control_fsm::state_t;
@@ -13,6 +13,10 @@ module utoss_riscv
   , output logic  [3:0] memory__write_enable
   , input  data_t       memory__read_data
   // memory interface end
+
+  // instruction memory
+  , output addr_t       imem__address
+  , input data_t        imem__data
   );
 
   wire         cfsm__pc_update;
