@@ -1,0 +1,46 @@
+
+State Machine - |top|utoss_riscv:core|ControlFSM:control_fsm|current_state
+Name current_state.BRANCHCOMP current_state.JALR_STEP2 current_state.JALR_CALC current_state.AUIPC current_state.LUI current_state.BRANCHIFEQ current_state.MEMWB current_state.MEMREAD current_state.MEMWRITE current_state.ALUWB current_state.MEMADR current_state.EXECUTEI current_state.UNCONDJUMP current_state.EXECUTER current_state.DECODE current_state.FETCH current_state.FETCH_WAIT 
+current_state.FETCH 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+current_state.DECODE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 
+current_state.EXECUTER 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 
+current_state.UNCONDJUMP 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 
+current_state.EXECUTEI 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 
+current_state.MEMADR 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 
+current_state.ALUWB 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 
+current_state.MEMWRITE 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 
+current_state.MEMREAD 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 
+current_state.MEMWB 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 
+current_state.BRANCHIFEQ 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 
+current_state.LUI 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 
+current_state.AUIPC 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 
+current_state.JALR_CALC 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 
+current_state.JALR_STEP2 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 
+current_state.BRANCHCOMP 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 
+current_state.FETCH_WAIT 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+
+State Machine - |top|uart_bus_master:u_master|state
+Name state.STATE_REG state.STATE_SEND state.STATE_DO_RD1 state.STATE_DO_RD0 state.STATE_DO_WR state.STATE_CHK state.STATE_D3 state.STATE_D2 state.STATE_D1 state.STATE_D0 state.STATE_A3 state.STATE_A2 state.STATE_A1 state.STATE_A0 state.STATE_CMD state.STATE_WAIT_SOF 
+state.STATE_WAIT_SOF 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+state.STATE_CMD 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+state.STATE_A0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+state.STATE_A1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+state.STATE_A2 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+state.STATE_A3 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+state.STATE_D0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+state.STATE_D1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+state.STATE_D2 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+state.STATE_D3 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+state.STATE_CHK 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+state.STATE_DO_WR 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+state.STATE_DO_RD0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+state.STATE_DO_RD1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+state.STATE_SEND 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+state.STATE_REG 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |top|uart:u_uart|uart_rx:uart_rx_inst|state
+Name state.STATE_STOP state.STATE_DATA state.STATE_START state.STATE_IDLE 
+state.STATE_IDLE 0 0 0 0 
+state.STATE_START 0 0 1 1 
+state.STATE_DATA 0 1 0 1 
+state.STATE_STOP 1 0 0 1 
