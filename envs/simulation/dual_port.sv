@@ -1,7 +1,7 @@
 `include "src/headers/types.svh"
 
 module dual_port
-  #( parameter SIZE = 2048 )
+  #( parameter SIZE = 1024 )
   ( input  wire         clk
   , input  addr_t       address
   , input  addr_t       instruction_address

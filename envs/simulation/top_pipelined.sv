@@ -1,6 +1,6 @@
 `include "src/headers/types.svh"
 
-module top
+module top_pipelined
   #( parameter MEM_SIZE = 1024 ) //maybe change to 2048 if using dual port?
   ( input wire clk
   , input wire reset
@@ -14,7 +14,7 @@ module top
   addr_t       imem__address;
   data_t       imem__data;
 
-  dual_port #( .SIZE ( 2048 ) )
+  dual_port #( .SIZE ( MEM_SIZE ) )
     memory
       ( .clk                      ( clk                  )
       , .address                  ( memory__address      )
