@@ -1,31 +1,30 @@
-// Zbs: Single-Bit Operations (RV32)
+// -----------------------------------------------------------------------------
+// Zbs Extension – Single-Bit Instructions (RV32)
+// Reference:
+//   RISC-V Bitmanip Extension Specification v1.0.0
+//   Section 5.4 – Zbs (Single-Bit Instructions)
 //
-// Implements:
-//  - bclr / bclri
-//  - bset / bseti
-//  - binv / binvi
-//  - bext / bexti
-//
-// Design note:
-//  - Purely combinational ALU block
-//  - reg2[4:0] used as bit index
-//  - R/I distinction handled in decoder
+// Notes:
+//   - Purely combinational logic
+//   - Bit index = reg2[4:0]
+//   - R/I distinction handled in decode stage
+// -----------------------------------------------------------------------------
 
 module zbs (
-    input logic [31:0] reg1 // rs1 operand
-    , input logic [31:0] reg2 // rs2 or immediate (bit index source)
-    , input logic [1:0] inst // operation selector
-    , output logic [31:0] out //result
+    input  data_t reg1 // rs1 operand
+  , input  data_t reg2 // rs2 or immediate (bit index source)
+  , input  logic [1:0] inst // operation selector
+  , output data_t out //result
 );
 
     logic [4:0] index;
-    logic [31:0] mask;
+    data_t mask;
 
     always_comb
         index = reg2[4:0];
 
     always_comb
-        mask = 32'h1 << index;
+        mask = data_t'(32'h1) << index;
 
     always_comb
         case (inst)
@@ -40,10 +39,10 @@ module zbs (
             2'b10: out = reg1 ^ mask;
 
             // 11 : bext / bexti  → extract selected bit (to bit[0])
-            2'b11: out = (reg1 >> index) & 32'h1;
+            2'b11: out = (reg1 >> index) & data_t'(32'h1);
 
             // others → safe default
-            default: out = 32'd0;
+            default: out = '0;
 
         endcase
 
