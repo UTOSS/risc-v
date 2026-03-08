@@ -11,13 +11,10 @@ module zba(input [31:0] reg1
   /* verilator lint_off UNUSEDSIGNAL */
   , input [2:0] funct3  //extra function inputs
   , input [6:0] funct7
-  /* verilator lint_on UNUSEDSIGNAL */
-
-  , output reg[31:0] out
+  , output logic[31:0] out
   );
 
-always @(*)
-begin
+always_comb
 
     case (inst)
 
@@ -38,6 +35,5 @@ begin
     default: out = 32'd0;
 
     endcase
-end
 
 endmodule
