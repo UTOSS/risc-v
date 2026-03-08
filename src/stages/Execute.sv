@@ -19,7 +19,6 @@ module Execute
 
   , output wire zero_flag
   , output data_t alu_result
-  , output addr_t pc_target
   , output ex_to_if_t EX_to_IF
   , output ex_to_mem_t EX_to_MEM
   );
@@ -59,8 +58,6 @@ module Execute
       default:                    alu_input_b = 'x;
     endcase
 
-  assign pc_target = ID_to_EX.imm_ext + ID_to_EX.pc_cur;
-
   ALU alu
     ( .a              ( alu_input_a         )
     , .b              ( alu_input_b         )
@@ -82,10 +79,9 @@ module Execute
   assign EX_to_MEM.rd               = ID_to_EX.rd;
   assign EX_to_MEM.alu_result       = alu_result;
   assign EX_to_MEM.pc_cur           = ID_to_EX.pc_cur;
+  assign EX_to_MEM.pc_plus_4        = ID_to_EX.pc_plus_4;
   assign EX_to_IF.imm_ext           = ID_to_EX.imm_ext;
   assign EX_to_IF.pc_src            = (JumpE | (zero_flag & BranchE)) ? PC_SRC__ALU_RESULT: PC_SRC__INCREMENT;
   assign EX_to_IF.alu_result_for_pc = alu_result;
   assign EX_to_IF.pc_old            = ID_to_EX.pc_cur;
-  assign EX_to_IF.pc_plus_4         = ID_to_EX.pc_plus_4;
-
 endmodule

@@ -14,29 +14,26 @@ module fetch_stage
   , output addr_t imem__address
   , input data_t imem__data
 );
-  addr_t pc_cur;
-  addr_t pc_plus_4;
+  // Decode needs to end up getting the same address as was given to imemory.
+  // At the start of the clock cycle, we need to indicate to decode the address
+  // and content of the previous instruction, while telling memory the address
+  // of the next instruction.
+  addr_t pc_previous;
+  addr_t pc_next;
+
+  always_comb
+    case (EX_to_IF.pc_src)
+      PC_SRC__INCREMENT:  pc_next = pc_previous + 32'h4;
+      PC_SRC__JUMP:       pc_next = EX_to_IF.pc_old + EX_to_IF.imm_ext;
+      PC_SRC__ALU_RESULT: pc_next = {EX_to_IF.alu_result_for_pc[31:1], 1'b0};
+      default:            pc_next = 32'hx;
+    endcase
 
   always @ (posedge clk)
-    if (reset) begin
-      pc_cur <= 0;
-      pc_plus_4 <= 0;
-    end
-    else begin
-      pc_cur <= imem__address;
-      pc_plus_4 <= pc_cur + 32'h4;
-    end
+    if (!StallF) pc_previous <= reset ? 0 : pc_next;
 
-  always @ (posedge clk)
-    if (!StallF) begin
-      case (EX_to_IF.pc_src)
-        PC_SRC__INCREMENT:  imem__address <= pc_plus_4;
-        PC_SRC__JUMP:       imem__address <= EX_to_IF.pc_old + EX_to_IF.imm_ext;
-        PC_SRC__ALU_RESULT: imem__address <= {EX_to_IF.alu_result_for_pc[31:1], 1'b0};
-      endcase
-    end
-
+  assign imem__address = pc_next;
   assign IF_to_ID.instruction = imem__data;
-  assign IF_to_ID.pc_cur = pc_cur;
-  assign IF_to_ID.pc_plus_4 = pc_plus_4;
+  assign IF_to_ID.pc_cur = pc_previous;
+  assign IF_to_ID.pc_plus_4 = pc_previous + 32'h4;
 endmodule
