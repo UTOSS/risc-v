@@ -19,7 +19,6 @@ module Execute
 
   , output wire zero_flag
   , output data_t alu_result
-  , output addr_t pc_target
   , output ex_to_if_t EX_to_IF
   , output ex_to_mem_t EX_to_MEM
   );
@@ -58,8 +57,6 @@ module Execute
       EXECUTE_ALU_SRC_B__IMM_EXT: alu_input_b = ID_to_EX.imm_ext;
       default:                    alu_input_b = 'x;
     endcase
-
-  assign pc_target = ID_to_EX.imm_ext + ID_to_EX.pc_cur;
 
   ALU alu
     ( .a              ( alu_input_a         )

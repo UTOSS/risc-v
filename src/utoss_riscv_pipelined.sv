@@ -37,7 +37,6 @@ module utoss_riscv_pipelined
   ex_to_mem_t ex_to_mem_out;
   ex_to_mem_t ex_to_mem_reg;
 
-  addr_t pc_target;
   logic  zero_flag;
   data_t alu_result;
 
@@ -106,7 +105,6 @@ module utoss_riscv_pipelined
 
     , .zero_flag  ( zero_flag     )
     , .alu_result ( alu_result    )
-    , .pc_target  ( pc_target     ) // TODO: Bring this into the Fetch stage
     , .EX_to_MEM  ( ex_to_mem_out )
     , .EX_to_IF   ( ex_to_if_out  )
     );
