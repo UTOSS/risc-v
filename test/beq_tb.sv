@@ -47,7 +47,7 @@ module beq_tb;
 
     assert (uut.core.opcode == 7'b1100011) else $fatal(1, "`uut.core.opcode` is `%0b`", uut.core.opcode);
 
-    assert (uut.core.fetch.pc_cur == 32'h00000004)
+    assert (uut.core.fetch.pc_cur == 32'h00000000)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
     assert (uut.core.fetch.imm_ext == 32'hFFFFFFF4)
       else $fatal(1, "`uut.core.fetch.imm_ext` is `%0h`", uut.core.fetch.imm_ext);
@@ -65,7 +65,7 @@ module beq_tb;
     assert (uut.core.cfsm__pc_src == 1 /* JUMP */)
       else $fatal(1, "`uut.core.cfsm__pc_src` is `%0b`", uut.core.cfsm__pc_src);
 
-    assert (uut.core.fetch.pc_cur == 32'h00000004)
+    assert (uut.core.fetch.pc_cur == 32'h00000000)
       else $fatal(1, "`uut.core.fetch.pc_cur` is `%0h`", uut.core.fetch.pc_cur);
 
     wait_till_next_cfsm_state(FETCH);

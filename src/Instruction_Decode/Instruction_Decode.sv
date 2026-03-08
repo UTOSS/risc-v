@@ -31,7 +31,6 @@ module Instruction_Decode
   reg [2:0] default_funct3;
   reg [6:0] default_funct7;
   /* verilator lint_on UNUSEDSIGNAL */
-  
   always @(*) begin
 
     funct3 = 3'b000;
@@ -51,7 +50,7 @@ module Instruction_Decode
       funct3 = instr[14:12];
 
     end
-    default: ;
+    default:;
     endcase
   end
 
@@ -125,8 +124,8 @@ module Instruction_Decode
       SType       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
       BType       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
       JType       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
-      UType_auipc  : imm_ext = {instr[31:12], 12'b0};
-      UType_lui  : imm_ext = {instr[31:12], 12'b0};
+      UType_auipc  : imm_ext = {instr[31:12], 12'h000};
+      UType_lui  : imm_ext = {instr[31:12], 12'h000};
       default:     imm_ext = 32'b0;
     endcase
   end

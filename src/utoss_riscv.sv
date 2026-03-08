@@ -40,7 +40,6 @@ module utoss_riscv
 
   data_t rd1;
   data_t rd2;
-
   data_t alu_input_a;
   data_t alu_input_b;
   data_t alu_result;
@@ -55,7 +54,6 @@ module utoss_riscv
   /* verilator lint_off UNUSEDSIGNAL */
   wire __tmp_Branch;
   /* verilator lint_on UNUSEDSIGNAL */
-  
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
 
@@ -102,8 +100,9 @@ module utoss_riscv
     // outputs
     , .pc_cur          ( pc_cur          )
     , .pc_old          ( pc_old          )
-    );
-
+    , .instr_mem_data_in (memory__read_data)
+    , .instr_out       (instruction      )
+  );
   always @(*) begin
     case (cfsm__adr_src)
       ADR_SRC__PC:     memory__address = pc_cur;
@@ -111,11 +110,11 @@ module utoss_riscv
     endcase
   end
 
-  always @(posedge clk) begin
-    if (cfsm__ir_write) begin
-      instruction <= memory__read_data;
-    end
-  end
+//  always @(posedge clk) begin
+//    if (cfsm__ir_write) begin
+//      instruction <= memory__read_data;
+//    end
+//  end
 
   MemoryLoader MemLoad
   ( .memory_data          ( memory__read_data   )
@@ -189,17 +188,20 @@ module utoss_riscv
 
   always @(*) begin
     case (cfsm__result_src)
-      RESULT_SRC__ALU_OUT:    result = alu_out;
+      RESULT_SRC__ALU_OUT:    result = alu_result;
       RESULT_SRC__DATA:       result = data;
       RESULT_SRC__ALU_RESULT: result = alu_result;
       default:                result = 32'hxxxxxxxx;
     endcase
   end
 
-  always @(posedge clk) begin
-    dataA <= rd1;
-    dataB <= rd2;
-  end
+  assign dataA = rd1;
+  assign dataB = rd2;
+
+//  always @(posedge clk) begin
+//    dataA <= rd1;
+//    dataB <= rd2;
+//  end
 
 `ifndef UTOSS_RISCV_SYNTHESIS
 `ifndef UTOSS_RISCV_HARDENING

@@ -31,7 +31,7 @@ module jalr_tb;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
-  // --- Test 1: JALR x1, x2, +5 (rs1=100) -> target=(100+5)&~1 = 104; link=4 ---
+  // --- Test 1: JALR x1, x2, +5 (x2=100) -> target=(100+5)&~1 = 104; link=4 ---
   initial begin
     // Hold reset
     reset = `TRUE;

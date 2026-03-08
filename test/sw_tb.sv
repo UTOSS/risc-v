@@ -32,9 +32,9 @@ module sw_tb;
     reset = `TRUE;
 
     // set up instructions and data memory
-    uut.memory.M[ 0] = 32'h00532023; // sw x5, 0(x6)
-    uut.memory.M[ 1] = 32'h00532223; // sw x5, 4(x6)
-    uut.memory.M[ 2] = 32'h00532423; // sw x5, 8(x6)
+    uut.memory.M[0] = 32'h00532023; // sw x5, 0(x6)
+    uut.memory.M[1] = 32'h00532223; // sw x5, 4(x6)
+    uut.memory.M[2] = 32'h00532423; // sw x5, 8(x6)
     uut.memory.M[10] = 32'hbadab00f; // initial value
     uut.memory.M[11] = 32'hdeadbeef; // initial value
     uut.memory.M[12] = 32'hcafebabe; // initial value

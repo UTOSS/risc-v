@@ -36,12 +36,12 @@ module Logger
 
     assign new_pc = pc_cur + imm_ext + 'h4;
 
-    always_ff @(posedge clk) begin //stricter by enforcing purely sequential block
+    always @(posedge clk) begin //stricter by enforcing purely sequential block
         // Display the high-level PC and instruction information
         $display("Cycle %d: \nPC: %08h \nInstruction (Hex): %08h", cycle, pc_cur, instruction);
 
         // Display the FSM State we are in
-        $display("FSM State: %s", FSM_State.name());
+        $display("FSM State: %0d", FSM_State);
 
         // Parse the instruction we are executing
         case (opcode)
@@ -51,7 +51,7 @@ module Logger
                 case (funct7)
                     7'h00: operation <= "add";
                     7'h20: operation <= "sub";
-                    default: ;
+                    default:;
                 endcase
             end
             3'b001: operation <= "sll";
@@ -62,7 +62,7 @@ module Logger
                 case (funct7)
                     7'h00: operation <= "srl";
                     7'h20: operation <= "sra";
-                    default: ;
+                    default:;
                 endcase
             end
             3'b110: operation <= "or";
@@ -81,12 +81,12 @@ module Logger
                 case (funct7)
                     7'h00: operation <= "srli";
                     7'h20: operation <= "srai";
-                    default: ;
+                    default:;
                 endcase
             end
             3'b110: operation <= "ori";
             3'b111: operation <= "andi";
-            default: ;
+            default:;
             endcase
         end
 
@@ -97,7 +97,7 @@ module Logger
             3'b010: operation <= "lw";
             3'b100: operation <= "lbu";
             3'b101: operation <= "lhu";
-            default: ;
+            default:;
             endcase
         end
 
@@ -106,7 +106,7 @@ module Logger
             3'b000: operation <= "sb";
             3'b001: operation <= "sh";
             3'b010: operation <= "sw";
-            default: ;
+            default:;
             endcase
         end
 
@@ -118,7 +118,7 @@ module Logger
             3'b101: operation <= "bge";
             3'b110: operation <= "bltu";
             3'b111: operation <= "bgeu";
-            default: ;
+            default:;
             endcase
         end
 
@@ -279,5 +279,4 @@ module Logger
 
         cycle <= cycle + 1'b1;
     end
-
 endmodule

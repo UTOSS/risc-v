@@ -34,9 +34,9 @@ module addi_tb;
     reset = 1'b1;
 
     // Set up instruction memory
-    uut.memory.M[ 0] = 32'h00010093; // addi x1, x2, 0
-    uut.memory.M[ 1] = 32'h00410093; // addi x1, x2, 4
-    uut.memory.M[ 2] = 32'hff810093; // addi x1, x2, -8
+    uut.memory.M[0] = 32'h00c10093; // addi x1, x2, 0
+    uut.memory.M[1] = 32'h00410093; // addi x1, x2, 4
+    uut.memory.M[2] = 32'hff810093; // addi x1, x2, -8
 
     // Set up register file
     uut.core.RegFile.RFMem[1] = 0; // x1 = 0
@@ -65,7 +65,7 @@ module addi_tb;
     wait_till_next_cfsm_state(FETCH);
     wait_till_next_cfsm_state(FETCH_WAIT);
     `assert_equal(uut.core.RegFile.RFMem[1], 42)
-    `assert_equal(uut.core.fetch.pc_cur, 4)
+    `assert_equal(uut.core.fetch.pc_cur, 18)
 
     // --- Instruction 2: addi x1, x2, 4 ---
     wait_till_next_cfsm_state(DECODE);

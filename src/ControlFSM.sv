@@ -121,6 +121,15 @@ module ControlFSM
 
   end
 
+  /* verilator lint_off UNUSEDSIGNAL */
+  reg pc_already_updated;
+  /* verilator lint_on UNUSEDSIGNAL */
+
+  always @(posedge clk) begin
+    if (reset) pc_already_updated <= 0;
+    else pc_already_updated <= (current_state == UNCONDJUMP || current_state == JALR_STEP2);
+  end
+
   //output logic
 
   /* verilator lint_off LATCH */
@@ -139,12 +148,15 @@ module ControlFSM
 
       FETCH: begin
         AdrSrc   = ADR_SRC__PC;
+        IRWrite  = 1'b1;
+        //PCUpdate = 1'b1;
+        pc_src   = PC_SRC__INCREMENT;
       end
 
       FETCH_WAIT: begin
         AdrSrc   = ADR_SRC__PC;
         IRWrite  = 1'b1;
-        PCUpdate = 1'b1;
+        //PCUpdate = 1'b1;
         pc_src   = PC_SRC__INCREMENT;
       end
 
@@ -153,18 +165,21 @@ module ControlFSM
 
         ALUSrcA = ALU_SRC_A__OLD_PC;
         ALUSrcB = ALU_SRC_B__IMM_EXT;
+        pc_src   = PC_SRC__INCREMENT;
 
       end
 
       AUIPC: begin
-
+      //  PCUpdate = 1'b1;
+        pc_src = PC_SRC__INCREMENT;
         ALUSrcA = ALU_SRC_A__OLD_PC;
         ALUSrcB = ALU_SRC_B__IMM_EXT;
 
       end
 
       LUI: begin
-
+      //  PCUpdate = 1'b1;
+        pc_src = PC_SRC__INCREMENT;
         ALUSrcA = ALU_SRC_A__ZERO;
         ALUSrcB = ALU_SRC_B__IMM_EXT;
 
@@ -214,11 +229,13 @@ module ControlFSM
         ALUSrcB = ALU_SRC_B__IMM_EXT;
         AdrSrc    = ADR_SRC__RESULT;
         ResultSrc = RESULT_SRC__ALU_RESULT;
+        pc_src = PC_SRC__INCREMENT;
 
       end
 
       BRANCHIFEQ: begin
-
+        PCUpdate = 1'b1;
+        pc_src = zero_flag ? PC_SRC__JUMP : PC_SRC__INCREMENT;
         ALUSrcA = ALU_SRC_A__RD1;
         ALUSrcB = ALU_SRC_B__RD2;
         ResultSrc = RESULT_SRC__ALU_OUT;
@@ -227,7 +244,7 @@ module ControlFSM
           3'b000: begin
             if (zero_flag) begin
               pc_src = PC_SRC__JUMP;
-              PCUpdate = 1'b1;
+            //  PCUpdate = 1'b1;
             end
             else pc_src = PC_SRC__INCREMENT;
           end
@@ -235,11 +252,11 @@ module ControlFSM
           3'b001: begin
             if (!zero_flag) begin
               pc_src = PC_SRC__JUMP;
-              PCUpdate = 1'b1;
+            //  PCUpdate = 1'b1;
             end
             else pc_src = PC_SRC__INCREMENT;
           end
-          default: ;
+          default:;
         endcase
       end
 
@@ -249,23 +266,24 @@ module ControlFSM
         ALUSrcB = ALU_SRC_B__RD2;
         ResultSrc = RESULT_SRC__ALU_OUT;
         Branch = 1'b1;
+        PCUpdate = 1'b1;
         if (alu_result == 32'b1) begin
           pc_src = PC_SRC__JUMP;
-          PCUpdate = 1'b1;
         end
         else pc_src = PC_SRC__INCREMENT;
 
       end
 
       ALUWB: begin
-
         ResultSrc = RESULT_SRC__ALU_OUT;
         RegWrite = 1'b1;
-
+        PCUpdate = 1'b1;
+        pc_src   = PC_SRC__INCREMENT;
       end
 
       MEMWRITE: begin
-
+        PCUpdate = 1'b1;
+        pc_src = PC_SRC__INCREMENT;
         ResultSrc = RESULT_SRC__ALU_OUT;
         AdrSrc = ADR_SRC__RESULT;
         MemWrite = MemWriteByteAddress;
@@ -280,9 +298,10 @@ module ControlFSM
       end
 
       MEMWB: begin
-
         ResultSrc = RESULT_SRC__DATA;
         RegWrite = 1'b1;
+        PCUpdate  = 1'b1;
+        pc_src    = PC_SRC__INCREMENT;
 
       end
 

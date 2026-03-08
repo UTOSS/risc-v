@@ -20,7 +20,10 @@ module fetch_tb;
   /* verilator lint_on UNUSEDSIGNAL */
 
   reg [31:0] alu_result_for_pc;
-
+  wire [31:0] instr_mem_data_in;
+  /* verilator lint_off UNUSEDSIGNAL */
+  wire [31:0] instr_out;
+  assign instr_mem_data_in = 32'h00528293;
   fetch uut
     ( .clk               ( clk               )
     , .reset             ( reset             )
@@ -29,10 +32,12 @@ module fetch_tb;
     , .cfsm__ir_write    ( cfsm__ir_write    )
     , .alu_result_for_pc ( alu_result_for_pc )
     , .imm_ext           ( imm_ext           )
+    , .instr_mem_data_in ( instr_mem_data_in )
 
     // outputs
     , .pc_cur            ( pc_cur            )
     , .pc_old            ( pc_old            )
+    , .instr_out         ( instr_out         )
     );
 
   initial begin
@@ -186,5 +191,5 @@ module fetch_tb;
   end
 
   `SETUP_VCD_DUMP(fetch_tb)
-
+/* verilator lint_on UNUSEDSIGNAL */
 endmodule

@@ -36,10 +36,10 @@ module auipc_tb;
 
     //Set up memory
     //auipc rd, imm -> machine code: imm[31:12] | 11 rd 7 | 6 op 0
-    uut.memory.M[ 0] = 32'h00014097; // auipc x1, 20
-    uut.memory.M[ 1] = 32'h000c8117; // auipc x2, 200
+    uut.memory.M[0] = 32'h00014097; // auipc x1, 20
+    uut.memory.M[1] = 32'h000c8117; // auipc x2, 200
     // 000c8 | 0001_0 | 001_0111
-    uut.memory.M[ 2] = 32'h003ff197; // auipc x3, 1023
+    uut.memory.M[2] = 32'h003ff197; // auipc x3, 1023
     uut.memory.M[40] = 32'hbadab00f; // have some data at address 0xa0
     uut.memory.M[42] = 32'hdeadbeef; // have some data at address 0xa8
     uut.memory.M[43] = 32'hcafebabe; // have some data at address 0xac

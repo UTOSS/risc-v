@@ -28,7 +28,7 @@ module MA #( parameter SIZE = 1024 )
 `endif
 
   always @(posedge clk) begin
-    read_data <= M[address[9:0]]; // 2 LSBs used for byte addressing
+    read_data <= M[address[11:2]]; // 2 LSBs used for byte addressing
                                   // changed width from 32:2 to 9:0 to match "logic [1023:0] M;"
 
     if (write_enable[0]) M[address[11:2]][7:0]   <= write_data[7:0];
@@ -36,5 +36,6 @@ module MA #( parameter SIZE = 1024 )
     if (write_enable[2]) M[address[11:2]][23:16] <= write_data[23:16];
     if (write_enable[3]) M[address[11:2]][31:24] <= write_data[31:24];
   end
+
 
 endmodule
