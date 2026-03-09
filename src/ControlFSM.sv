@@ -242,11 +242,23 @@ module ControlFSM
         ALUSrcB = ALU_SRC_B__RD2;
         ResultSrc = RESULT_SRC__ALU_OUT;
         Branch = 1'b1;
-        if (alu_result == 32'b1) begin
-          pc_src = PC_SRC__JUMP;
-          PCUpdate = 1'b1;
-        end
-        else pc_src = PC_SRC__INCREMENT;
+        case (funct3)
+          3'b100, 3'b110: begin // BLT, BLTU: branch if rs1 < rs2
+            if (alu_result) begin  // Direct SLT/SLTU result
+              pc_src = PC_SRC__JUMP;
+              PCUpdate = 1'b1;
+            end
+            else pc_src = PC_SRC__INCREMENT;
+          end
+          3'b101, 3'b111: begin // BGE, BGEU: branch if rs1 >= rs2 (invert SLT/SLTU)
+            if (!alu_result) begin  // Invert SLT/SLTU result for >= comparison
+              pc_src = PC_SRC__JUMP;
+              PCUpdate = 1'b1;
+            end
+            else pc_src = PC_SRC__INCREMENT;
+          end
+          default: pc_src = PC_SRC__INCREMENT;
+        endcase
 
       end
 
