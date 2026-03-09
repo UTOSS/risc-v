@@ -11,6 +11,7 @@ typedef logic [`PROCESSOR_BITNESS -1:0] data_t;
 
 typedef logic [6:0] opcode_t;
 
+// high-level ALU operation
 // based on table 7.2 of digital design and computer architecture book
 typedef enum logic [1:0]
   { ALU_OP__ADD                = 2'b00
@@ -20,6 +21,20 @@ typedef enum logic [1:0]
   // default value to use when alu op is not to be relied on
   , ALU_OP__UNSET              = 2'b11
   } alu_op_t;
+
+// low-level ALU operation
+typedef enum logic [3:0] {
+    ALUAdd  = 4'b0000,
+    ALUSub  = 4'b0001,
+    ALUSLL  = 4'b0010,
+    ALUSLT  = 4'b0011,
+    ALUSLTU = 4'b0100,
+    ALUXOR  = 4'b0101,
+    ALUSRL  = 4'b0110,
+    ALUSRA  = 4'b0111,
+    ALUOR   = 4'b1000,
+    ALUAND  = 4'b1001
+} alu_op_t_low;
 
 // represents the possible input sources for the first operand of the ALU as selected by the Control
 // FSM; See Figure 7.46 of digital design and computer architecture book
