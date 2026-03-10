@@ -13,7 +13,10 @@ permissions:
 
 jobs:
   build_ci_image:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # do this during a push to a branch (e.g. to main) or on a non-fork PR
+    if: >
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
       image-name: ghcr.io/utoss/risc-v
@@ -44,7 +47,10 @@ jobs:
           fi
 
   build_devcontainer_image:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # do this during a push to a branch (e.g. to main) or on a non-fork PR
+    if: >
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
       image-name: ghcr.io/utoss/risc-v-devcontainer
