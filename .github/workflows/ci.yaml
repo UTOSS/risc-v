@@ -24,9 +24,9 @@ jobs:
   # thier pipelines use; this is because internaly, every PR builds and caches (via docker push) a
   # new CI image; this helps reduce friction when adding new dependencies to the CI image but
   # requires write access to the GHCR repo for the org, which only org members have; to address
-  # this, this job selects `ci-latest` image for external collaborators so that they don't need to
-  # write anythign to GHCR; there is a chance that PR might diverge from the `ci-latest` tag and
-  # might cause issues for the contributor, but we'll see if that ever happens first
+  # this, this job selects `ci-branch-main` image for external collaborators so that they don't need
+  # to write anythign to GHCR; there is a chance that PR might diverge from the `ci-branch-main` tag
+  # and might cause issues for the contributor, but we'll see if that ever happens first
   select_ci_image:
     runs-on: ubuntu-latest
     needs: build_ci_image
@@ -39,7 +39,7 @@ jobs:
           if [ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]; then
             echo "tag=${{ needs.build_ci_image.outputs.image-primary-tag }}" >> $GITHUB_OUTPUT
           else
-            echo "tag=ghcr.io/utoss/risc-v:ci-latest" >> $GITHUB_OUTPUT
+            echo "tag=ghcr.io/utoss/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
           fi
 
   build_devcontainer_image:
