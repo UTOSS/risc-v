@@ -199,8 +199,12 @@ jobs:
   de1-soc-synthesis-metrics-diff:
     timeout-minutes: 10
     needs: de1-soc
-    # dont skip if build_ci_image is skipped; need explicit check for needs' success
-    if: always() && needs.de1-soc.result == 'success' && github.event_name == 'pull_request'
+    # dont run this on fork PRs; this will fail to permission issues when posting a comment; i don't
+    # understand exactly the permission mechanism that prohibits this so will need to look into this
+    # further down the road
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
