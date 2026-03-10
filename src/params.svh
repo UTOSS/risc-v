@@ -13,7 +13,8 @@ parameter UType_lui = 7'b0110111;
 parameter IType_jalr = 7'b1100111;
 parameter FENCE    = 7'b0001111;
 
-//ALU Operation Control Codes
+//ALU Operation Control Codes: Implemented as ENUM in params.svh
+/*
 parameter ALUAdd = 4'b0000;
 parameter ALUSub = 4'b0001;
 parameter ALUSLL =  4'b0010;
@@ -24,5 +25,6 @@ parameter ALUSRL = 4'b0110;
 parameter ALUSRA = 4'b0111;
 parameter ALUOR = 4'b1000;
 parameter ALUAND = 4'b1001;
+*/
 
 `endif  // PARAMS_VH

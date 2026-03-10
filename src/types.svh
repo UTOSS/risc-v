@@ -24,17 +24,17 @@ typedef enum logic [1:0]
 
 // low-level ALU operation
 typedef enum logic [3:0] {
-    ALUAdd  = 4'b0000,
-    ALUSub  = 4'b0001,
-    ALUSLL  = 4'b0010,
-    ALUSLT  = 4'b0011,
-    ALUSLTU = 4'b0100,
-    ALUXOR  = 4'b0101,
-    ALUSRL  = 4'b0110,
-    ALUSRA  = 4'b0111,
-    ALUOR   = 4'b1000,
-    ALUAND  = 4'b1001
-} alu_op_t_low;
+    ALU_CONTROL_ADD  = 4'b0000,
+    ALU_CONTROL_SUB  = 4'b0001,
+    ALU_CONTROL_SLL  = 4'b0010,
+    ALU_CONTROL_SLT  = 4'b0011,
+    ALU_CONTROL_SLTU = 4'b0100,
+    ALU_CONTROL_XOR  = 4'b0101,
+    ALU_CONTROL_SRL  = 4'b0110,
+    ALU_CONTROL_SRA  = 4'b0111,
+    ALU_CONTROL_OR   = 4'b1000,
+    ALU_CONTROL_AND  = 4'b1001
+} alu_control_t;
 
 // represents the possible input sources for the first operand of the ALU as selected by the Control
 // FSM; See Figure 7.46 of digital design and computer architecture book

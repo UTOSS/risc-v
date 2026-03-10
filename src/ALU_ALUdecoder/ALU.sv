@@ -3,23 +3,23 @@ module ALU
 (
   input  logic [31:0] a,
   input  logic [31:0] b,
-  input  alu_op_t_low alu_control,
+  input  alu_control_t alu_control,
   output reg [31:0] out,
   output logic zeroE
 );
 
 always_comb begin
     case (alu_control)
-        ALUAdd:  out = a + b;
-        ALUSub:  out = a - b;
-        ALUSLL:  out = a << b[4:0];
-        ALUSLT:  out = ($signed(a) < $signed(b)) ? 32'b1 : 32'b0;
-        ALUSLTU: out = (a < b) ? 32'b1 : 32'b0;
-        ALUXOR:  out = a ^ b;
-        ALUSRL:  out = a >> b[4:0];
-        ALUSRA:  out = $signed(a) >>> b[4:0];
-        ALUOR:   out = a | b;
-        ALUAND:  out = a & b;
+        ALU_CONTROL_ADD:  out = a + b;
+        ALU_CONTROL_SUB:  out = a - b;
+        ALU_CONTROL_SLL:  out = a << b[4:0];
+        ALU_CONTROL_SLT:  out = ($signed(a) < $signed(b)) ? 32'b1 : 32'b0;
+        ALU_CONTROL_SLTU: out = (a < b) ? 32'b1 : 32'b0;
+        ALU_CONTROL_XOR:  out = a ^ b;
+        ALU_CONTROL_SRL:  out = a >> b[4:0];
+        ALU_CONTROL_SRA:  out = $signed(a) >>> b[4:0];
+        ALU_CONTROL_OR:   out = a | b;
+        ALU_CONTROL_AND:  out = a & b;
         default: out = 32'b0;
     endcase
 end
