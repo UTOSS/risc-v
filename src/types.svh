@@ -23,17 +23,17 @@ typedef enum logic [1:0]
   } alu_op_t;
 
 // low-level ALU operation
-typedef enum logic [3:0] {
-    ALU_CONTROL_ADD  = 4'b0000,
-    ALU_CONTROL_SUB  = 4'b0001,
-    ALU_CONTROL_SLL  = 4'b0010,
-    ALU_CONTROL_SLT  = 4'b0011,
-    ALU_CONTROL_SLTU = 4'b0100,
-    ALU_CONTROL_XOR  = 4'b0101,
-    ALU_CONTROL_SRL  = 4'b0110,
-    ALU_CONTROL_SRA  = 4'b0111,
-    ALU_CONTROL_OR   = 4'b1000,
-    ALU_CONTROL_AND  = 4'b1001
+typedef enum logic [3:0]
+    { ALU_CONTROL_ADD  = 4'b0000
+    , ALU_CONTROL_SUB  = 4'b0001
+    , ALU_CONTROL_SLL  = 4'b0010
+    , ALU_CONTROL_SLT  = 4'b0011
+    , ALU_CONTROL_SLTU = 4'b0100
+    , ALU_CONTROL_XOR  = 4'b0101
+    , ALU_CONTROL_SRL  = 4'b0110
+    , ALU_CONTROL_SRA  = 4'b0111
+    , ALU_CONTROL_OR   = 4'b1000
+    , ALU_CONTROL_AND  = 4'b1001
 } alu_control_t;
 
 // represents the possible input sources for the first operand of the ALU as selected by the Control

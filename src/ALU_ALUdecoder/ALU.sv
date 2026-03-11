@@ -1,14 +1,14 @@
 `include "src/types.svh"
 module ALU
 (
-  input  logic [31:0] a,
-  input  logic [31:0] b,
-  input  alu_control_t alu_control,
-  output reg [31:0] out,
-  output logic zeroE
+  input logic [31:0] a
+  , input logic [31:0] b
+  , input alu_control_t alu_control
+  , output reg [31:0] out
+  , output logic zeroE
 );
 
-always_comb begin
+always_comb
     case (alu_control)
         ALU_CONTROL_ADD:  out = a + b;
         ALU_CONTROL_SUB:  out = a - b;
@@ -22,7 +22,6 @@ always_comb begin
         ALU_CONTROL_AND:  out = a & b;
         default: out = 32'b0;
     endcase
-end
 
 assign zeroE = (out == 0);
 

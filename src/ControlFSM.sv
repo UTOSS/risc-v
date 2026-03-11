@@ -244,14 +244,14 @@ module ControlFSM
         Branch = 1'b1;
         case (funct3)
           3'b100, 3'b110: begin // BLT, BLTU: branch if rs1 < rs2
-            if (alu_result) begin  // Direct SLT/SLTU result
+            if (alu_result) begin // Direct SLT/SLTU result
               pc_src = PC_SRC__JUMP;
               PCUpdate = 1'b1;
             end
             else pc_src = PC_SRC__INCREMENT;
           end
           3'b101, 3'b111: begin // BGE, BGEU: branch if rs1 >= rs2 (invert SLT/SLTU)
-            if (!alu_result) begin  // Invert SLT/SLTU result for >= comparison
+            if (!alu_result) begin // Invert SLT/SLTU result for >= comparison
               pc_src = PC_SRC__JUMP;
               PCUpdate = 1'b1;
             end
