@@ -3,7 +3,11 @@
 `include "test/utils.svh"
 `include "src/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off INITIALDLY */
 import pkg_control_fsm::*;
+/* verilator lint_on IMPORTSTAR */
 
 module auipc_tb;
 
@@ -20,7 +24,7 @@ module auipc_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  task wait_till_next_cfsm_state(input state_t expected_state);
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
@@ -32,10 +36,10 @@ module auipc_tb;
 
     //Set up memory
     //auipc rd, imm -> machine code: imm[31:12] | 11 rd 7 | 6 op 0
-    uut.memory.M[ 0] = 32'h00014097; // auipc x1, 20
-    uut.memory.M[ 1] = 32'h000c8117; // auipc x2, 200
+    uut.memory.M[0] = 32'h00014097; // auipc x1, 20
+    uut.memory.M[1] = 32'h000c8117; // auipc x2, 200
     // 000c8 | 0001_0 | 001_0111
-    uut.memory.M[ 2] = 32'h003ff197; // auipc x3, 1023
+    uut.memory.M[2] = 32'h003ff197; // auipc x3, 1023
     uut.memory.M[40] = 32'hbadab00f; // have some data at address 0xa0
     uut.memory.M[42] = 32'hdeadbeef; // have some data at address 0xa8
     uut.memory.M[43] = 32'hcafebabe; // have some data at address 0xac
@@ -133,5 +137,7 @@ module auipc_tb;
   end
 
   `SETUP_VCD_DUMP(auipc_tb)
-
+/* verilator lint_on IMPORTSTAR */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on INITIALDLY */
 endmodule

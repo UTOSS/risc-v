@@ -3,6 +3,7 @@
 `include "test/utils.svh"
 `include "src/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
 
 module lui_tb;
@@ -20,27 +21,30 @@ module lui_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  /* verilator lint_off UNUSEDSIGNAL */
+  task wait_till_next_cfsm_state(input state_t expected_state);
+  /* verilator lint_on UNUSEDSIGNAL */
+
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   initial begin
-    reset <= `TRUE;
+    reset = `TRUE;
 
     //Set up memory
     //lui rd, imm -> machine code: imm[31:12] | 11 rd 7 | 6 op 0
-    uut.memory.M[ 0] = 32'h000140b7; // lui x1, 20
-    uut.memory.M[ 1] = 32'h000c8137; // lui x2, 200
+    uut.memory.M[0] = 32'h000140b7; // lui x1, 20
+    uut.memory.M[1] = 32'h000c8137; // lui x2, 200
     // 000c8 | 0001_0 | 011_0111
-    uut.memory.M[ 2] = 32'h003ff1b7; // lui x3, 1023
+    uut.memory.M[2] = 32'h003ff1b7; // lui x3, 1023
     uut.memory.M[40] = 32'hbadab00f; // have some data at address 0xa0
     uut.memory.M[42] = 32'hdeadbeef; // have some data at address 0xa8
     uut.memory.M[43] = 32'hcafebabe; // have some data at address 0xac
 
     wait_till_next_cfsm_state(FETCH);
 
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -131,5 +135,5 @@ module lui_tb;
   end
 
   `SETUP_VCD_DUMP(lui_tb)
-
+/* verilator lint_on IMPORTSTAR */
 endmodule

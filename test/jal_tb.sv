@@ -3,6 +3,10 @@
 `include "src/types.svh"      // <-- bring in enum literals like PC_SRC__JUMP
 `include "test/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off INITIALDLY */
+
 import pkg_control_fsm::*;
 
 module jal_tb;
@@ -23,13 +27,15 @@ module jal_tb;
   end
 
   // helper: wait one cycle then assert expected FSM state
-  task wait_till_next_cfsm_state(input [4:0] expected_state);
+  /* verilator lint_off UNUSEDSIGNAL */
+  task wait_till_next_cfsm_state(input state_t expected_state);
+  /* verilator lint_on UNUSEDSIGNAL */
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
   initial begin
-    reset <= `TRUE;
+    reset = `TRUE;
 
     // Program:
     //   0x00000000: JAL x1, +16   (target = 16)
@@ -40,7 +46,7 @@ module jal_tb;
     wait_till_next_cfsm_state(FETCH);
 
     // Release reset
-    reset <= `FALSE;
+    reset = `FALSE;
 
     wait_till_next_cfsm_state(FETCH_WAIT);
 
@@ -73,5 +79,8 @@ module jal_tb;
   end
 
   `SETUP_VCD_DUMP(jal_only_tb)
+/* verilator lint_off IMPORTSTAR */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off INITIALDLY */
 
 endmodule

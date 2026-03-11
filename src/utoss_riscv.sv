@@ -1,7 +1,7 @@
 `include "src/types.svh"
 `include "src/packages/pkg_control_fsm.svh"
+`timescale 1ns/1ps
 
-import pkg_control_fsm::state_t;
 
 module utoss_riscv
   ( input wire clk
@@ -14,6 +14,8 @@ module utoss_riscv
   , input  data_t       memory__read_data
   // memory interface end
   );
+
+  import pkg_control_fsm::state_t;
 
   wire         cfsm__pc_update;
   wire         cfsm__reg_write;
@@ -29,14 +31,15 @@ module utoss_riscv
   reg [2:0] funct3;
   reg [6:0] funct7;
 
+/* verilator lint_off UNUSEDSIGNAL */
   integer byteindex;
+/* verilator lint_on UNUSEDSIGNAL */
 
   data_t result;
   data_t mem_load_result;
 
   data_t rd1;
   data_t rd2;
-
   data_t alu_input_a;
   data_t alu_input_b;
   data_t alu_result;
@@ -47,10 +50,17 @@ module utoss_riscv
   wire alu__zero_flag;
 
   adr_src_t cfsm__adr_src;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   wire __tmp_Branch;
+  /* verilator lint_on UNUSEDSIGNAL */
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
   wire [3:0] __tmp_ALUControl;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   wire [1:0] __tmp_ResultSrc;
+  /* verilator lint_on UNUSEDSIGNAL */
+
   state_t __tmp_FSMState;
   data_t     dataA, dataB;
   reg  [4:0] rd, rs1, rs2;
@@ -90,8 +100,9 @@ module utoss_riscv
     // outputs
     , .pc_cur          ( pc_cur          )
     , .pc_old          ( pc_old          )
-    );
-
+    , .instr_mem_data_in (memory__read_data)
+    , .instr_out       (instruction      )
+  );
   always @(*) begin
     case (cfsm__adr_src)
       ADR_SRC__PC:     memory__address = pc_cur;
@@ -99,11 +110,11 @@ module utoss_riscv
     endcase
   end
 
-  always @(posedge clk) begin
-    if (cfsm__ir_write) begin
-      instruction <= memory__read_data;
-    end
-  end
+//  always @(posedge clk) begin
+//    if (cfsm__ir_write) begin
+//      instruction <= memory__read_data;
+//    end
+//  end
 
   MemoryLoader MemLoad
   ( .memory_data          ( memory__read_data   )
@@ -177,17 +188,20 @@ module utoss_riscv
 
   always @(*) begin
     case (cfsm__result_src)
-      RESULT_SRC__ALU_OUT:    result = alu_out;
+      RESULT_SRC__ALU_OUT:    result = alu_result;
       RESULT_SRC__DATA:       result = data;
       RESULT_SRC__ALU_RESULT: result = alu_result;
       default:                result = 32'hxxxxxxxx;
     endcase
   end
 
-  always @(posedge clk) begin
-    dataA <= rd1;
-    dataB <= rd2;
-  end
+  assign dataA = rd1;
+  assign dataB = rd2;
+
+//  always @(posedge clk) begin
+//    dataA <= rd1;
+//    dataB <= rd2;
+//  end
 
 `ifndef UTOSS_RISCV_SYNTHESIS
 `ifndef UTOSS_RISCV_HARDENING
@@ -206,7 +220,7 @@ module utoss_riscv
   , .imm_ext          ( imm_ext          )
   , .memory_address   ( memory__address  )
   , .memory_data      ( mem_load_result  )
-  , .write_enable     ( memory__write_enable )
+  , .write_enable     ( memory__write_enable[0] )
   , .rd1              ( rd1              )
   , .rd2              ( rd2              )
   , .result           ( result           )

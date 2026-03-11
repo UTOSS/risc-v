@@ -2,13 +2,17 @@
 
 `include "test/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
 
 module memoryload_tb;
 
   reg clk;
   reg reset;
+
+  /* verilator lint_off UNUSEDSIGNAL */
   integer expected_pc = 0;
+  /* verilator lint_on UNUSEDSIGNAL */
 
   top uut
     ( .clk   ( clk   )
@@ -20,12 +24,18 @@ module memoryload_tb;
     forever #5 clk = ~clk;
   end
 
-  task wait_till_next_cfsm_state(input [5:0] expected_state);
+  /* verilator lint_off UNUSEDSIGNAL */
+  task wait_till_next_cfsm_state(input state_t expected_state);
+  /* verilator lint_on UNUSEDSIGNAL */
+
     @(posedge clk); #1;
     `assert_equal(uut.core.control_fsm.current_state, expected_state)
   endtask
 
+  /* verilator lint_off UNUSEDSIGNAL */
   task check_next_memory_read(input [31:0] expected_addr, input [31:0] expected_word);
+  /* verilator lint_on UNUSEDSIGNAL */
+
     wait_till_next_cfsm_state(FETCH_WAIT);
 
     wait_till_next_cfsm_state(DECODE);
@@ -58,7 +68,7 @@ module memoryload_tb;
   endtask
 
   initial begin
-    reset <= `TRUE;
+    reset = `TRUE;
 
     // set up instructions and data memory; M array uses word addressing, hence the indices there
     // are 4 times smaller than the actual addresses corresponding to the beginning to the
@@ -114,7 +124,7 @@ module memoryload_tb;
     uut.core.RegFile.RFMem[2] = 32'h10;
 
     wait_till_next_cfsm_state(FETCH);
-    reset <= `FALSE;
+    reset = `FALSE;
 
     // signed byte reads
     check_next_memory_read(32'ha0, 32'h00000011);
@@ -164,5 +174,5 @@ module memoryload_tb;
   end
 
   `SETUP_VCD_DUMP(memoryload_tb)
-
+/* verilator lint_on IMPORTSTAR */
 endmodule
