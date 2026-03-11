@@ -11,6 +11,11 @@ permissions:
   contents: read
   packages: write
 
+x-utoss-risc-v-matrix: &utoss-risc-v-matrix
+  config:
+    - RV32I
+    - RV32IB
+
 jobs:
   build_ci_image:
     # do this during a push to a branch (e.g. to main) or on a non-fork PR
@@ -86,17 +91,20 @@ jobs:
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
 
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Build top
         id: build-top
-        run: make build_top
+        run: make build_top UTOSS_RISCV_CONFIG={{ matrix.config }}
 
       - name: Build testbench
         id: build-testbench
-        run: make build_tb
+        run: make build_tb UTOSS_RISCV_CONFIG={{ matrix.config }}
 
       - name: Run testbench
         run: make run_tb
@@ -125,12 +133,15 @@ jobs:
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
 
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Build DUT
-        run: make riscof_build_dut
+        run: make riscof_build_dut UTOSS_RISCV_CONFIG={{ matrix.config }}
 
       - name: Validate YAML
         run: make riscof_validateyaml
