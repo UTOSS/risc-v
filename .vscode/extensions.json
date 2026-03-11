@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "tamasfe.even-better-toml",
-    "dalance.svls-vscode"
+    "dalance.svls-vscode",
+    "iulian-radu-at.vscode-tasks-sidebar"
   ]
 }
