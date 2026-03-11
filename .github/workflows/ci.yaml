@@ -98,11 +98,11 @@ jobs:
 
       - name: Build top
         id: build-top
-        run: make build_top UTOSS_RISCV_CONFIG={{ matrix.config }}
+        run: make build_top UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Build testbench
         id: build-testbench
-        run: make build_tb UTOSS_RISCV_CONFIG={{ matrix.config }}
+        run: make build_tb UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Run testbench
         run: make run_tb
@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build DUT
-        run: make riscof_build_dut UTOSS_RISCV_CONFIG={{ matrix.config }}
+        run: make riscof_build_dut UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Validate YAML
         run: make riscof_validateyaml
