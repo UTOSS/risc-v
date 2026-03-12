@@ -79,10 +79,11 @@ jobs:
         run: make svlint ENV=de1-soc
 
   build_and_test:
-    if: false # temporarily disabling during initial pipelineing integration
     timeout-minutes: 30
     needs: select_ci_image
-    if: always() # dont skip if build_ci_image is skipped
+    # dont skip if build_ci_image is skipped but temporarily disabling during initial pipelineing
+    # integration
+    if: always() && false
     runs-on: ubuntu-latest
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
