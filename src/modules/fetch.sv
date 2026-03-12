@@ -4,8 +4,8 @@
 // program counter (PC); implemented as a Moore FSM
 //
 
-`include "src/utils.svh"
-`include "src/types.svh"
+`include "src/headers/utils.svh"
+`include "src/headers/types.svh"
 
 module fetch
   ( input  wire     clk
