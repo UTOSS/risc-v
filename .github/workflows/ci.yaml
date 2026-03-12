@@ -6,12 +6,17 @@ on:
     branches:
       - main
 
+
 permissions:
   contents: read
   packages: write
 
 jobs:
   build_ci_image:
+    # do this during a push to a branch (e.g. to main) or on a non-fork PR
+    if: >
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
       image-name: ghcr.io/utoss/risc-v
@@ -19,7 +24,33 @@ jobs:
       tag-prefix: ci-
     secrets: inherit
 
+  # we have both internal and external collaborators, and we need to differentiate which CI image
+  # thier pipelines use; this is because internaly, every PR builds and caches (via docker push) a
+  # new CI image; this helps reduce friction when adding new dependencies to the CI image but
+  # requires write access to the GHCR repo for the org, which only org members have; to address
+  # this, this job selects `ci-branch-main` image for external collaborators so that they don't need
+  # to write anythign to GHCR; there is a chance that PR might diverge from the `ci-branch-main` tag
+  # and might cause issues for the contributor, but we'll see if that ever happens first
+  select_ci_image:
+    runs-on: ubuntu-latest
+    needs: build_ci_image
+    if: always() # dont skip if build_ci_image is skipped
+    outputs:
+      image-tag: ${{ steps.image.outputs.tag }}
+    steps:
+      - id: image
+        run: |
+          if [ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]; then
+            echo "tag=${{ needs.build_ci_image.outputs.image-primary-tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=ghcr.io/utoss/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
+          fi
+
   build_devcontainer_image:
+    # do this during a push to a branch (e.g. to main) or on a non-fork PR
+    if: >
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
       image-name: ghcr.io/utoss/risc-v-devcontainer
@@ -28,10 +59,11 @@ jobs:
     secrets: inherit
 
   svlint:
-    needs: build_ci_image
+    needs: select_ci_image
+    if: always() # dont skip if build_ci_image is skipped
     runs-on: ubuntu-latest
     container:
-      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
 
     steps:
       - name: Checkout code
@@ -49,10 +81,11 @@ jobs:
   build_and_test:
     if: false # temporarily disabling during initial pipelineing integration
     timeout-minutes: 30
-    needs: build_ci_image
+    needs: select_ci_image
+    if: always() # dont skip if build_ci_image is skipped
     runs-on: ubuntu-latest
     container:
-      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
 
     steps:
       - name: Checkout code
@@ -104,10 +137,11 @@ jobs:
   riscof:
     if: false # temporarily disabling during initial pipelineing integration
     timeout-minutes: 30
-    needs: build_ci_image
+    needs: select_ci_image
+    if: always() # dont skip if build_ci_image is skipped
     runs-on: ubuntu-latest
     container:
-      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
 
     steps:
       - name: Checkout code
@@ -139,11 +173,13 @@ jobs:
     if: false # temporarily disabling during initial pipelineing integration
     timeout-minutes: 30
     needs:
-      - build_ci_image
+      - select_ci_image
       - build_and_test
+    # dont skip if build_ci_image is skipped; need explicit check for needs' success
+    if: always() && needs.build_and_test.result == 'success'
     runs-on: ubuntu-latest
     container:
-      image: ${{ needs.build_ci_image.outputs.image-primary-tag }}
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
 
     steps:
       - name: Checkout code
@@ -186,9 +222,14 @@ jobs:
           retention-days: 7
 
   de1-soc-synthesis-metrics-diff:
-    if: github.event_name == 'pull_request'
     timeout-minutes: 10
     needs: de1-soc
+    # dont run this on fork PRs; this will fail to permission issues when posting a comment; i don't
+    # understand exactly the permission mechanism that prohibits this so will need to look into this
+    # further down the road
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
