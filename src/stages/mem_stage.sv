@@ -7,7 +7,7 @@ module Mem_Stage
   , input wire [2:0] funct3
   , input data_t dataFromMemory
   , output data_t dataToMemory
-  // , output logic [3:0] MemWriteByteAddress
+  , output logic [3:0] memWriteEnable
   , output mem_to_wb_t MEM_to_WB
   );
 
@@ -17,7 +17,7 @@ module Mem_Stage
   logic [4:0] RdM;
   logic MemWrite;
 
-  logic [3:0] MemWriteByteAddress;
+  // logic [3:0] MemWriteByteAddress;
 
   assign WriteDataM = EX_to_MEM.WriteDataE;
   assign ALUResultM = EX_to_MEM.alu_result;
@@ -35,7 +35,7 @@ module Mem_Stage
     , .__tmp_MemData       ( dataToMemory            )
     );
 
-  assign MemWriteByteAddress = (MemWrite == 'b0) ? 4'b0 : tempMemWriteByteAddress;
+  assign memWriteEnable = (MemWrite == 'b0) ? 4'b0 : tempMemWriteByteAddress;
 
   // Combinational assignment to MEM_to_WB interface
   assign MEM_to_WB.RegWriteW = EX_to_MEM.RegWrite;

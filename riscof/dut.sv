@@ -7,7 +7,7 @@ module dut;
   reg clk;
   reg reset;
 
-  top #( .MEM_SIZE ( 500000 /* 2MB */ ) )
+  top_pipelined #( .MEM_SIZE ( 500000 /* 2MB */ ) )
     top
       ( .clk   ( clk   )
       , .reset ( reset )
@@ -41,7 +41,7 @@ module dut;
 
       while (tohost_data === 0 || tohost_data === 32'bx) begin
         @(posedge clk);
-        tohost_data = top.memory.M[tohost[31:2]];
+        tohost_data = top.memory.M[tohost[31:2]];//tohost_data = top.memory.M[tohost[31:2]];
       end
 
       $display("%m: memory[tohost] written <%0d> at time %t", tohost_data, $time);
@@ -81,7 +81,7 @@ module dut;
     sig_file = $fopen(sig_filename, "w");
     if (sig_file != 0) begin
       for (i = begin_signature; i < end_signature; i = i + 4) begin
-        $fwrite(sig_file, "%08x\n", top.memory.M[i[31:2]]);
+        $fwrite(sig_file, "%08x\n", top.memory.M[i[31:2]]);//$fwrite(sig_file, "%08x\n", top.memory.M[i[31:2]]);
       end
       $fclose(sig_file);
       $display("%m: signature written to %s", sig_filename);
