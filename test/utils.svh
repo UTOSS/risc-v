@@ -25,4 +25,6 @@
 `include "src/utils.svh"
 `include "src/packages/pkg_control_fsm.svh"
 
+`include "src/utils.svh"
+
 `endif

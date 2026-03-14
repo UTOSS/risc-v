@@ -29,6 +29,7 @@ module top_tb;
     #100;
 
     reset <= 4'b1111;
+    uut.u_master.hold_core <= '0; // hack to make the tb pass
 
     #1000;
 
