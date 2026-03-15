@@ -134,4 +134,18 @@ module Instruction_Decode
     , .alu_control(ALUControl)
     );
 
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+
+  ext__b__types::b_alu_control_t b_alu_control;
+
+  ext__b__decoder u_ext__b__decoder
+    ( .funct3        ( funct3        )
+    , .funct7        ( funct7        )
+    , .opcode        ( opcode        )
+    , .rd            ( rd            )
+    , .b_alu_control ( b_alu_control )
+    );
+
+`endif
+
 endmodule

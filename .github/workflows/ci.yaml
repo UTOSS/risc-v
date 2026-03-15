@@ -86,17 +86,23 @@ jobs:
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
 
+    strategy:
+      matrix: &utoss-risc-v-matrix
+        config:
+          - RV32I
+          - RV32IB
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Build top
         id: build-top
-        run: make build_top
+        run: make build_top UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Build testbench
         id: build-testbench
-        run: make build_tb
+        run: make build_tb UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Run testbench
         run: make run_tb
@@ -105,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: steps.build-testbench.outcome == 'success'
         with:
-          name: vcd-files
+          name: vcd-files-${{ matrix.config }}
           path: test/vcd/*.vcd
           retention-days: 7
 
@@ -113,7 +119,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: steps.build-top.outcome == 'success'
         with:
-          name: vvp-files
+          name: vvp-files-${{ matrix.config }}
           path: out/*.vvp
           retention-days: 7
 
@@ -125,12 +131,15 @@ jobs:
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
 
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Build DUT
-        run: make riscof_build_dut
+        run: make riscof_build_dut UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Validate YAML
         run: make riscof_validateyaml
@@ -145,7 +154,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: riscof-report
+          name: riscof-report-${{ matrix.config }}
           path: |
             riscof/riscof_work/report.html
             riscof/riscof_work/style.css
