@@ -136,12 +136,14 @@ module Instruction_Decode
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
 
+  b_alu_control_t b_alu_control;
+
   BALUdecoder instanceBALUDec
-    ( .funct3(funct3)
-    , .funct7(funct7)
-    , .opcode(opcode)
-    , .rd(rd)
-    , .b_alu_control(state) // this should be updated accordingly in the future
+    ( .funct3        ( funct3        )
+    , .funct7        ( funct7        )
+    , .opcode        ( opcode        )
+    , .rd            ( rd            )
+    , .b_alu_control ( b_alu_control )
     );
 
 `endif
