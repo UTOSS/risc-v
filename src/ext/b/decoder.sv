@@ -1,12 +1,14 @@
-`include "src/types.svh"
+`include "src/ext/b/types.svh"
 
 module ext__b__decoder
   ( input [2:0] funct3
   , input [6:0] funct7
   , input [6:0] opcode
   , input [4:0] rd
-  , output b_alu_control_t b_alu_control
+  , output ext__b__types::b_alu_control_t b_alu_control
   );
+
+  import ext__b__types::*;
 
   localparam bit [6:0] FUNCT7_ZBA = 7'b0010000;
   localparam bit [6:0] FUNCT7_ZBB = 7'b0100000;
