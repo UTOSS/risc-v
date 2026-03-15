@@ -49,7 +49,7 @@ module utoss_riscv
   adr_src_t cfsm__adr_src;
   wire __tmp_Branch;
   wire [1:0] __tmp_ALUSrcA, __tmp_ALUSrcB;
-  wire [3:0] __tmp_ALUControl;
+  alu_control_t  __tmp_ALUControl;
   wire [1:0] __tmp_ResultSrc;
   state_t __tmp_FSMState;
   data_t     dataA, dataB;
