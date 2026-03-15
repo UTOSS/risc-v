@@ -28,3 +28,4 @@ out/**
 !out/.gitkeep
 build/**
 !build/.gitkeep
+.DS_Store
