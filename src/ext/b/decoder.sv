@@ -19,17 +19,17 @@ begin
         7'b0000100: // zba module
         begin
           case (funct3)
-            3'b010: b_alu_control = B_ALU_CTRL__SH1ADD; // sh1add
-            3'b100: b_alu_control = B_ALU_CTRL__SH2ADD; // sh2add
-            3'b110: b_alu_control = B_ALU_CTRL__SH3ADD; // sh3add
+            3'b010: b_alu_control = B_ALU_CTRL__SH1ADD;
+            3'b100: b_alu_control = B_ALU_CTRL__SH2ADD;
+            3'b110: b_alu_control = B_ALU_CTRL__SH3ADD;
           endcase
         end
         7'b0100000: // zbb module
         begin
           case (funct3)
-            3'b111: b_alu_control = B_ALU_CTRL__ANDN; // andn
-            3'b110: b_alu_control = B_ALU_CTRL__ORN; // orn
-            3'b100: b_alu_control = B_ALU_CTRL__XNOR; // xnor
+            3'b111: b_alu_control = B_ALU_CTRL__ANDN;
+            3'b110: b_alu_control = B_ALU_CTRL__ORN;
+            3'b100: b_alu_control = B_ALU_CTRL__XNOR;
           endcase
         end
 
