@@ -16,7 +16,7 @@ always @(*)
 begin
   b_alu_control = B_ALU_CTRL__NONE; // default to NONE for non-zba/b instructions
   case (opcode)
-    6'b011011:
+    7'b0110011:
     begin
       case (funct7)
         FUNCT7_ZBA:
