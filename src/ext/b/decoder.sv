@@ -14,7 +14,6 @@ module BALUdecoder
 always @(*)
 
 begin
-  b_alu_control = B_ALU_CTRL__NONE; // default to NONE for non-zba/b instructions
   case (opcode)
     7'b0110011:
     begin
@@ -22,24 +21,28 @@ begin
         FUNCT7_ZBA:
         begin
           case (funct3)
-            3'b010: b_alu_control = B_ALU_CTRL__SH1ADD;
-            3'b100: b_alu_control = B_ALU_CTRL__SH2ADD;
-            3'b110: b_alu_control = B_ALU_CTRL__SH3ADD;
+            3'b010:  b_alu_control = B_ALU_CTRL__SH1ADD;
+            3'b100:  b_alu_control = B_ALU_CTRL__SH2ADD;
+            3'b110:  b_alu_control = B_ALU_CTRL__SH3ADD;
+            default: b_alu_control = B_ALU_CTRL__NONE;
           endcase
         end
         FUNCT7_ZBB:
         begin
           case (funct3)
-            3'b111: b_alu_control = B_ALU_CTRL__ANDN;
-            3'b110: b_alu_control = B_ALU_CTRL__ORN;
-            3'b100: b_alu_control = B_ALU_CTRL__XNOR;
+            3'b111:  b_alu_control = B_ALU_CTRL__ANDN;
+            3'b110:  b_alu_control = B_ALU_CTRL__ORN;
+            3'b100:  b_alu_control = B_ALU_CTRL__XNOR;
+            default: b_alu_control = B_ALU_CTRL__NONE;
           endcase
         end
 
         // TODO: Implement zbs into ALU decoder, also confirm what zbb instructions are being implemented.
+        default: b_alu_control = B_ALU_CTRL__NONE;
 
       endcase
     end
+    default: b_alu_control = B_ALU_CTRL__NONE;
   endcase
 end
 endmodule
