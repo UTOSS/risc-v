@@ -1,0 +1,131 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "svlint: sources",
+            "type": "shell",
+            "command": "make svlint",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "svlint: testbench",
+            "type": "shell",
+            "command": "make svlint_tb",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "svlint: DE1-SoC env",
+            "type": "shell",
+            "command": "make svlint ENV=de1-soc",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Top (Verilator)",
+            "type": "shell",
+            "command": "make build_top",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Testbench",
+            "type": "shell",
+            "command": "make build_tb",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Testbench",
+            "type": "shell",
+            "command": "make run_tb",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "RISCOF Build DUT",
+            "type": "shell",
+            "command": "make riscof_build_dut",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "RISCOF Validate YAML",
+            "type": "shell",
+            "command": "make riscof_validateyaml",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "RISCOF Clone Arch Test",
+            "type": "shell",
+            "command": "make riscof_clone_archtest",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "RISCOF Run",
+            "type": "shell",
+            "command": "make riscof_run",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "DE1-SoC: Build PoC",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/envs/de1-soc/poc"
+            }
+        },
+        {
+            "label": "DE1-SoC: Run Testbench",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/envs/de1-soc"
+            }
+        },
+        {
+            "label": "DE1-SoC: Synthesize (Quartus)",
+            "type": "shell",
+            "command": "make synthesize",
+            "options": {
+                "cwd": "${workspaceFolder}/envs/de1-soc"
+            }
+        },
+        {
+            "label": "Run Full CI Workflow (local)",
+            "type": "shell",
+            "command": "make svlint && make svlint_tb && make build_top && make build_tb && make run_tb && make riscof_build_dut && make riscof_validateyaml && make riscof_clone_archtest && make riscof_run",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "problemMatcher": []
+        }
+    ]
+}
