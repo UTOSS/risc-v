@@ -5,7 +5,7 @@ module BALUdecoder
   , input [6:0] funct7
   , input [6:0] opcode
   , input [4:0] rd
-  , output reg [3:0] b_alu_control
+  , output b_alu_control_t b_alu_control
   );
 
 always @(*)
