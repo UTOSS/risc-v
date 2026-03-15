@@ -8,6 +8,9 @@ module BALUdecoder
   , output b_alu_control_t b_alu_control
   );
 
+  localparam bit [6:0] FUNCT7_ZBA = 7'b0010000;
+  localparam bit [6:0] FUNCT7_ZBB = 7'b0100000;
+
 always @(*)
 
 begin
@@ -16,7 +19,7 @@ begin
     6'b011011:
     begin
       case (funct7)
-        7'b0000100: // zba module
+        FUNCT7_ZBA:
         begin
           case (funct3)
             3'b010: b_alu_control = B_ALU_CTRL__SH1ADD;
@@ -24,7 +27,7 @@ begin
             3'b110: b_alu_control = B_ALU_CTRL__SH3ADD;
           endcase
         end
-        7'b0100000: // zbb module
+        FUNCT7_ZBB:
         begin
           case (funct3)
             3'b111: b_alu_control = B_ALU_CTRL__ANDN;
