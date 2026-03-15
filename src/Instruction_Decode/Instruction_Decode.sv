@@ -138,7 +138,7 @@ module Instruction_Decode
 
   b_alu_control_t b_alu_control;
 
-  BALUdecoder instanceBALUDec
+  ext__b__decoder u_ext__b__decoder
     ( .funct3        ( funct3        )
     , .funct7        ( funct7        )
     , .opcode        ( opcode        )

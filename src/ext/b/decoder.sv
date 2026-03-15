@@ -1,6 +1,6 @@
 `include "src/types.svh"
 
-module BALUdecoder
+module ext__b__decoder
   ( input [2:0] funct3
   , input [6:0] funct7
   , input [6:0] opcode
