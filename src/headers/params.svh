@@ -13,6 +13,7 @@ parameter UType_auipc = 7'b0010111;
 parameter UType_lui = 7'b0110111;
 parameter IType_jalr = 7'b1100111;
 parameter FENCE    = 7'b0001111;
+parameter SYSTEM   = 7'b1110011;
 /* verilator lint_on UNUSEDPARAM */
 
 //ALU Operation Control Codes: Implemented as ENUM in params.svh
