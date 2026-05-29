@@ -146,6 +146,18 @@ module Logger
             UType_lui:   op_name = "lui";
             IType_jalr:  op_name = "jalr";
             FENCE:       op_name = "fence";
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+            SYSTEM:
+                case (funct3)
+                    3'b001: op_name = "csrrw";
+                    3'b010: op_name = "csrrs";
+                    3'b011: op_name = "csrrc";
+                    3'b101: op_name = "csrrwi";
+                    3'b110: op_name = "csrrsi";
+                    3'b111: op_name = "csrrci";
+                    default:;
+                endcase
+`endif
             default:;
         endcase
     endfunction

@@ -7,6 +7,7 @@ module Instruction_Decode
   , output opcode_t opcode
   , output alu_control_t ALUControl
   , output imm_t imm_ext
+  , output csr_addr_t csr_addr
   , output reg [2:0] funct3
   , output reg [4:0] rd
   , output reg [4:0] rs1
@@ -50,6 +51,11 @@ module Instruction_Decode
       funct3 = instr[14:12];
 
     end
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    SYSTEM: begin
+      funct3 = instr[14:12];
+    end
+`endif
     default:;
     endcase
   end
@@ -66,6 +72,9 @@ module Instruction_Decode
       UType_auipc: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       UType_lui:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       FENCE:     alu_op = ALU_OP__UNSET;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      SYSTEM:    alu_op = ALU_OP__ADD;
+`endif
       default:    alu_op = ALU_OP__UNSET;
     endcase
   end
@@ -96,6 +105,13 @@ module Instruction_Decode
 
       end
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      SYSTEM: begin
+        rd  = instr[11:7];
+        rs1 = instr[19:15];
+      end
+`endif
+
       SType, BType: begin //S-type and B-Type
         rs1 = instr[19:15];
         rs2 = instr[24:20];
@@ -113,6 +129,9 @@ module Instruction_Decode
       end
     endcase
   end
+
+  always_comb
+    csr_addr = (opcode == SYSTEM) ? csr_addr_t'(instr[31:20]) : csr_addr_t'('0);
 
   // case statement for choosing 32-bit immediate format; based on opcode
     // this is essentially the extend module of the processor
