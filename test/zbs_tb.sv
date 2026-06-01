@@ -39,8 +39,8 @@ initial begin
 
     expected = reg1 | (32'h1 << reg2[4:0]);
 
-    assert (out == expected) else
-     $fatal("bset failed: expected %b got %b", expected, out);
+     assert (out == expected) else
+      $fatal("bset failed: expected %b got %b", expected, out);
 
 
     // -------- binv test --------

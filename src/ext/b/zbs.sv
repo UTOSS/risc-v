@@ -20,7 +20,7 @@ module zbs (
     logic [4:0] index;
     data_t mask;
 
-    always_comb begin
+    always_comb
         index = reg2[4:0];
         mask = data_t'(32'h1) << index;
 
@@ -42,6 +42,6 @@ module zbs (
             default: out = '0;
 
         endcase
-    end
+
 
 endmodule
