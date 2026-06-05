@@ -33,6 +33,8 @@ module decode_stage
 
   opcode_t opcode;
   imm_t    imm_ext;
+  csr_addr_t csr_addr;
+  data_t   csr_read_data;
 
   wire [2:0] funct3;
 
@@ -47,6 +49,7 @@ module decode_stage
 
   control_fsm u_ctrl
     ( .opcode  ( opcode )
+    , .funct3  ( funct3 )
 
     , .reg_write      ( cfsm__reg_write      )
     , .result_src     ( cfsm__result_src     )
@@ -64,6 +67,7 @@ module decode_stage
     , .funct3          ( funct3           )
     , .ALUControl      ( alu_control      )
     , .imm_ext         ( imm_ext          )
+    , .csr_addr        ( csr_addr         )
     , .rd              ( rd               )
     , .rs1             ( rs1              )
     , .rs2             ( rs2              )
@@ -80,6 +84,48 @@ module decode_stage
     , .baseAddr        ( rd1              )
     , .writeData       ( rd2              )
     );
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  data_t csr_write_data;
+  logic  csr_write_enable;
+
+  CSRFile u_csr_file
+    ( .addr            ( csr_addr         )
+    , .clk             ( clk              )
+    , .reset           ( reset            )
+    , .csr_write_enable( csr_write_enable )
+    , .data_in         ( csr_write_data   )
+    , .data_out        ( csr_read_data    )
+    );
+
+  always_comb begin
+    csr_write_enable = 1'b0;
+    csr_write_data   = data_t'(0);
+
+    if (opcode == SYSTEM) begin
+      case (funct3)
+        3'b001: begin
+          csr_write_enable = 1'b1;
+          csr_write_data   = rd1_safe;
+        end
+        3'b010: begin
+          csr_write_enable = (rs1 != 5'd0);
+          csr_write_data   = csr_read_data | rd1_safe;
+        end
+        3'b011: begin
+          csr_write_enable = (rs1 != 5'd0);
+          csr_write_data   = csr_read_data & ~rd1_safe;
+        end
+        default: begin
+          csr_write_enable = 1'b0;
+          csr_write_data   = data_t'(0);
+        end
+      endcase
+    end
+  end
+`else
+  assign csr_read_data = data_t'(0);
+`endif
 
   // WB->ID bypass; this is needed in situations where decode is reading the register that
   // write-back stage is about to write to; since register writes happen on clock enge without this
@@ -106,6 +152,7 @@ module decode_stage
   assign id_to_ex.reg_write      = cfsm__reg_write;
   assign id_to_ex.alu_control    = alu_control;
   assign id_to_ex.funct3         = funct3;
+  assign id_to_ex.csr_read_data  = csr_read_data;
   assign id_to_ex.rd1            = rd1_safe;
   assign id_to_ex.rd2            = rd2_safe;
   assign id_to_ex.rd             = rd;
