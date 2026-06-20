@@ -39,7 +39,8 @@ module fetch_stage
   addr_t pc_prev;
   addr_t pc_cur;
   addr_t pc_next;
- // RVC/C-extension fetch helpers.
+    // RVC/C-extension fetch helpers.
+
   always_comb
     case (ex_to_if.pc_src)
     //  PC_SRC__INCREMENT:  pc_next = pc_cur + 32'h4;
@@ -163,7 +164,7 @@ assign use_buffer = buffered_word_valid;
 assign reader_pc_i =
   split_wait_valid ? split_wait_pc :
   use_buffer       ? buffered_pc :
-                     pc_prev;
+  pc_prev;
 assign reader_cur_word_i =
   split_wait_valid   ? split_wait_cur_word :
   use_buffer         ? buffered_word :
