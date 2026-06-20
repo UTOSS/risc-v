@@ -143,12 +143,10 @@ instruction_reader u_reader
   , .instr_is_split_o      (reader_inst_is_split)
   );
 
-
-Compressed_Decode u_compressdecode (
-    .instr_c(reader_instr_raw[15:0]),
-    .instr_out(decompressed_instr),
-    .is_illegal(compressed_illegal)
-  );
+// TODO: Replace with real compressed decoder once C decompressor module is merged.
+// For now, compressed instructions are converted to NOP so fetch-stage integration builds.
+assign decompressed_instr = NOP;
+assign compressed_illegal = 1'b0;
 
 
 always_ff @ (posedge clk) begin
