@@ -327,6 +327,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/Instruction_
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/Instruction_Decode/MemoryLoader.sv
 set_global_assignment -name VERILOG_FILE ../../../src/modules/Instruction_Decode/registerFile.v
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/ControlFSM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/instruction_reader.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/packages/pkg_control_fsm.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/stages/decode_stage.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/stages/execute_stage.sv
