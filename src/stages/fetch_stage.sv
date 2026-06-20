@@ -149,51 +149,18 @@ assign compressed_illegal = 1'b0;
 
 
 
-/*
 
-always_ff @ (posedge clk) begin
-  if (reset || flush_f) begin
-    split_wait_valid    <= 1'b0;
-    split_wait_cur_word <= data_t'(0);
-    split_wait_pc       <= addr_t'(0);
-  end
-
-  else if (!stall_f) begin
-    // If we are currently waiting for the second half of a split instruction,
-    //then it must have arrived in this cycle, so we can stop waiting.
-    if (split_wait_valid) begin
-      split_wait_valid <= 1'b0;
-    end
-    // If we just fetched the first half of a split instruction,
-    //we need to start waiting for the second half in the next cycle.
-    //we must also save the current word and PC to be used for the split instruction
-    else if (need_split_wait) begin
-      split_wait_valid    <= 1'b1;
-      split_wait_cur_word <= reader_cur_word_i;
-      split_wait_pc       <= reader_instr_pc;
-    end
-  end
-end
-*/
-
-
-
-
-
-
-always_ff @ (posedge clk) begin
+always_ff @ (posedge clk)
   if (reset)
     pc_cur <= addr_t'(0);
   else if (!stall_f && !hold_pc_for_split_buffer)
     pc_cur <= pc_next;
-end
 
-always_ff @ (posedge clk) begin
+always_ff @ (posedge clk)
   if (reset)
     pc_prev <= addr_t'(0);
   else if (!stall_f && !hold_pc_for_split_buffer)
     pc_prev <= pc_cur;
-end
 
 
 always_ff @ (posedge clk)
@@ -222,43 +189,14 @@ always_ff @ (posedge clk)
       {buffered_word_valid, buffered_word, buffered_pc}
         <= {1'b1, reader_cur_word_i, reader_next_pc};
 
-      
-/*
-always_ff @ (posedge clk) begin
-  // On reset or flush, clear the buffer.
-  if (reset || flush_f) begin
-    buffered_word_valid <= 1'b0;
-    buffered_word       <= data_t'(0);
-    buffered_pc         <= addr_t'(0);
-  end
-  //If fetch is stalled, we should not consume or overwrite the buffer.
-  else if (!stall_f) begin
 
-    //This handles the case when the 32 bit word retrieved last after a
-    //split 32-bit instruction retrieval contains another instruction in
-    //its upper half that we will need to fetch next.
-    if (buffer_after_split) begin
-      buffered_word_valid <= 1'b1;
-      buffered_word       <= imem__data;
-      buffered_pc         <= reader_next_pc;
-    end
-  // the buffer is currently being used but we don't need to keep it for the next instruction, invalidate it.
-    else if (use_buffer) begin
-      buffered_word_valid <= 1'b0;
-    end
+/*
 
     // If the next instruction we need to fetch is in the same word
     //as the current instruction, buffer it for the next cycle.
     //this case happens when we have a compressed instruction followed by another
     //instruction (compressed or the start of a split 32-bit instruction) that starts in
     //the same 32-bit word
-    else if (buffer_next_same_word) begin
-      buffered_word_valid <= 1'b1;
-      buffered_word       <= reader_cur_word_i;
-      buffered_pc         <= reader_next_pc;
-    end
-  end
-end
 
 */
 
