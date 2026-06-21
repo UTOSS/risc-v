@@ -17,6 +17,9 @@ module fetch_rvc_06_branch_to_lower_compressed_tb;
   ex_to_if_t ex_to_if;
 
   addr_t imem__address;
+  wire unused_imem_address =
+    &{1'b0, imem__address[31:10], imem__address[1:0]};
+
   data_t imem__data;
 
   data_t imem [0:255];
