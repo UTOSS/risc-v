@@ -63,8 +63,10 @@ module fetch_rvc_05_branch_to_split_target_tb;
 
       imem__data = data_t'(0);
 
-      for (i = 0; i < 256; i = i + 1)
+      for (i = 0; i < 256; i = i + 1) begin
         imem[i] = NOP;
+
+      end
     end
   endtask
 
@@ -92,7 +94,7 @@ module fetch_rvc_05_branch_to_split_target_tb;
   task wait_fetch;
     input addr_t  exp_pc;
     input instr_t exp_instr;
-    input [8*80-1:0] label;
+    input [8 * 80 - 1:0] label;
     integer n;
     reg seen;
     begin
@@ -101,8 +103,12 @@ module fetch_rvc_05_branch_to_split_target_tb;
         if (!stall_f && !flush_f &&
             if_to_id.pc_cur === exp_pc &&
             if_to_id.instruction === exp_instr) begin
-          $display("[pass] %0s pc=0x%08h instr=0x%08h",
-                   label, if_to_id.pc_cur, if_to_id.instruction);
+          $display
+            ( "[pass] %0s pc=0x%08h instr=0x%08h"
+            , label
+            , if_to_id.pc_cur
+            , if_to_id.instruction
+            );
           seen = 1'b1;
           n = 40;
         end
@@ -112,8 +118,14 @@ module fetch_rvc_05_branch_to_split_target_tb;
       end
 
       if (!seen) begin
-        $display("[fail] %0s expected pc=0x%08h instr=0x%08h, got pc=0x%08h instr=0x%08h",
-                 label, exp_pc, exp_instr, if_to_id.pc_cur, if_to_id.instruction);
+        $display
+          ( "[fail] %0s expected pc=0x%08h instr=0x%08h, got pc=0x%08h instr=0x%08h"
+          , label
+          , exp_pc
+          , exp_instr
+          , if_to_id.pc_cur
+          , if_to_id.instruction
+          );
         $fatal(1);
       end
     end
@@ -122,7 +134,7 @@ module fetch_rvc_05_branch_to_split_target_tb;
   task wait_pc_plus;
     input addr_t exp_pc;
     input addr_t exp_next_pc;
-    input [8*80-1:0] label;
+    input [8 * 80 - 1:0] label;
     integer n;
     reg seen;
     begin
@@ -131,8 +143,12 @@ module fetch_rvc_05_branch_to_split_target_tb;
         if (!stall_f && !flush_f &&
             if_to_id.pc_cur === exp_pc &&
             if_to_id.pc_plus_4 === exp_next_pc) begin
-          $display("[pass] %0s pc=0x%08h next=0x%08h",
-                   label, if_to_id.pc_cur, if_to_id.pc_plus_4);
+          $display
+            ( "[pass] %0s pc=0x%08h next=0x%08h"
+            , label
+            , if_to_id.pc_cur
+            , if_to_id.pc_plus_4
+            );
           seen = 1'b1;
           n = 40;
         end
@@ -142,8 +158,14 @@ module fetch_rvc_05_branch_to_split_target_tb;
       end
 
       if (!seen) begin
-        $display("[fail] %0s expected pc=0x%08h next=0x%08h, got pc=0x%08h next=0x%08h",
-                 label, exp_pc, exp_next_pc, if_to_id.pc_cur, if_to_id.pc_plus_4);
+        $display
+          ( "[fail] %0s expected pc=0x%08h next=0x%08h, got pc=0x%08h next=0x%08h"
+          , label
+          , exp_pc
+          , exp_next_pc
+          , if_to_id.pc_cur
+          , if_to_id.pc_plus_4
+          );
         $fatal(1);
       end
     end
@@ -154,7 +176,7 @@ module fetch_rvc_05_branch_to_split_target_tb;
     input instr_t target_instr;
     input addr_t  forbidden_pc;
     input instr_t forbidden_instr;
-    input [8*80-1:0] label;
+    input [8 * 80 - 1:0] label;
     integer n;
     reg seen;
     begin
@@ -163,16 +185,24 @@ module fetch_rvc_05_branch_to_split_target_tb;
         if (!stall_f && !flush_f &&
             if_to_id.pc_cur === forbidden_pc &&
             if_to_id.instruction === forbidden_instr) begin
-          $display("[fail] %0s saw forbidden old-path pc=0x%08h instr=0x%08h",
-                   label, forbidden_pc, forbidden_instr);
+          $display
+            ( "[fail] %0s saw forbidden old-path pc=0x%08h instr=0x%08h"
+            , label
+            , forbidden_pc
+            , forbidden_instr
+            );
           $fatal(1);
         end
 
         if (!stall_f && !flush_f &&
             if_to_id.pc_cur === target_pc &&
             if_to_id.instruction === target_instr) begin
-          $display("[pass] %0s target pc=0x%08h instr=0x%08h",
-                   label, target_pc, target_instr);
+          $display
+            ( "[pass] %0s target pc=0x%08h instr=0x%08h"
+            , label
+            , target_pc
+            , target_instr
+            );
           seen = 1'b1;
           n = 50;
         end
@@ -182,8 +212,12 @@ module fetch_rvc_05_branch_to_split_target_tb;
       end
 
       if (!seen) begin
-        $display("[fail] %0s did not reach target pc=0x%08h instr=0x%08h",
-                 label, target_pc, target_instr);
+        $display
+          ( "[fail] %0s did not reach target pc=0x%08h instr=0x%08h"
+          , label
+          , target_pc
+          , target_instr
+          );
         $fatal(1);
       end
     end
@@ -202,9 +236,9 @@ module fetch_rvc_05_branch_to_split_target_tb;
 
     redirect_to(32'h00000002);
 
-    wait_fetch(32'h00000002, NOP,         "bubble after branch directly to split target");
-    wait_fetch(32'h00000002, 32'h00A00093,"real split ADDI after branch target");
-    wait_fetch(32'h00000006, NOP,         "fallthrough after branch-target split");
+    wait_fetch(32'h00000002, NOP, "bubble after branch directly to split target");
+    wait_fetch(32'h00000002, 32'h00A00093, "real split ADDI after branch target");
+    wait_fetch(32'h00000006, NOP, "fallthrough after branch-target split");
 
     $finish;
   end
