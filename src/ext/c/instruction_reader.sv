@@ -1,7 +1,7 @@
 `include "src/timescale.svh"
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
-/* verilator lint_off UNUSEDSIGNAL */
+
 module instruction_reader
   ( input  addr_t  pc_i
   , input  data_t  cur_word_i
@@ -12,7 +12,9 @@ module instruction_reader
   , output logic   instr_is_compressed_o
   , output logic   instr_is_split_o
   );
-/* verilator lint_on UNUSEDSIGNAL */
+
+  wire unused_next_word =
+    &{1'b0, next_word_i[31:16]};
   logic [15:0] selected_halfword;
   logic        selected_is_32b;
   assign selected_halfword =
