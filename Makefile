@@ -100,7 +100,7 @@ run_tb: build_tb
 
 # Pattern rule for building individual testbenches
 $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
-	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
+	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) $(if $(findstring fetch_rvc_,$*),-DUTOSS_RISCV_ENABLE_C_EXT) \
 		--top-module $(basename $(notdir $<)) \
 		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
 		-o $(basename $(notdir $@)) \
