@@ -45,6 +45,8 @@ module utoss_riscv
   logic [4:0] wb_rd;
   csr_addr_t  csr_addr_d;
   data_t      csr_read_data;
+  // Keep the live CSR read address referenced for lint when CSR is gated off.
+  wire        unused_csr_addr_d = &{1'b0, csr_addr_d};
 
   // common declarations end
 

@@ -92,4 +92,7 @@ module control_fsm
       default:
         alu_src_b = alu_src_b_t'('x);
     endcase
+
+  // Keep funct3 referenced for lint when CSR decode is compiled out.
+  wire unused_funct3 = &{1'b0, funct3};
 endmodule
