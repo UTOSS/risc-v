@@ -33,6 +33,7 @@ module write_back_stage
       RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;
       RESULT_SRC__READ_DATA:  result = mem_result;
       RESULT_SRC__PC_PLUS_4:  result = from_memory.pc_plus_4;
+      RESULT_SRC__CSR_READ:   result = from_memory.csr_read_data;
       default:                result = 32'hxxxxxxxx;
     endcase
 
