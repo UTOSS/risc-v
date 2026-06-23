@@ -17,6 +17,9 @@ typedef struct packed {
   logic         reg_write;
   alu_control_t alu_control;
   logic [2:0]   funct3;
+  csr_addr_t    csr_addr;
+  logic         csr_write_enable;
+  data_t        csr_write_data;
   data_t        csr_read_data;
   data_t        rd1;
   data_t        rd2;

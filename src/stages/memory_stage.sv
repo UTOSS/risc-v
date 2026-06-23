@@ -56,6 +56,10 @@ module memory_stage
   assign mem_to_wb.result_src = ex_to_mem.result_src;
   assign mem_to_wb.rd         = ex_to_mem.rd;
   assign mem_to_wb.alu_result = ex_to_mem.alu_result;
+  assign mem_to_wb.csr_addr   = ex_to_mem.csr_addr;
+  assign mem_to_wb.csr_write_enable = ex_to_mem.csr_write_enable;
+  assign mem_to_wb.csr_write_data = ex_to_mem.csr_write_data;
+  assign mem_to_wb.csr_read_data = ex_to_mem.csr_read_data;
   assign mem_to_wb.pc_cur     = ex_to_mem.pc_cur;
   assign mem_to_wb.pc_plus_4  = ex_to_mem.pc_plus_4;
   assign mem_to_wb.funct3     = ex_to_mem.funct3;

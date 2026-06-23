@@ -112,6 +112,10 @@ module execute_stage
   assign ex_to_mem.mem_write    = id_to_ex.mem_write;
   assign ex_to_mem.reg_write    = id_to_ex.reg_write;
   assign ex_to_mem.funct3       = id_to_ex.funct3;
+  assign ex_to_mem.csr_addr     = id_to_ex.csr_addr;
+  assign ex_to_mem.csr_write_enable = id_to_ex.csr_write_enable;
+  assign ex_to_mem.csr_write_data = id_to_ex.csr_write_data;
+  assign ex_to_mem.csr_read_data = id_to_ex.csr_read_data;
   assign ex_to_mem.write_data_e = safe_rd2;
   assign ex_to_mem.rd           = id_to_ex.rd;
   assign ex_to_mem.alu_result   = alu_result;

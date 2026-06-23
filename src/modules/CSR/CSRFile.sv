@@ -2,7 +2,8 @@
 `include "src/headers/types.svh"
 
 module CSRFile
-  ( input  csr_addr_t addr
+  ( input  csr_addr_t read_addr
+  , input  csr_addr_t write_addr
   , input  logic      clk
   , input  logic      reset
   , input  logic      csr_write_enable
@@ -12,7 +13,7 @@ module CSRFile
 
   reg [31:0] CSRMem [0:4095] /* synthesis ramstyle = M10K */;
 
-  assign data_out = CSRMem[addr];
+  assign data_out = CSRMem[read_addr];
 
   always @(posedge clk) begin
     if (reset) begin
@@ -21,7 +22,7 @@ module CSRFile
         CSRMem[i] <= 32'b0;
       end
     end else if (csr_write_enable) begin
-      CSRMem[addr] <= data_in;
+      CSRMem[write_addr] <= data_in;
     end
   end
 

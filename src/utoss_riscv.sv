@@ -43,6 +43,8 @@ module utoss_riscv
 
   data_t      wb_result;
   logic [4:0] wb_rd;
+  csr_addr_t  csr_addr_d;
+  data_t      csr_read_data;
 
   // common declarations end
 
@@ -81,9 +83,11 @@ module utoss_riscv
     , .clk         ( clk                     )
     , .reset       ( reset                   )
     , .data        ( wb_result               )
+    , .csr_read_data( csr_read_data          )
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
 
+    , .csr_addr ( csr_addr_d )
     , .rs1 ( id_rs1 )
     , .rs2 ( id_rs2 )
 
@@ -91,6 +95,20 @@ module utoss_riscv
     );
 
   // decode stage end
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  CSRFile u_csr_file
+    ( .read_addr       ( csr_addr_d                    )
+    , .write_addr      ( mem_to_wb_reg.csr_addr        )
+    , .clk             ( clk                          )
+    , .reset           ( reset                        )
+    , .csr_write_enable( mem_to_wb_reg.csr_write_enable )
+    , .data_in         ( mem_to_wb_reg.csr_write_data   )
+    , .data_out        ( csr_read_data                )
+    );
+`else
+  assign csr_read_data = data_t'(0);
+`endif
 
   // execute stage begin (@MSh-786 and tandr3w)
 
