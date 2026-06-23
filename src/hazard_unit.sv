@@ -24,11 +24,6 @@ module hazard_unit
   , output logic flush_e
   );
 
-  wire result_src_e_0;
-  assign result_src_e_0 = result_src_e[0];
-
-  wire unused = &{result_src_e[$bits(result_src_t) -1:1]};
-
   // Forwarding
   always_comb
     if ((rs1_e == rd_m) && reg_write_m && (rs1_e != 5'd0))
@@ -49,7 +44,10 @@ module hazard_unit
   logic lw_stall;
 
   //Stall when a load hazard occurs
-  assign lw_stall = result_src_e_0 && ((rs1_d == rd_e) || (rs2_d == rd_e)) && (rd_e != 5'd0);
+  assign lw_stall =
+    (result_src_e == RESULT_SRC__READ_DATA) &&
+    ((rs1_d == rd_e) || (rs2_d == rd_e)) &&
+    (rd_e != 5'd0);
   assign stall_f = lw_stall;
   assign stall_d = lw_stall;
 
