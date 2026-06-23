@@ -7,7 +7,6 @@ module instruction_reader
   , input  data_t  cur_word_i
   , input  data_t  next_word_i
   , output instr_t instr_raw_o
-  , output addr_t  instr_pc_o
   , output addr_t  instr_next_pc_o
   , output logic   instr_is_compressed_o
   , output logic   instr_is_split_o
@@ -21,8 +20,6 @@ module instruction_reader
     pc_i[1] ? cur_word_i[31:16] : cur_word_i[15:0];
   assign selected_is_32b =
     selected_halfword[1:0] == 2'b11;
-  assign instr_pc_o =
-    pc_i;
   assign instr_is_compressed_o =
     !selected_is_32b;
   assign instr_is_split_o =

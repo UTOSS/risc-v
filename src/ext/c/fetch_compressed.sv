@@ -30,7 +30,6 @@ module fetch_compressed
   logic reader_inst_is_compressed;
   logic reader_inst_is_split;
   instr_t reader_instr_raw;
-  addr_t reader_instr_pc;
   addr_t reader_next_pc;
 
   logic split_wait_valid;
@@ -86,7 +85,6 @@ module fetch_compressed
     , .cur_word_i            (reader_cur_word_i)
     , .next_word_i           (reader_next_word)
     , .instr_raw_o           (reader_instr_raw)
-    , .instr_pc_o            (reader_instr_pc)
     , .instr_next_pc_o       (reader_next_pc)
     , .instr_is_compressed_o (reader_inst_is_compressed)
     , .instr_is_split_o      (reader_inst_is_split)
@@ -128,7 +126,7 @@ module fetch_compressed
       , split_wait_pc
       , split_wait_next_word
       , split_wait_next_word_valid
-      } <= {1'b1, reader_cur_word_i, reader_instr_pc, data_t'(0), 1'b0};
+      } <= {1'b1, reader_cur_word_i, reader_pc_i, data_t'(0), 1'b0};
 
     else if (stall_f && split_wait_valid && !split_wait_next_word_valid)
       {split_wait_next_word, split_wait_next_word_valid} <= {imem__data, 1'b1};
@@ -171,7 +169,7 @@ module fetch_compressed
 
   assign buffer_next_same_word =
     reader_inst_is_compressed &&
-    (reader_next_pc[31:2] == reader_instr_pc[31:2]);
+    (reader_next_pc[31:2] == reader_pc_i[31:2]);
 
   assign need_split_wait =
     reader_inst_is_split && !split_wait_valid;
@@ -179,7 +177,7 @@ module fetch_compressed
   assign buffer_after_split =
     split_wait_valid &&
     reader_inst_is_split &&
-    (reader_next_pc[31:2] == (reader_instr_pc[31:2] + 30'd1));
+    (reader_next_pc[31:2] == (reader_pc_i[31:2] + 30'd1));
 
   assign hold_pc_for_split_buffer =
     buffer_after_split;
@@ -194,7 +192,7 @@ module fetch_compressed
     need_split_wait ? NOP : final_instr;
 
   assign if_to_id.pc_cur =
-    reader_instr_pc;
+    reader_pc_i;
 
   assign if_to_id.pc_plus_4 =
     reader_next_pc;
