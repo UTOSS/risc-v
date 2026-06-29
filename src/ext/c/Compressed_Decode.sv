@@ -9,7 +9,7 @@ module Compressed_Decode
   );
 
   wire [1:0] quadrant = instr_c[1:0];
-  wire [2:0] funct3   = instr_c[15:13];
+  wire [2:0] c_funct3   = instr_c[15:13];
 
   // Common locations of registers in instruction format
   wire [4:0] rd_prime  = {2'b01, instr_c[4:2]};
@@ -18,7 +18,7 @@ module Compressed_Decode
   wire [4:0] rd_full  = instr_c[11:7];
   wire [4:0] rs1_full = instr_c[11:7];
   wire [4:0] rs2_full = instr_c[6:2];
-  wire [4:0] shamt = instr_c[6:2];
+  wire [4:0] c_shamt = instr_c[6:2];
 
   // Pre-compute immediates for each instruction format
   wire [11:0] ciw_imm     = {2'b00, instr_c[10:7], instr_c[12:11], instr_c[5], instr_c[6], 2'b00};
@@ -83,6 +83,7 @@ module Compressed_Decode
     , input logic [2:0]  funct3
     , input logic [6:0]  opcode
     );
+    logic _unused = &{imm[0]};
     return {imm[12], imm[10:5], rs2, rs1, funct3, imm[4:1], imm[11], opcode};
   endfunction
 
@@ -99,6 +100,7 @@ module Compressed_Decode
     , input logic [4:0]  rd
     , input logic [6:0]  opcode
     );
+    logic _unused = &{imm[0]};
     return {imm[20], imm[10:1], imm[11], imm[19:12], rd, opcode};
   endfunction
 
@@ -109,7 +111,7 @@ module Compressed_Decode
 
     case (quadrant) // Opcode
       2'b00: begin // Quadrant 0
-        case (funct3)
+        case (c_funct3)
           3'b000: begin
             instr_out = build_i_instr(.imm(ciw_imm), .rs1(5'd2), .funct3(3'b000), .rd(rd_prime), .opcode(IType_logic)); // C.ADDI4SPN
             if (ciw_imm == 12'b0) is_illegal = 1'b1;
@@ -121,7 +123,7 @@ module Compressed_Decode
       end
 
       2'b01: begin // Quadrant 1
-        case (funct3)
+        case (c_funct3)
           3'b000: instr_out = build_i_instr(.imm(ci_imm), .rs1(rd_full), .funct3(3'b000), .rd(rd_full), .opcode(IType_logic)); // C.ADDI
           // TODO C.JAL does not expand exactly to a base RVI instruction since the link address should be pc+2 instead of pc+4
           // Need to add support for offset of 2 bytes and e.g. preserve an is_compressed wire
@@ -142,11 +144,11 @@ module Compressed_Decode
           3'b100: begin
             case (instr_c[11:10])
               2'b00: begin
-                instr_out = build_i_shift_instr(.funct7(7'h00), .shamt(shamt), .rs1(rs1_prime), .funct3(3'b101), .rd(rs1_prime), .opcode(IType_logic)); // C.SRLI
+                instr_out = build_i_shift_instr(.funct7(7'h00), .shamt(c_shamt), .rs1(rs1_prime), .funct3(3'b101), .rd(rs1_prime), .opcode(IType_logic)); // C.SRLI
                 if (instr_c[12]) is_illegal = 1'b1;
               end
               2'b01: begin
-                instr_out = build_i_shift_instr(.funct7(7'h20), .shamt(shamt), .rs1(rs1_prime), .funct3(3'b101), .rd(rs1_prime), .opcode(IType_logic)); // C.SRAI
+                instr_out = build_i_shift_instr(.funct7(7'h20), .shamt(c_shamt), .rs1(rs1_prime), .funct3(3'b101), .rd(rs1_prime), .opcode(IType_logic)); // C.SRAI
                 if (instr_c[12]) is_illegal = 1'b1;
               end
               2'b10: instr_out = build_i_instr(.imm(ci_imm), .rs1(rs1_prime), .funct3(3'b111), .rd(rs1_prime), .opcode(IType_logic)); // C.ANDI
@@ -169,9 +171,9 @@ module Compressed_Decode
       end
 
       2'b10: begin // Quadrant 2
-        case (funct3)
+        case (c_funct3)
           3'b000: begin
-            instr_out = build_i_shift_instr(.funct7(7'h00), .shamt(shamt), .rs1(rd_full), .funct3(3'b001), .rd(rd_full), .opcode(IType_logic)); // C.SLLI
+            instr_out = build_i_shift_instr(.funct7(7'h00), .shamt(c_shamt), .rs1(rd_full), .funct3(3'b001), .rd(rd_full), .opcode(IType_logic)); // C.SLLI
             if (instr_c[12]) is_illegal = 1'b1;
           end
           3'b010: begin
