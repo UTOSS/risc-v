@@ -13,11 +13,12 @@ module decode_stage
   , input  wire [4:0] rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
-  , input  data_t     csr_read_data
+  , input  csr_addr_t csr_write_addr // CSR write address from write-back stage
+  , input  logic      csr_write_enable_wb // CSR write enable from write-back stage
+  , input  data_t     csr_write_data_wb // CSR write data from write-back stage
 
   , output id_to_ex_t id_to_ex
 
-  , output csr_addr_t csr_addr
   , output logic [4:0] rs1
   , output logic [4:0] rs2
   );
@@ -35,13 +36,13 @@ module decode_stage
 
   opcode_t opcode;
   imm_t    imm_ext;
+  csr_addr_t csr_addr; // CSR read address from decoded instruction
 
   wire [2:0] funct3;
 
   wire [4:0] rd;
   wire [4:0] rs1_decoded;
   wire [4:0] rs2_decoded;
-  wire [4:0] csr_zimm;
   wire       csr_is_imm;
   wire [4:0] rs1_addr;
   wire [4:0] rs2_addr;
@@ -79,7 +80,8 @@ module decode_stage
     , .rs2             ( rs2_decoded      )
     );
 
-  assign csr_zimm   = instruction[19:15];
+  // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
+  // actual register dependency for the RF / hazard path. 
   assign csr_is_imm = (opcode == SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
   assign rs1_addr   = csr_is_imm ? 5'd0 : rs1_decoded;
   assign rs2_addr   = rs2_decoded;
@@ -97,9 +99,29 @@ module decode_stage
     );
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
+  data_t csr_read_data;
+
+  CSRFile u_csr_file
+    ( .read_addr       ( csr_addr                  )
+    , .write_addr      ( csr_write_addr            )
+    , .clk             ( clk                       )
+    , .reset           ( reset                     )
+    , .csr_write_enable( csr_write_enable_wb       )
+    , .data_in         ( csr_write_data_wb         )
+    , .data_out        ( csr_read_data             )
+    );
+`else
+  logic csr_read_data;
+  assign csr_read_data = data_t'(0);
+`endif
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  wire [4:0] csr_zimm;
   data_t csr_write_data;
   logic  csr_write_enable;
   data_t csr_src_data;
+
+  assign csr_zimm = instruction[19:15];
 
   always_comb begin
     csr_src_data     = csr_is_imm ? data_t'({27'b0, csr_zimm}) : rd1_safe;
@@ -143,10 +165,10 @@ module decode_stage
   logic csr_write_enable;
   data_t csr_write_data;
 
-  always_comb begin
+  always_comb
     csr_write_enable = 1'b0;
     csr_write_data   = data_t'(0);
-  end
+
 `endif
 
   // WB->ID bypass; this is needed in situations where decode is reading the register that
@@ -164,10 +186,10 @@ module decode_stage
     if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
 
-  always_comb begin
+  always_comb
     rs1 = rs1_addr;
     rs2 = rs2_addr;
-  end
+
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
   assign id_to_ex.alu_src_b      = cfsm__alu_src_b;

@@ -17,16 +17,18 @@ typedef struct packed {
   logic         reg_write;
   alu_control_t alu_control;
   logic [2:0]   funct3;
-  csr_addr_t    csr_addr;
-  logic         csr_write_enable;
-  data_t        csr_write_data;
-  data_t        csr_read_data;
   data_t        rd1;
   data_t        rd2;
   logic [4:0]   rd;
   logic [4:0]   rs1;
   logic [4:0]   rs2;
   imm_t         imm_ext;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  csr_addr_t    csr_addr;
+  logic         csr_write_enable;
+  data_t        csr_write_data;
+  data_t        csr_read_data;
+`endif
 } id_to_ex_t;
 
 `endif
