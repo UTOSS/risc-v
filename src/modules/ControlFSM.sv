@@ -31,7 +31,7 @@ module control_fsm
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
       || ((opcode == SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111}))
 `endif
-      ;
+;
 
   always_comb
     case (opcode)

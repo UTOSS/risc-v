@@ -81,7 +81,7 @@ module decode_stage
     );
 
   // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
-  // actual register dependency for the RF / hazard path. 
+  // actual register dependency for the RF / hazard path.
   assign csr_is_imm = (opcode == SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
   assign rs1_addr   = csr_is_imm ? 5'd0 : rs1_decoded;
   assign rs2_addr   = rs2_decoded;
@@ -111,7 +111,7 @@ module decode_stage
     , .data_out        ( csr_read_data             )
     );
 `else
-  logic csr_read_data;
+  data_t csr_read_data;
   assign csr_read_data = data_t'(0);
 `endif
 
@@ -165,9 +165,10 @@ module decode_stage
   logic csr_write_enable;
   data_t csr_write_data;
 
-  always_comb
+  always_comb begin
     csr_write_enable = 1'b0;
     csr_write_data   = data_t'(0);
+  end
 
 `endif
 
@@ -186,9 +187,10 @@ module decode_stage
     if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
 
-  always_comb
+  always_comb begin
     rs1 = rs1_addr;
     rs2 = rs2_addr;
+  end
 
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
