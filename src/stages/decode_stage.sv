@@ -165,10 +165,9 @@ module decode_stage
   logic csr_write_enable;
   data_t csr_write_data;
 
-  always_comb begin
+  always_comb
     csr_write_enable = 1'b0;
     csr_write_data   = data_t'(0);
-  end
 
 `endif
 
