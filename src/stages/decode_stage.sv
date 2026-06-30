@@ -116,59 +116,73 @@ module decode_stage
 `endif
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
+  typedef struct packed {
+    logic  write_enable;
+    data_t write_data;
+  } csr_write_ctrl_t;
+
   wire [4:0] csr_zimm;
   data_t csr_write_data;
   logic  csr_write_enable;
   data_t csr_src_data;
 
-  assign csr_zimm = instruction[19:15];
+  function automatic csr_write_ctrl_t decode_csr_write_ctrl
+    ( input opcode_t opcode_f
+    , input logic [2:0] funct3_f
+    , input data_t csr_src_data_f
+    , input data_t csr_read_data_f
+    );
+    csr_write_ctrl_t ctrl;
+    begin
+      ctrl.write_enable = 1'b0;
+      ctrl.write_data   = data_t'(0);
 
-  always_comb begin
-    csr_src_data     = csr_is_imm ? data_t'({27'b0, csr_zimm}) : rd1_safe;
-    csr_write_enable = 1'b0;
-    csr_write_data   = data_t'(0);
+      if (opcode_f == SYSTEM) begin
+        case (funct3_f)
+          3'b001: begin
+            ctrl.write_enable = 1'b1;
+            ctrl.write_data   = csr_src_data_f;
+          end
+          3'b010: begin
+            ctrl.write_enable = (csr_src_data_f != 5'd0);
+            ctrl.write_data   = csr_read_data_f | csr_src_data_f;
+          end
+          3'b011: begin
+            ctrl.write_enable = (csr_src_data_f != 5'd0);
+            ctrl.write_data   = csr_read_data_f & ~csr_src_data_f;
+          end
+          3'b101: begin
+            ctrl.write_enable = 1'b1;
+            ctrl.write_data   = csr_src_data_f;
+          end
+          3'b110: begin
+            ctrl.write_enable = (csr_src_data_f != 5'd0);
+            ctrl.write_data   = csr_read_data_f | csr_src_data_f;
+          end
+          3'b111: begin
+            ctrl.write_enable = (csr_src_data_f != 5'd0);
+            ctrl.write_data   = csr_read_data_f & ~csr_src_data_f;
+          end
+          default: begin
+            ctrl.write_enable = 1'b0;
+            ctrl.write_data   = data_t'(0);
+          end
+        endcase
+      end
 
-    if (opcode == SYSTEM) begin
-      case (funct3)
-        3'b001: begin
-          csr_write_enable = 1'b1;
-          csr_write_data   = csr_src_data;
-        end
-        3'b010: begin
-          csr_write_enable = (csr_src_data != 5'd0);
-          csr_write_data   = csr_read_data | csr_src_data;
-        end
-        3'b011: begin
-          csr_write_enable = (csr_src_data != 5'd0);
-          csr_write_data   = csr_read_data & ~csr_src_data;
-        end
-        3'b101: begin
-          csr_write_enable = 1'b1;
-          csr_write_data   = csr_src_data;
-        end
-        3'b110: begin
-          csr_write_enable = (csr_src_data != 5'd0);
-          csr_write_data   = csr_read_data | csr_src_data;
-        end
-        3'b111: begin
-          csr_write_enable = (csr_src_data != 5'd0);
-          csr_write_data   = csr_read_data & ~csr_src_data;
-        end
-        default: begin
-          csr_write_enable = 1'b0;
-          csr_write_data   = data_t'(0);
-        end
-      endcase
+      return ctrl;
     end
-  end
+  endfunction
+
+  assign csr_zimm = instruction[19:15];
+  assign csr_src_data = csr_is_imm ? data_t'({27'b0, csr_zimm}) : rd1_safe;
+  assign {csr_write_enable, csr_write_data} =
+    decode_csr_write_ctrl(opcode, funct3, csr_src_data, csr_read_data);
 `else
   logic csr_write_enable;
   data_t csr_write_data;
-
-  always_comb begin
-    csr_write_enable = 1'b0;
-    csr_write_data   = data_t'(0);
-  end
+  assign csr_write_enable = 1'b0;
+  assign csr_write_data   = data_t'(0);
 
 `endif
 
@@ -187,10 +201,8 @@ module decode_stage
     if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
 
-  always_comb begin
-    rs1 = rs1_addr;
-    rs2 = rs2_addr;
-  end
+  assign rs1 = rs1_addr;
+  assign rs2 = rs2_addr;
 
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
@@ -203,10 +215,12 @@ module decode_stage
   assign id_to_ex.reg_write      = cfsm__reg_write;
   assign id_to_ex.alu_control    = alu_control;
   assign id_to_ex.funct3         = funct3;
-  assign id_to_ex.csr_addr       = csr_addr;
-  assign id_to_ex.csr_write_enable = csr_write_enable;
-  assign id_to_ex.csr_write_data = csr_write_data;
-  assign id_to_ex.csr_read_data  = csr_read_data;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign id_to_ex.csr_addr         = csr_addr;
+  assign id_to_ex.csr_write_enable  = csr_write_enable;
+  assign id_to_ex.csr_write_data    = csr_write_data;
+  assign id_to_ex.csr_read_data     = csr_read_data;
+`endif
   assign id_to_ex.rd1            = rd1_safe;
   assign id_to_ex.rd2            = rd2_safe;
   assign id_to_ex.rd             = rd;
