@@ -21,7 +21,7 @@ if {[string first "B" $config_upper] >= 0} {
 	lappend macro_list UTOSS_RISCV_ENABLE_B_EXT
 }
 
-if {[string first "ZICSR" $config_upper] >= 0} {
+if {[string first "Zicsr" $config_upper] >= 0} {
 	lappend macro_list UTOSS_RISCV__ZICSR_ENABLED
 }
 
