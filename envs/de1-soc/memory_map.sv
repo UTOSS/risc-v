@@ -1,15 +1,21 @@
 `include "src/headers/types.svh"
+`include "src/interaces/mem_bus.svh"
 
+
+// change to use new interface Nugget-exe
 module memory_map #( parameter SIZE = 1024 )
   ( input  wire         clk
 
-  , input  addr_t       data__address
-  , input  data_t       data__write
-  , input  logic  [3:0] data__write_enable
-  , output data_t       data__read
+  // , input  addr_t       data__address
+  // , input  data_t       data__write
+  // , input  logic  [3:0] data__write_enable
+  // , output data_t       data__read
 
-  , input  addr_t       instr__address
-  , output data_t       instr__read
+  // , input  addr_t       instr__address
+  // , output data_t       instr__read
+
+  ,MEM_BUS.memory d_bus
+  ,MEM_BUS.memory i_bus
 
   , output reg    [9:0] LEDR
   );
@@ -37,18 +43,19 @@ module memory_map #( parameter SIZE = 1024 )
 
   localparam int ADDR_LSB   = 2;
   localparam int ADDR_WIDTH = $clog2(SIZE);
-  wire [ADDR_WIDTH - 1:0] mem_data_index  = data__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];  // I think this way may save some resources
-  wire [ADDR_WIDTH - 1:0] mem_instr_index = instr__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
+  wire [ADDR_WIDTH - 1:0] mem_data_index  = d_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];//data__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];  // I think this way may save some resources
+  wire [ADDR_WIDTH - 1:0] mem_instr_index = i_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];//instr__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
 
   always @(*) begin
-    case (data__address)
-      LEDR_ADDRESS: data__read = {22'b0, LEDR};
-      default:      data__read = mem_rdata;
+    case (d_bus.memory__address)//(data__address)
+      LEDR_ADDRESS: d_bus.memory__read_data = {22'b0, LEDR}; //data__read = {22'b0, LEDR};
+      default:      d_bus.memory__read_data = mem_rdata; //data__read = mem_rdata;
     endcase
   end
 
   always @(posedge clk) begin
-    instr__read <=
+    //instr__read <=
+    i_bus.memory__read_data <= 
       { M3[mem_instr_index]
       , M2[mem_instr_index]
       , M1[mem_instr_index]
@@ -62,13 +69,19 @@ module memory_map #( parameter SIZE = 1024 )
       };
     case (data__address)
       LEDR_ADDRESS: begin
-        if (|data__write_enable) LEDR <= data__write[9:0];
+        if (|d_bus.memory__write_enable) LEDR <= d_bus.memory__write_data[9:0];// (|data__write_enable) LEDR <= data__write[9:0]; 
       end
       default: begin
-        if (data__write_enable[0]) M0[mem_data_index] <= data__write[7:0];
-        if (data__write_enable[1]) M1[mem_data_index] <= data__write[15:8];
-        if (data__write_enable[2]) M2[mem_data_index] <= data__write[23:16];
-        if (data__write_enable[3]) M3[mem_data_index] <= data__write[31:24];
+        // if (data__write_enable[0]) M0[mem_data_index] <= data__write[7:0];
+        // if (data__write_enable[1]) M1[mem_data_index] <= data__write[15:8];
+        // if (data__write_enable[2]) M2[mem_data_index] <= data__write[23:16];
+        // if (data__write_enable[3]) M3[mem_data_index] <= data__write[31:24];
+
+        if (d_bus.memory__write_enable[0]) M0[mem_data_index] <= d_bus.memory__write_data[7:0];
+        if (d_bus.memory__write_enable[1]) M0[mem_data_index] <= d_bus.memory__write_data[15:8];
+        if (d_bus.memory__write_enable[2]) M0[mem_data_index] <= d_bus.memory__write_data[23:16];
+        if (d_bus.memory__write_enable[3]) M0[mem_data_index] <= d_bus.memory__write_data[31:24];
+
       end
     endcase
   end

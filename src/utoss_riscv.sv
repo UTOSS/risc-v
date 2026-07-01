@@ -5,24 +5,103 @@
 `include "src/interfaces/ex_to_mem_if.svh"
 `include "src/interfaces/ex_to_if_if.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
+`include "src/interfaces/mem_bus.svh"
+
+// make a new include 
+
+// interface instr_bus (input clk);
+//   addr_t memory_instr__address; // out
+//   data_t       memory_instr__write_data; // out
+//   logic  [3:0] memory_instr__write_enable; // out
+//   data_t       memory_instr__read_data; // in
+// endinterface 
+
+// interface data_mem_bus;
+//   addr_t       memory_data__address; // out
+//   data_t       memory_data__write_data; // out
+//   logic  [3:0] memory_data__write_enable; // out
+//   data_t       memory_data__read_data; // in
+// endinterface
+
+// do i putmy name here? (@Nugget-exe)
+
+// interface mem_bus //(input clk); // because some are clocked(or not ig)
+
+//   // //instruction 
+//   // addr_t       memory_instr__address; // out
+//   // data_t       memory_instr__write_data; // out
+//   // logic  [3:0] memory_instr__write_enable; // out
+//   // data_t       memory_instr__read_data; // in
+
+//   // //data
+//   // addr_t       memory_data__address; // out
+//   // data_t       memory_data__write_data; // out
+//   // logic  [3:0] memory_data__write_enable; // out
+//   // data_t       memory_data__read_data; // in
+
+//   addr_t       memory__address; // out
+//   data_t       memory__write_data; // out
+//   logic  [3:0] memory__write_enable; // out
+//   data_t       memory__read_data; // in
+
+
+//   // modport instr_bus(
+//   //   input memory_instr__read_data,
+//   //   output memory_instr__address,
+//   //   output memory_instr__write_data,
+//   //   output memory_instr__write_enable
+//   // );
+
+//   // modport data_mem_bus(
+//   //   input memory_data__read_data,
+//   //   output memory_data__address,
+//   //   output memory_data__write_data,
+//   //   output memory_data__write_enable
+//   // );
+
+//   modport memory(
+//     input memory__read_data,
+//     output memory__address, // out
+//     output memory__write_data, // out
+//     output memory__write_enable // out
+//   ); 
+
+//   modport consumer(
+//     input memory__read_data,
+//     output memory__address, // out
+//     output memory__write_data, // out
+//     output memory__write_enable // out
+//   ); 
+
+
+
+// endinterface 
+
 
 // pipelined implementation of our core
 module utoss_riscv
   ( input wire clk
   , input wire reset
+  , MEM_BUS.consumer instruction_bus
+  , MEM_BUS.consumer data_memory_bus
 
   // instruction memory interface begin
-  , output addr_t       memory_instr__address
-  , output data_t       memory_instr__write_data
-  , output logic  [3:0] memory_instr__write_enable
-  , input  data_t       memory_instr__read_data
-  // instruction memory interface end
 
-  // data memory interface begin
-  , output addr_t       memory_data__address
-  , output data_t       memory_data__write_data
-  , output logic  [3:0] memory_data__write_enable
-  , input  data_t       memory_data__read_data
+
+  // change to sv interface
+
+
+  // , output addr_t       memory_instr__address
+  // , output data_t       memory_instr__write_data
+  // , output logic  [3:0] memory_instr__write_enable
+  // , input  data_t       memory_instr__read_data
+  // // instruction memory interface end
+
+  // // data memory interface begin
+  // , output addr_t       memory_data__address
+  // , output data_t       memory_data__write_data
+  // , output logic  [3:0] memory_data__write_enable
+  // , input  data_t       memory_data__read_data
   // data memory interface end
   );
 
@@ -44,6 +123,14 @@ module utoss_riscv
   data_t      wb_result;
   logic [4:0] wb_rd;
 
+
+ 
+
+  // mem_bus instr_mem_bus; //
+  // mem_bus data_mem_bus; 
+
+
+
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
@@ -57,14 +144,21 @@ module utoss_riscv
     , .stall_f ( stall_f )
     , .flush_f ( flush_f )
 
-    , .imem__address ( memory_instr__address   )
-    , .imem__data    ( memory_instr__read_data )
+    , .imem__address (instruction_bus.memory__address)//( memory_instr__address   )
+    , .imem__data    (instruction_bus.memory__read_data)//( memory_instr__read_data )
     );
 
-  assign memory_instr__write_data = data_t'(0);
-  assign memory_instr__write_enable = 4'b0;
+  // assign memory_instr__write_data = data_t'(0);
+  // assign memory_instr__write_enable = 4'b0;
+
+  assign instruction_bus.mem_write_data = data_t'(0); 
+  assign instruction_bus.mem_write_enable = 4'b0;
+
+
+  
 
   // fetch stage end
+  // interface end @bugget
 
   // decode stage begin (@marwannismail)
 
@@ -123,9 +217,11 @@ module utoss_riscv
   memory_stage u_memory_stage
   ( .ex_to_mem ( ex_to_mem_reg )
 
-  , .mem_write_data   ( memory_data__write_data   )
-  , .mem_write_enable ( memory_data__write_enable ) // TODO: Is this required?
-  , .mem_address      ( memory_data__address      )
+  // change to use interface(Bugget)
+
+  , .mem_write_data   (data_memory_bus.memory__write_data)//( memory_data__write_data   )
+  , .mem_write_enable (data_memory_bus.memory__write_enable)//( memory_data__write_enable ) // TODO: Is this required?
+  , .mem_address      (data_memory_bus.memory__address)//( memory_data__address      )
 
   , .mem_to_wb ( mem_to_wb_out)
   );
@@ -141,8 +237,8 @@ module utoss_riscv
   write_back_stage u_write_back_stage
     ( .from_memory ( mem_to_wb_reg )
     , .ex_to_mem   ( ex_to_mem_reg )
-
-    , .data_from_memory ( memory_data__read_data )
+    // change to use interface Bugget
+    , .data_from_memory (data_memory_bus.memory__read_data)//( memory_data__read_data )
     , .result           ( wb_result              )
     , .rd               ( wb_rd                  )
     );
@@ -195,11 +291,12 @@ module utoss_riscv
     , .mem_stage_out ( mem_to_wb_out )
     , .wb_stage      ( mem_to_wb_reg )
 
-    , .imem_address      ( memory_instr__address     )
-    , .dmem_address      ( memory_data__address      )
-    , .dmem_read_data    ( memory_data__read_data    )
-    , .dmem_write_data   ( memory_data__write_data   )
-    , .dmem_write_enable ( memory_data__write_enable )
+    // change to use interface Bugget
+    , .imem_address      (instruction_bus.memory__address)//( memory_instr__address     )
+    , .dmem_address      (data_memory_bus.memory__address)//( memory_data__address      )
+    , .dmem_read_data    (data_memory_bus.memory__read_data)//( memory_data__read_data    )
+    , .dmem_write_data   (data_memory_bus.memory__write_data)//( memory_data__write_data   )
+    , .dmem_write_enable (data_memory_bus.memory__write_enable)//( memory_data__write_enable )
 
     , .wb_result ( wb_result )
     , .wb_rd     ( wb_rd     )
