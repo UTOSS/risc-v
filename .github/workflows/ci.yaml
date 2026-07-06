@@ -14,12 +14,12 @@ permissions:
 jobs:
   build_ci_image:
     # do this during a push to a branch (e.g. to main) or on a non-fork PR
-    if: >
-      github.event_name == 'push' ||
-      github.event.pull_request.head.repo.full_name == github.repository
+    if: false
+      #github.event_name == 'push' ||
+      #github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
-      image-name: ghcr.io/utoss/risc-v
+      image-name: ghcr.io/nsinghal06/risc-v
       dockerfile: ./Dockerfile.ci
       tag-prefix: ci-
     secrets: inherit
@@ -40,20 +40,16 @@ jobs:
     steps:
       - id: image
         run: |
-          if [ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]; then
-            echo "tag=${{ needs.build_ci_image.outputs.image-primary-tag }}" >> $GITHUB_OUTPUT
-          else
-            echo "tag=ghcr.io/utoss/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
-          fi
+          echo "tag=ghcr.io/utoss/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
 
   build_devcontainer_image:
     # do this during a push to a branch (e.g. to main) or on a non-fork PR
-    if: >
-      github.event_name == 'push' ||
-      github.event.pull_request.head.repo.full_name == github.repository
+    if: false
+      #github.event_name == 'push' ||
+      #github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
-      image-name: ghcr.io/utoss/risc-v-devcontainer
+      image-name: ghcr.io/nsinghal06/risc-v-devcontainer
       dockerfile: .devcontainer/Dockerfile
       tag-prefix: ""
     secrets: inherit
@@ -150,19 +146,7 @@ jobs:
         run: make riscof_clone_archtest
 
       - name: Run RISCOF
-        run: |
-          if make riscof_run UTOSS_RISCV_CONFIG=${{ matrix.config }}; then
-            :
-          else
-            case "${{ matrix.config }}" in
-              *B*)
-                echo "RISCOF failed for B-containing config; allowing failure."
-                ;;
-              *)
-                exit 1
-                ;;
-            esac
-          fi
+        run: make riscof_run UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Upload RISCOF report
         if: always()
