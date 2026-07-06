@@ -19,7 +19,7 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
-      image-name: ghcr.io/utoss/risc-v
+      image-name: ghcr.io/nsinghal06/risc-v
       dockerfile: ./Dockerfile.ci
       tag-prefix: ci-
     secrets: inherit
@@ -43,7 +43,7 @@ jobs:
           if [ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]; then
             echo "tag=${{ needs.build_ci_image.outputs.image-primary-tag }}" >> $GITHUB_OUTPUT
           else
-            echo "tag=ghcr.io/utoss/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
+            echo "tag=ghcr.io/nsinghal06/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
           fi
 
   build_devcontainer_image:
@@ -53,7 +53,7 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
-      image-name: ghcr.io/utoss/risc-v-devcontainer
+      image-name: ghcr.io/nsinghal06/risc-v-devcontainer
       dockerfile: .devcontainer/Dockerfile
       tag-prefix: ""
     secrets: inherit
