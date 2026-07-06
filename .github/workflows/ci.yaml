@@ -40,11 +40,7 @@ jobs:
     steps:
       - id: image
         run: |
-          if [ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]; then
-            echo "tag=${{ needs.build_ci_image.outputs.image-primary-tag }}" >> $GITHUB_OUTPUT
-          else
-            echo "tag=ghcr.io/nsinghal06/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
-          fi
+          echo "tag=ghcr.io/utoss/risc-v:ci-branch-main" >> $GITHUB_OUTPUT
 
   build_devcontainer_image:
     # do this during a push to a branch (e.g. to main) or on a non-fork PR
