@@ -136,4 +136,11 @@ RUN mkdir -p /tmp/sail-riscv && \
 USER dev
 RUN pip3 install riscof
 
+# install svsch
+USER root
+RUN apt update && apt install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
+    apt install -y nodejs && \
+    npm install -g svsch@0.1.0
+
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

@@ -184,9 +184,47 @@ svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
 # ===========================
+# Diagrams
+# ===========================
+DIAGRAM_DIR := docs/diagrams
+DIAGRAM_SRC := $(SRC_DIR)/utoss_riscv.sv
+DIAGRAM_OUT := $(DIAGRAM_DIR)/utoss_riscv.svg
+
+SVSCH_TEMP_DIR := .svsch_temp
+SVSCH_FIXER := scripts/svsch_include_fixer.py
+
+diagrams: $(DIAGRAM_OUT)
+
+$(DIAGRAM_OUT): $(DIAGRAM_SRC)
+	@mkdir -p $(DIAGRAM_DIR)
+	@mkdir -p $(SVSCH_TEMP_DIR)
+	@python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR)
+	@svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output $@ --workspace $(SVSCH_TEMP_DIR)
+	@rm -rf $(SVSCH_TEMP_DIR)
+
+test_diagrams: $(DIAGRAM_OUT)
+	@if [ -f $(DIAGRAM_OUT) ]; then \
+		mkdir -p $(SVSCH_TEMP_DIR); \
+		python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR); \
+		svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output /tmp/utoss_riscv_test.svg --workspace $(SVSCH_TEMP_DIR); \
+		rm -rf $(SVSCH_TEMP_DIR); \
+		if ! diff -q $(DIAGRAM_OUT) /tmp/utoss_riscv_test.svg > /dev/null; then \
+			echo "ERROR: Generated diagram differs from existing diagram"; \
+			diff $(DIAGRAM_OUT) /tmp/utoss_riscv_test.svg; \
+			rm /tmp/utoss_riscv_test.svg; \
+			exit 1; \
+		fi; \
+		rm /tmp/utoss_riscv_test.svg; \
+	else \
+		echo "ERROR: Diagram $(DIAGRAM_OUT) does not exist"; \
+		exit 1; \
+	fi
+
+# ===========================
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb \
         svlint svlint_tb \
+        diagrams test_diagrams \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run FORCE
