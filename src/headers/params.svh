@@ -15,6 +15,19 @@ parameter IType_jalr = 7'b1100111;
 parameter FENCE    = 7'b0001111;
 /* verilator lint_on UNUSEDPARAM */
 
+typedef enum logic [6:0]
+    { OP        = 7'b0110011 //R-type
+    , OP_IMM    = 7'b0010011 //I-type logic
+    , LOAD      = 7'b0000011 //I-type load
+    , STORE     = 7'b0100011 //S-type
+    , BRANCH    = 7'b1100011 //B-type
+    , JAL       = 7'b1101111 //J-type
+    , JALR      = 7'b1100111 //I-type jump
+    , AUIPC     = 7'b0010111 //U-type
+    , LUI       = 7'b0110111 //U-type
+    , MISC_MEM  = 7'b0001111 //FENCE
+    } opcode_t;
+
 //ALU Operation Control Codes: Implemented as ENUM in params.svh
 /*
 parameter ALUAdd = 4'b0000;

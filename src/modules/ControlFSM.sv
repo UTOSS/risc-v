@@ -20,44 +20,44 @@ module control_fsm
 
   always_comb
     reg_write =
-      (opcode == JType) ||
-      (opcode == RType) ||
-      (opcode == IType_load) ||
-      (opcode == IType_logic) ||
-      (opcode == IType_jalr) ||
-      (opcode == UType_auipc) ||
-      (opcode == UType_lui);
+      (opcode == JAL) ||
+      (opcode == OP) ||
+      (opcode == LOAD) ||
+      (opcode == OP_IMM) ||
+      (opcode == JALR) ||
+      (opcode == AUIPC) ||
+      (opcode == LUI);
 
   always_comb
     case (opcode)
-      RType, IType_logic:
+      OP, OP_IMM:
         result_src = RESULT_SRC__ALU_RESULT;
-      IType_load:
+      LOAD:
         result_src = RESULT_SRC__READ_DATA;
-      JType, IType_jalr:
+      JAL, JALR:
         result_src = RESULT_SRC__PC_PLUS_4;
       default:
         result_src = result_src_t'('0);
     endcase
 
-  always_comb mem_write = opcode == SType;
+  always_comb mem_write = opcode == STORE;
 
-  always_comb jump = (opcode == JType) || (opcode == IType_jalr);
+  always_comb jump = (opcode == JAL) || (opcode == JALR);
 
-  always_comb branch = opcode == BType;
+  always_comb branch = opcode == BRANCH;
 
   always_comb
     case (opcode)
-      JType:      pc_target_kind = PC_TARGET_KIND__RELATIVE;
-      IType_jalr: pc_target_kind = PC_TARGET_KIND__ABSOLUTE;
+      JAL:  pc_target_kind = PC_TARGET_KIND__RELATIVE;
+      JALR: pc_target_kind = PC_TARGET_KIND__ABSOLUTE;
       default:    pc_target_kind = pc_target_kind_t'('x);
     endcase
 
   always_comb
     case (opcode)
-      RType, IType_logic, IType_load, IType_jalr, SType, BType, UType_lui /* TODO: triple check lui */:
+      OP, OP_IMM, LOAD, JALR, STORE, BRANCH, LUI /* TODO: triple check lui */:
         alu_src_a = ALU_SRC_A__RD1;
-      UType_auipc, JType:
+      AUIPC, JAL:
         alu_src_a = ALU_SRC_A__PC;
       default:
         alu_src_a = alu_src_a_t'('x);
@@ -65,9 +65,9 @@ module control_fsm
 
   always_comb
     case (opcode)
-      RType, BType:
+      OP, BRANCH:
         alu_src_b = ALU_SRC_B__RD2;
-      UType_auipc, UType_lui, IType_logic, IType_jalr, IType_load, SType:
+      AUIPC, LUI, OP_IMM, JALR, LOAD, STORE:
         alu_src_b = ALU_SRC_B__IMM_EXT;
       default:
         alu_src_b = alu_src_b_t'('x);
