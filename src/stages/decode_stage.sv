@@ -10,14 +10,14 @@ module decode_stage
   , input  wire       clk
   , input  wire       reset
 
-  , input  wire [4:0] rd_wb // rd from writeback
+  , input  reg_t      rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
 
   , output id_to_ex_t id_to_ex
 
-  , output reg [4:0] rs1
-  , output reg [4:0] rs2
+  , output reg_t      rs1
+  , output reg_t      rs2
   );
 
   wire             cfsm__reg_write;
@@ -36,7 +36,7 @@ module decode_stage
 
   wire [2:0] funct3;
 
-  wire [4:0] rd;
+  reg_t rd;
 
   data_t rd1;
   data_t rd2;
