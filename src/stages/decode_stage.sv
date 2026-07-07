@@ -165,9 +165,10 @@ module decode_stage
   logic csr_write_enable;
   data_t csr_write_data;
 
-  always_comb
+  always_comb begin
     csr_write_enable = 1'b0;
     csr_write_data   = data_t'(0);
+  end
 
 `endif
 
@@ -186,10 +187,10 @@ module decode_stage
     if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
 
-  always_comb
+  always_comb begin
     rs1 = rs1_addr;
     rs2 = rs2_addr;
-
+  end
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
   assign id_to_ex.alu_src_b      = cfsm__alu_src_b;

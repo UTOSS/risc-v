@@ -15,6 +15,16 @@ module hazard_unit
   , input  wire [4:0] rs2_d
   , input  wire [4:0] rd_e
   , input  pc_src_t pc_src_e
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , input  logic      csr_instr_d
+  , input  logic      csr_write_intent_e
+  , input  logic      csr_write_intent_m
+  , input  logic      csr_write_intent_w
+  , input  csr_addr_t csr_addr_d
+  , input  csr_addr_t csr_addr_e
+  , input  csr_addr_t csr_addr_m
+  , input  csr_addr_t csr_addr_w
+`endif
   , output hazard_forward_a_t forward_a_e
   , output hazard_forward_b_t forward_b_e
   , output logic stall_f
@@ -44,12 +54,28 @@ module hazard_unit
   logic lw_stall;
 
   //Stall when a load hazard occurs
-  assign lw_stall =
-    (result_src_e == RESULT_SRC__READ_DATA) &&
-    ((rs1_d == rd_e) || (rs2_d == rd_e)) &&
-    (rd_e != 5'd0);
-  assign stall_f = lw_stall;
-  assign stall_d = lw_stall;
+  assign lw_stall = (result_src_e == RESULT_SRC__READ_DATA) &&
+                    ((rs1_d == rd_e) || (rs2_d == rd_e)) &&
+                    (rd_e != 5'd0);
+
+  // leaving this wire in the base-ISA configuration with the expectation that it will get optimized
+  // away
+  logic csr_stall;
+
+//CSR stall for csr-to-csr stall
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign csr_stall =
+      csr_instr_d &&
+      ((csr_write_intent_e && (csr_addr_d == csr_addr_e)) ||
+       (csr_write_intent_m && (csr_addr_d == csr_addr_m)) ||
+       (csr_write_intent_w && (csr_addr_d == csr_addr_w)));
+`else
+  assign csr_stall = 1'b0;
+`endif
+
+  assign stall_f = lw_stall || csr_stall;
+  assign stall_d = lw_stall || csr_stall;
+
 
   //Flush when a control hazard occurs; we need to flush one cycle later than we discover the
   // control hazard; this is due to synchronous memory making the instruction available one cycle
@@ -62,6 +88,6 @@ module hazard_unit
 
   assign flush_f = control_hazard;
   assign flush_d = control_hazard;
-  assign flush_e = lw_stall || control_hazard;
+  assign flush_e = lw_stall || csr_stall || control_hazard;
 
 endmodule
