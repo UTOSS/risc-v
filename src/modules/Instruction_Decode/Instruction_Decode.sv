@@ -41,14 +41,14 @@ module Instruction_Decode
 
     case (opcode)
 
-    RType, IType_logic: begin //R-Type
+    OP, OP_IMM: begin //R-Type
 
       funct3 = instr[14:12];
       funct7 = instr[31:25];
 
     end
 
-    IType_load, SType, BType: begin
+    LOAD, STORE, BRANCH: begin
 
       funct3 = instr[14:12];
 
@@ -61,14 +61,14 @@ module Instruction_Decode
   // architecture book
   always @(*) begin
     case (opcode)
-      RType:      alu_op = ALU_OP__REGISTER_OPERATION;
-      IType_load: alu_op = ALU_OP__ADD;
-      IType_jalr: alu_op = ALU_OP__ADD; // rs1 + imm
-      SType:      alu_op = ALU_OP__ADD;
-      BType:      alu_op = ALU_OP__BRANCH;
-      UType_auipc: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-      UType_lui:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-      FENCE:     alu_op = ALU_OP__UNSET;
+      OP:      alu_op = ALU_OP__REGISTER_OPERATION;
+      LOAD: alu_op = ALU_OP__ADD;
+      JALR: alu_op = ALU_OP__ADD; // rs1 + imm
+      STORE:      alu_op = ALU_OP__ADD;
+      BRANCH:      alu_op = ALU_OP__BRANCH;
+      AUIPC: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
+      LUI:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
+      MISC_MEM:     alu_op = ALU_OP__UNSET;
       default:    alu_op = ALU_OP__UNSET;
     endcase
   end
@@ -84,7 +84,7 @@ module Instruction_Decode
 
     case (opcode)
 
-        RType: begin //R-Type
+        OP: begin //R-Type
 
         rd = instr[11:7];
         rs1 = instr[19:15];
@@ -92,7 +92,7 @@ module Instruction_Decode
 
       end
 
-      IType_logic, IType_load, IType_jalr: begin //I-Type (where lw is I type)
+      OP_IMM, LOAD, JALR: begin //I-Type (where lw is I type)
 
         rd = instr[11:7];
         rs1 = instr[19:15];
@@ -100,13 +100,13 @@ module Instruction_Decode
 
       end
 
-      SType, BType: begin //S-type and B-Type
+      STORE, BRANCH: begin //S-type and B-Type
         rs1 = instr[19:15];
         rs2 = instr[24:20];
 
       end
 
-      UType_auipc, UType_lui, JType: begin
+      AUIPC, LUI, JAL: begin
         rd = instr[11:7];
       end
 
@@ -122,14 +122,14 @@ module Instruction_Decode
     // this is essentially the extend module of the processor
   always @(*) begin
     case (opcode)
-      IType_logic : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      IType_load  : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      IType_jalr : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      SType       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
-      BType       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
-      JType       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
-      UType_auipc  : imm_ext = {instr[31:12], 12'h000};
-      UType_lui  : imm_ext = {instr[31:12], 12'h000};
+      OP_IMM : imm_ext = {{20{instr[31]}}, instr[31:20]};
+      LOAD  : imm_ext = {{20{instr[31]}}, instr[31:20]};
+      JALR : imm_ext = {{20{instr[31]}}, instr[31:20]};
+      STORE       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
+      BRANCH       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+      JAL       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+      AUIPC  : imm_ext = {instr[31:12], 12'h000};
+      LUI  : imm_ext = {instr[31:12], 12'h000};
       default:     imm_ext = 32'b0;
     endcase
   end
