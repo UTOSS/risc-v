@@ -29,7 +29,7 @@ module control_fsm
       (opcode == UType_auipc) ||
       (opcode == UType_lui)
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-      || ((opcode == SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011}))
+      || ((opcode == SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111}))
 `endif
 ;
 
@@ -43,7 +43,7 @@ module control_fsm
         result_src = RESULT_SRC__PC_PLUS_4;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
       SYSTEM:
-        if (funct3 inside {3'b001, 3'b010, 3'b011})
+        if (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111})
           result_src = RESULT_SRC__CSR_READ;
         else
           result_src = result_src_t'('0);
@@ -92,4 +92,7 @@ module control_fsm
       default:
         alu_src_b = alu_src_b_t'('x);
     endcase
+
+  // Keep funct3 referenced for lint when CSR decode is compiled out.
+  wire unused_funct3 = &{1'b0, funct3};
 endmodule

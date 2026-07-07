@@ -15,13 +15,22 @@ RISCOF_DUT_BIN       := $(RISCOF_DIR)/dut_sim
 RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
 RISCOF_CONFIG        := $(RISCOF_DIR)/config.ini
 
+RISCOF_UTOSS_RISCV_ISA_CONFIG_TEMPLATE := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_isa.yaml.m4
+RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_isa.yaml
+
 # =============
 # Build config
 # =============
 
 UTOSS_RISCV_CONFIG ?= RV32I
 
-UTOSS_RISCV_VERILATOR_DEFINES := $(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT)
+# Convert B extension to Zbb for RISC-V ISA spec
+RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
+
+UTOSS_RISCV_VERILATOR_DEFINES := \
+	$(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) \
+	$(if $(findstring ZICSR,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV__ZICSR_ENABLED)
+
 UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 
 # ===========================
@@ -48,6 +57,9 @@ TB_VCD_BASE_PATH := test/vcd
 # ===========================
 # Default
 # ===========================
+
+FORCE: # makefile hack
+
 all: build_top
 	@echo "Build finished! Try 'make run_top' or 'make run_tb'."
 
@@ -131,21 +143,24 @@ $(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC)
 $(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
 	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
 
+$(RISCOF_UTOSS_RISCV_ISA_CONFIG): $(RISCOF_UTOSS_RISCV_ISA_CONFIG_TEMPLATE) FORCE
+	m4 -D M4__ISA_STRING="$(RISCOF_ISA_STRING)" $< > $@
+
 riscof_build_dut: $(RISCOF_DUT_BIN)
 
-riscof_validateyaml: $(RISCOF_CONFIG)
+riscof_validateyaml: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG)
 	cd $(RISCOF_DIR) && riscof validateyaml --config=config.ini
 
 riscof_clone_archtest: $(RISCOF_CONFIG)
 	cd $(RISCOF_DIR) && riscof arch-test --clone
 
-riscof_generate_testlist: $(RISCOF_CONFIG)
+riscof_generate_testlist: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG)
 	cd $(RISCOF_DIR) && \
 		riscof testlist --config=config.ini \
 		--suite=riscv-arch-test/riscv-test-suite/ \
 		--env=riscv-arch-test/riscv-test-suite/env
 
-riscof_run: $(RISCOF_CONFIG) riscof_build_dut
+riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 	cd $(RISCOF_DIR) && \
 		riscof run --config=config.ini \
 		--suite=riscv-arch-test/riscv-test-suite/ \
@@ -177,4 +192,4 @@ svlint_tb:
 .PHONY: all build_top run_top build_tb run_tb new_tb \
         svlint svlint_tb \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
-        riscof_generate_testlist riscof_run
+        riscof_generate_testlist riscof_run FORCE

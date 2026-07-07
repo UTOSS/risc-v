@@ -24,6 +24,12 @@ typedef struct packed {
   logic [4:0]   rs1;
   logic [4:0]   rs2;
   imm_t         imm_ext;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  csr_addr_t    csr_addr;
+  logic         csr_write_enable;
+  data_t        csr_write_data;
+  data_t        csr_read_data;
+`endif
 } id_to_ex_t;
 
 `endif

@@ -43,7 +43,6 @@ module utoss_riscv
 
   data_t      wb_result;
   logic [4:0] wb_rd;
-
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
@@ -81,6 +80,9 @@ module utoss_riscv
     , .clk         ( clk                     )
     , .reset       ( reset                   )
     , .data        ( wb_result               )
+    , .csr_write_addr( mem_to_wb_reg.csr_addr        )
+    , .csr_write_enable_wb( mem_to_wb_reg.csr_write_enable )
+    , .csr_write_data_wb( mem_to_wb_reg.csr_write_data )
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
 

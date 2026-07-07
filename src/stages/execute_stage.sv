@@ -117,6 +117,12 @@ module execute_stage
   assign ex_to_mem.alu_result   = alu_result;
   assign ex_to_mem.pc_cur       = id_to_ex.pc_cur;
   assign ex_to_mem.pc_plus_4    = id_to_ex.pc_plus_4;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign ex_to_mem.csr_addr         = id_to_ex.csr_addr;
+  assign ex_to_mem.csr_write_enable = id_to_ex.csr_write_enable;
+  assign ex_to_mem.csr_write_data   = id_to_ex.csr_write_data;
+  assign ex_to_mem.csr_read_data    = id_to_ex.csr_read_data;
+`endif
   assign ex_to_if.imm_ext       = id_to_ex.imm_ext;
   assign ex_to_if.pc_src        = pc_src;
   assign ex_to_if.pc_target     = pc_target;

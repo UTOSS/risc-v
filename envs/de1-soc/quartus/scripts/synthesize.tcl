@@ -21,6 +21,10 @@ if {[string first "B" $config_upper] >= 0} {
 	lappend macro_list UTOSS_RISCV_ENABLE_B_EXT
 }
 
+if {[string first "Zicsr" $config_upper] >= 0} {
+	lappend macro_list UTOSS_RISCV__ZICSR_ENABLED
+}
+
 project_open $project_name
 
 foreach macro $macro_list {

@@ -4,6 +4,7 @@
 riscof/riscof_work/
 riscof/riscv-arch-test/
 riscof/utoss_riscv/__pycache__/
+riscof/utoss_riscv/utoss_riscv_isa.yaml
 riscof/sail_cSim/__pycache__
 riscof/config.ini
 riscof/dut_sim
