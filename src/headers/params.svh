@@ -13,7 +13,7 @@ typedef enum logic [6:0]
     , AUIPC     = 7'b0010111 //U-type
     , LUI       = 7'b0110111 //U-type
     , MISC_MEM  = 7'b0001111 //FENCE
-    } opcode;
+    } opcode_name_t;
 
 //ALU Operation Control Codes: Implemented as ENUM in params.svh
 /*
