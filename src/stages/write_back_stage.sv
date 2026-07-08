@@ -9,7 +9,7 @@ module write_back_stage
   , input  data_t          data_from_memory
   , input  ex_to_mem_t     ex_to_mem
   , output var data_t      result
-  , output var logic [4:0] rd
+  , output var reg_t       rd
   );
 
   data_t alu_result_m;

@@ -8,9 +8,9 @@ module Instruction_Decode
   , output alu_control_t ALUControl
   , output imm_t imm_ext
   , output reg [2:0] funct3
-  , output reg [4:0] rd
-  , output reg [4:0] rs1
-  , output reg [4:0] rs2
+  , output reg_t rd
+  , output reg_t rs1
+  , output reg_t rs2
   );
 
   alu_op_t alu_op;
