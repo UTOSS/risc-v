@@ -20,8 +20,11 @@ module top
 
   // declare interface
 
-  MEM_BUS.memory i_bus;
-  MEM_BUS.memory d_bus;
+  // MEM_BUS.memory i_bus;
+  // MEM_BUS.memory d_bus;
+
+  MEM_BUS i_bus();
+  Mem_BUS d_bus();
 
   memory_map #( .SIZE ( 512 ) )
     memory_map
@@ -59,17 +62,17 @@ module top
     // , .memory_instr__write_data   ( memory_instr__write        )
     // , .memory_instr__write_enable ( memory_instr__write_enable )
     // , .memory_instr__read_data    ( memory_instr__read         )
+    , .d_bus(d_bus)
+    , .i_bus(i_bus)
+    // , .memory_data__address      (d_bus.memory__address)//( memory__address      )
+    // , .memory_data__write_data   (d_bus.memory__write_data)//( memory__write_data   )
+    // , .memory_data__write_enable (d_bus.memory__write_enable)//( memory__write_enable )
+    // , .memory_data__read_data    (d_bus.memory__read_data)//( memory__read_data    )
 
-
-    , .memory_data__address      (d_bus.memory__address)//( memory__address      )
-    , .memory_data__write_data   (d_bus.memory__write_data)//( memory__write_data   )
-    , .memory_data__write_enable (d_bus.memory__write_enable)//( memory__write_enable )
-    , .memory_data__read_data    (d_bus.memory__read_data)//( memory__read_data    )
-
-    , .memory_instr__address      (i_bus.memory__address)//( imem__address        )
-    , .memory_instr__write_data   (i_bus.memory__write_data)//( imem__write_data     )
-    , .memory_instr__write_enable (i_bus.memory__write_enable)//( imem__write_enable   )
-    , .memory_instr__read_data    (i_bus.memory__read_data)//( imem__read_data      )
+    // , .memory_instr__address      (i_bus.memory__address)//( imem__address        )
+    // , .memory_instr__write_data   (i_bus.memory__write_data)//( imem__write_data     )
+    // , .memory_instr__write_enable (i_bus.memory__write_enable)//( imem__write_enable   )
+    // , .memory_instr__read_data    (i_bus.memory__read_data)//( imem__read_data      )
     );
 
 endmodule

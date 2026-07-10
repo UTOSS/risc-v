@@ -19,6 +19,9 @@ module memory
 
   reg [31:0] M[0:SIZE -1];
 
+
+
+
 `ifndef UTOSS_RISCV_HARDENING
   initial begin
     string mem_file;

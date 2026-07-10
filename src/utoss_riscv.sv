@@ -82,27 +82,12 @@
 module utoss_riscv
   ( input wire clk
   , input wire reset
-  , MEM_BUS.consumer instruction_bus
-  , MEM_BUS.consumer data_memory_bus
+  , MEM_BUS.consumer i_bus
+  , MEM_BUS.consumer d_bus
 
   // instruction memory interface begin
 
-
   // change to sv interface
-
-
-  // , output addr_t       memory_instr__address
-  // , output data_t       memory_instr__write_data
-  // , output logic  [3:0] memory_instr__write_enable
-  // , input  data_t       memory_instr__read_data
-  // // instruction memory interface end
-
-  // // data memory interface begin
-  // , output addr_t       memory_data__address
-  // , output data_t       memory_data__write_data
-  // , output logic  [3:0] memory_data__write_enable
-  // , input  data_t       memory_data__read_data
-  // data memory interface end
   );
 
   // common declarations begin
@@ -124,12 +109,6 @@ module utoss_riscv
   logic [4:0] wb_rd;
 
 
- 
-
-  // mem_bus instr_mem_bus; //
-  // mem_bus data_mem_bus; 
-
-
 
   // common declarations end
 
@@ -144,15 +123,13 @@ module utoss_riscv
     , .stall_f ( stall_f )
     , .flush_f ( flush_f )
 
-    , .imem__address (instruction_bus.memory__address)//( memory_instr__address   )
-    , .imem__data    (instruction_bus.memory__read_data)//( memory_instr__read_data )
+    , .imem__address (i_bus.memory__address)//( memory_instr__address   )
+    , .imem__data    (i_bus.memory__read_data)//( memory_instr__read_data )
     );
 
-  // assign memory_instr__write_data = data_t'(0);
-  // assign memory_instr__write_enable = 4'b0;
 
-  assign instruction_bus.mem_write_data = data_t'(0); 
-  assign instruction_bus.mem_write_enable = 4'b0;
+  assign i_bus.mem_write_data = data_t'(0); 
+  assign i_bus.mem_write_enable = 4'b0;
 
 
   
@@ -219,9 +196,9 @@ module utoss_riscv
 
   // change to use interface(Bugget)
 
-  , .mem_write_data   (data_memory_bus.memory__write_data)//( memory_data__write_data   )
-  , .mem_write_enable (data_memory_bus.memory__write_enable)//( memory_data__write_enable ) // TODO: Is this required?
-  , .mem_address      (data_memory_bus.memory__address)//( memory_data__address      )
+  , .mem_write_data   (d_bus.memory__write_data)//( memory_data__write_data   )
+  , .mem_write_enable (d_bus.memory__write_enable)//( memory_data__write_enable ) // TODO: Is this required?
+  , .mem_address      (d_bus.memory__address)//( memory_data__address      )
 
   , .mem_to_wb ( mem_to_wb_out)
   );
@@ -238,7 +215,7 @@ module utoss_riscv
     ( .from_memory ( mem_to_wb_reg )
     , .ex_to_mem   ( ex_to_mem_reg )
     // change to use interface Bugget
-    , .data_from_memory (data_memory_bus.memory__read_data)//( memory_data__read_data )
+    , .data_from_memory (d_bus.memory__read_data)//( memory_data__read_data )
     , .result           ( wb_result              )
     , .rd               ( wb_rd                  )
     );
@@ -292,11 +269,11 @@ module utoss_riscv
     , .wb_stage      ( mem_to_wb_reg )
 
     // change to use interface Bugget
-    , .imem_address      (instruction_bus.memory__address)//( memory_instr__address     )
-    , .dmem_address      (data_memory_bus.memory__address)//( memory_data__address      )
-    , .dmem_read_data    (data_memory_bus.memory__read_data)//( memory_data__read_data    )
-    , .dmem_write_data   (data_memory_bus.memory__write_data)//( memory_data__write_data   )
-    , .dmem_write_enable (data_memory_bus.memory__write_enable)//( memory_data__write_enable )
+    , .imem_address      (i_bus.memory__address)//( memory_instr__address     )
+    , .dmem_address      (d_bus.memory__address)//( memory_data__address      )
+    , .dmem_read_data    (d_bus.memory__read_data)//( memory_data__read_data    )
+    , .dmem_write_data   (d_bus.memory__write_data)//( memory_data__write_data   )
+    , .dmem_write_enable (d_bus.memory__write_enable)//( memory_data__write_enable )
 
     , .wb_result ( wb_result )
     , .wb_rd     ( wb_rd     )

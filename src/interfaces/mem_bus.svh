@@ -4,19 +4,20 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 
-interface MEM_BUS
+interface MEM_BUS;
     addr_t       memory__address; // out
     data_t       memory__write_data; // out
     logic  [3:0] memory__write_enable; // out
     data_t       memory__read_data; // in
-
+    // change the inouts so memory read data is a wire that gives into for the consumer
     modport memory(
-        input memory__read_data,
-        output memory__address, // out
-        output memory__write_data, // out
-        output memory__write_enable // out
+        output memory__read_data,
+        input memory__address, // out
+        input memory__write_data, // out
+        input memory__write_enable // out
     ); 
 
+    
     modport consumer(
         input memory__read_data,
         output memory__address, // out
