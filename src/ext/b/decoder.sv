@@ -1,4 +1,5 @@
 `include "src/timescale.svh"
+`include "src/headers/types.svh"
 `include "src/ext/b/types.svh"
 /* verilator lint_off DECLFILENAME */
 module ext__b__decoder
@@ -7,9 +8,9 @@ module ext__b__decoder
   , input [6:0] funct7
   , input opcode_t opcode
   /* verilator lint_off UNUSEDSIGNAL */
-  , input [4:0] rd
+  , input reg_t rd
   /* verilator lint_on UNUSEDSIGNAL */
-  , input [4:0] rs2
+  , input reg_t rs2
   , output ext__b__types::b_alu_control_t b_alu_control
   );
 

@@ -14,6 +14,9 @@ module Instruction_Decode
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
 `endif
+  , output reg_t rd
+  , output reg_t rs1
+  , output reg_t rs2
   );
 
   alu_op_t alu_op;

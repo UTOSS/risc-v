@@ -11,7 +11,7 @@ typedef struct packed {
   data_t       alu_result;
   data_t       write_data_e;
   logic [2:0]  funct3;
-  logic [4:0]  rd;
+  reg_t        rd;
   addr_t       pc_cur;
   addr_t       pc_plus_4;
 } ex_to_mem_t;

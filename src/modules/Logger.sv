@@ -27,7 +27,7 @@ module Logger
 , input logic [3:0] dmem_write_enable
 
 , input data_t      wb_result
-, input logic [4:0] wb_rd
+, input reg_t       wb_rd
 
 , input logic stall_f
 , input logic stall_d
@@ -40,7 +40,7 @@ module Logger
     integer cycle = 32'h0;
     /* verilator lint_on PROCASSINIT */
 
-    function automatic string reg_name(input logic [4:0] reg_idx);
+    function automatic string reg_name(input reg_t reg_idx);
         case (reg_idx)
             5'd0:  reg_name = "zero";
             5'd1:  reg_name = "ra";
@@ -154,12 +154,12 @@ module Logger
         if (reset) begin
             cycle <= 32'h0;
         end else begin
-            logic [4:0] if_rs1;
-            logic [4:0] if_rs2;
-            logic [4:0] if_rd;
-            logic [4:0] id_rs1;
-            logic [4:0] id_rs2;
-            logic [4:0] id_rd;
+            reg_t if_rs1;
+            reg_t if_rs2;
+            reg_t if_rd;
+            reg_t id_rs1;
+            reg_t id_rs2;
+            reg_t id_rd;
 
             if_rs1 = if_stage.instruction[19:15];
             if_rs2 = if_stage.instruction[24:20];
