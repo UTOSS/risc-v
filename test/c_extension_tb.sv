@@ -14,7 +14,7 @@ module c_extension_tb;
 
   logic [31:0] imm;
 
-  Compressed_Decode uut
+  ext__c__decoder uut
     ( .instr_c    ( instr_c    )
     , .instr_out  ( instr_out  )
     , .is_illegal ( is_illegal )

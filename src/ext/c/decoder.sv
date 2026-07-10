@@ -3,7 +3,9 @@
 `include "src/headers/utils.svh"
 `include "src/timescale.svh"
 
-module Compressed_Decode
+/* verilator lint_off DECLFILENAME */
+module ext__c__decoder
+/* verilator lint_on DECLFILENAME */
   ( input  wire [15:0] instr_c    // Compressed input instruction
   , output reg  [31:0] instr_out  // Expanded instruction
   , output reg         is_illegal // Illegal or not implemented
