@@ -1,0 +1,16 @@
+Fri, 10 Jul 2026 16:49:22 INFO     Creating output directory: /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/logs/out_utoss_smoke
+Fri, 10 Jul 2026 16:49:22 INFO     Processing regression test list : /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/utoss_riscv_dv_smoke.yaml, test: utoss_rv32i_basic_smoke
+Fri, 10 Jul 2026 16:49:22 INFO     Found matched tests: utoss_rv32i_basic_smoke, iterations:1
+Fri, 10 Jul 2026 16:49:22 INFO     Processing simulator setup file : /home/andrew/tools/riscv-dv/yaml/simulator.yaml
+Fri, 10 Jul 2026 16:49:22 INFO     Found matching simulator: pyflow
+Fri, 10 Jul 2026 16:49:22 INFO     Building RISC-V instruction generator
+Fri, 10 Jul 2026 16:49:22 INFO     Running RISC-V instruction generator
+Fri, 10 Jul 2026 16:49:22 INFO     Generating 1 utoss_rv32i_basic_smoke
+Fri, 10 Jul 2026 16:49:22 INFO     Running utoss_rv32i_basic_smoke with 1 batches
+Fri, 10 Jul 2026 16:49:22 INFO     Running utoss_rv32i_basic_smoke, batch 1/1, test_cnt:1
+Fri, 10 Jul 2026 16:49:25 INFO     Compiling /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/logs/out_utoss_smoke/asm_test/utoss_rv32i_basic_smoke_0.S
+Fri, 10 Jul 2026 16:49:25 INFO     Converting to /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/logs/out_utoss_smoke/asm_test/utoss_rv32i_basic_smoke_0.bin
+Fri, 10 Jul 2026 16:49:25 INFO     Processing ISS setup file : /tmp/utoss_riscv_dv_j4zb2yyn/iss.yaml
+Fri, 10 Jul 2026 16:49:25 INFO     Found matching ISS: sail
+Fri, 10 Jul 2026 16:49:25 INFO     sail sim log dir: /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/logs/out_utoss_smoke/sail_sim
+Fri, 10 Jul 2026 16:49:25 INFO     Running sail sim: /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/logs/out_utoss_smoke/asm_test/utoss_rv32i_basic_smoke_0.o

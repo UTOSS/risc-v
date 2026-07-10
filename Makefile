@@ -181,6 +181,8 @@ riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 		--suite=riscv-arch-test/riscv-test-suite/ \
 		--env=riscv-arch-test/riscv-test-suite/env
 
+include utoss_riscv_dv/Makefile
+
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
 GITHUB_ORG_NAME=utoss
@@ -207,4 +209,5 @@ svlint_tb:
 .PHONY: all build_top run_top build_tb run_tb new_tb \
         svlint svlint_tb \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
-        riscof_generate_testlist riscof_run FORCE
+        riscof_generate_testlist riscof_run \
+        riscv_dv FORCE

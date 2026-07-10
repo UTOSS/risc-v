@@ -1,0 +1,4 @@
+sail : /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/logs/out_utoss_smoke/utoss_rv32i_basic_smoke_0.sail.csv
+utoss : /mnt/c/Users/every/Documents/Programming/risc-v/utoss_riscv_dv/logs/out_utoss_smoke/utoss_rv32i_basic_smoke_0.utoss.normalized.csv
+[PASSED]: 70 matched
+
