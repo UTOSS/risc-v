@@ -224,7 +224,7 @@ module Compressed_Decode
           3'b110:             {instr_out, is_illegal} = {dec_SW          , `FALSE             };
 
           // RV32C subset implemented here: floating-point and RV64C opcodes are treated as illegal.
-          default:            {instr_out, is_illegal} = {instr_t'(0)     , `FALSE             };
+          default:            {instr_out, is_illegal} = {instr_t'(0)     , `TRUE             };
         endcase
 
       2'b01:
@@ -284,7 +284,8 @@ module Compressed_Decode
           default:            {instr_out, is_illegal} = {instr_t'(0)     , `TRUE              };
         endcase
 
-      2'b11: is_illegal = 1'b1; // Per Table 39, quadrant 3 is >16b and not an RVC opcode.
+      // Per Table 39, quadrant 3 is >16b and not an RVC opcode.
+      2'b11:                  {instr_out, is_illegal} = {instr_t'(0)     , `TRUE              };
     endcase
 
 endmodule
