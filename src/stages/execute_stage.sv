@@ -71,6 +71,16 @@ module execute_stage
     , .out            ( alu_result_base          )
     , .zeroE          ( zero_flag_base           ) //added bases for local
     );
+
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  zbb u_zbb
+    ( .a              ( alu_input_a            )
+    , .b              ( alu_input_b            )
+    , .b_alu_control  ( id_to_ex.b_alu_control )
+    , .out            ( zbb_result             )
+    , .zeroE          ( zbb_zero_flag          )
+    );
+`endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   always_comb begin
     if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
@@ -84,18 +94,6 @@ module execute_stage
 `else
 assign alu_result = alu_result_base;
 assign zero_flag  = zero_flag_base;
-`endif
-
-
-
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
-  zbb u_zbb
-    ( .a              ( alu_input_a            )
-    , .b              ( alu_input_b            )
-    , .b_alu_control  ( id_to_ex.b_alu_control )
-    , .out            ( zbb_result             )
-    , .zeroE          ( zbb_zero_flag          )
-    );
 `endif
 
   typedef enum logic [2:0]

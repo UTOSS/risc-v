@@ -86,7 +86,7 @@ module Logger
         op_name = "unknown";
 
         case (opcode)
-            OP:
+            OPCODE_OP:
                 case (funct3)
                     3'b000: op_name = (funct7 == 7'h20) ? "sub" : "add";
                     3'b001: op_name = "sll";
@@ -99,7 +99,7 @@ module Logger
                     default:;
                 endcase
 
-            OP_IMM:
+            OPCODE_OP_IMM:
                 case (funct3)
                     3'b000: op_name = "addi";
                     3'b001: op_name = "slli";
@@ -112,7 +112,7 @@ module Logger
                     default:;
                 endcase
 
-            LOAD:
+            OPCODE_LOAD:
                 case (funct3)
                     3'b000: op_name = "lb";
                     3'b001: op_name = "lh";
@@ -122,7 +122,7 @@ module Logger
                     default:;
                 endcase
 
-            STORE:
+            OPCODE_STORE:
                 case (funct3)
                     3'b000: op_name = "sb";
                     3'b001: op_name = "sh";
@@ -130,7 +130,7 @@ module Logger
                     default:;
                 endcase
 
-            BRANCH:
+            OPCODE_BRANCH:
                 case (funct3)
                     3'b000: op_name = "beq";
                     3'b001: op_name = "bne";
@@ -141,11 +141,11 @@ module Logger
                     default:;
                 endcase
 
-            JAL:      op_name = "jal";
-            AUIPC:    op_name = "auipc";
-            LUI:      op_name = "lui";
-            JALR:     op_name = "jalr";
-            MISC_MEM: op_name = "fence";
+            OPCODE_JAL:      op_name = "jal";
+            OPCODE_AUIPC:    op_name = "auipc";
+            OPCODE_LUI:      op_name = "lui";
+            OPCODE_JALR:     op_name = "jalr";
+            OPCODE_MISC_MEM: op_name = "fence";
             default:;
         endcase
     endfunction

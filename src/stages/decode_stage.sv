@@ -112,9 +112,6 @@ module decode_stage
   assign id_to_ex.mem_write      = cfsm__mem_write;
   assign id_to_ex.reg_write      = cfsm__reg_write;
   assign id_to_ex.alu_control    = alu_control;
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
-  assign id_to_ex.b_alu_control = b_alu_control;
-`endif
   assign id_to_ex.funct3         = funct3;
   assign id_to_ex.rd1            = rd1_safe;
   assign id_to_ex.rd2            = rd2_safe;
@@ -124,5 +121,8 @@ module decode_stage
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  assign id_to_ex.b_alu_control = b_alu_control;
+`endif
 
 endmodule

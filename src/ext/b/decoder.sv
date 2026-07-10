@@ -5,7 +5,7 @@ module ext__b__decoder
 /* verilator lint_on DECLFILENAME */
   ( input [2:0] funct3
   , input [6:0] funct7
-  , input [6:0] opcode
+  , input opcode_t opcode
   /* verilator lint_off UNUSEDSIGNAL */
   , input [4:0] rd
   /* verilator lint_on UNUSEDSIGNAL */
