@@ -1,5 +1,6 @@
 `include "src/timescale.svh"
 `include "src/headers/types.svh"
+`include "src/headers/params.svh"
 
 // TODO: review all the signal assignments
 /* verilator lint_off DECLFILENAME */
