@@ -162,54 +162,51 @@ module ext__c__decoder
   // Docompressed instructions
 
   // as per Section 28.5.2. "Integer Constant-Generation / Register-Immediate Operations"
-  wire instr_t dec_SRLI     = build_i_shift_instr( .funct7(7'h00) , .shamt(c_shamt) , .rs1(rs1_prime) , .funct3(3'b101) , .rd(rs1_prime) , .opcode(IType_logic) ); // srli rs1', rs1', shamt
-  wire instr_t dec_SRAI     = build_i_shift_instr( .funct7(7'h20) , .shamt(c_shamt) , .rs1(rs1_prime) , .funct3(3'b101) , .rd(rs1_prime) , .opcode(IType_logic) ); // srai rs1', rs1', shamt
-  wire instr_t dec_SLLI     = build_i_shift_instr( .funct7(7'h00) , .shamt(c_shamt) , .rs1(rd_full)   , .funct3(3'b001) , .rd(rd_full)   , .opcode(IType_logic) ); // slli rd, rd, shamt
+  wire instr_t dec_SRLI     = build_i_shift_instr( .funct7(7'h00) , .shamt(c_shamt) , .rs1(rs1_prime) , .funct3(3'b101) , .rd(rs1_prime) , .opcode(OPCODE_OP_IMM) ); // srli rs1', rs1', shamt
+  wire instr_t dec_SRAI     = build_i_shift_instr( .funct7(7'h20) , .shamt(c_shamt) , .rs1(rs1_prime) , .funct3(3'b101) , .rd(rs1_prime) , .opcode(OPCODE_OP_IMM) ); // srai rs1', rs1', shamt
+  wire instr_t dec_SLLI     = build_i_shift_instr( .funct7(7'h00) , .shamt(c_shamt) , .rs1(rd_full)   , .funct3(3'b001) , .rd(rd_full)   , .opcode(OPCODE_OP_IMM) ); // slli rd, rd, shamt
 
   // as per Section 28.5.2. "Integer Constant-Generation / Register-Immediate Operations"
-  wire instr_t dec_ANDI     = build_i_instr( .imm(ci_imm) , .rs1(rs1_prime) , .funct3(3'b111) , .rd(rs1_prime) , .opcode(IType_logic) ); // andi rs1', rs1', imm
+  wire instr_t dec_ANDI     = build_i_instr( .imm(ci_imm) , .rs1(rs1_prime) , .funct3(3'b111) , .rd(rs1_prime) , .opcode(OPCODE_OP_IMM) ); // andi rs1', rs1', imm
 
   // as per Section 28.5.4. "Integer Register-Register Operations"
-  wire instr_t dec_MV       = build_r_instr( .funct7(7'h00) , .rs2(rs2_full)  , .rs1(5'd0)      , .funct3(3'h000) , .rd(rd_full)   , .opcode(RType) ); // mv rd, rs2
-  wire instr_t dec_ADD      = build_r_instr( .funct7(7'h00) , .rs2(rs2_full)  , .rs1(rd_full)   , .funct3(3'h000) , .rd(rd_full)   , .opcode(RType) ); // add rd, rd, rs2
-  wire instr_t dec_SUB      = build_r_instr( .funct7(7'h20) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b000) , .rd(rs1_prime) , .opcode(RType) ); // sub rs1', rs1', rs2'
-  wire instr_t dec_XOR      = build_r_instr( .funct7(7'h00) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b100) , .rd(rs1_prime) , .opcode(RType) ); // xor rs1', rs1', rs2'
-  wire instr_t dec_OR       = build_r_instr( .funct7(7'h00) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b110) , .rd(rs1_prime) , .opcode(RType) ); // or rs1', rs1', rs2'
-  wire instr_t dec_AND      = build_r_instr( .funct7(7'h00) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b111) , .rd(rs1_prime) , .opcode(RType) ); // and rs1', rs1', rs2'
+  wire instr_t dec_MV       = build_r_instr( .funct7(7'h00) , .rs2(rs2_full)  , .rs1(5'd0)      , .funct3(3'h000) , .rd(rd_full)   , .opcode(OPCODE_OP) ); // mv rd, rs2
+  wire instr_t dec_ADD      = build_r_instr( .funct7(7'h00) , .rs2(rs2_full)  , .rs1(rd_full)   , .funct3(3'h000) , .rd(rd_full)   , .opcode(OPCODE_OP) ); // add rd, rd, rs2
+  wire instr_t dec_SUB      = build_r_instr( .funct7(7'h20) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b000) , .rd(rs1_prime) , .opcode(OPCODE_OP) ); // sub rs1', rs1', rs2'
+  wire instr_t dec_XOR      = build_r_instr( .funct7(7'h00) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b100) , .rd(rs1_prime) , .opcode(OPCODE_OP) ); // xor rs1', rs1', rs2'
+  wire instr_t dec_OR       = build_r_instr( .funct7(7'h00) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b110) , .rd(rs1_prime) , .opcode(OPCODE_OP) ); // or rs1', rs1', rs2'
+  wire instr_t dec_AND      = build_r_instr( .funct7(7'h00) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b111) , .rd(rs1_prime) , .opcode(OPCODE_OP) ); // and rs1', rs1', rs2'
 
   // as per Section 28.3.1. "Stack-Pointer-Based Loads and Stores"
-  wire instr_t dec_SWSP     = build_s_instr( .imm(css_imm) , .rs2(rs2_full) , .rs1(5'd2) , .funct3(3'b010) , .opcode(SType) ); // sw rs2, offset(sp)
+  wire instr_t dec_SWSP     = build_s_instr( .imm(css_imm) , .rs2(rs2_full) , .rs1(5'd2) , .funct3(3'b010) , .opcode(OPCODE_STORE) ); // sw rs2, offset(sp)
 
   // as per Section 28.3.1. "Stack-Pointer-Based Loads and Stores"
-  wire instr_t dec_LWSP     = build_i_instr( .imm(ci_lwsp_imm) , .rs1(5'd2) , .funct3(3'b010) , .rd(rd_full) , .opcode(IType_load) ); // lw rd, offset(sp)
+  wire instr_t dec_LWSP     = build_i_instr( .imm(ci_lwsp_imm) , .rs1(5'd2) , .funct3(3'b010) , .rd(rd_full) , .opcode(OPCODE_LOAD) ); // lw rd, offset(sp)
 
   // as per Section 28.3.2. "Register-Based Loads and Stores"
-  wire instr_t dec_SW       = build_s_instr( .imm(cl_cs_imm) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b010) , .opcode(SType) ); // sw rs2′, offset(rs1′)
-
-  // as per Section 28.3.2. "Register-Based Loads and Stores"
-  wire instr_t dec_LW       = build_i_instr( .imm(cl_cs_imm) , .rs1(rs1_prime) , .funct3(3'b010) , .rd(rd_prime) , .opcode(IType_load) ); // lw rd′, offset(rs1′)
+  wire instr_t dec_LW       = build_i_instr( .imm(cl_cs_imm) , .rs1(rs1_prime) , .funct3(3'b010) , .rd(rd_prime) , .opcode(OPCODE_LOAD) ); // lw rd′, offset(rs1′)
 
   // as per Section 28.4. "Control Transfer Instructions"
-  wire instr_t dec_JAL      = build_j_instr( .imm(cj_imm), .rd(5'd1) , .opcode(JType) ); // jal x1, offset
-  wire instr_t dec_J        = build_j_instr( .imm(cj_imm), .rd(5'd0) , .opcode(JType) ); // jal x0, offset
+  wire instr_t dec_JAL      = build_j_instr( .imm(cj_imm), .rd(5'd1) , .opcode(OPCODE_JAL) ); // jal x1, offset
+  wire instr_t dec_J        = build_j_instr( .imm(cj_imm), .rd(5'd0) , .opcode(OPCODE_JAL) ); // jal x0, offset
 
   // as per Section 28.4. "Control Transfer Instructions"
-  wire instr_t dec_JALR     = build_i_instr( .imm(12'd0) , .rs1(rs1_full) , .funct3(3'h000) , .rd(5'd1) , .opcode(IType_jalr) ); // jalr x1, 0(rs1)
+  wire instr_t dec_JALR     = build_i_instr( .imm(12'd0) , .rs1(rs1_full) , .funct3(3'h000) , .rd(5'd1) , .opcode(OPCODE_JALR) ); // jalr x1, 0(rs1)
 
   // as per Section 28.4. "Control Transfer Instructions"
-  wire instr_t dec_BEQZ     = build_b_instr( .imm(cb_imm) , .rs2(5'd0) , .rs1(rs1_prime) , .funct3(3'b000) , .opcode(BType) ); // beq rs1', x0, offset
-  wire instr_t dec_BNEZ     = build_b_instr( .imm(cb_imm) , .rs2(5'd0) , .rs1(rs1_prime) , .funct3(3'b001) , .opcode(BType) ); // bne rs1', x0, offset
+  wire instr_t dec_BEQZ     = build_b_instr( .imm(cb_imm) , .rs2(5'd0) , .rs1(rs1_prime) , .funct3(3'b000) , .opcode(OPCODE_BRANCH) ); // beq rs1', x0, offset
+  wire instr_t dec_BNEZ     = build_b_instr( .imm(cb_imm) , .rs2(5'd0) , .rs1(rs1_prime) , .funct3(3'b001) , .opcode(OPCODE_BRANCH) ); // bne rs1', x0, offset
 
   // as per Section 28.5.1. "Integer Constant-Generation Instructions"
-  wire instr_t dec_LUI      = build_u_instr( .imm(ci_lui_imm) , .rd(rd_full) , .opcode(UType_lui) ); // lui rd, imm
+  wire instr_t dec_LUI      = build_u_instr( .imm(ci_lui_imm) , .rd(rd_full) , .opcode(OPCODE_LUI) ); // lui rd, imm
 
   // as per Section 28.5.1. "Integer Constant-Generation Instructions"
-  wire instr_t dec_LI       = build_i_instr( .imm(ci_imm) , .rs1(5'd0)    , .funct3(3'b000) , .rd(rd_full) , .opcode(IType_logic) ); // addi rd, x0, imm
-  wire instr_t dec_ADDI     = build_i_instr( .imm(ci_imm) , .rs1(rd_full) , .funct3(3'b000) , .rd(rd_full) , .opcode(IType_logic) ); // addi rd, rd, imm
+  wire instr_t dec_LI       = build_i_instr( .imm(ci_imm) , .rs1(5'd0)    , .funct3(3'b000) , .rd(rd_full) , .opcode(OPCODE_OP_IMM) ); // addi rd, x0, imm
+  wire instr_t dec_ADDI     = build_i_instr( .imm(ci_imm) , .rs1(rd_full) , .funct3(3'b000) , .rd(rd_full) , .opcode(OPCODE_OP_IMM) ); // addi rd, rd, imm
 
   // as per Section 28.5.2. "Integer Register-Immediate Operations"
-  wire instr_t dec_ADDI4SPN = build_i_instr( .imm(ciw_imm)   , .rs1(5'd2) , .funct3(3'b000) , .rd(rd_prime)  , .opcode(IType_logic) ); // addi rd′, x2, nzuimm[9:2]
-  wire instr_t dec_ADDI16SP = build_i_instr( .imm(ci_sp_imm) , .rs1(5'd2) , .funct3(3'b000) , .rd(5'd2)      , .opcode(IType_logic) ); // addi x2, x2, nzimm[9:4]
+  wire instr_t dec_ADDI4SPN = build_i_instr( .imm(ciw_imm)   , .rs1(5'd2) , .funct3(3'b000) , .rd(rd_prime)  , .opcode(OPCODE_OP_IMM) ); // addi rd′, x2, nzuimm[9:2]
+  wire instr_t dec_ADDI16SP = build_i_instr( .imm(ci_sp_imm) , .rs1(5'd2) , .funct3(3'b000) , .rd(5'd2)      , .opcode(OPCODE_OP_IMM) ); // addi x2, x2, nzimm[9:4]
 
   // as per Section 28.5.6. "Breakpoint Instruction"
   wire instr_t dec_EBREAK   = build_i_instr( .imm(12'h001) , .rs1(5'd0) , .funct3(3'h000) , .rd(5'd0) , .opcode(SYSTEM)      ); // ebreak
