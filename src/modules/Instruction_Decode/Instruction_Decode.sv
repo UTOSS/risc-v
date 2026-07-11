@@ -11,6 +11,9 @@ module Instruction_Decode
   , output reg_t rd
   , output reg_t rs1
   , output reg_t rs2
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  , output ext__b__types::b_alu_control_t b_alu_control
+`endif
   );
 
   alu_op_t alu_op;
@@ -23,7 +26,7 @@ module Instruction_Decode
 
 
   logic [6:0] funct7;
-  assign opcode = instr[6:0];
+  assign opcode = opcode_t'(instr[6:0]);
 
   //combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
 
@@ -38,14 +41,14 @@ module Instruction_Decode
 
     case (opcode)
 
-    RType, IType_logic: begin //R-Type
+    OPCODE_OP, OPCODE_OP_IMM: begin //R-Type
 
       funct3 = instr[14:12];
       funct7 = instr[31:25];
 
     end
 
-    IType_load, SType, BType: begin
+    OPCODE_LOAD, OPCODE_STORE, OPCODE_BRANCH: begin
 
       funct3 = instr[14:12];
 
@@ -58,14 +61,14 @@ module Instruction_Decode
   // architecture book
   always @(*) begin
     case (opcode)
-      RType:      alu_op = ALU_OP__REGISTER_OPERATION;
-      IType_load: alu_op = ALU_OP__ADD;
-      IType_jalr: alu_op = ALU_OP__ADD; // rs1 + imm
-      SType:      alu_op = ALU_OP__ADD;
-      BType:      alu_op = ALU_OP__BRANCH;
-      UType_auipc: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-      UType_lui:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-      FENCE:     alu_op = ALU_OP__UNSET;
+      OPCODE_OP:      alu_op = ALU_OP__REGISTER_OPERATION;
+      OPCODE_LOAD: alu_op = ALU_OP__ADD;
+      OPCODE_JALR: alu_op = ALU_OP__ADD; // rs1 + imm
+      OPCODE_STORE:      alu_op = ALU_OP__ADD;
+      OPCODE_BRANCH:      alu_op = ALU_OP__BRANCH;
+      OPCODE_AUIPC: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
+      OPCODE_LUI:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
+      OPCODE_MISC_MEM:     alu_op = ALU_OP__UNSET;
       default:    alu_op = ALU_OP__UNSET;
     endcase
   end
@@ -81,7 +84,7 @@ module Instruction_Decode
 
     case (opcode)
 
-        RType: begin //R-Type
+        OPCODE_OP: begin //R-Type
 
         rd = instr[11:7];
         rs1 = instr[19:15];
@@ -89,20 +92,21 @@ module Instruction_Decode
 
       end
 
-      IType_logic, IType_load, IType_jalr: begin //I-Type (where lw is I type)
+      OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR: begin //I-Type (where lw is I type)
 
         rd = instr[11:7];
-        rs1 = instr[19:15];
-
-      end
-
-      SType, BType: begin //S-type and B-Type
         rs1 = instr[19:15];
         rs2 = instr[24:20];
 
       end
 
-      UType_auipc, UType_lui, JType: begin
+      OPCODE_STORE, OPCODE_BRANCH: begin //S-type and B-Type
+        rs1 = instr[19:15];
+        rs2 = instr[24:20];
+
+      end
+
+      OPCODE_AUIPC, OPCODE_LUI, OPCODE_JAL: begin
         rd = instr[11:7];
       end
 
@@ -118,14 +122,14 @@ module Instruction_Decode
     // this is essentially the extend module of the processor
   always @(*) begin
     case (opcode)
-      IType_logic : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      IType_load  : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      IType_jalr : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      SType       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
-      BType       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
-      JType       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
-      UType_auipc  : imm_ext = {instr[31:12], 12'h000};
-      UType_lui  : imm_ext = {instr[31:12], 12'h000};
+      OPCODE_OP_IMM : imm_ext = {{20{instr[31]}}, instr[31:20]};
+      OPCODE_LOAD  : imm_ext = {{20{instr[31]}}, instr[31:20]};
+      OPCODE_JALR : imm_ext = {{20{instr[31]}}, instr[31:20]};
+      OPCODE_STORE       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
+      OPCODE_BRANCH       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+      OPCODE_JAL       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+      OPCODE_AUIPC  : imm_ext = {instr[31:12], 12'h000};
+      OPCODE_LUI  : imm_ext = {instr[31:12], 12'h000};
       default:     imm_ext = 32'b0;
     endcase
   end
@@ -138,10 +142,9 @@ module Instruction_Decode
     , .alu_op(alu_op)
     , .alu_control(ALUControl)
     );
+
+
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
-/* verilator lint_off UNUSEDSIGNAL */
-  ext__b__types::b_alu_control_t b_alu_control;
-/* verilator lint_on UNUSEDSIGNAL */
   ext__b__decoder u_ext__b__decoder
     ( .funct3        ( funct3        )
     , .funct7        ( funct7        )
@@ -150,7 +153,6 @@ module Instruction_Decode
     , .rs2           ( rs2           )
     , .b_alu_control ( b_alu_control )
     );
-
 `endif
 
 endmodule

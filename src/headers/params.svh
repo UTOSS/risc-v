@@ -1,21 +1,6 @@
 `ifndef PARAMS_VH
 `define PARAMS_VH
 
-// Opcodes
-/* verilator lint_off UNUSEDPARAM */
-parameter RType = 7'b0110011;
-parameter IType_logic = 7'b0010011;
-parameter IType_load = 7'b0000011;
-parameter SType = 7'b0100011;
-parameter BType = 7'b1100011;
-parameter JType = 7'b1101111;
-parameter UType_auipc = 7'b0010111;
-parameter UType_lui = 7'b0110111;
-parameter IType_jalr = 7'b1100111;
-parameter FENCE    = 7'b0001111;
-parameter SYSTEM = 7'b1110011;
-/* verilator lint_on UNUSEDPARAM */
-
 //ALU Operation Control Codes: Implemented as ENUM in params.svh
 /*
 parameter ALUAdd = 4'b0000;
