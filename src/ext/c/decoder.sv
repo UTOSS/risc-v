@@ -184,6 +184,9 @@ module ext__c__decoder
   wire instr_t dec_LWSP     = build_i_instr( .imm(ci_lwsp_imm) , .rs1(5'd2) , .funct3(3'b010) , .rd(rd_full) , .opcode(OPCODE_LOAD) ); // lw rd, offset(sp)
 
   // as per Section 28.3.2. "Register-Based Loads and Stores"
+  wire instr_t dec_SW       = build_s_instr( .imm(cl_cs_imm) , .rs2(rs2_prime) , .rs1(rs1_prime) , .funct3(3'b010) , .opcode(OPCODE_STORE) ); // sw rs2′, offset(rs1′)
+
+  // as per Section 28.3.2. "Register-Based Loads and Stores"
   wire instr_t dec_LW       = build_i_instr( .imm(cl_cs_imm) , .rs1(rs1_prime) , .funct3(3'b010) , .rd(rd_prime) , .opcode(OPCODE_LOAD) ); // lw rd′, offset(rs1′)
 
   // as per Section 28.4. "Control Transfer Instructions"
