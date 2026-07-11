@@ -2,6 +2,7 @@
 `define PARAMS_VH
 
 // Opcodes
+// Section 36.1. RV32/64G Instruction Set Listings: Table 1. RISC-V base opcode map, inst[1:0]=11
 typedef enum logic [6:0]
     { OPCODE_OP        = 7'b0110011 //R-type
     , OPCODE_OP_IMM    = 7'b0010011 //I-type logic
@@ -13,6 +14,7 @@ typedef enum logic [6:0]
     , OPCODE_AUIPC     = 7'b0010111 //U-type
     , OPCODE_LUI       = 7'b0110111 //U-type
     , OPCODE_MISC_MEM  = 7'b0001111 //FENCE
+    , OPCODE_SYSTEM    = 7'b1110011 //SYSTEM
     } opcode_t;
 
 //ALU Operation Control Codes: Implemented as ENUM in params.svh

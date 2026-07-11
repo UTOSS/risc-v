@@ -209,7 +209,7 @@ module ext__c__decoder
   wire instr_t dec_ADDI16SP = build_i_instr( .imm(ci_sp_imm) , .rs1(5'd2) , .funct3(3'b000) , .rd(5'd2)      , .opcode(OPCODE_OP_IMM) ); // addi x2, x2, nzimm[9:4]
 
   // as per Section 28.5.6. "Breakpoint Instruction"
-  wire instr_t dec_EBREAK   = build_i_instr( .imm(12'h001) , .rs1(5'd0) , .funct3(3'h000) , .rd(5'd0) , .opcode(SYSTEM)      ); // ebreak
+  wire instr_t dec_EBREAK   = build_i_instr( .imm(12'h001) , .rs1(5'd0) , .funct3(3'h000) , .rd(5'd0) , .opcode(OPCODE_SYSTEM)      ); // ebreak
 
   // Note: C.FLW, C.FSW, C.FLD, C.FSD, C.FLWSP, C.FLDSP, C.FSWSP, C.FSDSP should be added alongside future F/D extension support.
   always_comb
