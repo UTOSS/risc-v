@@ -7,14 +7,14 @@
 `include "src/interfaces/mem_to_wb_if.svh"
 `include "src/interfaces/MEM_BUS.svh"
 
-// make a new include 
+// make a new include
 
 // interface instr_bus (input clk);
 //   addr_t memory_instr__address; // out
 //   data_t       memory_instr__write_data; // out
 //   logic  [3:0] memory_instr__write_enable; // out
 //   data_t       memory_instr__read_data; // in
-// endinterface 
+// endinterface
 
 // interface data_mem_bus;
 //   addr_t       memory_data__address; // out
@@ -27,7 +27,7 @@
 
 // interface mem_bus //(input clk); // because some are clocked(or not ig)
 
-//   // //instruction 
+//   // //instruction
 //   // addr_t       memory_instr__address; // out
 //   // data_t       memory_instr__write_data; // out
 //   // logic  [3:0] memory_instr__write_enable; // out
@@ -64,18 +64,18 @@
 //     output memory__address, // out
 //     output memory__write_data, // out
 //     output memory__write_enable // out
-//   ); 
+//   );
 
 //   modport consumer(
 //     input memory__read_data,
 //     output memory__address, // out
 //     output memory__write_data, // out
 //     output memory__write_enable // out
-//   ); 
+//   );
 
 
 
-// endinterface 
+// endinterface
 
 
 // pipelined implementation of our core
@@ -128,11 +128,11 @@ module utoss_riscv
     );
 
 
-  assign i_bus.memory__write_data = data_t'(0); 
+  assign i_bus.memory__write_data = data_t'(0);
   assign i_bus.memory__write_enable = 4'b0;
 
 
-  
+
 
   // fetch stage end
   // interface end @bugget

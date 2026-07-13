@@ -5,28 +5,29 @@
 `include "src/headers/types.svh"
 
 interface MEM_BUS;
-    addr_t       memory__address; // out
-    data_t       memory__write_data; // out
-    logic  [3:0] memory__write_enable; // out
-    data_t       memory__read_data; // in
-    // change the inouts so memory read data is a wire that gives into for the consumer
-    modport memory(
-        output memory__read_data,
-        input memory__address, // out
-        input memory__write_data, // out
-        input memory__write_enable // out
-    ); 
 
-    
-    modport consumer(
-        input memory__read_data,
-        output memory__address, // out
-        output memory__write_data, // out
-        output memory__write_enable // out
-    ); 
+  addr_t       memory__address;
+  data_t       memory__write_data;
+  logic  [3:0] memory__write_enable;
+  data_t       memory__read_data;
+
+  modport memory
+    ( output memory__read_data
+    , input  memory__address
+    , input  memory__write_data
+    , input  memory__write_enable
+    );
+
+  modport consumer
+    ( input  memory__read_data
+    , output memory__address
+    , output memory__write_data
+    , output memory__write_enable
+    );
+
 endinterface
 
-`endif 
+`endif
 
 
 

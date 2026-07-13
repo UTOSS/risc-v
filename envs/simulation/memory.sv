@@ -52,7 +52,7 @@ module memory
     //read_data <= M[address[SIZE_W +1:2]]; // 2 LSBs used for byte addressing
 
     d_bus.memory__read_data <= M[d_bus.memory__address[SIZE_W + 1:2]];
-    
+
     // instruction_read_data <= M[instruction_address[SIZE_W +1:2]];
     // if (write_enable[0]) M[address[SIZE_W +1:2]][7:0]   <= write_data[7:0];
     // if (write_enable[1]) M[address[SIZE_W +1:2]][15:8]  <= write_data[15:8];

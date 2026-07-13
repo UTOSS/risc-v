@@ -5,7 +5,7 @@ module top
   #( parameter MEM_SIZE = 1024 ) //maybe change to 2048 if using dual port?
   ( input wire clk
   , input wire reset
-  // , MEM_BUS.memory i_bus   
+  // , MEM_BUS.memory i_bus
   // , MEM_BUS.memory d_bus
   );
 
