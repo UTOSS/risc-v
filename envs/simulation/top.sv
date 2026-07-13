@@ -23,7 +23,7 @@ module top
   MEM_BUS d_bus();
 
 
-  wire unused = &{i_bus.memory__write_data, i_bus.memory__write_enable} //&{imem__write_data, imem__write_enable};
+  wire unused = &{i_bus.memory__write_data, i_bus.memory__write_enable}; //&{imem__write_data, imem__write_enable};
 
   memory #( .SIZE ( MEM_SIZE ) )
 

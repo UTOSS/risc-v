@@ -61,10 +61,10 @@ module memory
 
     i_bus.memory__read_data <= M[i_bus.memory__address[SIZE_W + 1:2]];
 
-    if (d_bus.memory__write_enable[0]) M[d_bus.memory__address[SIZE_W +1:2]][7:0] <= d_bus.memory__write_data[7:0]
-    if (d_bus.memory__write_enable[1]) M[d_bus.memory__address[SIZE_W +1:2]][15:8] <= d_bus.memory__write_data[15:8]
-    if (d_bus.memory__write_enable[2]) M[d_bus.memory__address[SIZE_W +1:2]][23:16] <= d_bus.memory__write_data[23:16]
-    if (d_bus.memory__write_enable[3]) M[d_bus.memory__address[SIZE_W +1:2]][31:24] <= d_bus.memory__write_data[31:24]
+    if (d_bus.memory__write_enable[0]) M[d_bus.memory__address[SIZE_W +1:2]][7:0] <= d_bus.memory__write_data[7:0];
+    if (d_bus.memory__write_enable[1]) M[d_bus.memory__address[SIZE_W +1:2]][15:8] <= d_bus.memory__write_data[15:8];
+    if (d_bus.memory__write_enable[2]) M[d_bus.memory__address[SIZE_W +1:2]][23:16] <= d_bus.memory__write_data[23:16];
+    if (d_bus.memory__write_enable[3]) M[d_bus.memory__address[SIZE_W +1:2]][31:24] <= d_bus.memory__write_data[31:24];
   end
 
 endmodule
