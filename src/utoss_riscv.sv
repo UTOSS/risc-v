@@ -128,8 +128,8 @@ module utoss_riscv
     );
 
 
-  assign i_bus.mem_write_data = data_t'(0); 
-  assign i_bus.mem_write_enable = 4'b0;
+  assign i_bus.memory__write_data = data_t'(0); 
+  assign i_bus.memory__write_enable = 4'b0;
 
 
   
