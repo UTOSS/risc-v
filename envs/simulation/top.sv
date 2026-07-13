@@ -30,12 +30,14 @@ module top
   // u could prob do the same from the core thingy here @Bugget
     u_memory
       ( .clk                      ( clk                  )
-      , .address                  (d_bus.memory__address)//( memory__address      )
-      , .instruction_address      (i_bus.memory__address)//( imem__address        )
-      , .write_data               (d_bus.memory__write_data)//( memory__write_data   )
-      , .write_enable             (d_bus.memory__write_enable)//( memory__write_enable )
-      , .read_data                (d_bus.memory__read_data)//( memory__read_data    )
-      , .instruction_read_data    (i_bus.memory__read_data)//( imem__read_data      )
+      , .d_bus(d_bus)
+      , .i_bus(i_bus)
+      // , .address                  (d_bus.memory__address)//( memory__address      )
+      // , .instruction_address      (i_bus.memory__address)//( imem__address        )
+      // , .write_data               (d_bus.memory__write_data)//( memory__write_data   )
+      // , .write_enable             (d_bus.memory__write_enable)//( memory__write_enable )
+      // , .read_data                (d_bus.memory__read_data)//( memory__read_data    )
+      // , .instruction_read_data    (i_bus.memory__read_data)//( imem__read_data      )
       );
 
   utoss_riscv core
