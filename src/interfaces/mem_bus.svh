@@ -26,5 +26,7 @@ interface MEM_BUS;
     ); 
 endinterface
 
+`endif 
+
 
 
