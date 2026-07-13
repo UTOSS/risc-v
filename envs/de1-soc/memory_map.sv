@@ -1,5 +1,5 @@
 `include "src/headers/types.svh"
-`include "src/interaces/MEM_BUS.svh"
+`include "src/interfaces/MEM_BUS.svh"
 
 
 // change to use new interface Nugget-exe
