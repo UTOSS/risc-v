@@ -67,7 +67,7 @@ module memory_map #( parameter SIZE = 1024 )
       , M1[mem_data_index]
       , M0[mem_data_index]
       };
-    case (data__address)
+    case (d_bus.memory__address)
       LEDR_ADDRESS: begin
         if (|d_bus.memory__write_enable) LEDR <= d_bus.memory__write_data[9:0];// (|data__write_enable) LEDR <= data__write[9:0]; 
       end
