@@ -1,5 +1,5 @@
 `include "src/headers/types.svh"
-`include "src/interfaces/mem_bus.svh"
+`include "src/interfaces/MEM_BUS.svh"
 
 module top
   #( parameter MEM_SIZE = 1024 ) //maybe change to 2048 if using dual port?

@@ -1,5 +1,5 @@
 `include "src/headers/types.svh"
-`include "src/interfaces/mem_bus.svh"
+`include "src/interfaces/MEM_BUS.svh"
 
 // a dual-read single-write memory block that we use with our core in simulation environment
 module memory

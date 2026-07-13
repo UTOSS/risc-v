@@ -1,6 +1,6 @@
 //do i need include? 
 
-`include "src/interfaces/mem_bus.svh"
+`include "src/interfaces/MEM_BUS.svh"
 
 module top
   ( input  wire       CLOCK_50
