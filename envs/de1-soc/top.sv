@@ -24,7 +24,11 @@ module top
   // MEM_BUS.memory d_bus;
 
   MEM_BUS i_bus();
-  Mem_BUS d_bus();
+  MEM_BUS d_bus();
+
+
+  // added to mirror memory.sv in envs/simulation
+  wire unused = &{i_bus.memory__write_data, i_bus.memory__write_enable};
 
   memory_map #( .SIZE ( 512 ) )
     memory_map
@@ -35,16 +39,19 @@ module top
       // , .data__write_enable ( memory_data__write_enable )
       // , .data__read         ( memory_data__read         )
 
-      , .data__address (d_bus.memory__address)
-      , .data__write (d_bus.memory__write_data)
-      , .data__write_enable (d_bus.memory__write_enable)
-      , .data__read (d_bus.memory__read_data)
+      // , .data__address (d_bus.memory__address)
+      // , .data__write (d_bus.memory__write_data)
+      // , .data__write_enable (d_bus.memory__write_enable)
+      // , .data__read (d_bus.memory__read_data)
 
       // , .instr__address     ( memory_instr__address     )
       // , .instr__read        ( memory_instr__read        )
 
-      , .instr__address (i_bus.memory__address)
-      , .instr__read (i_bus.memory__read_data)
+      // , .instr__address (i_bus.memory__address)
+      // , .instr__read (i_bus.memory__read_data)
+
+      , .d_bus(d_bus)
+      , .i_bus(i_bus)
 
       , .LEDR ( LEDR )
       );
