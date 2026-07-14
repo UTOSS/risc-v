@@ -10,14 +10,14 @@ module decode_stage
   , input  wire       clk
   , input  wire       reset
 
-  , input  wire [4:0] rd_wb // rd from writeback
+  , input  reg_t      rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
 
   , output id_to_ex_t id_to_ex
 
-  , output reg [4:0] rs1
-  , output reg [4:0] rs2
+  , output reg_t      rs1
+  , output reg_t      rs2
   );
 
   wire             cfsm__reg_write;
@@ -30,13 +30,17 @@ module decode_stage
   alu_src_b_t      cfsm__alu_src_b;
 
   alu_control_t    alu_control;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  ext__b__types::b_alu_control_t b_alu_control; //NEW
+`endif
+
 
   opcode_t opcode;
   imm_t    imm_ext;
 
   wire [2:0] funct3;
 
-  wire [4:0] rd;
+  reg_t rd;
 
   data_t rd1;
   data_t rd2;
@@ -67,6 +71,9 @@ module decode_stage
     , .rd              ( rd               )
     , .rs1             ( rs1              )
     , .rs2             ( rs2              )
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+    , .b_alu_control   ( b_alu_control    )
+`endif
     );
 
   registerFile RegFile
@@ -114,5 +121,8 @@ module decode_stage
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  assign id_to_ex.b_alu_control = b_alu_control;
+`endif
 
 endmodule

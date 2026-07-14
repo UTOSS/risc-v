@@ -1,6 +1,6 @@
 hart_ids: [0]
 hart0:
-  ISA: RV32I
+  ISA: M4__ISA_STRING
   physical_addr_sz: 32
   User_Spec_Version: '2.3'
   supported_xlen: [32]
@@ -26,4 +26,3 @@ hart0:
                 - extensions[25:0] bitmask [0x0000100, 0x0000000]
               wr_illegal:
                 - Unchanged
-

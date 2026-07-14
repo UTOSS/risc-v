@@ -8,10 +8,12 @@
 //rs2 --> a register inside RF memory, holding data to be written into destination register
 //rd --> a register inside RF memory, holding address of register to be written into
 
+`include "src/headers/types.svh"
+
 module registerFile
-  ( input [4:0] Addr1 //rs1 field (holds addr of one of 32 registers) - first source register
-  , input [4:0] Addr2 //rs2 field - second source register (holds data to be stored)
-  , input [4:0] Addr3 //rd field - desination register
+  ( input reg_t Addr1 //rs1 field (holds addr of one of 32 registers) - first source register
+  , input reg_t Addr2 //rs2 field - second source register (holds data to be stored)
+  , input reg_t Addr3 //rd field - desination register
   , input clk
   , input regWrite
   , input [31:0] dataIn

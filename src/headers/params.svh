@@ -1,20 +1,6 @@
 `ifndef PARAMS_VH
 `define PARAMS_VH
 
-// Opcodes
-/* verilator lint_off UNUSEDPARAM */
-localparam bit [6:0] RType = 7'b0110011;
-localparam bit [6:0] IType_logic = 7'b0010011;
-localparam bit [6:0] IType_load = 7'b0000011;
-localparam bit [6:0] SType = 7'b0100011;
-localparam bit [6:0] BType = 7'b1100011;
-localparam bit [6:0] JType = 7'b1101111;
-localparam bit [6:0] UType_auipc = 7'b0010111;
-localparam bit [6:0] UType_lui = 7'b0110111;
-localparam bit [6:0] IType_jalr = 7'b1100111;
-localparam bit [6:0] FENCE    = 7'b0001111;
-/* verilator lint_on UNUSEDPARAM */
-
 //ALU Operation Control Codes: Implemented as ENUM in params.svh
 /*
 localparam ALUAdd = 4'b0000;
