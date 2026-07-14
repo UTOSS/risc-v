@@ -14,8 +14,8 @@ module memory_map #( parameter SIZE = 1024 )
   // , input  addr_t       instr__address
   // , output data_t       instr__read
 
-  ,MEM_BUS.memory d_bus
-  ,MEM_BUS.memory i_bus
+  , MEM_BUS.memory d_bus
+  , MEM_BUS.memory i_bus
 
   , output reg    [9:0] LEDR
   );
@@ -55,7 +55,7 @@ module memory_map #( parameter SIZE = 1024 )
 
   always @(posedge clk) begin
     //instr__read <=
-    i_bus.memory__read_data <= 
+    i_bus.memory__read_data <=
       { M3[mem_instr_index]
       , M2[mem_instr_index]
       , M1[mem_instr_index]
@@ -69,7 +69,7 @@ module memory_map #( parameter SIZE = 1024 )
       };
     case (d_bus.memory__address)
       LEDR_ADDRESS: begin
-        if (|d_bus.memory__write_enable) LEDR <= d_bus.memory__write_data[9:0];// (|data__write_enable) LEDR <= data__write[9:0]; 
+        if (|d_bus.memory__write_enable) LEDR <= d_bus.memory__write_data[9:0];// (|data__write_enable) LEDR <= data__write[9:0];
       end
       default: begin
         // if (data__write_enable[0]) M0[mem_data_index] <= data__write[7:0];
