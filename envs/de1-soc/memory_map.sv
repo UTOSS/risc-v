@@ -63,9 +63,9 @@ module memory_map #( parameter SIZE = 1024 )
       end
       default: begin
         if (d_bus.memory__write_enable[0]) M0[mem_data_index] <= d_bus.memory__write_data[7:0];
-        if (d_bus.memory__write_enable[1]) M0[mem_data_index] <= d_bus.memory__write_data[15:8];
-        if (d_bus.memory__write_enable[2]) M0[mem_data_index] <= d_bus.memory__write_data[23:16];
-        if (d_bus.memory__write_enable[3]) M0[mem_data_index] <= d_bus.memory__write_data[31:24];
+        if (d_bus.memory__write_enable[1]) M1[mem_data_index] <= d_bus.memory__write_data[15:8];
+        if (d_bus.memory__write_enable[2]) M2[mem_data_index] <= d_bus.memory__write_data[23:16];
+        if (d_bus.memory__write_enable[3]) M3[mem_data_index] <= d_bus.memory__write_data[31:24];
 
       end
     endcase
