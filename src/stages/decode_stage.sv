@@ -18,9 +18,6 @@ module decode_stage
   , input  data_t     csr_write_data_wb // CSR write data from write-back stage
 
   , output id_to_ex_t id_to_ex
-
-  , output logic [4:0] rs1
-  , output logic [4:0] rs2
   );
 
   wire             cfsm__reg_write;
@@ -208,8 +205,8 @@ module decode_stage
   assign id_to_ex.rd1            = rd1_safe;
   assign id_to_ex.rd2            = rd2_safe;
   assign id_to_ex.rd             = rd;
-  assign id_to_ex.rs1            = rs1;
-  assign id_to_ex.rs2            = rs2;
+  assign id_to_ex.rs1            = rs1_addr;
+  assign id_to_ex.rs2            = rs2_addr;
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
