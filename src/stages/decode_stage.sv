@@ -132,11 +132,11 @@ module decode_stage
           csr_write_data   = csr_src_data;
         end
         3'b010: begin
-          csr_write_enable = (csr_src_data != 5'd0);
+          csr_write_enable = (csr_src_data != data_t'(0));
           csr_write_data   = csr_read_data | csr_src_data;
         end
         3'b011: begin
-          csr_write_enable = (csr_src_data != 5'd0);
+          csr_write_enable = (csr_src_data != data_t'(0));
           csr_write_data   = csr_read_data & ~csr_src_data;
         end
         3'b101: begin
@@ -144,11 +144,11 @@ module decode_stage
           csr_write_data   = csr_src_data;
         end
         3'b110: begin
-          csr_write_enable = (csr_src_data != 5'd0);
+          csr_write_enable = (csr_src_data != data_t'(0));
           csr_write_data   = csr_read_data | csr_src_data;
         end
         3'b111: begin
-          csr_write_enable = (csr_src_data != 5'd0);
+          csr_write_enable = (csr_src_data != data_t'(0));
           csr_write_data   = csr_read_data & ~csr_src_data;
         end
         default: begin
@@ -183,9 +183,6 @@ module decode_stage
   always_comb
     if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
-
-  assign  rs1 = rs1_addr;
-  assign  rs2 = rs2_addr;
  
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;

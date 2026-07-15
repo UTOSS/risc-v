@@ -24,7 +24,6 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 
 UTOSS_RISCV_CONFIG ?= RV32I
 
-# Convert B extension to Zbb for RISC-V ISA spec
 RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
 
 UTOSS_RISCV_VERILATOR_DEFINES := \

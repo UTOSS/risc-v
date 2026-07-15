@@ -297,4 +297,6 @@ module Logger
             , dmem_write_enable
         };
 
+        wire _unused_structs = &{1'b0, mem_stage_out, wb_stage};
+
 endmodule
