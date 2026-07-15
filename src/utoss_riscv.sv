@@ -46,12 +46,12 @@ module utoss_riscv
     , .stall_f ( stall_f )
     , .flush_f ( flush_f )
 
-    , .imem__address (i_bus.memory__address)
-    , .imem__data    (i_bus.memory__read_data)
+    , .imem__address (i_bus.address)
+    , .imem__data    (i_bus.read_data)
     );
 
-  assign i_bus.memory__write_data = data_t'(0);
-  assign i_bus.memory__write_enable = 4'b0;
+  assign i_bus.write_data = data_t'(0);
+  assign i_bus.write_enable = 4'b0;
 
   // fetch stage end
   // interface end @bugget
@@ -113,9 +113,9 @@ module utoss_riscv
   memory_stage u_memory_stage
   ( .ex_to_mem ( ex_to_mem_reg )
 
-  , .mem_write_data   ( d_bus.memory__write_data   )
-  , .mem_write_enable ( d_bus.memory__write_enable ) // TODO: Is this required?
-  , .mem_address      ( d_bus.memory__address      )
+  , .mem_write_data   ( d_bus.write_data   )
+  , .mem_write_enable ( d_bus.write_enable ) // TODO: Is this required?
+  , .mem_address      ( d_bus.address      )
 
   , .mem_to_wb ( mem_to_wb_out)
   );
@@ -131,8 +131,8 @@ module utoss_riscv
   write_back_stage u_write_back_stage
     ( .from_memory ( mem_to_wb_reg )
     , .ex_to_mem   ( ex_to_mem_reg )
-    // change to use interface Bugget
-    , .data_from_memory ( d_bus.memory__read_data )
+
+    , .data_from_memory ( d_bus.read_data         )
     , .result           ( wb_result               )
     , .rd               ( wb_rd                   )
     );
@@ -185,11 +185,11 @@ module utoss_riscv
     , .mem_stage_out ( mem_to_wb_out )
     , .wb_stage      ( mem_to_wb_reg )
 
-    , .imem_address      ( i_bus.memory__address      )
-    , .dmem_address      ( d_bus.memory__address      )
-    , .dmem_read_data    ( d_bus.memory__read_data    )
-    , .dmem_write_data   ( d_bus.memory__write_data   )
-    , .dmem_write_enable ( d_bus.memory__write_enable )
+    , .imem_address      ( i_bus.address      )
+    , .dmem_address      ( d_bus.address      )
+    , .dmem_read_data    ( d_bus.read_data    )
+    , .dmem_write_data   ( d_bus.write_data   )
+    , .dmem_write_enable ( d_bus.write_enable )
 
     , .wb_result ( wb_result )
     , .wb_rd     ( wb_rd     )

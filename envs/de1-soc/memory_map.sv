@@ -32,18 +32,18 @@ module memory_map #( parameter SIZE = 1024 )
 
   localparam int ADDR_LSB   = 2;
   localparam int ADDR_WIDTH = $clog2(SIZE);
-  wire [ADDR_WIDTH - 1:0] mem_data_index  = d_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
-  wire [ADDR_WIDTH - 1:0] mem_instr_index = i_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
+  wire [ADDR_WIDTH - 1:0] mem_data_index  = d_bus.address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
+  wire [ADDR_WIDTH - 1:0] mem_instr_index = i_bus.address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
 
   always @(*) begin
-    case (d_bus.memory__address)
-      LEDR_ADDRESS: d_bus.memory__read_data = {22'b0, LEDR};
-      default:      d_bus.memory__read_data = mem_rdata;
+    case (d_bus.address)
+      LEDR_ADDRESS: d_bus.read_data = {22'b0, LEDR};
+      default:      d_bus.read_data = mem_rdata;
     endcase
   end
 
   always @(posedge clk) begin
-    i_bus.memory__read_data <=
+    i_bus.read_data <=
       { M3[mem_instr_index]
       , M2[mem_instr_index]
       , M1[mem_instr_index]
@@ -55,15 +55,15 @@ module memory_map #( parameter SIZE = 1024 )
       , M1[mem_data_index]
       , M0[mem_data_index]
       };
-    case (d_bus.memory__address)
+    case (d_bus.address)
       LEDR_ADDRESS: begin
-        if (|d_bus.memory__write_enable) LEDR <= d_bus.memory__write_data[9:0];
+        if (|d_bus.write_enable) LEDR <= d_bus.write_data[9:0];
       end
       default: begin
-        if (d_bus.memory__write_enable[0]) M0[mem_data_index] <= d_bus.memory__write_data[7:0];
-        if (d_bus.memory__write_enable[1]) M1[mem_data_index] <= d_bus.memory__write_data[15:8];
-        if (d_bus.memory__write_enable[2]) M2[mem_data_index] <= d_bus.memory__write_data[23:16];
-        if (d_bus.memory__write_enable[3]) M3[mem_data_index] <= d_bus.memory__write_data[31:24];
+        if (d_bus.write_enable[0]) M0[mem_data_index] <= d_bus.write_data[7:0];
+        if (d_bus.write_enable[1]) M1[mem_data_index] <= d_bus.write_data[15:8];
+        if (d_bus.write_enable[2]) M2[mem_data_index] <= d_bus.write_data[23:16];
+        if (d_bus.write_enable[3]) M3[mem_data_index] <= d_bus.write_data[31:24];
 
       end
     endcase

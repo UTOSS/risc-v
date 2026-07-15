@@ -31,16 +31,16 @@ module memory
     end
   end
 
-  wire unused = &{d_bus.memory__address[`PROCESSOR_BITNESS -1:SIZE_W], d_bus.memory__address[1:0], i_bus.memory__address[`PROCESSOR_BITNESS -1:SIZE_W], i_bus.memory__address[1:0]};
+  wire unused = &{d_bus.address[`PROCESSOR_BITNESS -1:SIZE_W], d_bus.address[1:0], i_bus.address[`PROCESSOR_BITNESS -1:SIZE_W], i_bus.address[1:0]};
 
   always @(posedge clk) begin
-    d_bus.memory__read_data <= M[d_bus.memory__address[SIZE_W + 1:2]];
-    i_bus.memory__read_data <= M[i_bus.memory__address[SIZE_W + 1:2]];
+    d_bus.read_data <= M[d_bus.address[SIZE_W + 1:2]];
+    i_bus.read_data <= M[i_bus.address[SIZE_W + 1:2]];
 
-    if (d_bus.memory__write_enable[0]) M[d_bus.memory__address[SIZE_W +1:2]][7:0] <= d_bus.memory__write_data[7:0];
-    if (d_bus.memory__write_enable[1]) M[d_bus.memory__address[SIZE_W +1:2]][15:8] <= d_bus.memory__write_data[15:8];
-    if (d_bus.memory__write_enable[2]) M[d_bus.memory__address[SIZE_W +1:2]][23:16] <= d_bus.memory__write_data[23:16];
-    if (d_bus.memory__write_enable[3]) M[d_bus.memory__address[SIZE_W +1:2]][31:24] <= d_bus.memory__write_data[31:24];
+    if (d_bus.write_enable[0]) M[d_bus.address[SIZE_W +1:2]][7:0] <= d_bus.write_data[7:0];
+    if (d_bus.write_enable[1]) M[d_bus.address[SIZE_W +1:2]][15:8] <= d_bus.write_data[15:8];
+    if (d_bus.write_enable[2]) M[d_bus.address[SIZE_W +1:2]][23:16] <= d_bus.write_data[23:16];
+    if (d_bus.write_enable[3]) M[d_bus.address[SIZE_W +1:2]][31:24] <= d_bus.write_data[31:24];
   end
 
 endmodule

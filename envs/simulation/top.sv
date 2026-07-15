@@ -10,7 +10,7 @@ module top
   mem_bus i_bus();
   mem_bus d_bus();
 
-  wire unused = &{i_bus.memory__write_data, i_bus.memory__write_enable};
+  wire unused = &{i_bus.write_data, i_bus.write_enable};
   memory #( .SIZE ( MEM_SIZE ) )
     u_memory
       ( .clk   ( clk   )
