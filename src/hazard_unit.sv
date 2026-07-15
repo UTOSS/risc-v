@@ -4,16 +4,16 @@
 module hazard_unit
   ( input logic clk
 
-  , input  wire [4:0] rs1_e
-  , input  wire [4:0] rs2_e
-  , input  wire [4:0] rd_m
-  , input  wire [4:0] rd_w
+  , input  reg_t      rs1_e
+  , input  reg_t      rs2_e
+  , input  reg_t      rd_m
+  , input  reg_t      rd_w
   , input  wire reg_write_m
   , input  wire reg_write_w
   , input  result_src_t result_src_e
-  , input  wire [4:0] rs1_d
-  , input  wire [4:0] rs2_d
-  , input  wire [4:0] rd_e
+  , input  reg_t      rs1_d
+  , input  reg_t      rs2_d
+  , input  reg_t      rd_e
   , input  pc_src_t pc_src_e
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   , input  logic      csr_instr_d

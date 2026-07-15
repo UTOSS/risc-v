@@ -42,7 +42,8 @@ module utoss_riscv
   mem_to_wb_t mem_to_wb_reg;
 
   data_t      wb_result;
-  logic [4:0] wb_rd;
+  reg_t       wb_rd;
+
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
@@ -72,6 +73,8 @@ module utoss_riscv
     else if (flush_d)  if_to_id_reg <= '0;
     else if (!stall_d) if_to_id_reg <= if_to_id_out;
 
+  reg_t id_rs1, id_rs2;
+
   decode_stage u_decode_stage
     ( .if_to_id ( if_to_id_reg )
 
@@ -83,6 +86,9 @@ module utoss_riscv
     , .csr_write_data_wb( mem_to_wb_reg.csr_write_data )
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
+
+    , .rs1 ( id_rs1 )
+    , .rs2 ( id_rs2 )
 
     , .id_to_ex ( id_to_ex_out )
     );
@@ -155,8 +161,8 @@ module utoss_riscv
   hazard_unit u_hazard_unit
     ( .clk ( clk )
 
-    , .rs1_d        ( id_to_ex_out.rs1        )
-    , .rs2_d        ( id_to_ex_out.rs2        )
+    , .rs1_d        ( id_rs1                  )
+    , .rs2_d        ( id_rs2                  )
     , .rs1_e        ( id_to_ex_reg.rs1        )
     , .rs2_e        ( id_to_ex_reg.rs2        )
     , .rd_m         ( ex_to_mem_reg.rd        )

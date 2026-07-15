@@ -10,7 +10,7 @@ module decode_stage
   , input  wire       clk
   , input  wire       reset
 
-  , input  wire [4:0] rd_wb // rd from writeback
+  , input  reg_t      rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
   , input  csr_addr_t csr_write_addr // CSR write address from write-back stage
@@ -18,6 +18,9 @@ module decode_stage
   , input  data_t     csr_write_data_wb // CSR write data from write-back stage
 
   , output id_to_ex_t id_to_ex
+
+  , output reg_t      rs1
+  , output reg_t      rs2
   );
 
   wire             cfsm__reg_write;
@@ -30,6 +33,10 @@ module decode_stage
   alu_src_b_t      cfsm__alu_src_b;
 
   alu_control_t    alu_control;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  ext__b__types::b_alu_control_t b_alu_control; //NEW
+`endif
+
 
   opcode_t opcode;
   imm_t    imm_ext;
@@ -37,12 +44,12 @@ module decode_stage
 
   wire [2:0] funct3;
 
-  wire [4:0] rd;
-  wire [4:0] rs1_decoded;
-  wire [4:0] rs2_decoded;
-  wire       csr_is_imm;
-  wire [4:0] rs1_addr;
-  wire [4:0] rs2_addr;
+  reg_t rd;
+  reg_t rs1_decoded;
+  reg_t rs2_decoded;
+  wire  csr_is_imm;
+  reg_t rs1_addr;
+  reg_t rs2_addr;
 
   data_t rd1;
   data_t rd2;
@@ -75,12 +82,15 @@ module decode_stage
     , .rd              ( rd               )
     , .rs1             ( rs1_decoded      )
     , .rs2             ( rs2_decoded      )
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+    , .b_alu_control   ( b_alu_control    )
+`endif
     );
 
   // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
   // actual register dependency for the RF / hazard path.
-  assign csr_is_imm = (opcode == SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
-  assign rs1_addr   = csr_is_imm ? 5'd0 : rs1_decoded;
+  assign csr_is_imm = (opcode == OPCODE_SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
+  assign rs1_addr   = csr_is_imm ? reg_t'(0) : rs1_decoded;
   assign rs2_addr   = rs2_decoded;
 
   registerFile RegFile
@@ -125,7 +135,7 @@ module decode_stage
     csr_write_enable = 1'b0;
     csr_write_data   = data_t'(0);
 
-    if (opcode == SYSTEM) begin
+    if (opcode == OPCODE_SYSTEM) begin
       case (funct3)
         3'b001: begin
           csr_write_enable = 1'b1;
@@ -162,11 +172,8 @@ module decode_stage
   logic csr_write_enable;
   data_t csr_write_data;
 
-  
   assign  csr_write_enable = 1'b0;
   assign  csr_write_data   = data_t'(0);
- 
-
 `endif
 
   // WB->ID bypass; this is needed in situations where decode is reading the register that
@@ -183,7 +190,6 @@ module decode_stage
   always_comb
     if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
- 
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
   assign id_to_ex.alu_src_b      = cfsm__alu_src_b;
@@ -207,5 +213,11 @@ module decode_stage
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  assign id_to_ex.b_alu_control = b_alu_control;
+`endif
+
+  assign rs1 = rs1_addr;
+  assign rs2 = rs2_addr;
 
 endmodule

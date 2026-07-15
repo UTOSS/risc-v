@@ -24,6 +24,12 @@ module execute_stage
   data_t alu_result;
   logic zero_flag;
 
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  data_t zbb_result;
+  logic  zbb_zero_flag;
+`endif
+
+
   // ALU computation
 
   always_comb
@@ -56,15 +62,39 @@ module execute_stage
       default:            alu_input_b = 'x;
     endcase
 
+  logic [`PROCESSOR_BITNESS - 1:0] alu_result_base;
+  logic zero_flag_base;
   ALU alu
     ( .a              ( alu_input_a         )
     , .b              ( alu_input_b         )
     , .alu_control    ( id_to_ex.alu_control )
-    , .out            ( alu_result          )
-    , .zeroE          ( zero_flag           )
+    , .out            ( alu_result_base          )
+    , .zeroE          ( zero_flag_base           ) //added bases for local
     );
 
-  // branching logic
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  zbb u_zbb
+    ( .a              ( alu_input_a            )
+    , .b              ( alu_input_b            )
+    , .b_alu_control  ( id_to_ex.b_alu_control )
+    , .out            ( zbb_result             )
+    , .zeroE          ( zbb_zero_flag          )
+    );
+`endif
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  always_comb begin
+    if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
+        alu_result = zbb_result;
+        zero_flag  = zbb_zero_flag;
+    end else begin
+        alu_result = alu_result_base;
+        zero_flag  = zero_flag_base;
+    end
+  end
+`else
+assign alu_result = alu_result_base;
+assign zero_flag  = zero_flag_base;
+`endif
 
   typedef enum logic [2:0]
     { FUNCT3__BEQ  = 3'b000

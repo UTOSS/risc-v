@@ -21,28 +21,28 @@ module control_fsm
 
   always_comb
     reg_write =
-      (opcode == JType) ||
-      (opcode == RType) ||
-      (opcode == IType_load) ||
-      (opcode == IType_logic) ||
-      (opcode == IType_jalr) ||
-      (opcode == UType_auipc) ||
-      (opcode == UType_lui)
+      (opcode == OPCODE_JAL) ||
+      (opcode == OPCODE_OP) ||
+      (opcode == OPCODE_LOAD) ||
+      (opcode == OPCODE_OP_IMM) ||
+      (opcode == OPCODE_JALR) ||
+      (opcode == OPCODE_AUIPC) ||
+      (opcode == OPCODE_LUI)
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-      || ((opcode == SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111}))
+      || ((opcode == OPCODE_SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111}))
 `endif
-;
+      ;
 
   always_comb
     case (opcode)
-      RType, IType_logic:
+      OPCODE_OP, OPCODE_OP_IMM:
         result_src = RESULT_SRC__ALU_RESULT;
-      IType_load:
+      OPCODE_LOAD:
         result_src = RESULT_SRC__READ_DATA;
-      JType, IType_jalr:
+      OPCODE_JAL, OPCODE_JALR:
         result_src = RESULT_SRC__PC_PLUS_4;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-      SYSTEM:
+      OPCODE_SYSTEM:
         if (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111})
           result_src = RESULT_SRC__CSR_READ;
         else
@@ -52,27 +52,27 @@ module control_fsm
         result_src = result_src_t'('0);
     endcase
 
-  always_comb mem_write = opcode == SType;
+  always_comb mem_write = opcode == OPCODE_STORE;
 
-  always_comb jump = (opcode == JType) || (opcode == IType_jalr);
+  always_comb jump = (opcode == OPCODE_JAL) || (opcode == OPCODE_JALR);
 
-  always_comb branch = opcode == BType;
+  always_comb branch = opcode == OPCODE_BRANCH;
 
   always_comb
     case (opcode)
-      JType:      pc_target_kind = PC_TARGET_KIND__RELATIVE;
-      IType_jalr: pc_target_kind = PC_TARGET_KIND__ABSOLUTE;
+      OPCODE_JAL:  pc_target_kind = PC_TARGET_KIND__RELATIVE;
+      OPCODE_JALR: pc_target_kind = PC_TARGET_KIND__ABSOLUTE;
       default:    pc_target_kind = pc_target_kind_t'('x);
     endcase
 
   always_comb
     case (opcode)
-      RType, IType_logic, IType_load, IType_jalr, SType, BType, UType_lui /* TODO: triple check lui */:
+      OPCODE_OP, OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR, OPCODE_STORE, OPCODE_BRANCH, OPCODE_LUI /* TODO: triple check lui */:
         alu_src_a = ALU_SRC_A__RD1;
-      UType_auipc, JType:
+      OPCODE_AUIPC, OPCODE_JAL:
         alu_src_a = ALU_SRC_A__PC;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-      SYSTEM:
+      OPCODE_SYSTEM:
         alu_src_a = ALU_SRC_A__RD1;
 `endif
       default:
@@ -81,12 +81,12 @@ module control_fsm
 
   always_comb
     case (opcode)
-      RType, BType:
+      OPCODE_OP, OPCODE_BRANCH:
         alu_src_b = ALU_SRC_B__RD2;
-      UType_auipc, UType_lui, IType_logic, IType_jalr, IType_load, SType:
+      OPCODE_AUIPC, OPCODE_LUI, OPCODE_OP_IMM, OPCODE_JALR, OPCODE_LOAD, OPCODE_STORE:
         alu_src_b = ALU_SRC_B__IMM_EXT;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-      SYSTEM:
+      OPCODE_SYSTEM:
         alu_src_b = ALU_SRC_B__IMM_EXT;
 `endif
       default:
