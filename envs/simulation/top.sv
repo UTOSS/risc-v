@@ -1,5 +1,5 @@
 `include "src/headers/types.svh"
-`include "src/interfaces/MEM_BUS.svh"
+`include "src/interfaces/mem_bus.svh"
 
 module top
   #( parameter MEM_SIZE = 1024 ) //maybe change to 2048 if using dual port?
@@ -7,8 +7,8 @@ module top
   , input wire reset
   );
 
-  MEM_BUS i_bus();
-  MEM_BUS d_bus();
+  mem_bus i_bus();
+  mem_bus d_bus();
 
   wire unused = &{i_bus.memory__write_data, i_bus.memory__write_enable};
   memory #( .SIZE ( MEM_SIZE ) )

@@ -1,12 +1,12 @@
 `include "src/headers/types.svh"
-`include "src/interfaces/MEM_BUS.svh"
+`include "src/interfaces/mem_bus.svh"
 
 
 // change to use new interface Nugget-exe
 module memory_map #( parameter SIZE = 1024 )
   ( input  wire    clk
-  , MEM_BUS.memory d_bus
-  , MEM_BUS.memory i_bus
+  , mem_bus.memory d_bus
+  , mem_bus.memory i_bus
   , output reg    [9:0] LEDR
   );
 

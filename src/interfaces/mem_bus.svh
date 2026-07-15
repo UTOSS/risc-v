@@ -1,10 +1,10 @@
-`ifndef MEM_BUS
-`define MEM_BUS
+`ifndef IF_MEM_BUS__HG
+`define IF_MEM_BUS__HG
 
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 
-interface MEM_BUS;
+interface mem_bus;
 
   addr_t       memory__address;
   data_t       memory__write_data;

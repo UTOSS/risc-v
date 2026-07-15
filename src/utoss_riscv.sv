@@ -5,14 +5,14 @@
 `include "src/interfaces/ex_to_mem_if.svh"
 `include "src/interfaces/ex_to_if_if.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
-`include "src/interfaces/MEM_BUS.svh"
+`include "src/interfaces/mem_bus.svh"
 
 // pipelined implementation of our core
 module utoss_riscv
   ( input wire clk
   , input wire reset
-  , MEM_BUS.consumer i_bus
-  , MEM_BUS.consumer d_bus
+  , mem_bus.consumer i_bus
+  , mem_bus.consumer d_bus
 
   // instruction memory interface begin
 

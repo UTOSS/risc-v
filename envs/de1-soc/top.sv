@@ -1,6 +1,6 @@
 //do i need include?
 
-`include "src/interfaces/MEM_BUS.svh"
+`include "src/interfaces/mem_bus.svh"
 
 module top
   ( input  wire       CLOCK_50
@@ -8,8 +8,8 @@ module top
   , output wire [9:0] LEDR
   );
 
-  MEM_BUS i_bus();
-  MEM_BUS d_bus();
+  mem_bus i_bus();
+  mem_bus d_bus();
 
 
   // added to mirror memory.sv in envs/simulation
