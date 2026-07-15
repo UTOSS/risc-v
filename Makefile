@@ -51,7 +51,9 @@ UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 # Verilator flags
 # ===========================
 
-VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 $(UTOSS_RISCV_VERILATOR_DEFINES)
+VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 \
+	-CFLAGS "-Wno-unknown-warning-option" \
+	$(UTOSS_RISCV_VERILATOR_DEFINES)
 RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
 # Testbench-only defines
