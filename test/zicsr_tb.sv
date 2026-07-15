@@ -5,7 +5,7 @@
 module zicsr_tb;
 
   reg clk;
-  reg reset;
+  reg reset = `TRUE;
 
   top uut
     ( .clk   ( clk   )
@@ -40,7 +40,6 @@ module zicsr_tb;
     static bit saw_csr_stall    = 0;
     static bit saw_csr_flush_e  = 0;
 
-    reset = `TRUE;
     tick();
     reset = `FALSE;
 

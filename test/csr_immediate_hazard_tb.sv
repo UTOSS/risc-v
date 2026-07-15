@@ -5,7 +5,7 @@
 module csr_immediate_hazard_tb;
 
   reg clk;
-  reg reset;
+  reg reset = `TRUE;
 
   top uut
     ( .clk   ( clk   )
@@ -38,8 +38,6 @@ module csr_immediate_hazard_tb;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   initial begin
     static bit saw_csr_stall = 0;
-
-    reset = `TRUE;
 
     tick();
     reset = `FALSE;
