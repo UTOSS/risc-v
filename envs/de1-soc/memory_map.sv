@@ -3,10 +3,11 @@
 
 
 module memory_map #( parameter SIZE = 1024 )
-  ( input  wire    clk
+  ( input  wire       clk
+  , output reg  [9:0] LEDR
+
   , mem_bus.memory d_bus
   , mem_bus.memory i_bus
-  , output reg    [9:0] LEDR
   );
 
   reg [7:0] M0 [0:SIZE - 1] /* synthesis ram_init_file = "../../poc/poc0.mif" */;  // byte lane 0

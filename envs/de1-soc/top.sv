@@ -1,5 +1,3 @@
-//do i need include?
-
 `include "src/interfaces/mem_bus.svh"
 
 module top
@@ -14,18 +12,18 @@ module top
   memory_map #( .SIZE ( 512 ) )
     memory_map
       ( .clk ( CLOCK_50 )
-
-      , .d_bus(d_bus)
-      , .i_bus(i_bus)
-
       , .LEDR ( LEDR )
+
+      , .d_bus ( d_bus )
+      , .i_bus ( i_bus )
       );
 
   utoss_riscv core
     ( .clk   ( CLOCK_50 )
-    , .reset ( ~KEY[0]   )
-    , .d_bus(d_bus)
-    , .i_bus(i_bus)
+    , .reset ( ~KEY[0]  )
+
+    , .d_bus ( d_bus )
+    , .i_bus ( i_bus )
     );
 
 endmodule

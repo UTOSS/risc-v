@@ -4,7 +4,8 @@
 // a dual-read single-write memory block that we use with our core in simulation environment
 module memory
   #( parameter SIZE = 1024 )
-  ( input  wire         clk
+  ( input wire clk
+
   , mem_bus.memory i_bus
   , mem_bus.memory d_bus
   );

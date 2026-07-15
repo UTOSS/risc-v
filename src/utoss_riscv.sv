@@ -46,8 +46,8 @@ module utoss_riscv
     , .stall_f ( stall_f )
     , .flush_f ( flush_f )
 
-    , .imem__address (i_bus.address)
-    , .imem__data    (i_bus.read_data)
+    , .imem__address ( i_bus.address   )
+    , .imem__data    ( i_bus.read_data )
     );
 
   assign i_bus.write_data = data_t'(0);

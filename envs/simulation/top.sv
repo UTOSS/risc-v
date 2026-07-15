@@ -13,16 +13,18 @@ module top
   wire unused = &{i_bus.write_data, i_bus.write_enable};
   memory #( .SIZE ( MEM_SIZE ) )
     u_memory
-      ( .clk   ( clk   )
-      , .d_bus ( d_bus )
-      , .i_bus ( i_bus )
+      ( .clk   ( clk )
+
+      , .d_bus ( d_bus.memory )
+      , .i_bus ( i_bus.memory )
       );
 
   utoss_riscv core
     ( .clk   ( clk   )
     , .reset ( reset )
-    , .d_bus ( d_bus )
-    , .i_bus ( i_bus )
+
+    , .d_bus ( d_bus.consumer )
+    , .i_bus ( i_bus.consumer )
     );
 
 endmodule
