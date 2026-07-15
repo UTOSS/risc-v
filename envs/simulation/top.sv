@@ -12,18 +12,17 @@ module top
 
   wire unused = &{i_bus.memory__write_data, i_bus.memory__write_enable};
   memory #( .SIZE ( MEM_SIZE ) )
-  // u could prob do the same from the core thingy here @Bugget
     u_memory
-      ( .clk                      ( clk                  )
-      , .d_bus(d_bus)
-      , .i_bus(i_bus)
+      ( .clk   ( clk   )
+      , .d_bus ( d_bus )
+      , .i_bus ( i_bus )
       );
 
   utoss_riscv core
-    ( .clk    ( clk    )
-    , .reset  ( reset  )
-    , .d_bus(d_bus)
-    , .i_bus(i_bus)
+    ( .clk   ( clk   )
+    , .reset ( reset )
+    , .d_bus ( d_bus )
+    , .i_bus ( i_bus )
     );
 
 endmodule

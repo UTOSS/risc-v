@@ -2,7 +2,6 @@
 `include "src/interfaces/mem_bus.svh"
 
 
-// change to use new interface Nugget-exe
 module memory_map #( parameter SIZE = 1024 )
   ( input  wire    clk
   , mem_bus.memory d_bus
@@ -33,18 +32,17 @@ module memory_map #( parameter SIZE = 1024 )
 
   localparam int ADDR_LSB   = 2;
   localparam int ADDR_WIDTH = $clog2(SIZE);
-  wire [ADDR_WIDTH - 1:0] mem_data_index  = d_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];//data__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];  // I think this way may save some resources
-  wire [ADDR_WIDTH - 1:0] mem_instr_index = i_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];//instr__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
+  wire [ADDR_WIDTH - 1:0] mem_data_index  = d_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
+  wire [ADDR_WIDTH - 1:0] mem_instr_index = i_bus.memory__address[ADDR_LSB + ADDR_WIDTH - 1 : ADDR_LSB];
 
   always @(*) begin
-    case (d_bus.memory__address)//(data__address)
-      LEDR_ADDRESS: d_bus.memory__read_data = {22'b0, LEDR}; //data__read = {22'b0, LEDR};
-      default:      d_bus.memory__read_data = mem_rdata; //data__read = mem_rdata;
+    case (d_bus.memory__address)
+      LEDR_ADDRESS: d_bus.memory__read_data = {22'b0, LEDR};
+      default:      d_bus.memory__read_data = mem_rdata;
     endcase
   end
 
   always @(posedge clk) begin
-    //instr__read <=
     i_bus.memory__read_data <=
       { M3[mem_instr_index]
       , M2[mem_instr_index]

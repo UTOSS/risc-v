@@ -9,14 +9,10 @@
 
 // pipelined implementation of our core
 module utoss_riscv
-  ( input wire clk
-  , input wire reset
+  ( input wire       clk
+  , input wire       reset
   , mem_bus.consumer i_bus
   , mem_bus.consumer d_bus
-
-  // instruction memory interface begin
-
-  // change to sv interface
   );
 
   // common declarations begin
@@ -50,8 +46,8 @@ module utoss_riscv
     , .stall_f ( stall_f )
     , .flush_f ( flush_f )
 
-    , .imem__address (i_bus.memory__address)//( memory_instr__address   )
-    , .imem__data    (i_bus.memory__read_data)//( memory_instr__read_data )
+    , .imem__address (i_bus.memory__address)
+    , .imem__data    (i_bus.memory__read_data)
     );
 
   assign i_bus.memory__write_data = data_t'(0);
@@ -117,11 +113,9 @@ module utoss_riscv
   memory_stage u_memory_stage
   ( .ex_to_mem ( ex_to_mem_reg )
 
-  // change to use interface(Bugget)
-
-  , .mem_write_data   (d_bus.memory__write_data)//( memory_data__write_data   )
-  , .mem_write_enable (d_bus.memory__write_enable)//( memory_data__write_enable ) // TODO: Is this required?
-  , .mem_address      (d_bus.memory__address)//( memory_data__address      )
+  , .mem_write_data   ( d_bus.memory__write_data   )
+  , .mem_write_enable ( d_bus.memory__write_enable ) // TODO: Is this required?
+  , .mem_address      ( d_bus.memory__address      )
 
   , .mem_to_wb ( mem_to_wb_out)
   );
@@ -138,9 +132,9 @@ module utoss_riscv
     ( .from_memory ( mem_to_wb_reg )
     , .ex_to_mem   ( ex_to_mem_reg )
     // change to use interface Bugget
-    , .data_from_memory (d_bus.memory__read_data)//( memory_data__read_data )
-    , .result           ( wb_result              )
-    , .rd               ( wb_rd                  )
+    , .data_from_memory ( d_bus.memory__read_data )
+    , .result           ( wb_result               )
+    , .rd               ( wb_rd                   )
     );
 
   // writeback stage end
@@ -191,12 +185,11 @@ module utoss_riscv
     , .mem_stage_out ( mem_to_wb_out )
     , .wb_stage      ( mem_to_wb_reg )
 
-    // change to use interface Bugget
-    , .imem_address      (i_bus.memory__address)//( memory_instr__address     )
-    , .dmem_address      (d_bus.memory__address)//( memory_data__address      )
-    , .dmem_read_data    (d_bus.memory__read_data)//( memory_data__read_data    )
-    , .dmem_write_data   (d_bus.memory__write_data)//( memory_data__write_data   )
-    , .dmem_write_enable (d_bus.memory__write_enable)//( memory_data__write_enable )
+    , .imem_address      ( i_bus.memory__address      )
+    , .dmem_address      ( d_bus.memory__address      )
+    , .dmem_read_data    ( d_bus.memory__read_data    )
+    , .dmem_write_data   ( d_bus.memory__write_data   )
+    , .dmem_write_enable ( d_bus.memory__write_enable )
 
     , .wb_result ( wb_result )
     , .wb_rd     ( wb_rd     )

@@ -11,10 +11,6 @@ module top
   mem_bus i_bus();
   mem_bus d_bus();
 
-
-  // added to mirror memory.sv in envs/simulation
-  // wire unused = &{i_bus.memory__write_data, i_bus.memory__write_enable};
-
   memory_map #( .SIZE ( 512 ) )
     memory_map
       ( .clk ( CLOCK_50 )

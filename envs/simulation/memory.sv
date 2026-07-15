@@ -34,8 +34,6 @@ module memory
   wire unused = &{d_bus.memory__address[`PROCESSOR_BITNESS -1:SIZE_W], d_bus.memory__address[1:0], i_bus.memory__address[`PROCESSOR_BITNESS -1:SIZE_W], i_bus.memory__address[1:0]};
 
   always @(posedge clk) begin
-    //read_data <= M[address[SIZE_W +1:2]]; // 2 LSBs used for byte addressing
-
     d_bus.memory__read_data <= M[d_bus.memory__address[SIZE_W + 1:2]];
     i_bus.memory__read_data <= M[i_bus.memory__address[SIZE_W + 1:2]];
 
