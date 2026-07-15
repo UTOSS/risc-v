@@ -81,9 +81,11 @@ module utoss_riscv
     , .clk         ( clk                     )
     , .reset       ( reset                   )
     , .data        ( wb_result               )
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
     , .csr_write_addr( mem_to_wb_reg.csr_addr        )
     , .csr_write_enable_wb( mem_to_wb_reg.csr_write_enable )
     , .csr_write_data_wb( mem_to_wb_reg.csr_write_data )
+`endif
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
 
@@ -174,14 +176,14 @@ module utoss_riscv
     , .pc_src_e     ( ex_to_if_out.pc_src     )
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .csr_instr_d       ( id_to_ex_out.funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111} )
+    , .csr_instr_d        ( id_to_ex_out.funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111} )
     , .csr_write_intent_e ( id_to_ex_reg.csr_write_enable )
     , .csr_write_intent_m ( ex_to_mem_reg.csr_write_enable )
     , .csr_write_intent_w ( mem_to_wb_reg.csr_write_enable )
-    , .csr_addr_d        ( id_to_ex_out.csr_addr )
-    , .csr_addr_e        ( id_to_ex_reg.csr_addr )
-    , .csr_addr_m        ( ex_to_mem_reg.csr_addr )
-    , .csr_addr_w        ( mem_to_wb_reg.csr_addr )
+    , .csr_addr_d         ( id_to_ex_out.csr_addr )
+    , .csr_addr_e         ( id_to_ex_reg.csr_addr )
+    , .csr_addr_m         ( ex_to_mem_reg.csr_addr )
+    , .csr_addr_w         ( mem_to_wb_reg.csr_addr )
 `endif
 
     , .forward_a_e ( hz_forward_a )

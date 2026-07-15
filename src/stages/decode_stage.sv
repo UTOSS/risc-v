@@ -201,10 +201,12 @@ module decode_stage
   assign id_to_ex.reg_write      = cfsm__reg_write;
   assign id_to_ex.alu_control    = alu_control;
   assign id_to_ex.funct3         = funct3;
-  assign id_to_ex.csr_addr       = csr_addr;
-  assign id_to_ex.csr_write_enable = csr_write_enable;
-  assign id_to_ex.csr_write_data = csr_write_data;
-  assign id_to_ex.csr_read_data  = csr_read_data;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign id_to_ex.csr_addr         = csr_addr;
+  assign id_to_ex.csr_write_enable  = csr_write_enable;
+  assign id_to_ex.csr_write_data    = csr_write_data;
+  assign id_to_ex.csr_read_data     = csr_read_data;
+`endif
   assign id_to_ex.rd1            = rd1_safe;
   assign id_to_ex.rd2            = rd2_safe;
   assign id_to_ex.rd             = rd;
