@@ -3,6 +3,8 @@
 
 /* defines the bitness of the processor */
 `define PROCESSOR_BITNESS 32
+`define NUMBER_OF_CSRS 4096
+`define CSR_RF_WIDTH $clog2(`NUMBER_OF_CSRS)
 
 typedef logic [`PROCESSOR_BITNESS -1:0] instr_t;
 typedef logic [`PROCESSOR_BITNESS -1:0] addr_t;
