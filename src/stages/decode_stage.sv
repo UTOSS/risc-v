@@ -13,9 +13,11 @@ module decode_stage
   , input  reg_t      rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
   , input  csr_addr_t csr_write_addr // CSR write address from write-back stage
   , input  logic      csr_write_enable_wb // CSR write enable from write-back stage
   , input  data_t     csr_write_data_wb // CSR write data from write-back stage
+`endif
 
   , output id_to_ex_t id_to_ex
 
@@ -40,14 +42,18 @@ module decode_stage
 
   opcode_t opcode;
   imm_t    imm_ext;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
   csr_addr_t csr_addr; // CSR read address from decoded instruction
+`endif
 
   wire [2:0] funct3;
 
   reg_t rd;
   reg_t rs1_decoded;
   reg_t rs2_decoded;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
   wire  csr_is_imm;
+`endif
   reg_t rs1_addr;
   reg_t rs2_addr;
 
@@ -78,20 +84,27 @@ module decode_stage
     , .funct3          ( funct3           )
     , .ALUControl      ( alu_control      )
     , .imm_ext         ( imm_ext          )
-    , .csr_addr        ( csr_addr         )
     , .rd              ( rd               )
     , .rs1             ( rs1_decoded      )
     , .rs2             ( rs2_decoded      )
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
 `endif
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_addr        ( csr_addr         )
+`endif
     );
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
   // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
   // actual register dependency for the RF / hazard path.
   assign csr_is_imm = (opcode == OPCODE_SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
   assign rs1_addr   = csr_is_imm ? reg_t'(0) : rs1_decoded;
   assign rs2_addr   = rs2_decoded;
+`else
+  assign rs1_addr   = rs1_decoded;
+  assign rs2_addr   = rs2_decoded;
+`endif
 
   registerFile RegFile
     ( .Addr1           ( rs1_addr         )
@@ -107,6 +120,10 @@ module decode_stage
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   data_t csr_read_data;
+  wire [4:0] csr_zimm;
+  data_t csr_write_data;
+  logic  csr_write_enable;
+  data_t csr_src_data;
 
   CSRFile u_csr_file
     ( .read_addr       ( csr_addr                  )
@@ -117,16 +134,6 @@ module decode_stage
     , .data_in         ( csr_write_data_wb         )
     , .data_out        ( csr_read_data             )
     );
-`else
-  data_t csr_read_data;
-  assign csr_read_data = data_t'(0);
-`endif
-
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
-  wire [4:0] csr_zimm;
-  data_t csr_write_data;
-  logic  csr_write_enable;
-  data_t csr_src_data;
 
   assign csr_zimm = instruction[19:15];
 
@@ -168,14 +175,6 @@ module decode_stage
       endcase
     end
   end
-`else
-  logic csr_write_enable;
-  data_t csr_write_data;
-
-  assign  csr_write_enable = 1'b0;
-  assign  csr_write_data   = data_t'(0);
-`endif
-
   // WB->ID bypass; this is needed in situations where decode is reading the register that
   // write-back stage is about to write to; since register writes happen on clock enge without this
   // decode will pass stale register data to execute stage which the hazard unit will not be able to

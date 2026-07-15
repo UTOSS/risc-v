@@ -7,13 +7,15 @@ module Instruction_Decode
   , output opcode_t opcode
   , output alu_control_t ALUControl
   , output imm_t imm_ext
-  , output csr_addr_t csr_addr
   , output reg [2:0] funct3
   , output reg_t rd
   , output reg_t rs1
   , output reg_t rs2
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
+`endif
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , output csr_addr_t csr_addr
 `endif
   );
 
@@ -134,8 +136,10 @@ module Instruction_Decode
     endcase
   end
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
   always_comb
     csr_addr = (opcode == OPCODE_SYSTEM) ? csr_addr_t'(instr[31:20]) : csr_addr_t'('0);
+`endif
 
   // case statement for choosing 32-bit immediate format; based on opcode
     // this is essentially the extend module of the processor
