@@ -267,6 +267,7 @@ module Logger
                 1'b0
             , ex_stage
             , ex_stage_out
+            , ex_to_if
             , mem_stage
             , if_stage.pc_plus_4
             , id_stage.pc_plus_4
