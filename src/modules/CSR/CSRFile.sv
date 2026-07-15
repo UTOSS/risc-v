@@ -11,7 +11,7 @@ module CSRFile
   , output data_t     data_out
   );
 
-  reg [31:0] CSRMem [0:`NUMBER_OF_CSRS-1];
+  reg [31:0] CSRMem [0:`NUMBER_OF_CSRS - 1];
 
   assign data_out = CSRMem[read_addr];
 
