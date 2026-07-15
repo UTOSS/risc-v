@@ -79,7 +79,7 @@ module Logger
     endfunction
 
         function automatic string op_name
-            ( input logic [6:0] opcode
+            ( input opcode_t opcode
             , input logic [2:0] funct3
             , input logic [6:0] funct7
             );
@@ -195,7 +195,7 @@ module Logger
                             , if_stage.pc_cur
                             , if_stage.instruction
                                                         , op_name
-                                                            ( if_stage.instruction[6:0]
+                                                            ( opcode_t'(if_stage.instruction[6:0])
                                                             , if_stage.instruction[14:12]
                                                             , if_stage.instruction[31:25]
                                                             )
@@ -210,7 +210,7 @@ module Logger
                             , id_stage.pc_cur
                             , id_stage.instruction
                                                         , op_name
-                                                            ( id_stage.instruction[6:0]
+                                                            ( opcode_t'(id_stage.instruction[6:0])
                                                             , id_stage.instruction[14:12]
                                                             , id_stage.instruction[31:25]
                                                             )

@@ -20,9 +20,6 @@ module decode_stage
 `endif
 
   , output id_to_ex_t id_to_ex
-
-  , output reg_t      rs1
-  , output reg_t      rs2
   );
 
   wire             cfsm__reg_write;
@@ -44,6 +41,11 @@ module decode_stage
   imm_t    imm_ext;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   csr_addr_t csr_addr; // CSR read address from decoded instruction
+  data_t     csr_read_data;
+  wire [4:0] csr_zimm;
+  data_t     csr_write_data;
+  logic      csr_write_enable;
+  data_t     csr_src_data;
 `endif
 
   wire [2:0] funct3;
@@ -59,6 +61,8 @@ module decode_stage
 
   data_t rd1;
   data_t rd2;
+  data_t rd1_safe;
+  data_t rd2_safe;
 
   instr_t instruction;
 
@@ -119,12 +123,6 @@ module decode_stage
     );
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-  data_t csr_read_data;
-  wire [4:0] csr_zimm;
-  data_t csr_write_data;
-  logic  csr_write_enable;
-  data_t csr_src_data;
-
   CSRFile u_csr_file
     ( .read_addr       ( csr_addr                  )
     , .write_addr      ( csr_write_addr            )
@@ -175,17 +173,16 @@ module decode_stage
       endcase
     end
   end
+`endif
   // WB->ID bypass; this is needed in situations where decode is reading the register that
   // write-back stage is about to write to; since register writes happen on clock enge without this
   // decode will pass stale register data to execute stage which the hazard unit will not be able to
   // accomodate since during the following clock cycle the write-back's destination register will
   // already move on to the next instruction
-  data_t rd1_safe;
   always_comb
     if (rd_wb == rs1_addr && reg_write_w && rd_wb != 0) rd1_safe = data;
     else                                           rd1_safe = rd1;
 
-  data_t rd2_safe;
   always_comb
     if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
@@ -217,8 +214,5 @@ module decode_stage
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   assign id_to_ex.b_alu_control = b_alu_control;
 `endif
-
-  assign rs1 = rs1_addr;
-  assign rs2 = rs2_addr;
 
 endmodule
