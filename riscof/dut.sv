@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`include "src/timescale.svh"
 
 `include "test/utils.svh"
 
@@ -19,9 +19,9 @@ module dut;
   end
 
   initial begin
-    reset <= `TRUE;
+    reset = `TRUE;
     @(posedge clk); #1;
-    reset <= `FALSE;
+    reset = `FALSE;
 
     fork
       watch_tohost();
@@ -32,8 +32,10 @@ module dut;
   end
 
   task watch_tohost();
+    /* verilator lint_off UNUSEDSIGNAL */
     integer tohost;
     reg [31:0] tohost_data;
+    /* verilator lint_on UNUSEDSIGNAL */
 
     $display("%m: waiting for tohost...");
     if ($value$plusargs("tohost=%h", tohost)) begin
@@ -41,7 +43,7 @@ module dut;
 
       while (tohost_data === 0 || tohost_data === 32'bx) begin
         @(posedge clk);
-        tohost_data = top.memory.M[tohost[31:2]];
+        tohost_data = top.u_memory.M[19'(tohost[31:2])];
       end
 
       $display("%m: memory[tohost] written <%0d> at time %t", tohost_data, $time);
@@ -53,15 +55,22 @@ module dut;
 
   task watch_timeout();
     $display("%m: waiting for timeout...");
+
+    /* verilator lint_off UNUSEDSIGNAL */
     repeat (100000) @(posedge clk);
+    /* verilator lint_on UNUSEDSIGNAL */
+
     $display("%m: timeout reached");
     void'(extract_signature());
   endtask
 
   function bit extract_signature();
+    /* verilator lint_off UNUSEDSIGNAL */
     integer begin_signature, end_signature;
     string sig_filename;
-    integer sig_file, i, i_fixed;
+    integer sig_file, i;
+    //integer i_fixed;
+    /* verilator lint_on UNUSEDSIGNAL */
 
     if (!$value$plusargs("begin_signature=%h", begin_signature)) begin
       $display("%m: begin_signature not specified.");
@@ -81,7 +90,7 @@ module dut;
     sig_file = $fopen(sig_filename, "w");
     if (sig_file != 0) begin
       for (i = begin_signature; i < end_signature; i = i + 4) begin
-        $fwrite(sig_file, "%08x\n", top.memory.M[i[31:2]]);
+        $fwrite(sig_file, "%08x\n", top.u_memory.M[19'(i[31:2])]);
       end
       $fclose(sig_file);
       $display("%m: signature written to %s", sig_filename);

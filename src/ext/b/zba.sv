@@ -1,3 +1,5 @@
+`include "src/timescale.svh"
+
 // sh1add - logical shift left by 1 and add
 // sh2add - logical shift left by 2 and add
 // sh3add - logical shift left by 3 and add
@@ -8,7 +10,8 @@
 module zba(input [31:0] reg1
   , input [31:0] reg2
   , input [1:0] inst // two bit register, distinguish instruction
-  , input [2:0] funct3 // extra function inputs
+  /* verilator lint_off UNUSEDSIGNAL */
+  , input [2:0] funct3  //extra function inputs
   , input [6:0] funct7
   , output logic[31:0] out
   );

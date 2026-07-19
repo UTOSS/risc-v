@@ -1,8 +1,8 @@
-FROM ghcr.io/utoss/verilator:latest AS verilator
-
 FROM ghcr.io/utoss/risc-v-toolchain:latest AS risc-v-toolchain
 
 FROM ghcr.io/utoss/quartus:latest AS quartus
+
+FROM ghcr.io/utoss/oss-cad-suite:latest AS oss-cad-suite
 
 FROM public.ecr.aws/lts/ubuntu:22.04_stable
 
@@ -57,10 +57,10 @@ RUN sudo apt update && sudo apt install -y autoconf gperf make gcc g++ bison fle
     cd iverilog-* && sh autoconf.sh && ./configure && make && make check && sudo make install && \
     cd .. && rm ${ICARUS_SRC_TAR} && rm -rf ./iverilog-*
 
-# copy Verilator installation
+# copy Verilator installation from OSS CAD Suite
 USER dev
-COPY --from=verilator /usr/local/bin/ /usr/local/bin/
-COPY --from=verilator /usr/local/share/verilator/ /usr/local/share/verilator/
+COPY --from=oss-cad-suite /opt/oss-cad-suite/bin/ /usr/local/bin/
+COPY --from=oss-cad-suite /opt/oss-cad-suite/share/verilator/ /usr/local/share/verilator/
 
 # install verilator runtime deps
 USER dev
@@ -70,6 +70,12 @@ RUN sudo apt update && sudo apt install -y ccache
 USER dev
 COPY --from=quartus /opt/quartus /opt/quartus
 ENV PATH="/opt/quartus/quartus/bin:${PATH}"
+
+# copy OSS CAD Suite installation
+USER dev
+COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
+COPY --from=oss-cad-suite /etc/profile.d/oss-cad-suite.sh /etc/profile.d/oss-cad-suite.sh
+ENV PATH="/opt/oss-cad-suite/bin:${PATH}"
 
 # install cocotb
 USER dev

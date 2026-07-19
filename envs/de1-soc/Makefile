@@ -13,6 +13,9 @@ VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc \
 
 all: run_tb
 
+# ===========================
+# Sub-project
+# ===========================
 poc:
 	$(MAKE) -C poc
 
@@ -30,12 +33,9 @@ run_tb: $(OUT_DIR)/top_tb_sim
 	./$<
 
 synthesize:
-	cd quartus && quartus_sh --flow compile utoss-risc-v
-
-refresh_ram:
-	cd quartus && quartus_cdb utoss-risc-v --update_mif && quartus_asm utoss-risc-v
+	$(MAKE) -C quartus synthesize
 
 clean:
 	rm -rf $(OUT_DIR) $(BUILD_DIR)
 
-.PHONY: all run_tb poc clean
+.PHONY: all run_tb poc synthesize clean

@@ -1,5 +1,5 @@
 changequote([,])dnl
-`timescale 1ns/1ps
+`include "src/timescale.svh"
 
 `include "test/utils.svh"
 

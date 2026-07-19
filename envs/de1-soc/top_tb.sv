@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`include "src/timescale.svh"
+`include "src/headers/types.svh"
 
 module top_tb;
 
@@ -23,7 +24,7 @@ module top_tb;
     reset <= 4'b0000;
 
     for (i = 0; i < 32; i = i + 1) begin
-      uut.core.RegFile.RFMem[i] = 32'h0;
+      uut.core.u_decode_stage.RegFile.RFMem[i] = 32'h0;
     end
 
     #100;

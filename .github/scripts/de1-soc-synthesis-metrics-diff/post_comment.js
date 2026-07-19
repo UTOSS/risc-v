@@ -1,9 +1,15 @@
 // Script to post/update PR comment with FPGA metrics comparison
 // This script is called from the CI workflow via github-script action
 
-module.exports = async ({github, context}) => {
+module.exports = async ({github, context, comparisonFile}) => {
   const fs = require('fs');
-  const comparison = fs.readFileSync('comparison.md', 'utf8');
+  const reportPath = comparisonFile;
+
+  if (!reportPath) {
+    throw new Error('comparisonFile parameter is required');
+  }
+
+  const comparison = fs.readFileSync(reportPath, 'utf8');
   
   // Find existing comment
   const { data: comments } = await github.rest.issues.listComments({

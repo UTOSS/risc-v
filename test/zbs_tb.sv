@@ -1,28 +1,31 @@
 `timescale 1ns/1ns
 `include "test/utils.svh"
+`include "src/ext/b/types.svh"
 
 module zbs_tb;
 
+import ext__b__types::*;
+
 logic [31:0] reg1;
 logic [31:0] reg2;
-alu_control_t inst;
+b_alu_control_t b_alu_control;
 logic [31:0] out;
 
 logic [31:0] expected;
 
 zbs uut
-  ( .reg1 ( reg1 )
-  , .reg2 ( reg2 )
-  , .inst ( inst )
-  , .out  ( out  )
-);
+  ( .reg1          ( reg1          )
+  , .reg2          ( reg2          )
+  , .b_alu_control ( b_alu_control )
+  , .out           ( out           )
+  );
 
 initial begin
 
     // -------- bclr test --------
     reg1 = 32'b1010;
     reg2 = 32'd1;   // clear bit 1
-    inst = ALU_CONTROL_BCLR;
+    b_alu_control = B_ALU_CTRL__BCLR;
     #10;
 
     expected = reg1 & ~(32'h1 << reg2[4:0]);
@@ -34,7 +37,7 @@ initial begin
     // -------- bset test --------
     reg1 = 32'b1110;
     reg2 = 32'd0;   // set bit 0
-    inst = ALU_CONTROL_BSET;
+    b_alu_control = B_ALU_CTRL__BSET;
     #10;
 
     expected = reg1 | (32'h1 << reg2[4:0]);
@@ -46,7 +49,7 @@ initial begin
     // -------- binv test --------
     reg1 = 32'b1010;
     reg2 = 32'd1;
-    inst = ALU_CONTROL_BINV;
+    b_alu_control = B_ALU_CTRL__BINV;
     #10;
 
     expected = reg1 ^ (32'h1 << reg2[4:0]);
@@ -58,7 +61,7 @@ initial begin
     // -------- bext test --------
     reg1 = 32'b1010;
     reg2 = 32'd3;
-    inst = ALU_CONTROL_BEXT;
+    b_alu_control = B_ALU_CTRL__BEXT;
     #10;
 
     expected = {31'b0, reg1[reg2[4:0]]};
@@ -71,7 +74,7 @@ initial begin
     // Bit 0 boundary
     reg1 = 32'hFFFFFFFF;
     reg2 = 32'd0;
-    inst = ALU_CONTROL_BCLR; // bclr
+    b_alu_control = B_ALU_CTRL__BCLR; // bclr
     #10;
 
     expected = reg1 & ~(32'h1 << reg2[4:0]);
@@ -83,7 +86,7 @@ initial begin
     // Bit 31 boundary
     reg1 = 32'hFFFFFFFF;
     reg2 = 32'd31;
-    inst = ALU_CONTROL_BCLR; // bclr
+    b_alu_control = B_ALU_CTRL__BCLR; // bclr
     #10;
 
     expected = reg1 & ~(32'h1 << reg2[4:0]);
@@ -101,32 +104,32 @@ initial begin
 
                 // pick a Zbs operation without arithmetic on enums to avoid width expansion
                 case ($urandom % 4)
-                    0: inst = ALU_CONTROL_BCLR;
-                    1: inst = ALU_CONTROL_BSET;
-                    2: inst = ALU_CONTROL_BINV;
-                    3: inst = ALU_CONTROL_BEXT;
-                    default: inst = ALU_CONTROL_BCLR;
+                    0: b_alu_control = B_ALU_CTRL__BCLR;
+                    1: b_alu_control = B_ALU_CTRL__BSET;
+                    2: b_alu_control = B_ALU_CTRL__BINV;
+                    3: b_alu_control = B_ALU_CTRL__BEXT;
+                    default: b_alu_control = B_ALU_CTRL__BCLR;
                 endcase
 
                 #1;
 
-                case ( inst )
+                case (b_alu_control)
 
-                        ALU_CONTROL_BCLR: expected = reg1 & ~(32'h1 << reg2[4:0]);
+                        B_ALU_CTRL__BCLR: expected = reg1 & ~(32'h1 << reg2[4:0]);
 
-                        ALU_CONTROL_BSET: expected = reg1 | (32'h1 << reg2[4:0]);
+                        B_ALU_CTRL__BSET: expected = reg1 | (32'h1 << reg2[4:0]);
 
-                        ALU_CONTROL_BINV: expected = reg1 ^ (32'h1 << reg2[4:0]);
+                        B_ALU_CTRL__BINV: expected = reg1 ^ (32'h1 << reg2[4:0]);
 
-                        ALU_CONTROL_BEXT: expected = {31'b0, reg1[reg2[4:0]]};
+                        B_ALU_CTRL__BEXT: expected = {31'b0, reg1[reg2[4:0]]};
 
-            default: expected = 32'd0;
+                  default: expected = 32'd0;
 
         endcase
 
         assert (out == expected) else
-          $fatal("random test failed: inst=%0d reg1=%h reg2=%d expected=%h got=%h"
-                , inst, reg1, reg2, expected, out);
+          $fatal("random test failed: b_alu_control=%0d reg1=%h reg2=%d expected=%h got=%h"
+                , b_alu_control, reg1, reg2, expected, out);
 
     end
 

@@ -1,47 +1,29 @@
-// -----------------------------------------------------------------------------
-// Zbs Extension – Single-Bit Instructions (RV32)
-// Reference:
-//   RISC-V Bitmanip Extension Specification v1.0.0
-//   Section 5.4 – Zbs (Single-Bit Instructions)
-//
-// Notes:
-//   - Purely combinational logic
-//   - Bit index = reg2[4:0]
-//   - R/I distinction handled in decode stage
-// -----------------------------------------------------------------------------
+`include "src/timescale.svh"
+`include "src/headers/types.svh"
+`include "src/ext/b/types.svh"
 
-module zbs (
-    input  data_t reg1 // rs1 operand
-  , input  data_t reg2 // rs2 or immediate (bit index source)
-  , input  alu_control_t inst // operation selector
-  , output data_t out //result
+module zbs
+  ( input  data_t                         reg1
+  , input  data_t                         reg2
+  , input  ext__b__types::b_alu_control_t b_alu_control
+  , output data_t                         out
 );
 
-    logic [4:0] index;
-    data_t mask;
+  import ext__b__types::*;
 
-    always_comb begin
-        index = reg2[4:0];
-        mask = data_t'(32'h1) << index;
+  logic [4:0] index;
+  data_t mask;
 
-        case ( inst )
+  assign index = reg2[4:0];
+  assign mask  = data_t'(32'h1) << index;
 
-            // bclr / bclri  → clear selected bit
-            ALU_CONTROL_BCLR: out = reg1 & ~mask;
-
-            // bset / bseti  → set selected bit
-            ALU_CONTROL_BSET: out = reg1 | mask;
-
-            // binv / binvi  → invert selected bit
-            ALU_CONTROL_BINV: out = reg1 ^ mask;
-
-            // bext / bexti  → extract selected bit (to bit[0])
-            ALU_CONTROL_BEXT: out = (reg1 >> index) & data_t'(32'h1);
-
-            // safe default
-            default: out = '0;
-
-        endcase
-    end
+  always_comb
+    case (b_alu_control)
+      B_ALU_CTRL__BCLR: out = reg1 & ~mask;
+      B_ALU_CTRL__BSET: out = reg1 | mask;
+      B_ALU_CTRL__BINV: out = reg1 ^ mask;
+      B_ALU_CTRL__BEXT: out = (reg1 >> index) & data_t'(32'h1);
+      default:          out = '0;
+    endcase
 
 endmodule

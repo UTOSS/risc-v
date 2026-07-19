@@ -1,13 +1,15 @@
-`timescale 1ns/1ps
+`include "src/timescale.svh"
+`include "src/headers/types.svh"
 
 `include "test/utils.svh"
 
+/* verilator lint_off IMPORTSTAR */
 import pkg_control_fsm::*;
 
 module rf_tb;
 
   //DUT inputs
-  logic [4:0] Addr1, Addr2, Addr3;
+  reg_t Addr1, Addr2, Addr3;
   logic clk;
   logic regWrite;
   logic [31:0] dataIn;
@@ -101,4 +103,5 @@ module rf_tb;
 
   `SETUP_VCD_DUMP(rf_tb)
 
+/* verilator lint_on IMPORTSTAR */
 endmodule

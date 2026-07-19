@@ -1,0 +1,29 @@
+FROM public.ecr.aws/lts/ubuntu:22.04_stable AS builder
+
+RUN apt update && apt install -y --no-install-recommends \
+		ca-certificates wget tar gzip xz-utils bzip2 \
+	&& rm -rf /var/lib/apt/lists/*
+
+ARG OSS_CAD_SUITE_VERSION=2026-05-25
+ARG OSS_CAD_SUITE_HASH="588f74228e0e950534a461b1d86caad2d0a5641fa53db26264116bcb22610304  oss-cad-suite-linux-x64-20260525.tgz"
+
+RUN set -eux; cd /tmp; \
+	ver="${OSS_CAD_SUITE_VERSION}"; \
+	ver_nd="$(printf '%s' "$ver" | tr -d '-')"; \
+	filename="oss-cad-suite-linux-x64-${ver_nd}.tgz"; \
+	url="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${ver}/${filename}"; \
+	wget "${url}" -O "${filename}"; \
+	echo "${OSS_CAD_SUITE_HASH}" | sha256sum -c -; \
+	mkdir -p /opt/oss-cad-suite; \
+	tar -xzf "${filename}" -C /opt/oss-cad-suite --strip-components=1; \
+	rm -f "${filename}"; \
+	rm -rf /opt/oss-cad-suite/share/doc /opt/oss-cad-suite/share/man || true
+
+FROM public.ecr.aws/lts/ubuntu:22.04_stable
+
+COPY --from=builder /opt/oss-cad-suite /opt/oss-cad-suite
+
+ENV PATH=/opt/oss-cad-suite/bin:$PATH
+
+# Provide a profile.d script so toolchains and shells pick up the OSS CAD Suite
+RUN mkdir -p /etc/profile.d && echo 'export PATH=/opt/oss-cad-suite/bin:$PATH' > /etc/profile.d/oss-cad-suite.sh
