@@ -34,6 +34,10 @@ typedef enum logic [3:0]
     , ALU_CONTROL_SRA  = 4'b0111
     , ALU_CONTROL_OR   = 4'b1000
     , ALU_CONTROL_AND  = 4'b1001
+    , ALU_CONTROL_BCLR = 4'b1010
+    , ALU_CONTROL_BSET = 4'b1011
+    , ALU_CONTROL_BINV = 4'b1100
+    , ALU_CONTROL_BEXT = 4'b1101
 } alu_control_t;
 
 // represents the possible input sources for the first operand of the ALU as selected by the Control
