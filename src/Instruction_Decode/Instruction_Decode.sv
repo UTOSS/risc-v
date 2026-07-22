@@ -14,16 +14,14 @@ module Instruction_Decode
   );
 
   alu_op_t alu_op;
-  // reg [2:0] funct3;
-  // reg [6:0] funct7;
-  wire [3:0] state;
+  alu_control_t base_alu_control;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  logic [3:0] ext_b_alu_control;
+`endif
 
   assign opcode = instr[6:0];
 
   //combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
-
-  reg [2:0] default_funct3;
-  reg [6:0] default_funct7;
 
   always @(*) begin
 
@@ -131,21 +129,21 @@ module Instruction_Decode
     ( .funct3(funct3)
     , .funct7(funct7)
     , .alu_op(alu_op)
-    , .alu_control(ALUControl)
+    , .alu_control(base_alu_control)
     );
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
-
-  ext__b__types::b_alu_control_t b_alu_control;
-
-  ext__b__decoder u_ext__b__decoder
-    ( .funct3        ( funct3        )
-    , .funct7        ( funct7        )
-    , .opcode        ( opcode        )
-    , .rd            ( rd            )
-    , .b_alu_control ( b_alu_control )
+  ext__b__decoder instanceBExtDec
+    ( .funct3      ( funct3           )
+    , .funct7      ( funct7           )
+    , .opcode      ( opcode           )
+    , .rd          ( rd               )
+    , .b_alu_control ( ext_b_alu_control )
     );
 
+  assign ALUControl = (ext_b_alu_control != 4'b0000) ? ext_b_alu_control : base_alu_control;
+`else
+  assign ALUControl = base_alu_control;
 `endif
 
 endmodule
