@@ -23,27 +23,21 @@ module Instruction_Decode
   assign opcode = opcode_t'(instr[6:0]);
 
   // combinational logic for extracting funct3 and funct7 for ALU decoder input
-  always_comb begin
-    funct3 = 3'b000;
-    funct7 = 7'b0;
-
+  always_comb
     case (opcode)
-      OPCODE_OP, OPCODE_OP_IMM: begin
-        funct3 = instr[14:12];
-        funct7 = instr[31:25];
-      end
-
-      OPCODE_LOAD, OPCODE_STORE, OPCODE_BRANCH: begin
-        funct3 = instr[14:12];
-      end
-
-      default: begin
-      end
+      OPCODE_OP, OPCODE_OP_IMM: funct3 = instr[14:12];
+      OPCODE_LOAD, OPCODE_STORE, OPCODE_BRANCH: funct3 = instr[14:12];
+      default: funct3 = 3'b000;
     endcase
-  end
+
+  always_comb
+    case (opcode)
+      OPCODE_OP, OPCODE_OP_IMM: funct7 = instr[31:25];
+      default: funct7 = 7'b0;
+    endcase
 
   // determine ALU op based on opcode
-  always_comb begin
+  always_comb
     case (opcode)
       OPCODE_OP:       alu_op = ALU_OP__REGISTER_OPERATION;
       OPCODE_LOAD:     alu_op = ALU_OP__ADD;
@@ -55,43 +49,38 @@ module Instruction_Decode
       OPCODE_MISC_MEM: alu_op = ALU_OP__UNSET;
       default:         alu_op = ALU_OP__UNSET;
     endcase
-  end
 
-  // extract rd, rs1, rs2 from 32-bit instruction
-  always_comb begin
-    rd = 5'b00000;
-    rs1 = 5'b00000;
-    rs2 = 5'b00000;
-
+  always_comb
     case (opcode)
-      OPCODE_OP: begin
-        rd = instr[11:7];
-        rs1 = instr[19:15];
-        rs2 = instr[24:20];
-      end
-
-      OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR: begin
-        rd = instr[11:7];
-        rs1 = instr[19:15];
-        rs2 = instr[24:20];
-      end
-
-      OPCODE_STORE, OPCODE_BRANCH: begin
-        rs1 = instr[19:15];
-        rs2 = instr[24:20];
-      end
-
-      OPCODE_AUIPC, OPCODE_LUI, OPCODE_JAL: begin
-        rd = instr[11:7];
-      end
-
-      default: begin
-      end
+      OPCODE_OP,
+      OPCODE_OP_IMM,
+      OPCODE_LOAD,
+      OPCODE_JALR,
+      OPCODE_AUIPC,
+      OPCODE_LUI,
+      OPCODE_JAL: rd = instr[11:7];
+      default: rd = 5'b00000;
     endcase
-  end
+
+  always_comb
+    case (opcode)
+      OPCODE_OP: rs1 = instr[19:15];
+      OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR: rs1 = instr[19:15];
+      OPCODE_STORE, OPCODE_BRANCH: rs1 = instr[19:15];
+      default: rs1 = 5'b00000;
+    endcase
+
+  always_comb
+    case (opcode)
+      OPCODE_OP: rs2 = instr[24:20];
+      OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR: rs2 = instr[24:20];
+      OPCODE_STORE, OPCODE_BRANCH: rs2 = instr[24:20];
+      default: rs2 = 5'b00000;
+    endcase
+
 
   // immediate decode
-  always_comb begin
+  always_comb
     case (opcode)
       OPCODE_OP_IMM:  imm_ext = {{20{instr[31]}}, instr[31:20]};
       OPCODE_LOAD:    imm_ext = {{20{instr[31]}}, instr[31:20]};
@@ -103,7 +92,6 @@ module Instruction_Decode
       OPCODE_LUI:     imm_ext = {instr[31:12], 12'h000};
       default:        imm_ext = 32'b0;
     endcase
-  end
 
   ALUdecoder instanceALUDec
     ( .funct3      ( funct3           )
