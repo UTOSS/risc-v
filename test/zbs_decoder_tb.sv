@@ -8,14 +8,16 @@ module zbs_decoder_tb;
   import ext__b__types::*;
 
   logic [31:0] instr;
-  wire opcode_t opcode;
-  wire [3:0] alu_control;
-  wire imm_t imm_ext;
-  wire [2:0] funct3;
-  wire [4:0] rd;
-  wire [4:0] rs1;
-  wire [4:0] rs2;
-  wire b_alu_control_t b_alu_control;
+  logic [3:0] alu_control;
+  opcode_t opcode;
+  imm_t imm_ext;
+  logic [2:0] funct3;
+  logic [4:0] rd;
+  logic [4:0] rs1;
+  logic [4:0] rs2;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  b_alu_control_t b_alu_control;
+`endif
 
   function automatic logic [31:0] make_r_zbs
     ( input logic [6:0] funct7_i
@@ -39,8 +41,8 @@ module zbs_decoder_tb;
 
   Instruction_Decode uut
     ( .instr      ( instr      )
-    , .opcode     ( opcode     )
     , .ALUControl ( alu_control )
+    , .opcode     ( opcode     )
     , .imm_ext    ( imm_ext    )
     , .funct3     ( funct3     )
     , .rd         ( rd         )
@@ -57,12 +59,34 @@ module zbs_decoder_tb;
 
     instr = 32'h00000013; // addi x0, x0, 0
     #1;
+    assert (opcode == OPCODE_OP_IMM) else
+      $fatal(1, "opcode decode failed for addi: got %0h", opcode);
     assert (alu_control == ALU_CONTROL_ADD) else
       $fatal(1, "base decode sanity check failed: got %0h", alu_control);
+    assert (imm_ext == 32'h0) else
+      $fatal(1, "imm decode failed for addi: got %0h", imm_ext);
+    assert (funct3 == 3'b000) else
+      $fatal(1, "funct3 decode failed for addi: got %0h", funct3);
+    assert (rd == 5'h0) else
+      $fatal(1, "rd decode failed for addi: got %0h", rd);
+    assert (rs1 == 5'h0) else
+      $fatal(1, "rs1 decode failed for addi: got %0h", rs1);
+    assert (rs2 == 5'h0) else
+      $fatal(1, "rs2 decode failed for addi: got %0h", rs2);
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     instr = make_r_zbs(7'b0010100, 3'b001, 5'd3, 5'd2, 5'd1); // bset
     #1;
+    assert (opcode == OPCODE_OP) else
+      $fatal(1, "opcode decode failed for bset: got %0h", opcode);
+    assert (funct3 == 3'b001) else
+      $fatal(1, "funct3 decode failed for bset: got %0h", funct3);
+    assert (rd == 5'd1) else
+      $fatal(1, "rd decode failed for bset: got %0h", rd);
+    assert (rs1 == 5'd2) else
+      $fatal(1, "rs1 decode failed for bset: got %0h", rs1);
+    assert (rs2 == 5'd3) else
+      $fatal(1, "rs2 decode failed for bset: got %0h", rs2);
     assert (b_alu_control == B_ALU_CTRL__BSET) else
       $fatal(1, "bset decode failed: got %0h", b_alu_control);
 
@@ -83,6 +107,8 @@ module zbs_decoder_tb;
 
     instr = make_i_zbs(7'b0010100, 5'd3, 5'd2, 5'd1, 3'b001); // bseti
     #1;
+    assert (opcode == OPCODE_OP_IMM) else
+      $fatal(1, "opcode decode failed for bseti: got %0h", opcode);
     assert (b_alu_control == B_ALU_CTRL__BSET) else
       $fatal(1, "bseti decode failed: got %0h", b_alu_control);
 

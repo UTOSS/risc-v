@@ -76,6 +76,8 @@ module ext__b__decoder
           FUNCT7_ZBB__BSET:
             if (funct3 == 3'b001)
               b_alu_control = B_ALU_CTRL__BSET;
+            else
+              b_alu_control = B_ALU_CTRL__NONE;
 
           FUNCT7_ZBB__BCLR:
             case (funct3)
@@ -87,49 +89,51 @@ module ext__b__decoder
           FUNCT7_ZBB__BINV:
             if (funct3 == 3'b001)
               b_alu_control = B_ALU_CTRL__BINV;
+            else
+              b_alu_control = B_ALU_CTRL__NONE;
 
           default: b_alu_control = B_ALU_CTRL__NONE;
         endcase
 
       7'b0010011:
-        if (funct7 == 7'b0110000) begin
-          case (funct3)
-            3'b001:
-              case (rs2)
-                5'b00100: b_alu_control = B_ALU_CTRL__SEXTB;
-                5'b00101: b_alu_control = B_ALU_CTRL__SEXTH;
-                5'b00000: b_alu_control = B_ALU_CTRL__CLZ;
-                5'b00001: b_alu_control = B_ALU_CTRL__CTZ;
-                5'b00010: b_alu_control = B_ALU_CTRL__CPOP;
-                default:   b_alu_control = B_ALU_CTRL__NONE;
-              endcase
-            3'b101: b_alu_control = B_ALU_CTRL__RORI;
-            default: b_alu_control = B_ALU_CTRL__NONE;
-          endcase
-        end
-        else if (funct7 == FUNCT7_ZBB_ORCB) begin
-          case (funct3)
-            3'b101:
-              case (rs2)
-                5'b00111: b_alu_control = B_ALU_CTRL__ORCB;
-                default:   b_alu_control = B_ALU_CTRL__NONE;
-              endcase
-            default: b_alu_control = B_ALU_CTRL__NONE;
-          endcase
-        end
-        else if (funct7 == FUNCT7_ZBB_REV8) begin
-          case (funct3)
-            3'b101:
-              case (rs2)
-                5'b11000: b_alu_control = B_ALU_CTRL__REV8;
-                default:   b_alu_control = B_ALU_CTRL__NONE;
-              endcase
-            default: b_alu_control = B_ALU_CTRL__NONE;
-          endcase
-        end
-        else begin
-          b_alu_control = B_ALU_CTRL__NONE;
-        end
+        case (funct7)
+          7'b0110000:
+            case (funct3)
+              3'b001:
+                case (rs2)
+                  5'b00100: b_alu_control = B_ALU_CTRL__SEXTB;
+                  5'b00101: b_alu_control = B_ALU_CTRL__SEXTH;
+                  5'b00000: b_alu_control = B_ALU_CTRL__CLZ;
+                  5'b00001: b_alu_control = B_ALU_CTRL__CTZ;
+                  5'b00010: b_alu_control = B_ALU_CTRL__CPOP;
+                  default:   b_alu_control = B_ALU_CTRL__NONE;
+                endcase
+              3'b101: b_alu_control = B_ALU_CTRL__RORI;
+              default: b_alu_control = B_ALU_CTRL__NONE;
+            endcase
+
+          FUNCT7_ZBB_ORCB:
+            case (funct3)
+              3'b101:
+                case (rs2)
+                  5'b00111: b_alu_control = B_ALU_CTRL__ORCB;
+                  default:   b_alu_control = B_ALU_CTRL__NONE;
+                endcase
+              default: b_alu_control = B_ALU_CTRL__NONE;
+            endcase
+
+          FUNCT7_ZBB_REV8:
+            case (funct3)
+              3'b101:
+                case (rs2)
+                  5'b11000: b_alu_control = B_ALU_CTRL__REV8;
+                  default:   b_alu_control = B_ALU_CTRL__NONE;
+                endcase
+              default: b_alu_control = B_ALU_CTRL__NONE;
+            endcase
+
+          default: b_alu_control = B_ALU_CTRL__NONE;
+        endcase
 
       default: b_alu_control = B_ALU_CTRL__NONE;
     endcase
