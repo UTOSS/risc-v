@@ -11,21 +11,13 @@ module zbs
 
   import ext__b__types::*;
 
-  logic [4:0] index;
-  data_t mask;
-
-  always_comb begin
-    index = reg2[4:0];
-    mask = data_t'(32'h1) << index;
-    out = '0;
-
+  always_comb
     case (b_alu_control)
-      B_ALU_CTRL__BCLR: out = reg1 & ~mask;
-      B_ALU_CTRL__BSET: out = reg1 | mask;
-      B_ALU_CTRL__BINV: out = reg1 ^ mask;
-      B_ALU_CTRL__BEXT: out = (reg1 >> index) & data_t'(32'h1);
+      B_ALU_CTRL__BCLR: out = reg1 & ~(data_t'(32'h1) << reg2[4:0]);
+      B_ALU_CTRL__BSET: out = reg1 | (data_t'(32'h1) << reg2[4:0]);
+      B_ALU_CTRL__BINV: out = reg1 ^ (data_t'(32'h1) << reg2[4:0]);
+      B_ALU_CTRL__BEXT: out = (reg1 >> reg2[4:0]) & data_t'(32'h1);
       default:          out = '0;
     endcase
-  end
 
 endmodule
