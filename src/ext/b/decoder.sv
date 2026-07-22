@@ -119,6 +119,7 @@ module ext__b__decoder
                   5'b00111: b_alu_control = B_ALU_CTRL__ORCB;
                   default:   b_alu_control = B_ALU_CTRL__NONE;
                 endcase
+              3'b001: b_alu_control = B_ALU_CTRL__BSET;
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
 
@@ -129,6 +130,14 @@ module ext__b__decoder
                   5'b11000: b_alu_control = B_ALU_CTRL__REV8;
                   default:   b_alu_control = B_ALU_CTRL__NONE;
                 endcase
+              3'b001: b_alu_control = B_ALU_CTRL__BINV;
+              default: b_alu_control = B_ALU_CTRL__NONE;
+            endcase
+
+          FUNCT7_ZBB__BCLR:
+            case (funct3)
+              3'b001: b_alu_control = B_ALU_CTRL__BCLR;
+              3'b101: b_alu_control = B_ALU_CTRL__BEXT;
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
 
