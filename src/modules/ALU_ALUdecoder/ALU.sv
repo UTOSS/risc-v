@@ -22,6 +22,10 @@ always_comb
         ALU_CONTROL_SRA:  out = $signed(a) >>> b[4:0];
         ALU_CONTROL_OR:   out = a | b;
         ALU_CONTROL_AND:  out = a & b;
+        ALU_CONTROL_BCLR: out = a & ~(data_t'(32'd1) << b[4:0]);
+        ALU_CONTROL_BSET: out = a | (data_t'(32'd1) << b[4:0]);
+        ALU_CONTROL_BINV: out = a ^ (data_t'(32'd1) << b[4:0]);
+        ALU_CONTROL_BEXT: out = (a >> b[4:0]) & data_t'(32'd1);
         default: out = 32'b0;
     endcase
 

@@ -3,7 +3,6 @@
 
 /* verilator lint_off DECLFILENAME */
 package ext__b__types;
-/* verilator lint_on DECLFILENAME */
   typedef enum logic [4:0]
     { B_ALU_CTRL__NONE   = 5'b00000
     , B_ALU_CTRL__SH1ADD = 5'b00001
@@ -27,10 +26,10 @@ package ext__b__types;
     , B_ALU_CTRL__RORI   = 5'b10011
     , B_ALU_CTRL__ORCB   = 5'b10100
     , B_ALU_CTRL__REV8   = 5'b10101
-    , B_ALU_CTRL__BCLR   = 5'bxxxxx
-    , B_ALU_CTRL__BSET   = 5'bxxxxx
-    , B_ALU_CTRL__BINV   = 5'bxxxxx
-    , B_ALU_CTRL__BEXT   = 5'bxxxxx
+    , B_ALU_CTRL__BCLR   = 5'b10110
+    , B_ALU_CTRL__BSET   = 5'b10111
+    , B_ALU_CTRL__BINV   = 5'b11000
+    , B_ALU_CTRL__BEXT   = 5'b11001
     } b_alu_control_t;
 
 endpackage

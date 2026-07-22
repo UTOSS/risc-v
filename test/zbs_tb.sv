@@ -42,8 +42,8 @@ initial begin
 
     expected = reg1 | (32'h1 << reg2[4:0]);
 
-    assert (out == expected) else
-     $fatal("bset failed: expected %b got %b", expected, out);
+     assert (out == expected) else
+      $fatal("bset failed: expected %b got %b", expected, out);
 
 
     // -------- binv test --------
@@ -67,7 +67,7 @@ initial begin
     expected = {31'b0, reg1[reg2[4:0]]};
 
     assert (out == expected) else
-     $fatal("bext failed: expected %b got %b", expected, out);
+      $fatal("bext failed: expected %b got %b", expected, out);
 
     // -------- Edge Cases ---------
 
@@ -80,7 +80,7 @@ initial begin
     expected = reg1 & ~(32'h1 << reg2[4:0]);
 
     assert (out == expected) else
-     $fatal("corner case bit0 failed");
+      $fatal("corner case bit0 failed");
 
 
     // Bit 31 boundary
@@ -92,7 +92,7 @@ initial begin
     expected = reg1 & ~(32'h1 << reg2[4:0]);
 
     assert (out == expected) else
-     $fatal("corner case bit31 failed");
+      $fatal("corner case bit31 failed");
 
 
     // ----------- Randomized Testing (Experimental) -----------
