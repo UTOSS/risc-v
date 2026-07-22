@@ -23,9 +23,9 @@ module ext__b__decoder
   localparam bit [6:0] FUNCT7_ZBB_ROTATE   = 7'b0110000;
   localparam bit [6:0] FUNCT7_ZBB_ORCB     = 7'b0010100;
   localparam bit [6:0] FUNCT7_ZBB_REV8     = 7'b0110100;
-  localparam bit [6:0] FUNCT7_ZBS_BSET     = 7'b0010100;
-  localparam bit [6:0] FUNCT7_ZBS_BCLR     = 7'b0100100;
-  localparam bit [6:0] FUNCT7_ZBS_BINV     = 7'b0110100;
+  localparam bit [6:0] FUNCT7_ZBB__BSET    = 7'b0010100;
+  localparam bit [6:0] FUNCT7_ZBB__BCLR    = 7'b0100100;
+  localparam bit [6:0] FUNCT7_ZBB__BINV    = 7'b0110100;
 
   always_comb begin
     b_alu_control = B_ALU_CTRL__NONE;
@@ -75,19 +75,19 @@ module ext__b__decoder
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
 
-          FUNCT7_ZBS_BSET:
+          FUNCT7_ZBB__BSET:
             if (funct3 == 3'b001) begin
               b_alu_control = B_ALU_CTRL__BSET;
             end
 
-          FUNCT7_ZBS_BCLR:
+          FUNCT7_ZBB__BCLR:
             case (funct3)
               3'b001: b_alu_control = B_ALU_CTRL__BCLR;
               3'b101: b_alu_control = B_ALU_CTRL__BEXT;
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
 
-          FUNCT7_ZBS_BINV:
+          FUNCT7_ZBB__BINV:
             if (funct3 == 3'b001) begin
               b_alu_control = B_ALU_CTRL__BINV;
             end
@@ -132,19 +132,19 @@ module ext__b__decoder
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
 
-          FUNCT7_ZBS_BSET:
+          FUNCT7_ZBB__BSET:
             if (funct3 == 3'b001) begin
               b_alu_control = B_ALU_CTRL__BSET;
             end
 
-          FUNCT7_ZBS_BCLR:
+          FUNCT7_ZBB__BCLR:
             case (funct3)
               3'b001: b_alu_control = B_ALU_CTRL__BCLR;
               3'b101: b_alu_control = B_ALU_CTRL__BEXT;
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
 
-          FUNCT7_ZBS_BINV:
+          FUNCT7_ZBB__BINV:
             if (funct3 == 3'b001) begin
               b_alu_control = B_ALU_CTRL__BINV;
             end
