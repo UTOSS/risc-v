@@ -52,13 +52,13 @@ module Instruction_Decode
 
   always_comb
     case (opcode)
-      OPCODE_OP,
-      OPCODE_OP_IMM,
-      OPCODE_LOAD,
-      OPCODE_JALR,
-      OPCODE_AUIPC,
-      OPCODE_LUI,
-      OPCODE_JAL: rd = instr[11:7];
+      OPCODE_OP
+    , OPCODE_OP_IMM
+    , OPCODE_LOAD
+    , OPCODE_JALR
+    , OPCODE_AUIPC
+    , OPCODE_LUI
+    , OPCODE_JAL: rd = instr[11:7];
       default: rd = 5'b00000;
     endcase
 
