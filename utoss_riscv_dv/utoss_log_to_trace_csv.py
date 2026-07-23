@@ -96,8 +96,7 @@ def process_utoss_sim_log(log, csv):
             if not match:
                 continue
 
-            # Only nonzero register writes with known values are useful for
-            # architectural trace comparison.
+            # Keep zero-valued writes so row order stays aligned with Sail.
             rd = match.group("rd")
             rd_num = int(match.group("rd_num"))
             value = match.group("value").lower()

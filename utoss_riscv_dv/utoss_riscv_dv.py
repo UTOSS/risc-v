@@ -50,38 +50,40 @@ def normalize_address_values(sail_csv, compare_csv, offset, isa):
     width = 16 if isa.lower().startswith("rv64") else 8
     count = 0
 
-    gpr_changes = []
-    for rows in (sail_rows, utoss_rows):
-        state = {}
-        changes = []
-        for index, row in enumerate(rows):
-            text = row.get("gpr", "")
-            if ":" not in text or ";" in text:
-                continue
-            reg, value_text = text.split(":", 1)
-            try:
-                value = int(value_text, 16)
-            except ValueError:
-                continue
-            if state.get(reg, 0) != value:
-                changes.append((index, reg, value))
-            state[reg] = value
-        gpr_changes.append(changes)
-
-    for (_, sail_reg, sail_value), (utoss_index, utoss_reg, utoss_value) in zip(*gpr_changes):
-        if sail_reg == utoss_reg and ((sail_value - offset) & mask) == utoss_value:
-            utoss_rows[utoss_index]["gpr"] = f"{utoss_reg}:{sail_value:0{width}x}"
-            count += 1
-
-    for sail_row, utoss_row in zip(sail_rows, utoss_rows):
+    for utoss_row in utoss_rows:
         for field in ("pc", "instr_addr"):
             try:
-                sail_value = int(sail_row[field], 16)
                 utoss_value = int(utoss_row[field], 16)
             except (KeyError, ValueError):
                 continue
-            if ((sail_value - offset) & mask) == utoss_value:
-                utoss_row[field] = f"{sail_value:0{width}x}"
+            utoss_row[field] = f"{(utoss_value + offset) & mask:0{width}x}"
+
+    sail_gprs = {}
+    for sail_row in sail_rows:
+        sail_gpr = sail_row.get("gpr", "")
+        if ":" not in sail_gpr or ";" in sail_gpr:
+            continue
+        sail_reg, sail_value_text = sail_gpr.split(":", 1)
+        try:
+            sail_gprs[(sail_row.get("pc", ""), sail_reg)] = int(sail_value_text, 16)
+        except ValueError:
+            continue
+
+    for utoss_row in utoss_rows:
+        utoss_gpr = utoss_row.get("gpr", "")
+        if ":" not in utoss_gpr or ";" in utoss_gpr:
+            continue
+        utoss_reg, utoss_value_text = utoss_gpr.split(":", 1)
+        try:
+            utoss_value = int(utoss_value_text, 16)
+        except ValueError:
+            continue
+        sail_value = sail_gprs.get((utoss_row.get("pc", ""), utoss_reg))
+        if sail_value is None:
+            continue
+        if ((sail_value - offset) & mask) == utoss_value:
+            utoss_row["gpr"] = f"{utoss_reg}:{sail_value:0{width}x}"
+            count += 1
 
     with open(compare_csv, "w", newline="") as csv_fd:
         writer = csv.DictWriter(csv_fd, fieldnames=utoss_reader.fieldnames)
