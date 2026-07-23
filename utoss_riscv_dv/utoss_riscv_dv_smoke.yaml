@@ -9,7 +9,7 @@
   iterations: 1
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=50
+    +instr_cnt=1000
     +num_of_sub_program=0
     +no_directed_instr=1
     +no_fence=1
@@ -27,7 +27,7 @@
   iterations: 1
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=100
+    +instr_cnt=1000
     +num_of_sub_program=0
     +no_directed_instr=1
     +no_fence=1

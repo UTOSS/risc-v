@@ -85,6 +85,22 @@ USER root
 RUN apt update && apt install -y python3 python3-pip && \
     pip3 install riscof
 
+# install riscv-dv
+RUN pip3 install PyYAML bitstring Sphinx Pallets-Sphinx-Themes sphinxcontrib-log-cabinet \
+    sphinx-issues sphinx_rtd_theme rst2pdf flake8 pyvsc tabulate pandas
+ARG RISCV_DV_VERSION=b7a0b4b0b51346a3c64f159f81ea262d867c14a9
+ARG RISCV_DV_TAR_NAME=${RISCV_DV_VERSION}.tar.gz
+ARG RISCV_DV_TAR_URL=https://github.com/chipsalliance/riscv-dv/archive/${RISCV_DV_TAR_NAME}
+ARG RISCV_DV_TAR_HASH="e95d179b52f3c8dd1566b5b7bf6a5b42c570bfb17cca7f1f2c73460a0c5d0669  ${RISCV_DV_TAR_NAME}"
+RUN mkdir -p /tmp/riscv-dv && \
+    cd /tmp/riscv-dv && \
+    wget ${RISCV_DV_TAR_URL} && \
+    echo ${RISCV_DV_TAR_HASH} | sha256sum -c && \
+    tar -xzf ${RISCV_DV_TAR_NAME} && \
+    mv riscv-dv-* /opt/riscv-dv && \
+    cd .. && rm -rf /tmp/riscv-dv
+ENV RISCV_DV_HOME=/opt/riscv-dv
+
 # install svlint
 USER dev
 ARG SVLINT_VERSION=0.9.3

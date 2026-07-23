@@ -13,14 +13,35 @@ def expand_path(path):
     return Path(os.path.expandvars(os.path.expanduser(str(path))))
 
 
-def normalize_address_values(sail_csv, utoss_csv, normalized_csv, offset, isa):
+def riscv_target_parts(name):
+    name = name.lower().replace("_", "")
+    extensions = set(name[4:])
+    if "g" in extensions:
+        extensions.remove("g")
+        extensions.update("imafd")
+    return name[:4], extensions
+
+
+def choose_riscv_dv_target(config, riscv_dv):
+    config_base, config_extensions = riscv_target_parts(config)
+    candidates = []
+    for target in (riscv_dv / "target").iterdir():
+        if not target.is_dir() or not target.name.lower().startswith(config_base):
+            continue
+        target_base, target_extensions = riscv_target_parts(target.name)
+        if target_base == config_base and target_extensions <= config_extensions:
+            candidates.append((len(target_extensions), target.name))
+    return max(candidates)[1]
+
+
+def normalize_address_values(sail_csv, compare_csv, offset, isa):
     # Sail normally runs RISC-V tests at 0x80000000, while this core currently
     # runs the same memory image at 0x0. Normalize address-like trace values so
     # PC-relative instructions do not fail only because of that base difference.
     if offset == 0:
-        return utoss_csv, 0
+        return 0
 
-    with open(sail_csv, newline="") as sail_fd, open(utoss_csv, newline="") as utoss_fd:
+    with open(sail_csv, newline="") as sail_fd, open(compare_csv, newline="") as utoss_fd:
         sail_rows = list(csv.DictReader(sail_fd))
         utoss_reader = csv.DictReader(utoss_fd)
         utoss_rows = list(utoss_reader)
@@ -62,11 +83,11 @@ def normalize_address_values(sail_csv, utoss_csv, normalized_csv, offset, isa):
             if ((sail_value - offset) & mask) == utoss_value:
                 utoss_row[field] = f"{sail_value:0{width}x}"
 
-    with open(normalized_csv, "w", newline="") as csv_fd:
+    with open(compare_csv, "w", newline="") as csv_fd:
         writer = csv.DictWriter(csv_fd, fieldnames=utoss_reader.fieldnames)
         writer.writeheader()
         writer.writerows(utoss_rows)
-    return normalized_csv, count
+    return count
 
 
 def main():
@@ -79,9 +100,8 @@ def main():
     parser.add_argument("--testlist", default="utoss_riscv_dv/utoss_riscv_dv_smoke.yaml")
     parser.add_argument("--target", default="rv32i")
     parser.add_argument("--simulator", default="pyflow")
-    parser.add_argument("--isa", default="rv32i_zicsr")
+    parser.add_argument("--isa", default="")
     parser.add_argument("--mabi", default="ilp32")
-    parser.add_argument("--iteration", type=int, default=0)
     parser.add_argument("--iss", default="sail")
     parser.add_argument("--seed")
     parser.add_argument("--skip-dut", action="store_true")
@@ -96,20 +116,24 @@ def main():
         print("Set RISCV_DV_HOME or pass RISCV_DV_DIR=/path/to/riscv-dv.")
         return 1
 
+    target = choose_riscv_dv_target(args.target, riscv_dv)
+    if target != args.target:
+        print(f"Target {args.target} is not available. Defaulting to riscv-dv target {target}.\n")
+
     testlist = expand_path(args.testlist)
     if not testlist.is_absolute() and (root / testlist).exists():
         testlist = (root / testlist).resolve()
     output_path = expand_path(args.output)
     out = (output_path if output_path.is_absolute() else root / output_path).resolve()
-    test = f"{args.test}_{args.iteration}"
-    asm = out / "asm_test" / f"{test}.S"
+    test = args.test
+    riscv_dv_test = f"{test}_0"
+    asm = out / "asm_test" / f"{riscv_dv_test}.S"
     elf = out / "asm_test" / f"{test}.dut.elf"
     mem = out / "asm_test" / f"{test}.mem"
-    sail_log = out / f"{args.iss}_sim" / f"{test}.log"
+    sail_log = out / f"{args.iss}_sim" / f"{riscv_dv_test}.log"
     utoss_log = out / "dut.log"
     sail_csv = out / f"{test}.sail.csv"
-    utoss_csv = out / f"{test}.utoss.csv"
-    normalized_csv = out / f"{test}.utoss.normalized.csv"
+    compare_csv = out / f"{test}.utoss.csv"
     compare_log = out / "trace_compare.log"
     riscv_dv_log = out / "riscv_dv_run.log"
 
@@ -131,7 +155,7 @@ def main():
         "run.py",
         "--testlist", str(testlist),
         "--test", args.test,
-        "--target", args.target,
+        "--target", target,
         "--simulator", args.simulator,
         "--iss", args.iss,
         "--steps", "gen,gcc_compile,iss_sim",
@@ -152,8 +176,6 @@ def main():
     if result.returncode:
         print(f"\nCommand failed with exit code {result.returncode}.")
         print(f"Log: {riscv_dv_log}")
-        if riscv_dv_log.exists():
-            print("\n".join(riscv_dv_log.read_text(errors="replace").splitlines()[-40:]))
         return result.returncode
 
     # Recompile the same assembly with the UTOSS/RISCOF linker script and turn it
@@ -213,8 +235,6 @@ def main():
     if result.returncode:
         print(f"\nCommand failed with exit code {result.returncode}.")
         print(f"Log: {utoss_log}")
-        if utoss_log.exists():
-            print("\n".join(utoss_log.read_text(errors="replace").splitlines()[-40:]))
         return result.returncode
 
     # Convert both logs to riscv-dv trace CSVs, normalize address-base differences,
@@ -224,13 +244,12 @@ def main():
     print("+ " + " ".join(str(arg) for arg in command))
     subprocess.run(command, cwd=root, check=True, env=env)
 
-    command = [sys.executable, str(root / "utoss_riscv_dv" / "utoss_log_to_trace_csv.py"), "--log", str(utoss_log), "--csv", str(utoss_csv)]
+    command = [sys.executable, str(root / "utoss_riscv_dv" / "utoss_log_to_trace_csv.py"), "--log", str(utoss_log), "--csv", str(compare_csv)]
     print("+ " + " ".join(str(arg) for arg in command))
     subprocess.run(command, cwd=root, check=True, env=env)
-    compare_csv, normalized = normalize_address_values(
+    normalized = normalize_address_values(
         sail_csv,
-        utoss_csv,
-        normalized_csv,
+        compare_csv,
         int(args.trace_address_offset, 0),
         args.isa,
     )
@@ -258,9 +277,8 @@ def main():
     print(f"  UTOSS: {'PASS' if utoss_ok else 'FAIL'} ({utoss_log})")
     print(f"  Trace: {'PASS' if trace_ok else 'FAIL'} ({compare_log})")
     print(f"    Sail CSV : {sail_csv}")
-    print(f"    UTOSS CSV: {utoss_csv}")
-    if compare_csv != utoss_csv:
-        print(f"    Compare CSV: {compare_csv}")
+    print(f"    UTOSS CSV: {compare_csv}")
+    if normalized:
         print(f"    normalized {normalized} address-offset update(s)")
 
     passed = sail_ok and utoss_ok and trace_ok
