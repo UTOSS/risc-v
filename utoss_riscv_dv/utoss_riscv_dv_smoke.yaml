@@ -11,11 +11,7 @@
   gen_opts: >
     +instr_cnt=1000
     +num_of_sub_program=0
-    +no_directed_instr=1
     +no_fence=1
-    +no_data_page=1
-    +no_branch_jump=1
-    +no_load_store=1
     +no_csr_instr=1
     +bare_program_mode=1
     +boot_mode=m

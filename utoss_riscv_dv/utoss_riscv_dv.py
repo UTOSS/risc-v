@@ -2,7 +2,6 @@
 """Generate a riscv-dv test, run it on UTOSS, and compare against Sail."""
 
 import argparse
-import csv
 import os
 import subprocess
 import sys
@@ -25,71 +24,13 @@ def riscv_target_parts(name):
 def choose_riscv_dv_target(config, riscv_dv):
     config_base, config_extensions = riscv_target_parts(config)
     candidates = []
-    for target in (riscv_dv / "target").iterdir():
+    for target in (riscv_dv / "pygen" / "pygen_src" / "target").iterdir():
         if not target.is_dir() or not target.name.lower().startswith(config_base):
             continue
         target_base, target_extensions = riscv_target_parts(target.name)
         if target_base == config_base and target_extensions <= config_extensions:
             candidates.append((len(target_extensions), target.name))
     return max(candidates)[1]
-
-
-def normalize_address_values(sail_csv, compare_csv, offset, isa):
-    # Sail normally runs RISC-V tests at 0x80000000, while this core currently
-    # runs the same memory image at 0x0. Normalize address-like trace values so
-    # PC-relative instructions do not fail only because of that base difference.
-    if offset == 0:
-        return 0
-
-    with open(sail_csv, newline="") as sail_fd, open(compare_csv, newline="") as utoss_fd:
-        sail_rows = list(csv.DictReader(sail_fd))
-        utoss_reader = csv.DictReader(utoss_fd)
-        utoss_rows = list(utoss_reader)
-
-    mask = (1 << 64) - 1 if isa.lower().startswith("rv64") else (1 << 32) - 1
-    width = 16 if isa.lower().startswith("rv64") else 8
-    count = 0
-
-    for utoss_row in utoss_rows:
-        for field in ("pc", "instr_addr"):
-            try:
-                utoss_value = int(utoss_row[field], 16)
-            except (KeyError, ValueError):
-                continue
-            utoss_row[field] = f"{(utoss_value + offset) & mask:0{width}x}"
-
-    sail_gprs = {}
-    for sail_row in sail_rows:
-        sail_gpr = sail_row.get("gpr", "")
-        if ":" not in sail_gpr or ";" in sail_gpr:
-            continue
-        sail_reg, sail_value_text = sail_gpr.split(":", 1)
-        try:
-            sail_gprs[(sail_row.get("pc", ""), sail_reg)] = int(sail_value_text, 16)
-        except ValueError:
-            continue
-
-    for utoss_row in utoss_rows:
-        utoss_gpr = utoss_row.get("gpr", "")
-        if ":" not in utoss_gpr or ";" in utoss_gpr:
-            continue
-        utoss_reg, utoss_value_text = utoss_gpr.split(":", 1)
-        try:
-            utoss_value = int(utoss_value_text, 16)
-        except ValueError:
-            continue
-        sail_value = sail_gprs.get((utoss_row.get("pc", ""), utoss_reg))
-        if sail_value is None:
-            continue
-        if ((sail_value - offset) & mask) == utoss_value:
-            utoss_row["gpr"] = f"{utoss_reg}:{sail_value:0{width}x}"
-            count += 1
-
-    with open(compare_csv, "w", newline="") as csv_fd:
-        writer = csv.DictWriter(csv_fd, fieldnames=utoss_reader.fieldnames)
-        writer.writeheader()
-        writer.writerows(utoss_rows)
-    return count
 
 
 def main():
@@ -107,7 +48,6 @@ def main():
     parser.add_argument("--iss", default="sail")
     parser.add_argument("--seed")
     parser.add_argument("--skip-dut", action="store_true")
-    parser.add_argument("--trace-address-offset", default="0x80000000")
     args, extra_riscv_dv_args = parser.parse_known_args()
 
     root = expand_path(args.repo_root).resolve()
@@ -193,7 +133,7 @@ def main():
         "-nostdlib",
         "-nostartfiles",
         "-I", str(riscv_dv / "user_extension"),
-        "-T", "riscof/utoss_riscv/env/link.ld",
+        "-T", "utoss_riscv_dv/env/link.ld",
         "-Wl,-e,_start",
         str(asm),
         "-o", str(elf),
@@ -201,7 +141,7 @@ def main():
     print("+ " + " ".join(str(arg) for arg in command))
     subprocess.run(command, cwd=root, check=True, env=env)
 
-    command = [objcopy, "-O", "verilog", "--verilog-data-width=4", str(elf), str(mem)]
+    command = [objcopy, "-O", "verilog", "--verilog-data-width=4", "--change-addresses=-0x80000000", str(elf), str(mem)]
     print("+ " + " ".join(str(arg) for arg in command))
     subprocess.run(command, cwd=root, check=True, env=env)
 
@@ -222,7 +162,9 @@ def main():
         return 1
 
     # Run the UTOSS Verilator simulator on the generated memory image.
-    command = ["make", "riscof_build_dut"]
+    command = ["make", "-B", "riscof_build_dut"]
+    env["UTOSS_BOOT_ADDR"] = "32\\'h8000_0000"
+
     print("+ " + " ".join(str(arg) for arg in command))
     subprocess.run(command, cwd=root, check=True, env=env)
     with utoss_log.open("w") as log:
@@ -239,8 +181,8 @@ def main():
         print(f"Log: {utoss_log}")
         return result.returncode
 
-    # Convert both logs to riscv-dv trace CSVs, normalize address-base differences,
-    # and use riscv-dv's comparator for the final pass/fail decision.
+    # Convert both logs to riscv-dv trace CSVs and use riscv-dv's comparator for
+    # the final pass/fail decision.
     compare_log.unlink(missing_ok=True)
     command = [sys.executable, str(riscv_dv / "scripts" / "sail_log_to_trace_csv.py"), "--log", str(sail_log), "--csv", str(sail_csv)]
     print("+ " + " ".join(str(arg) for arg in command))
@@ -249,12 +191,6 @@ def main():
     command = [sys.executable, str(root / "utoss_riscv_dv" / "utoss_log_to_trace_csv.py"), "--log", str(utoss_log), "--csv", str(compare_csv)]
     print("+ " + " ".join(str(arg) for arg in command))
     subprocess.run(command, cwd=root, check=True, env=env)
-    normalized = normalize_address_values(
-        sail_csv,
-        compare_csv,
-        int(args.trace_address_offset, 0),
-        args.isa,
-    )
     command = [
         sys.executable,
         str(riscv_dv / "scripts" / "instr_trace_compare.py"),
@@ -280,8 +216,6 @@ def main():
     print(f"  Trace: {'PASS' if trace_ok else 'FAIL'} ({compare_log})")
     print(f"    Sail CSV : {sail_csv}")
     print(f"    UTOSS CSV: {compare_csv}")
-    if normalized:
-        print(f"    normalized {normalized} address-offset update(s)")
 
     passed = sail_ok and utoss_ok and trace_ok
     print(f"VERDICT: {'PASS' if passed else 'FAIL'}")

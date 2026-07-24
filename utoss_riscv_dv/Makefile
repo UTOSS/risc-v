@@ -5,7 +5,6 @@ RISCV_DV_TESTLIST    ?= utoss_riscv_dv/utoss_riscv_dv_smoke.yaml
 RISCV_DV_MABI        ?= ilp32
 RISCV_DV_ISS         ?= sail
 RISCV_DV_SEED        ?=
-RISCV_DV_TRACE_ADDRESS_OFFSET ?= 0x80000000
 RISCV_DV_ARGS        ?=
 
 RISCV_DV_TARGET ?= $(shell printf '%s' '$(UTOSS_RISCV_CONFIG)' | tr '[:upper:]' '[:lower:]')
@@ -24,6 +23,5 @@ riscv_dv:
 		--isa $(RISCV_DV_ISA) \
 		--mabi $(RISCV_DV_MABI) \
 		--iss $(RISCV_DV_ISS) \
-		--trace-address-offset $(RISCV_DV_TRACE_ADDRESS_OFFSET) \
 		$(if $(RISCV_DV_SEED),--seed $(RISCV_DV_SEED)) \
 		$(RISCV_DV_ARGS)

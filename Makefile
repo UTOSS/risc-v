@@ -24,6 +24,8 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 
 UTOSS_RISCV_CONFIG ?= RV32I
 
+UTOSS_BOOT_ADDR ?= 32\'h0000_0000
+
 # Convert B extension to Zbb for RISC-V ISA spec
 RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
 
@@ -49,7 +51,7 @@ UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 # Verilator flags
 # ===========================
 
-VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 $(UTOSS_RISCV_VERILATOR_DEFINES)
+VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 $(UTOSS_RISCV_VERILATOR_DEFINES) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR)
 RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
 # Testbench-only defines
