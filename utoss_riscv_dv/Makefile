@@ -2,6 +2,7 @@ RISCV_DV_DIR         ?= $(if $(RISCV_DV_HOME),$(RISCV_DV_HOME),$(HOME)/tools/ris
 RISCV_DV_OUT         ?= utoss_riscv_dv/logs/out_utoss_smoke
 RISCV_DV_TEST        ?= utoss_rv32i_basic_smoke
 RISCV_DV_TESTLIST    ?= utoss_riscv_dv/utoss_riscv_dv_smoke.yaml
+RISCV_DV_SIMULATOR   ?= pyflow
 RISCV_DV_MABI        ?= ilp32
 RISCV_DV_ISS         ?= sail
 RISCV_DV_SEED        ?=
@@ -20,6 +21,7 @@ riscv_dv:
 		--output $(RISCV_DV_OUT) \
 		--test $(RISCV_DV_TEST) \
 		--testlist $(RISCV_DV_TESTLIST) \
+		--simulator $(RISCV_DV_SIMULATOR) \
 		--target $(RISCV_DV_TARGET) \
 		--isa $(RISCV_DV_ISA) \
 		--mabi $(RISCV_DV_MABI) \

@@ -21,15 +21,19 @@ def riscv_target_parts(name):
     return name[:4], extensions
 
 
-def choose_riscv_dv_target(config, riscv_dv):
+def choose_riscv_dv_target(config, riscv_dv, simulator="pyflow"):
     config_base, config_extensions = riscv_target_parts(config)
     candidates = []
+    if simulator == "pyflow":
+        target_dir = (riscv_dv / "pygen" / "pygen_src" / "target")
+    else:
+        target_dir = (riscv_dv / "target")
     for target in (riscv_dv / "pygen" / "pygen_src" / "target").iterdir():
         if not target.is_dir() or not target.name.lower().startswith(config_base):
             continue
         target_base, target_extensions = riscv_target_parts(target.name)
         if target_base == config_base and target_extensions <= config_extensions:
-            if target.name == "rv32imcb": # This target is currently broken
+            if target.name == "rv32imcb" and args.simulator == "pyflow": # This target is currently broken
                 continue
             candidates.append((len(target_extensions), target.name))
     return max(candidates)[1]
@@ -61,7 +65,7 @@ def main():
         print("Set RISCV_DV_HOME or pass RISCV_DV_DIR=/path/to/riscv-dv.")
         return 1
 
-    target = choose_riscv_dv_target(args.target, riscv_dv)
+    target = choose_riscv_dv_target(args.target, riscv_dv, args.simulator)
     if target != args.target:
         print(f"Target {args.target} is not available. Defaulting to riscv-dv target {target}.\n")
 

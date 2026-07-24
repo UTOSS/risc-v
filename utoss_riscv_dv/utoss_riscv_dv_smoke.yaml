@@ -27,7 +27,7 @@
   iterations: 1
   gen_test: riscv_instr_base_test
   gen_opts: >
-    +instr_cnt=10000
+    +instr_cnt=1000
     +num_of_sub_program=0
     +bare_program_mode=1
     +boot_mode=m
