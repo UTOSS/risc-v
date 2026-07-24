@@ -29,6 +29,12 @@ FETCH_RE = re.compile(
     r"\b(?:IF|ID)\s*:\s*pc=(?P<pc>[0-9a-fA-FxX]+)\s+"
     r"instr=(?P<binary>[0-9a-fA-FxX]+)\s+op=(?P<op>[a-z0-9_?]+)"
 )
+ID_RE = re.compile(
+    r"\bID\s*:\s*pc=(?P<pc>[0-9a-fA-FxX]+)\s+"
+    r"instr=(?P<binary>[0-9a-fA-FxX]+)\s+op=(?P<op>[a-z0-9_?]+)\s+"
+    r"rs1=(?P<rs1>[a-z0-9?]+)\s+rs2=(?P<rs2>[a-z0-9?]+)\s+"
+    r"rd=(?P<rd>[a-z0-9?]+)\s+imm=(?P<imm>[0-9a-fA-FxX]+)"
+)
 MEM_RE = re.compile(
     # Store parsing is kept separate so memory lines cannot be misread as writes.
     r"\bMEM:\s*(?:pc=(?P<pc>[0-9a-fA-FxX]+)\s+)?"
@@ -62,6 +68,42 @@ def add_instruction_context(entry, pc, instruction_by_pc):
     set_if_present(entry, "binary", binary)
     set_if_present(entry, "instr_bin", binary)
     set_if_present(entry, "instr_str", op)
+    set_if_present(entry, "instr", op)
+
+    operand = context.get("operand", "")
+    set_if_present(entry, "operand", operand)
+
+
+def add_instruction_context_from_line(instruction_by_pc, match):
+    pc = clean_hex(match.group("pc"))
+    if pc:
+        context = instruction_by_pc.setdefault(pc, {})
+        context["binary"] = match.group("binary")
+        context["op"] = match.group("op")
+
+
+def add_id_context(instruction_by_pc, match):
+    add_instruction_context_from_line(instruction_by_pc, match)
+    pc = clean_hex(match.group("pc"))
+    if pc:
+        context = instruction_by_pc.setdefault(pc, {})
+        context["rs1"] = match.group("rs1")
+        context["rs2"] = match.group("rs2")
+        context["rd"] = match.group("rd")
+        context["imm"] = clean_hex(match.group("imm"))
+
+        if context.get("op", "").startswith("s"):
+            context["operand"] = "{},{},{}".format(
+                context["rs2"],
+                context["rs1"],
+                context["imm"],
+            )
+
+
+def write_store_entry(trace_csv, mem_match, instruction_by_pc):
+    entry = RiscvInstructionTraceEntry()
+    add_instruction_context(entry, mem_match.group("pc") or "", instruction_by_pc)
+    trace_csv.write_trace_entry(entry)
 
 
 def process_utoss_sim_log(log, csv):
@@ -76,20 +118,21 @@ def process_utoss_sim_log(log, csv):
                 break
 
             # Cache instruction context by PC as it flows through the front end.
+            id_match = ID_RE.search(line)
+            if id_match:
+                add_id_context(instruction_by_pc, id_match)
+                continue
+
             fetch_match = FETCH_RE.search(line)
             if fetch_match:
-                pc = clean_hex(fetch_match.group("pc"))
-                if pc:
-                    instruction_by_pc[pc] = {
-                        "binary": fetch_match.group("binary"),
-                        "op": fetch_match.group("op"),
-                    }
+                add_instruction_context_from_line(instruction_by_pc, fetch_match)
                 continue
 
             mem_match = MEM_RE.search(line)
             if mem_match and "1" in mem_match.group("we"):
-                # Parsed here so store lines do not get mistaken for writeback lines.
-                # Do not emit them yet; first confirm the Sail converter emits matching store rows.
+                # Store rows do not affect riscv-dv's default GPR comparison, but
+                # keeping them in the CSV makes the memory side of the trace visible.
+                write_store_entry(trace_csv, mem_match, instruction_by_pc)
                 continue
 
             match = WB_RE.search(line)

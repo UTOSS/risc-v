@@ -1,6 +1,6 @@
 RISCV_DV_DIR         ?= $(if $(RISCV_DV_HOME),$(RISCV_DV_HOME),$(HOME)/tools/riscv-dv)
 RISCV_DV_OUT         ?= utoss_riscv_dv/logs/out_utoss_smoke
-RISCV_DV_TEST        ?= utoss_rv32i_arithmetic_smoke
+RISCV_DV_TEST        ?= utoss_rv32i_basic_smoke
 RISCV_DV_TESTLIST    ?= utoss_riscv_dv/utoss_riscv_dv_smoke.yaml
 RISCV_DV_MABI        ?= ilp32
 RISCV_DV_ISS         ?= sail
