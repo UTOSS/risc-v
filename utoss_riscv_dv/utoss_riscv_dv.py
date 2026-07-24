@@ -29,6 +29,8 @@ def choose_riscv_dv_target(config, riscv_dv):
             continue
         target_base, target_extensions = riscv_target_parts(target.name)
         if target_base == config_base and target_extensions <= config_extensions:
+            if target.name == "rv32imcb": # This target is currently broken
+                continue
             candidates.append((len(target_extensions), target.name))
     return max(candidates)[1]
 
@@ -47,6 +49,7 @@ def main():
     parser.add_argument("--mabi", default="ilp32")
     parser.add_argument("--iss", default="sail")
     parser.add_argument("--seed")
+    parser.add_argument("--gen-timeout", type=int)
     parser.add_argument("--skip-dut", action="store_true")
     args, extra_riscv_dv_args = parser.parse_known_args()
 
@@ -107,6 +110,8 @@ def main():
     ]
     if args.seed:
         run_py += ["--seed", args.seed]
+    if args.gen_timeout:
+        run_py += ["--gen_timeout", str(args.gen_timeout)]
     if args.iss == "sail":
         run_py += ["--iss_yaml", str(script_dir / "sail_iss.yaml")]
     out.mkdir(parents=True, exist_ok=True)
