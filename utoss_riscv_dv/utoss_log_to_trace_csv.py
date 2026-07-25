@@ -42,14 +42,6 @@ MEM_RE = re.compile(
     r"wdata=(?P<wdata>[0-9a-fA-FxX]+)"
 )
 
-
-def clean_hex(value):
-    # Unknown Verilog values contain x; skip them rather than producing bad CSV.
-    if not value or "x" in value.lower():
-        return ""
-    return value.lower()
-
-
 def set_if_present(entry, name, value):
     if value and hasattr(entry, name):
         setattr(entry, name, value)
@@ -58,12 +50,12 @@ def set_if_present(entry, name, value):
 def add_instruction_context(entry, pc, instruction_by_pc):
     # The comparator is more helpful when each register write has the PC and
     # instruction that produced it, not just the destination register value.
-    pc = clean_hex(pc)
     set_if_present(entry, "pc", pc)
     set_if_present(entry, "instr_addr", pc)
 
     context = instruction_by_pc.get(pc, {})
-    binary = clean_hex(context.get("binary", ""))
+    binary = context.get("binary", "")
+
     op = context.get("op", "")
     set_if_present(entry, "binary", binary)
     set_if_present(entry, "instr_bin", binary)
@@ -75,7 +67,7 @@ def add_instruction_context(entry, pc, instruction_by_pc):
 
 
 def add_instruction_context_from_line(instruction_by_pc, match):
-    pc = clean_hex(match.group("pc"))
+    pc = match.group("pc")
     if pc:
         context = instruction_by_pc.setdefault(pc, {})
         context["binary"] = match.group("binary")
@@ -84,13 +76,13 @@ def add_instruction_context_from_line(instruction_by_pc, match):
 
 def add_id_context(instruction_by_pc, match):
     add_instruction_context_from_line(instruction_by_pc, match)
-    pc = clean_hex(match.group("pc"))
+    pc = match.group("pc")
     if pc:
         context = instruction_by_pc.setdefault(pc, {})
         context["rs1"] = match.group("rs1")
         context["rs2"] = match.group("rs2")
         context["rd"] = match.group("rd")
-        context["imm"] = clean_hex(match.group("imm"))
+        context["imm"] = match.group("imm")
 
         if context.get("op", "").startswith("s"):
             context["operand"] = "{},{},{}".format(
@@ -139,7 +131,6 @@ def process_utoss_sim_log(log, csv):
             if not match:
                 continue
 
-            # Keep zero-valued writes so row order stays aligned with Sail.
             rd = match.group("rd")
             rd_num = int(match.group("rd_num"))
             value = match.group("value").lower()
