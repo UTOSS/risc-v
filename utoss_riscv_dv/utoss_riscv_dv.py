@@ -28,12 +28,12 @@ def choose_riscv_dv_target(config, riscv_dv, simulator="pyflow"):
         target_dir = (riscv_dv / "pygen" / "pygen_src" / "target")
     else:
         target_dir = (riscv_dv / "target")
-    for target in (riscv_dv / "pygen" / "pygen_src" / "target").iterdir():
+    for target in target_dir.iterdir():
         if not target.is_dir() or not target.name.lower().startswith(config_base):
             continue
         target_base, target_extensions = riscv_target_parts(target.name)
         if target_base == config_base and target_extensions <= config_extensions:
-            if target.name == "rv32imcb" and args.simulator == "pyflow": # This target is currently broken
+            if target.name == "rv32imcb" and simulator == "pyflow": # This target is currently broken
                 continue
             candidates.append((len(target_extensions), target.name))
     return max(candidates)[1]
