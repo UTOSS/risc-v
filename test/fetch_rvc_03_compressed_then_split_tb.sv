@@ -6,6 +6,7 @@
 `include "src/interfaces/if_to_id_if.svh"
 `include "src/interfaces/ex_to_if_if.svh"
 
+
 module fetch_rvc_03_compressed_then_split_tb;
 
   reg clk;
