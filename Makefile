@@ -25,7 +25,11 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 UTOSS_RISCV_CONFIG ?= RV32I
 
 # Convert B extension to Zbb for RISC-V ISA spec
-RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
+RISCOF_ISA_STRING := $(subst B,,$(UTOSS_RISCV_CONFIG))
+
+ifneq ($(findstring B,$(UTOSS_RISCV_CONFIG)),)
+RISCOF_ISA_STRING := $(RISCOF_ISA_STRING)Zbb
+endif
 
 # Generate misa value
 MISA_VALUE = 0x40000100
@@ -42,7 +46,7 @@ ifneq ($(findstring A,$(UTOSS_RISCV_CONFIG)),)
 MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1 )))
 endif
 
-UTOSS_RISCV_VERILATOR_DEFINES := $(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT)
+UTOSS_RISCV_VERILATOR_DEFINES := $(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) $(if $(findstring C,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_C_EXT)
 UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 
 # ===========================
@@ -124,7 +128,7 @@ run_tb: build_tb
 
 # Pattern rule for building individual testbenches
 $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
-	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
+	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) $(if $(findstring fetch_rvc_,$*),-DUTOSS_RISCV_ENABLE_C_EXT) \
 		--top-module $(basename $(notdir $<)) \
 		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
 		-o $(basename $(notdir $@)) \

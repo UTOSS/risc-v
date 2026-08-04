@@ -3,19 +3,34 @@
 `include "src/headers/types.svh"
 `include "src/interfaces/if_to_id_if.svh"
 `include "src/interfaces/ex_to_if_if.svh"
-
 module fetch_stage
   ( output if_to_id_t if_to_id
   , input ex_to_if_t  ex_to_if
-
   , input wire clk
   , input wire reset
   , input wire stall_f
   , input wire flush_f
-
-  , output addr_t imem__address
-  , input data_t imem__data
+//use these to test
+  , output addr_t imem__address //output to instruction memory
+  , input data_t imem__data //get input instruction/data from instruction memory at the address specified by imem__address
 );
+
+
+
+`ifdef UTOSS_RISCV_ENABLE_C_EXT
+  //do only if C extension is enabled
+fetch_compressed fetch_compressed_i
+  ( .if_to_id(if_to_id)
+  , .ex_to_if(ex_to_if)
+  , .clk(clk)
+  , .reset(reset)
+  , .stall_f(stall_f)
+  , .flush_f(flush_f)
+  , .imem__address(imem__address)
+  , .imem__data(imem__data)
+  );
+
+`else
   // The use of distinct registers for prev, cur and next PC requires some explanation. Below is the
   // timing diagram of the instruction retireval and subsequenct passing of the relevant data to
   // decode stage. Importantly, notice the one clock-cycle lag between PC placed on the `imem
@@ -38,33 +53,27 @@ module fetch_stage
   // if->id.pc_cur :                   | < prev PC    > | < cur PC    > | < next PC    >
   // if->id.instr  :                   | < prev instr > | < cur instr > | < next instr >
   //                                   +----------------+
-
   addr_t pc_prev;
   addr_t pc_cur;
   addr_t pc_next;
+    // RVC/C-extension fetch helpers.
 
   always_comb
     case (ex_to_if.pc_src)
-      PC_SRC__INCREMENT:  pc_next = pc_cur + 32'h4;
+    //  PC_SRC__INCREMENT:  pc_next = pc_cur + 32'h4;
+      PC_SRC__INCREMENT: pc_next = pc_cur + 32'h4;
       PC_SRC__ALU_RESULT: pc_next = ex_to_if.pc_target;
       default:            pc_next = 32'hx;
     endcase
-
-  always_ff @ (posedge clk)
-    if (!stall_f) pc_cur <= reset ? 0 : pc_next;
-
-  always_ff @ (posedge clk)
-    if (!stall_f) pc_prev <= reset ? 0 : pc_cur;
-
   // With synchronous instruction memory, one in-flight instruction can arrive after stall_f rises.
   // Keep a one-entry skid copy so decode can consume it once the stall is released;
   //
   // NOTE: this takes up extra space, we could have just used the existing space in the IF->ID
   // register, but that would require breaking the combinational protocol of the stage logic;
   // revisit if space becomes a problem
+
   instr_t stalled_instr;
   logic stalled_instr_valid;
-
   always_ff @ (posedge clk)
     if (reset)
       {stalled_instr, stalled_instr_valid} <= {instr_t'(0)  , 1'b0};
@@ -75,12 +84,22 @@ module fetch_stage
     else if (!stall_f && stalled_instr_valid)
       {stalled_instr, stalled_instr_valid} <= {stalled_instr, 1'b0};
 
-  assign imem__address = pc_cur;
+assign imem__address = pc_cur;
+
+
+  always_ff @ (posedge clk)
+    if (!stall_f) pc_cur <= reset ? 0 : pc_next;
+
+  always_ff @ (posedge clk)
+    if (!stall_f) pc_prev <= reset ? 0 : pc_cur;
+
 
   assign if_to_id.instruction = stalled_instr_valid ? stalled_instr : imem__data;
   assign if_to_id.pc_cur      = pc_prev;
-  assign if_to_id.pc_plus_4   = pc_prev + 32'h4; // TODO: revisit
-
-  // TODO: probably can just get rid of those altogether
+  assign if_to_id.pc_plus_4   = pc_prev + 32'h4;
   wire unused = &{ex_to_if.pc_old, ex_to_if.imm_ext};
+
+`endif
+
+
 endmodule

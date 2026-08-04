@@ -92,6 +92,8 @@ jobs:
         config:
           - RV32I
           - RV32IB
+          - RV32IC
+          - RV32IBC
 
     steps:
       - name: Checkout code
