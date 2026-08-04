@@ -5,7 +5,7 @@ hart0:
   User_Spec_Version: '2.3'
   supported_xlen: [32]
   misa:
-   reset-val: 0x40000100
+   reset-val: M4__MISA_VALUE
    rv32:
      accessible: true
      mxl:
