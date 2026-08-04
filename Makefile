@@ -31,6 +31,21 @@ ifneq ($(findstring B,$(UTOSS_RISCV_CONFIG)),)
 RISCOF_ISA_STRING := $(RISCOF_ISA_STRING)Zbb
 endif
 
+# Generate misa value
+MISA_VALUE = 0x40000100
+
+ifneq ($(findstring C,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x4 )))
+endif
+
+ifneq ($(findstring M,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1000 )))
+endif
+
+ifneq ($(findstring A,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1 )))
+endif
+
 UTOSS_RISCV_VERILATOR_DEFINES := $(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) $(if $(findstring C,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_C_EXT)
 UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 
@@ -145,7 +160,10 @@ $(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
 	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
 
 $(RISCOF_UTOSS_RISCV_ISA_CONFIG): $(RISCOF_UTOSS_RISCV_ISA_CONFIG_TEMPLATE) FORCE
-	m4 -D M4__ISA_STRING="$(RISCOF_ISA_STRING)" $< > $@
+	m4 \
+-D M4__ISA_STRING="$(RISCOF_ISA_STRING)" \
+-D M4__MISA_VALUE="$(MISA_VALUE)" \
+$< > $@
 
 riscof_build_dut: $(RISCOF_DUT_BIN)
 
