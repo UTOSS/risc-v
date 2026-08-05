@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '23 6 * * *' # Run nightly at 01:23 EST (06:23 UTC)
 
 
 permissions:
@@ -16,6 +18,7 @@ jobs:
     # do this during a push to a branch (e.g. to main) or on a non-fork PR
     if: >
       github.event_name == 'push' ||
+      github.event_name == 'schedule' ||
       github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
