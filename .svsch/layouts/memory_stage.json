@@ -1,0 +1,209 @@
+{
+  "nodes": {
+    "bus:memory_stage:mem_address": {
+      "x": 1248,
+      "y": 168,
+      "fixed": true
+    },
+    "comb:memory_stage:transfersize:expr": {
+      "x": 816,
+      "y": 216,
+      "fixed": true
+    },
+    "struct:memory_stage:ex_to_mem": {
+      "x": 456,
+      "y": 312,
+      "fixed": true
+    },
+    "struct_comp:memory_stage:mem_to_wb": {
+      "x": 840,
+      "y": 312,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_if_true_n74:4_b0": {
+      "x": 2472,
+      "y": 252,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_BYTE_2_d0:4_b0001": {
+      "x": 1704,
+      "y": 372,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_BYTE_2_d1:4_b0010": {
+      "x": 1704,
+      "y": 420,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_BYTE_2_d2:4_b0100": {
+      "x": 1704,
+      "y": 516,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_BYTE_2_d3:4_b1000": {
+      "x": 1704,
+      "y": 564,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_HALF_2_d0:4_b0011": {
+      "x": 1704,
+      "y": 612,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_HALF_2_d2:4_b1100": {
+      "x": 1704,
+      "y": 660,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_WORD_2_d0:4_b1111": {
+      "x": 1704,
+      "y": 708,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_enable_default:4_bxxxx": {
+      "x": 1704,
+      "y": 756,
+      "fixed": true
+    },
+    "bus:memory_stage:mem_write_enable_sel:expr": {
+      "x": 1656,
+      "y": 240,
+      "fixed": true
+    },
+    "mux:memory_stage:mem_write_enable:mem_write_enable_sel:mem_write_enable_if_false_n74": {
+      "x": 2040,
+      "y": 456,
+      "fixed": true
+    },
+    "comb:memory_stage:if_sel_n75:expr": {
+      "x": 2376,
+      "y": 144,
+      "fixed": true
+    },
+    "mux:memory_stage:mem_write_enable:if_sel_n75:mem_write_enable": {
+      "x": 2784,
+      "y": 240,
+      "fixed": true
+    },
+    "replicate:memory_stage:mem_write_data_BYTE:x4": {
+      "x": 912,
+      "y": 672,
+      "fixed": true
+    },
+    "replicate:memory_stage:mem_write_data_HALF:x2": {
+      "x": 912,
+      "y": 744,
+      "fixed": true
+    },
+    "literal:memory_stage:mem_write_data_default:32_hxxxxxxxx": {
+      "x": 840,
+      "y": 828,
+      "fixed": true
+    },
+    "mux:memory_stage:mem_write_data:transfersize:mem_write_data": {
+      "x": 1224,
+      "y": 696,
+      "fixed": true
+    },
+    "port:memory_stage:ex_to_mem": {
+      "x": 24,
+      "y": 324,
+      "fixed": true
+    },
+    "port:memory_stage:mem_write_data": {
+      "x": 1632,
+      "y": 756,
+      "fixed": true
+    },
+    "port:memory_stage:mem_write_enable": {
+      "x": 3168,
+      "y": 276,
+      "fixed": true
+    },
+    "port:memory_stage:mem_address": {
+      "x": 1392,
+      "y": -132,
+      "fixed": true
+    },
+    "port:memory_stage:mem_to_wb": {
+      "x": 1224,
+      "y": 324,
+      "fixed": true
+    },
+    "bus:memory_stage:funct3": {
+      "x": 48,
+      "y": 24,
+      "fixed": true
+    }
+  },
+  "edges": {
+    "edge:struct:memory_stage:ex_to_mem:port:memory_stage:mem_address:ex_to_mem.alu_result": {
+      "routePoints": [
+        {
+          "x": 648,
+          "y": 336
+        },
+        {
+          "x": 744,
+          "y": 336
+        },
+        {
+          "x": 744,
+          "y": -120
+        },
+        {
+          "x": 1368,
+          "y": -120
+        }
+      ]
+    },
+    "edge:struct:memory_stage:ex_to_mem:bus:memory_stage:mem_address:mem_address": {
+      "routePoints": [
+        {
+          "x": 648,
+          "y": 336
+        },
+        {
+          "x": 744,
+          "y": 336
+        },
+        {
+          "x": 744,
+          "y": 192
+        },
+        {
+          "x": 1224,
+          "y": 192
+        }
+      ]
+    },
+    "edge:struct:memory_stage:ex_to_mem:struct_comp:memory_stage:mem_to_wb:ex_to_mem.alu_result": {
+      "routePoints": [
+        {
+          "x": 648,
+          "y": 336
+        },
+        {
+          "x": 744,
+          "y": 336
+        },
+        {
+          "x": 744,
+          "y": 72
+        },
+        {
+          "x": 744,
+          "y": 72
+        },
+        {
+          "x": 744,
+          "y": 480
+        },
+        {
+          "x": 816,
+          "y": 480
+        }
+      ]
+    }
+  }
+}

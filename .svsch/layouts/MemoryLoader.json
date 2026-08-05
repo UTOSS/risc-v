@@ -1,0 +1,139 @@
+{
+  "nodes": {
+    "bus:MemoryLoader:memory_address": {
+      "x": 1824,
+      "y": 2592,
+      "fixed": true
+    },
+    "bus:MemoryLoader:funct3": {
+      "x": 384,
+      "y": -288,
+      "fixed": true
+    },
+    "inverter:MemoryLoader:signed_mode:expr": {
+      "x": 744,
+      "y": -168,
+      "fixed": true
+    },
+    "comb:MemoryLoader:mem_load_result_2_d0_concat_in0_rep_in0:expr": {
+      "x": 1008,
+      "y": 48,
+      "fixed": true
+    },
+    "replicate:MemoryLoader:mem_load_result_2_d0_concat_in0:x24": {
+      "x": 1488,
+      "y": 48,
+      "fixed": true
+    },
+    "bus:MemoryLoader:memory_data": {
+      "x": 1440,
+      "y": 120,
+      "fixed": true
+    },
+    "bus:MemoryLoader:mem_load_result_2_d0:expr": {
+      "x": 1824,
+      "y": 2472,
+      "fixed": true
+    },
+    "comb:MemoryLoader:mem_load_result_2_d1_concat_in0_rep_in0:expr": {
+      "x": 1008,
+      "y": -192,
+      "fixed": true
+    },
+    "replicate:MemoryLoader:mem_load_result_2_d1_concat_in0:x24": {
+      "x": 1488,
+      "y": -168,
+      "fixed": true
+    },
+    "bus:MemoryLoader:mem_load_result_2_d1:expr": {
+      "x": 1824,
+      "y": -168,
+      "fixed": true
+    },
+    "comb:MemoryLoader:mem_load_result_2_d2_concat_in0_rep_in0:expr": {
+      "x": 1008,
+      "y": 456,
+      "fixed": true
+    },
+    "replicate:MemoryLoader:mem_load_result_2_d2_concat_in0:x24": {
+      "x": 1488,
+      "y": 480,
+      "fixed": true
+    },
+    "bus:MemoryLoader:mem_load_result_2_d2:expr": {
+      "x": 1824,
+      "y": 2832,
+      "fixed": true
+    },
+    "comb:MemoryLoader:mem_load_result_2_d3_concat_in0_rep_in0:expr": {
+      "x": 1008,
+      "y": -72,
+      "fixed": true
+    },
+    "replicate:MemoryLoader:mem_load_result_2_d3_concat_in0:x24": {
+      "x": 1488,
+      "y": -96,
+      "fixed": true
+    },
+    "bus:MemoryLoader:mem_load_result_2_d3:expr": {
+      "x": 1824,
+      "y": 72,
+      "fixed": true
+    },
+    "literal:MemoryLoader:mem_load_result_default:32_hxxxxxxxx": {
+      "x": 1800,
+      "y": 2964,
+      "fixed": true
+    },
+    "mux:MemoryLoader:mem_load_result:byteindex:mem_load_result_BYTE": {
+      "x": 2184,
+      "y": 120,
+      "fixed": true
+    },
+    "replicate:MemoryLoader:mem_load_result_2_d0_concat_in0:x16": {
+      "x": 1488,
+      "y": -24,
+      "fixed": true
+    },
+    "replicate:MemoryLoader:mem_load_result_2_d2_concat_in0:x16": {
+      "x": 1488,
+      "y": 552,
+      "fixed": true
+    },
+    "mux:MemoryLoader:mem_load_result:byteindex:mem_load_result_HALF": {
+      "x": 2184,
+      "y": 360,
+      "fixed": true
+    },
+    "mux:MemoryLoader:mem_load_result:byteindex:mem_load_result_WORD": {
+      "x": 2184,
+      "y": 552,
+      "fixed": true
+    },
+    "mux:MemoryLoader:mem_load_result:funct3_1:0_:mem_load_result": {
+      "x": 2592,
+      "y": 504,
+      "fixed": true
+    },
+    "port:MemoryLoader:memory_data": {
+      "x": 1008,
+      "y": 396,
+      "fixed": true
+    },
+    "port:MemoryLoader:memory_address": {
+      "x": 1392,
+      "y": 2604,
+      "fixed": true
+    },
+    "port:MemoryLoader:funct3": {
+      "x": 24,
+      "y": -276,
+      "fixed": true
+    },
+    "port:MemoryLoader:mem_load_result": {
+      "x": 3000,
+      "y": 564,
+      "fixed": true
+    }
+  }
+}
