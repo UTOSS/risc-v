@@ -9,6 +9,7 @@
 
 // pipelined implementation of our core
 module utoss_riscv
+  #( parameter addr_t BOOT_ADDR = addr_t'(0) )
   ( input wire       clk
   , input wire       reset
   , mem_bus.consumer i_bus
@@ -37,7 +38,9 @@ module utoss_riscv
 
   // fetch stage start (@thatlittlegit)
 
-  fetch_stage u_fetch_stage
+  fetch_stage
+    #( .BOOT_ADDR ( BOOT_ADDR ) )
+    u_fetch_stage
     ( .if_to_id ( if_to_id_out )
     , .ex_to_if ( ex_to_if_out )
 

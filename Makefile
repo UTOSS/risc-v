@@ -24,6 +24,8 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 
 UTOSS_RISCV_CONFIG ?= RV32I
 
+UTOSS_BOOT_ADDR ?= 32\'h0000_0000
+
 # Convert B extension to Zbb for RISC-V ISA spec
 RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
 
@@ -50,7 +52,8 @@ UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 # ===========================
 
 VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 $(UTOSS_RISCV_VERILATOR_DEFINES)
-RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
+TOP_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR)
+RISCOF_VERILATOR_FLAGS := $(TOP_VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
 # Testbench-only defines
 TB_DEFINES := -DTESTBENCH
@@ -91,7 +94,7 @@ run_top: $(OUT_DIR)/top_sim
 
 $(OUT_DIR)/top_sim: $(SRCS)
 	@mkdir -p $(BUILD_DIR)/top
-	$(VERILATOR) $(VERILATOR_FLAGS) \
+	$(VERILATOR) $(TOP_VERILATOR_FLAGS) \
 		--top-module top \
 		--Mdir $(BUILD_DIR)/top \
 		-o top_sim \
@@ -181,6 +184,8 @@ riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 		--suite=riscv-arch-test/riscv-test-suite/ \
 		--env=riscv-arch-test/riscv-test-suite/env
 
+include utoss_riscv_dv/Makefile
+
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
 GITHUB_ORG_NAME=utoss
@@ -207,4 +212,5 @@ svlint_tb:
 .PHONY: all build_top run_top build_tb run_tb new_tb \
         svlint svlint_tb \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
-        riscof_generate_testlist riscof_run FORCE
+        riscof_generate_testlist riscof_run \
+        riscv_dv FORCE

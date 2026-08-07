@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '23 6 * * *' # Run nightly at 01:23 EST (06:23 UTC)
 
 
 permissions:
@@ -16,6 +18,7 @@ jobs:
     # do this during a push to a branch (e.g. to main) or on a non-fork PR
     if: >
       github.event_name == 'push' ||
+      github.event_name == 'schedule' ||
       github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/docker-image.yml
     with:
@@ -160,6 +163,35 @@ jobs:
           path: |
             riscof/riscof_work/report.html
             riscof/riscof_work/style.css
+          retention-days: 7
+
+  riscv_dv:
+    timeout-minutes: 30
+    needs: select_ci_image
+    # dont skip if build_ci_image is skipped
+    if: always()
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run riscv-dv
+        env:
+          RISCV_DV_DIR: /opt/riscv-dv
+        run: make riscv_dv UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      - name: Upload riscv-dv logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: riscv-dv-logs-${{ matrix.config }}
+          path: utoss_riscv_dv/logs/**
           retention-days: 7
 
   de1-soc:
