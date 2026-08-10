@@ -13,10 +13,10 @@ module aes_mixcolumns (
         reg [7:0] r0,r1,r2,r3;
         begin
             // c packs bytes little-endian: [7:0]=b0, [15:8]=b1, ...
-            a0 = c[7:0];
-            a1 = c[15:8];
-            a2 = c[23:16];
-            a3 = c[31:24];
+            a0 = c[31:24];
+            a1 = c[23:16];
+            a2 = c[15:8];
+            a3 = c[7:0];
 
             // AES MixColumns matrix:
             // [2 3 1 1] [a0]
@@ -28,17 +28,17 @@ module aes_mixcolumns (
             r2 = a0 ^ a1 ^ xtime(a2) ^ (xtime(a3) ^ a3);
             r3 = (xtime(a0) ^ a0) ^ a1 ^ a2 ^ xtime(a3);
 
-            mix_single_column = {r3, r2, r1, r0};
+            mix_single_column = {r0, r1, r2, r3};
         end
     endfunction
 
-    wire [31:0] c0 = in_state[31:0];
-    wire [31:0] c1 = in_state[63:32];
-    wire [31:0] c2 = in_state[95:64];
-    wire [31:0] c3 = in_state[127:96];
+    wire [31:0] c0 = in_state[127:96];
+    wire [31:0] c1 = in_state[95:64];
+    wire [31:0] c2 = in_state[63:32];
+    wire [31:0] c3 = in_state[31:0];
 
-    assign out_state[31:0]   = mix_single_column(c0);
-    assign out_state[63:32]  = mix_single_column(c1);
-    assign out_state[95:64]  = mix_single_column(c2);
-    assign out_state[127:96] = mix_single_column(c3);
+    assign out_state[127:96]   = mix_single_column(c0);
+    assign out_state[95:64]  = mix_single_column(c1);
+    assign out_state[63:32]  = mix_single_column(c2);
+    assign out_state[31:0] = mix_single_column(c3);
 endmodule

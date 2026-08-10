@@ -3,10 +3,10 @@ module aes_key_schedule(
     input  wire [3:0]   round,  
     output wire [127:0] key_out
 );
-    wire [31:0] W0 = key_in[31:0];
-    wire [31:0] W1 = key_in[63:32];
-    wire [31:0] W2 = key_in[95:64];
-    wire [31:0] W3 = key_in[127:96];
+    wire [31:0] W0 = key_in[127:96];
+    wire [31:0] W1 = key_in[95:64];
+    wire [31:0] W2 = key_in[63:32];
+    wire [31:0] W3 = key_in[31:0];
 
     // RotWord: rotate left by 1 byte: [b3 b2 b1 b0] as bytes -> [b2 b1 b0 b3]
     wire [31:0] rot = {W3[23:0], W3[31:24]};
@@ -37,12 +37,12 @@ module aes_key_schedule(
         endcase
     end
 
-    wire [31:0] temp = sub ^ {24'h0, rcon};
+    wire [31:0] temp = sub ^ {rcon, 24'h0};
 
     wire [31:0] W0n = W0 ^ temp;
     wire [31:0] W1n = W1 ^ W0n;
     wire [31:0] W2n = W2 ^ W1n;
     wire [31:0] W3n = W3 ^ W2n;
 
-    assign key_out = {W3n, W2n, W1n, W0n};
+    assign key_out = {W0n, W1n, W2n, W3n};
 endmodule
