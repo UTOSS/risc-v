@@ -1,6 +1,6 @@
 module aes_mixcolumns (
-    input  wire [127:0] in_state, 
-    output wire [127:0] out_state
+input  wire [127:0] in_state
+, output wire [127:0] out_state
 );
     function automatic [7:0] xtime(input [7:0] a);
         begin

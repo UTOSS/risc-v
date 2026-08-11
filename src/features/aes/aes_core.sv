@@ -1,25 +1,25 @@
 module aes_core (
-    input  logic         clk, 
-    input  logic         rst_n, 
-    // Command
-    input  logic         start, 
-    // AES-128 input
-    input  logic [127:0] plaintext, 
-    input  logic [127:0] key, 
-    // AES-128 output
-    output logic [127:0] ciphertext, 
-    // Status
-    output logic         busy, 
-    output logic         done
+  input  logic         clk
+, input  logic         rst_n
+// Command
+, input  logic         start
+// AES-128 input
+, input  logic [127:0] plaintext
+, input  logic [127:0] key
+// AES-128 output
+, output logic [127:0] ciphertext
+// Status
+, output logic         busy
+, output logic         done
 );
 
     // FSM states
     typedef enum logic [2:0] {
-        S_IDLE, 
-        S_INIT, 
-        S_ROUND, 
-        S_FINAL, 
-        S_DONE
+      S_IDLE
+    , S_INIT
+    , S_ROUND
+    , S_FINAL
+    , S_DONE
     } aes_state_t;
 
     aes_state_t fsm_state;
@@ -45,9 +45,9 @@ module aes_core (
     assign final_round = (fsm_state == S_FINAL);
 
     aes_key_schedule u_aes_key_schedule (
-        .key_in  (round_key_reg), 
-        .round   (round), 
-        .key_out (round_key_next)
+        .key_in  (round_key_reg)
+      , .round   (round)
+      , .key_out (round_key_next)
     );
 
 
@@ -55,147 +55,184 @@ module aes_core (
     // use round_key_next
 
     aes_round u_aes_round (
-        .state_in    (state_reg), 
-        .round_key   (round_key_next), 
-        .final_round (final_round), 
-        .state_out   (state_next)
+    .state_in    (state_reg)
+    , .round_key   (round_key_next)
+    , .final_round (final_round)
+    , .state_out   (state_next)
     );
 
-    // AES controller FSM
-    always_ff @(posedge clk or negedge rst_n) begin
+// AES controller FSM
+// split into separate always_ff blocks for svlint
+// FSM state
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        fsm_state <= S_IDLE;
+    else
+        case (fsm_state)
 
-        if (!rst_n) begin
+            S_IDLE:
+                if (start)
+                    fsm_state <= S_INIT;
 
-            fsm_state <= S_IDLE;
+            S_INIT:
+                fsm_state <= S_ROUND;
 
-            plaintext_reg <= 128'b0;
-            key_reg       <= 128'b0;
+            S_ROUND:
+                if (round == 4'd9)
+                    fsm_state <= S_FINAL;
 
-            state_reg     <= 128'b0;
-            round_key_reg <= 128'b0;
+            S_FINAL:
+                fsm_state <= S_DONE;
 
-            ciphertext <= 128'b0;
+            S_DONE:
+                if (start)
+                    fsm_state <= S_INIT;
 
-            round <= 4'b0;
+            default:
+                fsm_state <= S_IDLE;
 
-            busy <= 1'b0;
-            done <= 1'b0;
+        endcase
 
-        end else begin
 
-            case (fsm_state)
+// Input reg
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        plaintext_reg <= 128'b0;
+    else if ((fsm_state == S_IDLE || fsm_state == S_DONE) && start)
+        plaintext_reg <= plaintext;
 
-                S_IDLE: begin
 
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        key_reg <= 128'b0;
+    else if ((fsm_state == S_IDLE || fsm_state == S_DONE) && start)
+        key_reg <= key;
+
+
+
+// AES state reg
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        state_reg <= 128'b0;
+    else
+        case (fsm_state)
+
+            S_INIT:
+                state_reg <= plaintext_reg ^ key_reg;
+
+            S_ROUND:
+                state_reg <= state_next;
+
+            S_FINAL:
+                state_reg <= state_next;
+
+            default:
+                state_reg <= state_reg;
+
+        endcase
+
+
+
+// Round key reg
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        round_key_reg <= 128'b0;
+    else
+        case (fsm_state)
+
+            S_INIT:
+                round_key_reg <= key_reg;
+
+            S_ROUND:
+                round_key_reg <= round_key_next;
+
+            S_FINAL:
+                round_key_reg <= round_key_next;
+
+            default:
+                round_key_reg <= round_key_reg;
+
+        endcase
+
+
+// Round counter
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        round <= 4'b0;
+    else
+        case (fsm_state)
+
+            S_INIT:
+                round <= 4'd1;
+
+            S_ROUND:
+                if (round == 4'd9)
+                    round <= 4'd10;
+                else
+                    round <= round + 1'b1;
+
+            default:
+                round <= round;
+
+        endcase
+
+// Ciphertext reg
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        ciphertext <= 128'b0;
+    else if (fsm_state == S_FINAL)
+        ciphertext <= state_next;
+
+// Busy
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        busy <= 1'b0;
+    else
+        case (fsm_state)
+
+            S_IDLE:
+                if (start)
+                    busy <= 1'b1;
+                else
                     busy <= 1'b0;
+
+            S_FINAL:
+                busy <= 1'b0;
+
+            S_DONE:
+                if (start)
+                    busy <= 1'b1;
+                else
+                    busy <= 1'b0;
+
+            default:
+                busy <= busy;
+
+        endcase
+
+
+// Done
+always_ff @(posedge clk, negedge rst_n)
+    if (!rst_n)
+        done <= 1'b0;
+    else
+        case (fsm_state)
+
+            S_IDLE:
+                done <= 1'b0;
+
+            S_FINAL:
+                done <= 1'b1;
+
+            S_DONE:
+                if (start)
                     done <= 1'b0;
-
-                    if (start) begin
-                        // Preserve input values.
-                        plaintext_reg <= plaintext;
-                        key_reg       <= key;
-
-                        busy <= 1'b1;
-
-                        fsm_state <= S_INIT;
-
-                    end
-
-                end
-
-
-
-                // INIT
-                // AES initial AddRoundKey:
-                // K0 is the original AES key.
-
-                S_INIT: begin
-
-                    state_reg     <= plaintext_reg ^ key_reg;
-                    round_key_reg <= key_reg;
-
-                    // Next operation will be AES round 1
-                    round <= 4'd1;
-
-                    fsm_state <= S_ROUND;
-
-                end
-
-
-                // ROUND
-                // Perform AES rounds 1 through 9
-                S_ROUND: begin
-
-                    state_reg     <= state_next;
-                    round_key_reg <= round_key_next;
-
-                    if (round == 4'd9) begin
-
-                        round <= 4'd10;
-
-                        fsm_state <= S_FINAL;
-
-                    end else begin
-
-                        round <= round + 1'b1;
-
-                    end
-
-                end
-
-                // FINAL
-                // Perform AES round 10
-                S_FINAL: begin
-
-                    state_reg     <= state_next;
-                    round_key_reg <= round_key_next;
-
-                    // Capture final ciphertext
-                    ciphertext <= state_next;
-
-                    busy <= 1'b0;
+                else
                     done <= 1'b1;
 
-                    fsm_state <= S_DONE;
+            default:
+                done <= done;
 
-                end
-
-                // DONE
-                // Keep ciphertext and done valid until another AES operation is requested
-
-                S_DONE: begin
-
-                    busy <= 1'b0;
-                    done <= 1'b1;
-
-                    if (start) begin
-
-                        // Capture the next operation's inputs
-                        plaintext_reg <= plaintext;
-                        key_reg       <= key;
-
-                        done <= 1'b0;
-                        busy <= 1'b1;
-
-                        fsm_state <= S_INIT;
-
-                    end
-
-                end
-
-                default: begin
-
-                    fsm_state <= S_IDLE;
-
-                    busy <= 1'b0;
-                    done <= 1'b0;
-
-                end
-
-            endcase
-
-        end
-
-    end
+        endcase
 
 endmodule

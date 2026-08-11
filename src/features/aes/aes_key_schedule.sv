@@ -1,7 +1,7 @@
 module aes_key_schedule(
-    input  wire [127:0] key_in, 
-    input  wire [3:0]   round, 
-    output wire [127:0] key_out
+input  wire [127:0] key_in
+, input  wire [3:0]   round
+, output wire [127:0] key_out
 );
     wire [31:0] W0 = key_in[127:96];
     wire [31:0] W1 = key_in[95:64];
@@ -13,8 +13,8 @@ module aes_key_schedule(
 
     // SubWord: apply S-box to each byte of rot
     wire [7:0] sw0, sw1, sw2, sw3;
-    aes_sbox s0(.byte_in(rot[7:0]),   .byte_out(sw0));
-    aes_sbox s1(.byte_in(rot[15:8]),  .byte_out(sw1));
+    aes_sbox s0(.byte_in(rot[7:0]), .byte_out(sw0));
+    aes_sbox s1(.byte_in(rot[15:8]), .byte_out(sw1));
     aes_sbox s2(.byte_in(rot[23:16]), .byte_out(sw2));
     aes_sbox s3(.byte_in(rot[31:24]), .byte_out(sw3));
     wire [31:0] sub = {sw3, sw2, sw1, sw0};
