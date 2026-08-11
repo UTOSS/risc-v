@@ -1,5 +1,5 @@
 module aes_sbox(
-    input  wire [7:0] byte_in,
+    input  wire [7:0] byte_in, 
     output reg  [7:0] byte_out
 );
 

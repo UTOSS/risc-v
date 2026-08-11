@@ -1,5 +1,5 @@
 module aes_mixcolumns (
-    input  wire [127:0] in_state,
+    input  wire [127:0] in_state, 
     output wire [127:0] out_state
 );
     function automatic [7:0] xtime(input [7:0] a);
@@ -9,8 +9,8 @@ module aes_mixcolumns (
     endfunction
 
     function automatic [31:0] mix_single_column(input [31:0] c);
-        reg [7:0] a0,a1,a2,a3;
-        reg [7:0] r0,r1,r2,r3;
+        reg [7:0] a0, a1, a2, a3;
+        reg [7:0] r0, r1, r2, r3;
         begin
             // c packs bytes little-endian: [7:0]=b0, [15:8]=b1, ...
             a0 = c[31:24];

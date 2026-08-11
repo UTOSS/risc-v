@@ -1,24 +1,24 @@
 module aes_core (
-    input  logic         clk,
-    input  logic         rst_n,
+    input  logic         clk, 
+    input  logic         rst_n, 
     // Command
-    input  logic         start,
+    input  logic         start, 
     // AES-128 input
-    input  logic [127:0] plaintext,
-    input  logic [127:0] key,
+    input  logic [127:0] plaintext, 
+    input  logic [127:0] key, 
     // AES-128 output
-    output logic [127:0] ciphertext,
+    output logic [127:0] ciphertext, 
     // Status
-    output logic         busy,
+    output logic         busy, 
     output logic         done
 );
 
     // FSM states
     typedef enum logic [2:0] {
-        S_IDLE,
-        S_INIT,
-        S_ROUND,
-        S_FINAL,
+        S_IDLE, 
+        S_INIT, 
+        S_ROUND, 
+        S_FINAL, 
         S_DONE
     } aes_state_t;
 
@@ -45,8 +45,8 @@ module aes_core (
     assign final_round = (fsm_state == S_FINAL);
 
     aes_key_schedule u_aes_key_schedule (
-        .key_in  (round_key_reg),
-        .round   (round),
+        .key_in  (round_key_reg), 
+        .round   (round), 
         .key_out (round_key_next)
     );
 
@@ -55,9 +55,9 @@ module aes_core (
     // use round_key_next
 
     aes_round u_aes_round (
-        .state_in    (state_reg),
-        .round_key   (round_key_next),
-        .final_round (final_round),
+        .state_in    (state_reg), 
+        .round_key   (round_key_next), 
+        .final_round (final_round), 
         .state_out   (state_next)
     );
 

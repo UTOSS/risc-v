@@ -1,6 +1,6 @@
 module aes_key_schedule(
-    input  wire [127:0] key_in,
-    input  wire [3:0]   round,  
+    input  wire [127:0] key_in, 
+    input  wire [3:0]   round, 
     output wire [127:0] key_out
 );
     wire [31:0] W0 = key_in[127:96];
