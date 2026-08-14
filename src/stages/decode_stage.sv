@@ -30,6 +30,14 @@ module decode_stage
   alu_src_b_t      cfsm__alu_src_b;
 
   alu_control_t    alu_control;
+  logic            is_mul;
+  logic            is_div;
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  ext__m__types::m_mul_control_t mul_control;
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  ext__m__types::m_div_control_t div_control;
+`endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control; //NEW
 `endif
@@ -71,6 +79,14 @@ module decode_stage
     , .rd              ( rd               )
     , .rs1             ( rs1              )
     , .rs2             ( rs2              )
+    , .is_mul          ( is_mul           )
+    , .is_div          ( is_div           )
+`ifdef UTOSS_RISCV__MUL_ENABLED
+    , .mul_control     ( mul_control      )
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    , .div_control     ( div_control      )
+`endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
 `endif
@@ -121,6 +137,14 @@ module decode_stage
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
+  assign id_to_ex.is_mul         = is_mul;
+  assign id_to_ex.is_div         = is_div;
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  assign id_to_ex.mul_control    = mul_control;
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  assign id_to_ex.div_control    = div_control;
+`endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   assign id_to_ex.b_alu_control = b_alu_control;
 `endif

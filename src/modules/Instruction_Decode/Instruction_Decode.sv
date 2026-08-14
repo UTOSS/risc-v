@@ -1,5 +1,6 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
+`include "src/ext/m/types.svh"
 `include "src/timescale.svh"
 
 module Instruction_Decode
@@ -14,6 +15,15 @@ module Instruction_Decode
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
 `endif
+  , output logic is_mul
+  , output logic is_div
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  , output ext__m__types::m_mul_control_t mul_control
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  , output ext__m__types::m_div_control_t div_control
+`endif
+
   );
 
   alu_op_t alu_op;
@@ -154,5 +164,40 @@ module Instruction_Decode
     , .b_alu_control ( b_alu_control )
     );
 `endif
+
+`ifdef UTOSS_RISCV__M_ENABLED
+  ext__m__decoder u_ext__m__decoder
+    ( .funct3      ( funct3      )
+    , .funct7      ( funct7      )
+    , .opcode      ( opcode      )
+    , .is_mul      ( is_mul      )
+    , .is_div      ( is_div      )
+    , .mul_control ( mul_control )
+    , .div_control ( div_control )
+    );
+
+`elsif UTOSS_RISCV__MUL_ENABLED
+  ext__m__decoder u_ext__m__decoder
+    ( .funct3      ( funct3      )
+    , .funct7      ( funct7      )
+    , .opcode      ( opcode      )
+    , .is_mul      ( is_mul      )
+    , .is_div      ( is_div      )
+    , .mul_control ( mul_control )
+    );
+`elsif UTOSS_RISCV__DIV_ENABLED
+  ext__m__decoder u_ext__m__decoder
+    ( .funct3      ( funct3      )
+    , .funct7      ( funct7      )
+    , .opcode      ( opcode      )
+    , .is_mul      ( is_mul      )
+    , .is_div      ( is_div      )
+    , .div_control ( div_control )
+    );
+`else
+  assign is_mul = 1'b0;
+  assign is_div = 1'b0;
+`endif
+
 
 endmodule
