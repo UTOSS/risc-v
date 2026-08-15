@@ -3,6 +3,7 @@
 `include "src/headers/types.svh"
 `include "src/timescale.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
+`include "src/interfaces/ex_to_mem_if.svh"
 
 module write_back_stage
   ( input  mem_to_wb_t     from_memory
