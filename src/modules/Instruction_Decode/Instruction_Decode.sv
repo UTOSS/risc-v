@@ -17,142 +17,100 @@ module Instruction_Decode
   );
 
   alu_op_t alu_op;
-  // reg [2:0] funct3;
-  // reg [6:0] funct7;
-
-  /* verilator lint_off UNUSEDSIGNAL */
-  wire [3:0] state;
-  /* verilator lint_on UNUSEDSIGNAL */
-
-
+  alu_control_t base_alu_control;
   logic [6:0] funct7;
+
   assign opcode = opcode_t'(instr[6:0]);
 
-  //combinational logic for extracting funct3 and funct7[5] for ALU Decoder input
-
-  /* verilator lint_off UNUSEDSIGNAL */
-  reg [2:0] default_funct3;
-  reg [6:0] default_funct7;
-  /* verilator lint_on UNUSEDSIGNAL */
-  always @(*) begin
-
-    funct3 = 3'b000;
-    funct7 = 7'b0;
-
+  // combinational logic for extracting funct3 and funct7 for ALU decoder input
+  always_comb
     case (opcode)
-
-    OPCODE_OP, OPCODE_OP_IMM: begin //R-Type
-
-      funct3 = instr[14:12];
-      funct7 = instr[31:25];
-
-    end
-
-    OPCODE_LOAD, OPCODE_STORE, OPCODE_BRANCH: begin
-
-      funct3 = instr[14:12];
-
-    end
-    default:;
+      OPCODE_OP, OPCODE_OP_IMM: funct3 = instr[14:12];
+      OPCODE_LOAD, OPCODE_STORE, OPCODE_BRANCH: funct3 = instr[14:12];
+      default: funct3 = 3'b000;
     endcase
-  end
 
-  // determine ALU op based on the opcode; see Table 7.2 of the digital design and computer
-  // architecture book
-  always @(*) begin
+  always_comb
     case (opcode)
-      OPCODE_OP:      alu_op = ALU_OP__REGISTER_OPERATION;
-      OPCODE_LOAD: alu_op = ALU_OP__ADD;
-      OPCODE_JALR: alu_op = ALU_OP__ADD; // rs1 + imm
-      OPCODE_STORE:      alu_op = ALU_OP__ADD;
-      OPCODE_BRANCH:      alu_op = ALU_OP__BRANCH;
-      OPCODE_AUIPC: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-      OPCODE_LUI:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
-      OPCODE_MISC_MEM:     alu_op = ALU_OP__UNSET;
-      default:    alu_op = ALU_OP__UNSET;
+      OPCODE_OP, OPCODE_OP_IMM: funct7 = instr[31:25];
+      default: funct7 = 7'b0;
     endcase
-  end
 
-  //logic for extracting rs1, rs2, and rd registers from 32-bit instruction field
-  //The logic depends on the instruction type
-
-  always @(*) begin
-
-    rd = 5'b00000;
-    rs1 = 5'b00000;
-    rs2 = 5'b00000;
-
+  // determine ALU op based on opcode
+  always_comb
     case (opcode)
-
-        OPCODE_OP: begin //R-Type
-
-        rd = instr[11:7];
-        rs1 = instr[19:15];
-        rs2 = instr[24:20];
-
-      end
-
-      OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR: begin //I-Type (where lw is I type)
-
-        rd = instr[11:7];
-        rs1 = instr[19:15];
-        rs2 = instr[24:20];
-
-      end
-
-      OPCODE_STORE, OPCODE_BRANCH: begin //S-type and B-Type
-        rs1 = instr[19:15];
-        rs2 = instr[24:20];
-
-      end
-
-      OPCODE_AUIPC, OPCODE_LUI, OPCODE_JAL: begin
-        rd = instr[11:7];
-      end
-
-      default: begin
-        rd  = 5'b0;
-        rs1 = 5'b0;
-        rs2 = 5'b0;
-      end
+      OPCODE_OP:       alu_op = ALU_OP__REGISTER_OPERATION;
+      OPCODE_LOAD:     alu_op = ALU_OP__ADD;
+      OPCODE_JALR:     alu_op = ALU_OP__ADD;
+      OPCODE_STORE:    alu_op = ALU_OP__ADD;
+      OPCODE_BRANCH:   alu_op = ALU_OP__BRANCH;
+      OPCODE_AUIPC:    alu_op = ALU_OP__ADD;
+      OPCODE_LUI:      alu_op = ALU_OP__ADD;
+      OPCODE_MISC_MEM: alu_op = ALU_OP__UNSET;
+      default:         alu_op = ALU_OP__UNSET;
     endcase
-  end
 
-  // case statement for choosing 32-bit immediate format; based on opcode
-    // this is essentially the extend module of the processor
-  always @(*) begin
+  always_comb
     case (opcode)
-      OPCODE_OP_IMM : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      OPCODE_LOAD  : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      OPCODE_JALR : imm_ext = {{20{instr[31]}}, instr[31:20]};
-      OPCODE_STORE       : imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
-      OPCODE_BRANCH       : imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
-      OPCODE_JAL       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
-      OPCODE_AUIPC  : imm_ext = {instr[31:12], 12'h000};
-      OPCODE_LUI  : imm_ext = {instr[31:12], 12'h000};
-      default:     imm_ext = 32'b0;
+      OPCODE_OP
+    , OPCODE_OP_IMM
+    , OPCODE_LOAD
+    , OPCODE_JALR
+    , OPCODE_AUIPC
+    , OPCODE_LUI
+    , OPCODE_JAL: rd = instr[11:7];
+      default: rd = 5'b00000;
     endcase
-  end
 
-  //Instantiate ALU Decoder module
+  always_comb
+    case (opcode)
+      OPCODE_OP: rs1 = instr[19:15];
+      OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR: rs1 = instr[19:15];
+      OPCODE_STORE, OPCODE_BRANCH: rs1 = instr[19:15];
+      default: rs1 = 5'b00000;
+    endcase
+
+  always_comb
+    case (opcode)
+      OPCODE_OP: rs2 = instr[24:20];
+      OPCODE_OP_IMM, OPCODE_LOAD, OPCODE_JALR: rs2 = instr[24:20];
+      OPCODE_STORE, OPCODE_BRANCH: rs2 = instr[24:20];
+      default: rs2 = 5'b00000;
+    endcase
+
+
+  // immediate decode
+  always_comb
+    case (opcode)
+      OPCODE_OP_IMM:  imm_ext = {{20{instr[31]}}, instr[31:20]};
+      OPCODE_LOAD:    imm_ext = {{20{instr[31]}}, instr[31:20]};
+      OPCODE_JALR:    imm_ext = {{20{instr[31]}}, instr[31:20]};
+      OPCODE_STORE:   imm_ext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
+      OPCODE_BRANCH:  imm_ext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+      OPCODE_JAL:     imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+      OPCODE_AUIPC:   imm_ext = {instr[31:12], 12'h000};
+      OPCODE_LUI:     imm_ext = {instr[31:12], 12'h000};
+      default:        imm_ext = 32'b0;
+    endcase
 
   ALUdecoder instanceALUDec
-    ( .funct3(funct3)
-    , .funct7(funct7)
-    , .alu_op(alu_op)
-    , .alu_control(ALUControl)
+    ( .funct3      ( funct3           )
+    , .funct7      ( funct7           )
+    , .alu_op      ( alu_op           )
+    , .alu_control ( base_alu_control )
     );
-
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
-  ext__b__decoder u_ext__b__decoder
-    ( .funct3        ( funct3        )
-    , .funct7        ( funct7        )
-    , .opcode        ( opcode        )
-    , .rd            ( rd            )
-    , .rs2           ( rs2           )
-    , .b_alu_control ( b_alu_control )
+  ext__b__decoder instanceBExtDec
+    ( .funct3        ( funct3           )
+    , .funct7        ( funct7           )
+    , .opcode        ( opcode           )
+    , .rd            ( rd               )
+    , .rs2           ( rs2              )
+    , .b_alu_control ( b_alu_control    )
     );
 `endif
+
+  assign ALUControl = base_alu_control;
 
 endmodule
