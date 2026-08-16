@@ -165,34 +165,19 @@ module Instruction_Decode
     );
 `endif
 
-`ifdef UTOSS_RISCV__M_ENABLED
+`ifdef UTOSS_RISCV__ANY_M
   ext__m__decoder u_ext__m__decoder
     ( .funct3      ( funct3      )
     , .funct7      ( funct7      )
     , .opcode      ( opcode      )
     , .is_mul      ( is_mul      )
     , .is_div      ( is_div      )
+`ifdef UTOSS_RISCV__MUL_ENABLED
     , .mul_control ( mul_control )
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
     , .div_control ( div_control )
-    );
-
-`elsif UTOSS_RISCV__MUL_ENABLED
-  ext__m__decoder u_ext__m__decoder
-    ( .funct3      ( funct3      )
-    , .funct7      ( funct7      )
-    , .opcode      ( opcode      )
-    , .is_mul      ( is_mul      )
-    , .is_div      ( is_div      )
-    , .mul_control ( mul_control )
-    );
-`elsif UTOSS_RISCV__DIV_ENABLED
-  ext__m__decoder u_ext__m__decoder
-    ( .funct3      ( funct3      )
-    , .funct7      ( funct7      )
-    , .opcode      ( opcode      )
-    , .is_mul      ( is_mul      )
-    , .is_div      ( is_div      )
-    , .div_control ( div_control )
+`endif
     );
 `else
   assign is_mul = 1'b0;
