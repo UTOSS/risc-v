@@ -26,12 +26,12 @@ typedef struct packed {
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;
 `endif
-  logic         is_mul;
-  logic         is_div;
 `ifdef UTOSS_RISCV__MUL_ENABLED
+  logic         is_mul;
   ext__m__types::m_mul_control_t mul_control;
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
+  logic         is_div;
   ext__m__types::m_div_control_t div_control;
 `endif
 } id_to_ex_t;

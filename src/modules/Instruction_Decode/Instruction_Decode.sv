@@ -15,12 +15,13 @@ module Instruction_Decode
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
 `endif
-  , output logic is_mul
-  , output logic is_div
+
 `ifdef UTOSS_RISCV__MUL_ENABLED
+  , output logic is_mul
   , output ext__m__types::m_mul_control_t mul_control
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
+  , output logic is_div
   , output ext__m__types::m_div_control_t div_control
 `endif
 
@@ -179,9 +180,6 @@ module Instruction_Decode
     , .div_control ( div_control )
 `endif
     );
-`else
-  assign is_mul = 1'b0;
-  assign is_div = 1'b0;
 `endif
 
 
