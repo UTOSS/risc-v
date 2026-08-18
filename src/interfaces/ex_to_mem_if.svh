@@ -14,6 +14,8 @@ typedef struct packed {
   reg_t        rd;
   addr_t       pc_cur;
   addr_t       pc_plus_4;
+  logic        is_fence;
+  fence_ctrl_t fence_ctrl;
 } ex_to_mem_t;
 
 `endif

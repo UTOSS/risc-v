@@ -23,6 +23,8 @@ typedef struct packed {
   reg_t         rs1;
   reg_t         rs2;
   imm_t         imm_ext;
+  logic         is_fence;
+  fence_ctrl_t  fence_ctrl;
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;
 `endif

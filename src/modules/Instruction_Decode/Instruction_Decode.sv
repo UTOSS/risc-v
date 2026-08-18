@@ -11,6 +11,8 @@ module Instruction_Decode
   , output reg_t rd
   , output reg_t rs1
   , output reg_t rs2
+  , output logic is_fence
+  , output fence_ctrl_t fence_ctrl
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
 `endif
@@ -48,7 +50,7 @@ module Instruction_Decode
 
     end
 
-    OPCODE_LOAD, OPCODE_STORE, OPCODE_BRANCH: begin
+    OPCODE_LOAD, OPCODE_STORE, OPCODE_BRANCH, OPCODE_MISC_MEM: begin
 
       funct3 = instr[14:12];
 
@@ -84,7 +86,7 @@ module Instruction_Decode
 
     case (opcode)
 
-        OPCODE_OP: begin //R-Type
+      OPCODE_OP: begin //R-Type
 
         rd = instr[11:7];
         rs1 = instr[19:15];
@@ -132,6 +134,19 @@ module Instruction_Decode
       OPCODE_LUI  : imm_ext = {instr[31:12], 12'h000};
       default:     imm_ext = 32'b0;
     endcase
+  end
+
+  //Fence extraction
+  assign is_fence = (opcode == OPCODE_MISC_MEM) && (funct3 == 3'b000);
+
+  always_comb begin
+    if (is_fence) begin
+      fence_ctrl.fm   = instr[31:28];
+      fence_ctrl.pred = instr[27:24];
+      fence_ctrl.succ = instr[23:20];
+    end else begin
+      fence_ctrl = '0;
+    end
   end
 
   //Instantiate ALU Decoder module

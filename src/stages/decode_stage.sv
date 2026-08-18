@@ -31,9 +31,8 @@ module decode_stage
 
   alu_control_t    alu_control;
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
-  ext__b__types::b_alu_control_t b_alu_control; //NEW
+  ext__b__types::b_alu_control_t b_alu_control;
 `endif
-
 
   opcode_t opcode;
   imm_t    imm_ext;
@@ -48,6 +47,9 @@ module decode_stage
   instr_t instruction;
 
   assign instruction = if_to_id.instruction;
+
+  logic        is_fence;
+  fence_ctrl_t fence_ctrl;
 
   control_fsm u_ctrl
     ( .opcode  ( opcode )
@@ -71,6 +73,8 @@ module decode_stage
     , .rd              ( rd               )
     , .rs1             ( rs1              )
     , .rs2             ( rs2              )
+    , .is_fence        ( is_fence     )
+    , .fence_ctrl      ( fence_ctrl   )
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
 `endif
@@ -121,6 +125,8 @@ module decode_stage
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
+  assign id_to_ex.is_fence   = is_fence;
+  assign id_to_ex.fence_ctrl = fence_ctrl;
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   assign id_to_ex.b_alu_control = b_alu_control;
 `endif
