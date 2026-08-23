@@ -121,6 +121,10 @@ module utoss_riscv
   , .mem_address      ( d_bus.address      )
 
   , .mem_to_wb ( mem_to_wb_out)
+  // Fence hooks
+  , .fence_req       ( /* unused */ )
+  , .fence_ctrl      ( /* unused */ )
+  , .fence_stall_req ( fence_stall_req )
   );
 
   // memory stage end
@@ -147,6 +151,7 @@ module utoss_riscv
   hazard_forward_a_t hz_forward_a;
   hazard_forward_b_t hz_forward_b;
   logic stall_f, stall_d, flush_f, flush_d, flush_e;
+  logic fence_stall_req;
 
   hazard_unit u_hazard_unit
     ( .clk ( clk )
@@ -162,6 +167,7 @@ module utoss_riscv
     , .reg_write_w  ( mem_to_wb_reg.reg_write )
     , .result_src_e ( id_to_ex_reg.result_src )
     , .pc_src_e     ( ex_to_if_out.pc_src     )
+    , .fence_stall_req ( fence_stall_req      )
 
     , .forward_a_e ( hz_forward_a )
     , .forward_b_e ( hz_forward_b )

@@ -98,7 +98,6 @@ typedef enum logic [1:0]
   , HAZARD_FORWARD_B__MEMORY_ALU_RESULT = 2'b10
   } hazard_forward_b_t;
 
-//delete later: for fence
 typedef struct packed {
   logic [3:0] fm;   //instr[31:28]- fence mode (0000 = normal, 1000 = TSO)
   logic [3:0] pred; //instr[27:24]- predecessor set (PI, PO, PR, PW)

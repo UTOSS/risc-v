@@ -11,6 +11,10 @@ module memory_stage
   , output addr_t      mem_address
 
   , output mem_to_wb_t mem_to_wb
+  // Fence subsystem hooks (for future store buffer / cache integration)
+  , output logic        fence_req
+  , output fence_ctrl_t fence_ctrl
+  , output logic        fence_stall_req
   );
 
   logic [1:0] byte_index;
@@ -50,6 +54,18 @@ module memory_stage
     endcase
 
   assign mem_address = ex_to_mem.alu_result;
+
+  // Fence control outputs
+  assign fence_req  = ex_to_mem.is_fence;
+  assign fence_ctrl = ex_to_mem.fence_ctrl;
+
+  // Placeholder: When a store buffer or cache is added, replace 1'b0 with:
+  // (store_buffer_busy || dcache_flush_busy)
+  logic mem_subsystem_busy;
+  assign mem_subsystem_busy = 1'b0;
+
+  // Request a pipeline stall only if a FENCE is active and previous writes are draining
+  assign fence_stall_req = ex_to_mem.is_fence && mem_subsystem_busy;
 
   // Combinational assignment to MEM_to_WB interface
   assign mem_to_wb.reg_write  = ex_to_mem.reg_write;

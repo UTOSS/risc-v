@@ -15,6 +15,7 @@ module hazard_unit
   , input  reg_t      rs2_d
   , input  reg_t      rd_e
   , input  pc_src_t pc_src_e
+  , input  logic fence_stall_req
   , output hazard_forward_a_t forward_a_e
   , output hazard_forward_b_t forward_b_e
   , output logic stall_f
@@ -50,8 +51,9 @@ module hazard_unit
 
   //Stall when a load hazard occurs
   assign lw_stall = result_src_e_0 && ((rs1_d == rd_e) || (rs2_d == rd_e)) && (rd_e != 5'd0);
-  assign stall_f = lw_stall;
-  assign stall_d = lw_stall;
+  // Freeze Fetch and Decode stages on a load hazard or when a FENCE is draining
+  assign stall_f = lw_stall || fence_stall_req;
+  assign stall_d = lw_stall || fence_stall_req;
 
   //Flush when a control hazard occurs; we need to flush one cycle later than we discover the
   // control hazard; this is due to synchronous memory making the instruction available one cycle
