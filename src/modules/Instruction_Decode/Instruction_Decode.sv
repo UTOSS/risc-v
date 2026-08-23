@@ -139,15 +139,11 @@ module Instruction_Decode
   //Fence extraction
   assign is_fence = (opcode == OPCODE_MISC_MEM) && (funct3 == 3'b000);
 
-  always_comb begin
-    if (is_fence) begin
-      fence_ctrl.fm   = instr[31:28];
-      fence_ctrl.pred = instr[27:24];
-      fence_ctrl.succ = instr[23:20];
-    end else begin
-      fence_ctrl = '0;
-    end
-  end
+  //When is_fence is 1'b1, {4{is_fence}} expands to 4'b1111 (passing the bits).
+  //When is_fence is 1'b0, {4{is_fence}} expands to 4'b0000 (masking all bits to 0).
+  assign fence_ctrl.fm   = instr[31:28] & {4{is_fence}};
+  assign fence_ctrl.pred = instr[27:24] & {4{is_fence}};
+  assign fence_ctrl.succ = instr[23:20] & {4{is_fence}};
 
   //Instantiate ALU Decoder module
 

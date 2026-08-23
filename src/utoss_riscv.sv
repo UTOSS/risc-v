@@ -113,6 +113,10 @@ module utoss_riscv
     if (reset) ex_to_mem_reg <= '0;
     else       ex_to_mem_reg <= ex_to_mem_out;
 
+  logic        unused_fence_req;
+  fence_ctrl_t unused_fence_ctrl;
+  wire         unused_fence = &{unused_fence_req, unused_fence_ctrl};
+
   memory_stage u_memory_stage
   ( .ex_to_mem ( ex_to_mem_reg )
 
@@ -122,8 +126,8 @@ module utoss_riscv
 
   , .mem_to_wb ( mem_to_wb_out)
   // Fence hooks
-  , .fence_req       ( /* unused */ )
-  , .fence_ctrl      ( /* unused */ )
+  , .fence_req       ( unused_fence_req )
+  , .fence_ctrl      ( unused_fence_ctrl )
   , .fence_stall_req ( fence_stall_req )
   );
 
@@ -168,7 +172,6 @@ module utoss_riscv
     , .result_src_e ( id_to_ex_reg.result_src )
     , .pc_src_e     ( ex_to_if_out.pc_src     )
     , .fence_stall_req ( fence_stall_req      )
-
     , .forward_a_e ( hz_forward_a )
     , .forward_b_e ( hz_forward_b )
     , .stall_f    ( stall_f       )
