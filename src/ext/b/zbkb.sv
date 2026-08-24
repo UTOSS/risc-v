@@ -3,10 +3,10 @@
 `include "src/ext/b/types.svh"
 
 module zbkb(
-    input [`PROCESSOR_BITNESS - 1:0] rs1
-  , input [`PROCESSOR_BITNESS - 1:0] rs2
+    input [`PROCESSOR_BITNESS - 1:0] a
+  , input [`PROCESSOR_BITNESS - 1:0] b
   , input ext__b__types::b_alu_control_t b_alu_control
-  , output reg [`PROCESSOR_BITNESS - 1:0] rd
+  , output reg [`PROCESSOR_BITNESS - 1:0] out
   , output wire zeroE
   );
 
@@ -35,12 +35,12 @@ module zbkb(
     end
   endfunction
 
-  function automatic logic [XLEN - 1:0] get_pack(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
-    get_pack = {rs2[XLEN / 2 - 1:0], rs1[XLEN / 2 - 1:0]};
+  function automatic logic [XLEN - 1:0] get_pack(input [XLEN - 1:0] a, input [XLEN - 1:0] b);
+    get_pack = {b[XLEN / 2 - 1:0], a[XLEN / 2 - 1:0]};
   endfunction
 
-  function automatic logic [XLEN - 1:0] get_packh(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
-    get_packh = {{(XLEN - 16){1'b0}}, rs2[7:0], rs1[7:0]};
+  function automatic logic [XLEN - 1:0] get_packh(input [XLEN - 1:0] a, input [XLEN - 1:0] b);
+    get_packh = {{(XLEN - 16){1'b0}}, b[7:0], a[7:0]};
   endfunction
 
   function automatic logic [XLEN - 1:0] get_brev8(input logic [XLEN - 1:0] val);
@@ -59,19 +59,19 @@ module zbkb(
 
   always_comb
     case (b_alu_control)
-      B_ALU_CTRL__ROL: rd = get_rol(rs1, rs2[SHIFT_WIDTH - 1:0]); // rol (rotate left)
-      B_ALU_CTRL__ROR: rd = get_ror(rs1, rs2[SHIFT_WIDTH - 1:0]); // ror (rotate right)
-      B_ALU_CTRL__RORI: rd = get_ror(rs1, rs2[SHIFT_WIDTH - 1:0]); // rori (rotate right immediate)
-      B_ALU_CTRL__ANDN: rd = rs1 & ~rs2; // andn
-      B_ALU_CTRL__ORN: rd = rs1 | ~rs2; // orn
-      B_ALU_CTRL__XNOR: rd = ~(rs1 ^ rs2); // xnor
-      B_ALU_CTRL__PACK: rd = get_pack(rs1, rs2); // pack
-      B_ALU_CTRL__PACKH: rd = get_packh(rs1, rs2); // packh
-      B_ALU_CTRL__BREV8: rd = get_brev8(rs1); // brev8
-      B_ALU_CTRL__REV8: rd = get_rev8(rs1); // rev8 (byte-reverse)
-      default: rd = '0; //other
+      B_ALU_CTRL__ROL: out = get_rol(a, b[SHIFT_WIDTH - 1:0]); // rol (rotate left)
+      B_ALU_CTRL__ROR: out = get_ror(a, b[SHIFT_WIDTH - 1:0]); // ror (rotate right)
+      B_ALU_CTRL__RORI: out = get_ror(a, b[SHIFT_WIDTH - 1:0]); // rori (rotate right immediate)
+      B_ALU_CTRL__ANDN: out = a & ~b; // andn
+      B_ALU_CTRL__ORN: out = a | ~b; // orn
+      B_ALU_CTRL__XNOR: out = ~(a ^ b); // xnor
+      B_ALU_CTRL__PACK: out = get_pack(a, b); // pack (pack lower halves)
+      B_ALU_CTRL__PACKH: out = get_packh(a, b); // packh (pack lower bytes)
+      B_ALU_CTRL__REV8: out = get_rev8(a); // rev8 (byte-reverse)
+      B_ALU_CTRL__BREV8: out = get_brev8(a); // brev8 (reverse bits in each byte)
+      default: out = '0; // other
     endcase
 
-  assign zeroE = (rd == 0);
+  assign zeroE = (out == 0);
 
 endmodule
