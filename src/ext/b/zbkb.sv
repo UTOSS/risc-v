@@ -34,13 +34,15 @@ module zbkb(
     end
   endfunction
 
-  function automatic logic [XLEN - 1:0] get_pack(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
-    get_pack = {rs2[XLEN / 2 - 1:0], rs1[XLEN / 2 - 1:0]};
-  endfunction
+  /* verilator lint_off UNUSEDSIGNAL */
+function automatic logic [XLEN - 1:0] get_pack(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
+  get_pack = {rs2[XLEN / 2 - 1:0], rs1[XLEN / 2 - 1:0]};
+endfunction
 
-  function automatic logic [XLEN - 1:0] get_packh(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
-    get_packh = {{(XLEN - 16){1'b0}}, rs2[7:0], rs1[7:0]};
-  endfunction
+function automatic logic [XLEN - 1:0] get_packh(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
+  get_packh = {{(XLEN - 16){1'b0}}, rs2[7:0], rs1[7:0]};
+endfunction
+/* verilator lint_on UNUSEDSIGNAL */
 
   function automatic logic [XLEN - 1:0] get_brev8(input logic [XLEN - 1:0] val);
     for (int j = 0; j < XLEN / 8; j++) begin

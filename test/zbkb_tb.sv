@@ -117,9 +117,9 @@ module zbkb_tb;
       rand_a = $urandom;
       shift  = $urandom_range(0, XLEN - 1);
 
-      a = rand_a; b = shift[SHIFT_WIDTH - 1:0]; ctrl = B_ALU_CTRL__ROL;
+      a = rand_a; b = shift; ctrl = B_ALU_CTRL__ROL;
       #1;
-      a = out; b = shift[SHIFT_WIDTH - 1:0]; ctrl = B_ALU_CTRL__ROR;
+      a = out; b = shift; ctrl = B_ALU_CTRL__ROR;
       #1;
       if (out !== rand_a) begin
         $error("[FAIL] rol/ror inverse property: shift=%0d, got %h, expected %h", shift, out, rand_a);
