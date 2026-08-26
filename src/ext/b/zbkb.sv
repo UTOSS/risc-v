@@ -34,12 +34,12 @@ module zbkb(
     end
   endfunction
 
-  function automatic logic [XLEN - 1:0] get_pack(input [XLEN - 1:0] a, input [XLEN - 1:0] b);
-    get_pack = {b[XLEN / 2 - 1:0], a[XLEN / 2 - 1:0]};
+  function automatic logic [XLEN - 1:0] get_pack(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
+    get_pack = {rs2[XLEN / 2 - 1:0], rs1[XLEN / 2 - 1:0]};
   endfunction
 
-  function automatic logic [XLEN - 1:0] get_packh(input [XLEN - 1:0] a, input [XLEN - 1:0] b);
-    get_packh = {{(XLEN - 16){1'b0}}, b[7:0], a[7:0]};
+  function automatic logic [XLEN - 1:0] get_packh(input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
+    get_packh = {{(XLEN - 16){1'b0}}, rs2[7:0], rs1[7:0]};
   endfunction
 
   function automatic logic [XLEN - 1:0] get_brev8(input logic [XLEN - 1:0] val);
