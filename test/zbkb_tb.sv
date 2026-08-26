@@ -6,7 +6,6 @@ module zbkb_tb;
   import ext__b__types::*;
 
   localparam int XLEN = `PROCESSOR_BITNESS;
-  localparam int SHIFT_WIDTH = $clog2(XLEN);
 
   logic [XLEN - 1:0] a, b;
   b_alu_control_t ctrl;
