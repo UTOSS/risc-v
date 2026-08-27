@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-        - main
+      - main
   schedule:
     - cron: '23 6 * * *' # Run nightly at 01:23 EST (06:23 UTC)
 
