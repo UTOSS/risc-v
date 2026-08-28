@@ -27,7 +27,7 @@ module Logger
 , input logic [3:0] dmem_write_enable
 
 , input data_t      wb_result
-, input logic [4:0] wb_rd
+, input reg_t       wb_rd
 
 , input logic stall_f
 , input logic stall_d
@@ -40,7 +40,7 @@ module Logger
     integer cycle = 32'h0;
     /* verilator lint_on PROCASSINIT */
 
-    function automatic string reg_name(input logic [4:0] reg_idx);
+    function automatic string reg_name(input reg_t reg_idx);
         case (reg_idx)
             5'd0:  reg_name = "zero";
             5'd1:  reg_name = "ra";
@@ -86,7 +86,7 @@ module Logger
         op_name = "unknown";
 
         case (opcode)
-            RType:
+            OPCODE_OP:
                 case (funct3)
                     3'b000: op_name = (funct7 == 7'h20) ? "sub" : "add";
                     3'b001: op_name = "sll";
@@ -99,7 +99,7 @@ module Logger
                     default:;
                 endcase
 
-            IType_logic:
+            OPCODE_OP_IMM:
                 case (funct3)
                     3'b000: op_name = "addi";
                     3'b001: op_name = "slli";
@@ -112,7 +112,7 @@ module Logger
                     default:;
                 endcase
 
-            IType_load:
+            OPCODE_LOAD:
                 case (funct3)
                     3'b000: op_name = "lb";
                     3'b001: op_name = "lh";
@@ -122,7 +122,7 @@ module Logger
                     default:;
                 endcase
 
-            SType:
+            OPCODE_STORE:
                 case (funct3)
                     3'b000: op_name = "sb";
                     3'b001: op_name = "sh";
@@ -130,7 +130,7 @@ module Logger
                     default:;
                 endcase
 
-            BType:
+            OPCODE_BRANCH:
                 case (funct3)
                     3'b000: op_name = "beq";
                     3'b001: op_name = "bne";
@@ -141,11 +141,11 @@ module Logger
                     default:;
                 endcase
 
-            JType:       op_name = "jal";
-            UType_auipc: op_name = "auipc";
-            UType_lui:   op_name = "lui";
-            IType_jalr:  op_name = "jalr";
-            FENCE:       op_name = "fence";
+            OPCODE_JAL:      op_name = "jal";
+            OPCODE_AUIPC:    op_name = "auipc";
+            OPCODE_LUI:      op_name = "lui";
+            OPCODE_JALR:     op_name = "jalr";
+            OPCODE_MISC_MEM: op_name = "fence";
             default:;
         endcase
     endfunction
@@ -154,12 +154,12 @@ module Logger
         if (reset) begin
             cycle <= 32'h0;
         end else begin
-            logic [4:0] if_rs1;
-            logic [4:0] if_rs2;
-            logic [4:0] if_rd;
-            logic [4:0] id_rs1;
-            logic [4:0] id_rs2;
-            logic [4:0] id_rd;
+            reg_t if_rs1;
+            reg_t if_rs2;
+            reg_t if_rd;
+            reg_t id_rs1;
+            reg_t id_rs2;
+            reg_t id_rd;
 
             if_rs1 = if_stage.instruction[19:15];
             if_rs2 = if_stage.instruction[24:20];
@@ -225,7 +225,8 @@ module Logger
                             );
 
                         $display
-                            ( "MEM: addr=%08h we=%b wdata=%08h rdata=%08h alu_result=%08h rd=%s result_src=%0d regwrite=%0b"
+                            ( "MEM: pc=%08h addr=%08h we=%b wdata=%08h rdata=%08h alu_result=%08h rd=%s result_src=%0d regwrite=%0b"
+                            , mem_stage.pc_cur
                             , dmem_address
                             , dmem_write_enable
                             , dmem_write_data
@@ -237,7 +238,8 @@ module Logger
                             );
 
                         $display
-                            ( "WB : rd=%s(%0d) regwrite=%0b result_src=%0d wb_result=%08h alu_result=%08h"
+                            ( "WB : pc=%08h rd=%s(%0d) regwrite=%0b result_src=%0d wb_result=%08h alu_result=%08h"
+                            , wb_stage.pc_cur
                             , reg_name(wb_rd)
                             , wb_rd
                             , wb_stage.reg_write

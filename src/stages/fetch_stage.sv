@@ -5,6 +5,7 @@
 `include "src/interfaces/ex_to_if_if.svh"
 
 module fetch_stage
+  #( parameter addr_t BOOT_ADDR = addr_t'(0) )
   ( output if_to_id_t if_to_id
   , input ex_to_if_t  ex_to_if
 
@@ -51,10 +52,10 @@ module fetch_stage
     endcase
 
   always_ff @ (posedge clk)
-    if (!stall_f) pc_cur <= reset ? 0 : pc_next;
+    if (!stall_f) pc_cur <= reset ? BOOT_ADDR : pc_next;
 
   always_ff @ (posedge clk)
-    if (!stall_f) pc_prev <= reset ? 0 : pc_cur;
+    if (!stall_f) pc_prev <= reset ? BOOT_ADDR : pc_cur;
 
   // With synchronous instruction memory, one in-flight instruction can arrive after stall_f rises.
   // Keep a one-entry skid copy so decode can consume it once the stall is released;

@@ -23,11 +23,37 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 # =============
 
 UTOSS_RISCV_CONFIG ?= RV32I
+UTOSS_RISCV_ENABLE_MUL ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
+UTOSS_RISCV_ENABLE_DIV ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
+UTOSS_RISCV_ENABLE_M := $(if $(filter 1 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
+UTOSS_RISCV_ANY_M := $(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
+
+UTOSS_BOOT_ADDR ?= 32\'h0000_0000
 
 # Convert B extension to Zbb for RISC-V ISA spec
 RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
 
-UTOSS_RISCV_VERILATOR_DEFINES := $(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT)
+# Generate misa value
+MISA_VALUE = 0x40000100
+
+ifneq ($(findstring C,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x4 )))
+endif
+
+ifneq ($(findstring M,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1000 )))
+endif
+
+ifneq ($(findstring A,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1 )))
+endif
+
+UTOSS_RISCV_VERILATOR_DEFINES := \
+$(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) \
+$(if $(filter 1,$(UTOSS_RISCV_ENABLE_M)),-DUTOSS_RISCV__M_ENABLED) \
+$(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL)),-DUTOSS_RISCV__MUL_ENABLED) \
+$(if $(filter 1,$(UTOSS_RISCV_ENABLE_DIV)),-DUTOSS_RISCV__DIV_ENABLED) \
+$(if $(filter 1,$(UTOSS_RISCV_ANY_M)),-DUTOSS_RISCV__ANY_M)
 UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 
 # ===========================
@@ -35,7 +61,8 @@ UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 # ===========================
 
 VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 $(UTOSS_RISCV_VERILATOR_DEFINES)
-RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
+TOP_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR)
+RISCOF_VERILATOR_FLAGS := $(TOP_VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
 # Testbench-only defines
 TB_DEFINES := -DTESTBENCH
@@ -76,7 +103,7 @@ run_top: $(OUT_DIR)/top_sim
 
 $(OUT_DIR)/top_sim: $(SRCS)
 	@mkdir -p $(BUILD_DIR)/top
-	$(VERILATOR) $(VERILATOR_FLAGS) \
+	$(VERILATOR) $(TOP_VERILATOR_FLAGS) \
 		--top-module top \
 		--Mdir $(BUILD_DIR)/top \
 		-o top_sim \
@@ -141,7 +168,10 @@ $(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
 	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
 
 $(RISCOF_UTOSS_RISCV_ISA_CONFIG): $(RISCOF_UTOSS_RISCV_ISA_CONFIG_TEMPLATE) FORCE
-	m4 -D M4__ISA_STRING="$(RISCOF_ISA_STRING)" $< > $@
+	m4 \
+-D M4__ISA_STRING="$(RISCOF_ISA_STRING)" \
+-D M4__MISA_VALUE="$(MISA_VALUE)" \
+$< > $@
 
 riscof_build_dut: $(RISCOF_DUT_BIN)
 
@@ -162,6 +192,8 @@ riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 		riscof run --config=config.ini \
 		--suite=riscv-arch-test/riscv-test-suite/ \
 		--env=riscv-arch-test/riscv-test-suite/env
+
+include utoss_riscv_dv/Makefile
 
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
@@ -225,6 +257,8 @@ test_diagrams: $(DIAGRAM_OUT)
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb \
         svlint svlint_tb \
-        diagrams test_diagrams \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
-        riscof_generate_testlist riscof_run FORCE
+        riscof_generate_testlist riscof_run \
+        riscv_dv \
+				diagrams test_diagrams \
+				FORCE

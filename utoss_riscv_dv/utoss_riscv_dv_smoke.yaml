@@ -1,0 +1,34 @@
+# Minimal pyflow smoke tests for the UTOSS RV32I core.
+#
+# This avoids the heavy default riscv_rand_instr_test from yaml/base_testlist.yaml,
+# which uses 10k instructions, multiple subprograms, and directed loop streams.
+
+- test: utoss_rv32i_arithmetic_smoke
+  description: >
+    Small RV32I arithmetic-only generator smoke test.
+  iterations: 1
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=1000
+    +num_of_sub_program=0
+    +no_directed_instr=1
+    +no_fence=1
+    +no_data_page=1
+    +no_branch_jump=1
+    +no_load_store=1
+    +no_csr_instr=1
+    +bare_program_mode=1
+    +boot_mode=m
+  rtl_test: core_base_test
+
+- test: utoss_rv32i_basic_smoke
+  description: >
+    Small RV32I random generator smoke test without directed streams.
+  iterations: 1
+  gen_test: riscv_instr_base_test
+  gen_opts: >
+    +instr_cnt=1000
+    +num_of_sub_program=0
+    +bare_program_mode=1
+    +boot_mode=m
+  rtl_test: core_base_test

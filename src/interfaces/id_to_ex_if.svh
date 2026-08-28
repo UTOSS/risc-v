@@ -19,10 +19,21 @@ typedef struct packed {
   logic [2:0]   funct3;
   data_t        rd1;
   data_t        rd2;
-  logic [4:0]   rd;
-  logic [4:0]   rs1;
-  logic [4:0]   rs2;
+  reg_t         rd;
+  reg_t         rs1;
+  reg_t         rs2;
   imm_t         imm_ext;
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  ext__b__types::b_alu_control_t b_alu_control;
+`endif
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  logic         is_mul;
+  ext__m__types::m_mul_control_t mul_control;
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  logic         is_div;
+  ext__m__types::m_div_control_t div_control;
+`endif
 } id_to_ex_t;
 
 `endif

@@ -5,25 +5,15 @@
 `include "src/interfaces/ex_to_mem_if.svh"
 `include "src/interfaces/ex_to_if_if.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
+`include "src/interfaces/mem_bus.svh"
 
 // pipelined implementation of our core
 module utoss_riscv
-  ( input wire clk
-  , input wire reset
-
-  // instruction memory interface begin
-  , output addr_t       memory_instr__address
-  , output data_t       memory_instr__write_data
-  , output logic  [3:0] memory_instr__write_enable
-  , input  data_t       memory_instr__read_data
-  // instruction memory interface end
-
-  // data memory interface begin
-  , output addr_t       memory_data__address
-  , output data_t       memory_data__write_data
-  , output logic  [3:0] memory_data__write_enable
-  , input  data_t       memory_data__read_data
-  // data memory interface end
+  #( parameter addr_t BOOT_ADDR = addr_t'(0) )
+  ( input wire       clk
+  , input wire       reset
+  , mem_bus.consumer i_bus
+  , mem_bus.consumer d_bus
   );
 
   // common declarations begin
@@ -42,13 +32,15 @@ module utoss_riscv
   mem_to_wb_t mem_to_wb_reg;
 
   data_t      wb_result;
-  logic [4:0] wb_rd;
+  reg_t       wb_rd;
 
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
 
-  fetch_stage u_fetch_stage
+  fetch_stage
+    #( .BOOT_ADDR ( BOOT_ADDR ) )
+    u_fetch_stage
     ( .if_to_id ( if_to_id_out )
     , .ex_to_if ( ex_to_if_out )
 
@@ -57,14 +49,15 @@ module utoss_riscv
     , .stall_f ( stall_f )
     , .flush_f ( flush_f )
 
-    , .imem__address ( memory_instr__address   )
-    , .imem__data    ( memory_instr__read_data )
+    , .imem__address ( i_bus.address   )
+    , .imem__data    ( i_bus.read_data )
     );
 
-  assign memory_instr__write_data = data_t'(0);
-  assign memory_instr__write_enable = 4'b0;
+  assign i_bus.write_data = data_t'(0);
+  assign i_bus.write_enable = 4'b0;
 
   // fetch stage end
+  // interface end @bugget
 
   // decode stage begin (@marwannismail)
 
@@ -73,7 +66,7 @@ module utoss_riscv
     else if (flush_d)  if_to_id_reg <= '0;
     else if (!stall_d) if_to_id_reg <= if_to_id_out;
 
-  wire [4:0] id_rs1, id_rs2;
+  reg_t id_rs1, id_rs2;
 
   decode_stage u_decode_stage
     ( .if_to_id ( if_to_id_reg )
@@ -123,9 +116,9 @@ module utoss_riscv
   memory_stage u_memory_stage
   ( .ex_to_mem ( ex_to_mem_reg )
 
-  , .mem_write_data   ( memory_data__write_data   )
-  , .mem_write_enable ( memory_data__write_enable ) // TODO: Is this required?
-  , .mem_address      ( memory_data__address      )
+  , .mem_write_data   ( d_bus.write_data   )
+  , .mem_write_enable ( d_bus.write_enable ) // TODO: Is this required?
+  , .mem_address      ( d_bus.address      )
 
   , .mem_to_wb ( mem_to_wb_out)
   );
@@ -142,9 +135,9 @@ module utoss_riscv
     ( .from_memory ( mem_to_wb_reg )
     , .ex_to_mem   ( ex_to_mem_reg )
 
-    , .data_from_memory ( memory_data__read_data )
-    , .result           ( wb_result              )
-    , .rd               ( wb_rd                  )
+    , .data_from_memory ( d_bus.read_data         )
+    , .result           ( wb_result               )
+    , .rd               ( wb_rd                   )
     );
 
   // writeback stage end
@@ -195,11 +188,11 @@ module utoss_riscv
     , .mem_stage_out ( mem_to_wb_out )
     , .wb_stage      ( mem_to_wb_reg )
 
-    , .imem_address      ( memory_instr__address     )
-    , .dmem_address      ( memory_data__address      )
-    , .dmem_read_data    ( memory_data__read_data    )
-    , .dmem_write_data   ( memory_data__write_data   )
-    , .dmem_write_enable ( memory_data__write_enable )
+    , .imem_address      ( i_bus.address      )
+    , .dmem_address      ( d_bus.address      )
+    , .dmem_read_data    ( d_bus.read_data    )
+    , .dmem_write_data   ( d_bus.write_data   )
+    , .dmem_write_enable ( d_bus.write_enable )
 
     , .wb_result ( wb_result )
     , .wb_rd     ( wb_rd     )
@@ -211,6 +204,4 @@ module utoss_riscv
     , .flush_e ( flush_e )
     );
 `endif
-
-
 endmodule

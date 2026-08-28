@@ -3,13 +3,14 @@
 `include "src/headers/types.svh"
 `include "src/timescale.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
+`include "src/interfaces/ex_to_mem_if.svh"
 
 module write_back_stage
   ( input  mem_to_wb_t     from_memory
   , input  data_t          data_from_memory
   , input  ex_to_mem_t     ex_to_mem
   , output var data_t      result
-  , output var logic [4:0] rd
+  , output var reg_t       rd
   );
 
   data_t alu_result_m;
