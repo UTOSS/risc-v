@@ -224,21 +224,31 @@ DIAGRAM_OUT := $(DIAGRAM_DIR)/utoss_riscv.svg
 
 SVSCH_TEMP_DIR := .svsch_temp
 SVSCH_FIXER := scripts/svsch_include_fixer.py
+SVSCH_DATA_DIR := .svsch
 
 diagrams: $(DIAGRAM_OUT)
+
+update_diagrams: FORCE
+	@mkdir -p $(DIAGRAM_DIR)
+	@mkdir -p $(SVSCH_TEMP_DIR)
+	@python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR)
+	@svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output $(DIAGRAM_OUT) --workspace $(SVSCH_TEMP_DIR) --svsch-data-dir $(SVSCH_DATA_DIR)
+	@rm -rf $(SVSCH_TEMP_DIR)
+
+update_diagrmas: update_diagrams
 
 $(DIAGRAM_OUT): $(DIAGRAM_SRC)
 	@mkdir -p $(DIAGRAM_DIR)
 	@mkdir -p $(SVSCH_TEMP_DIR)
 	@python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR)
-	@svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output $@ --workspace $(SVSCH_TEMP_DIR)
+	@svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output $@ --workspace $(SVSCH_TEMP_DIR) --svsch-data-dir $(SVSCH_DATA_DIR)
 	@rm -rf $(SVSCH_TEMP_DIR)
 
-test_diagrams: $(DIAGRAM_OUT)
+test_diagrams:
 	@if [ -f $(DIAGRAM_OUT) ]; then \
 		mkdir -p $(SVSCH_TEMP_DIR); \
 		python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR); \
-		svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output /tmp/utoss_riscv_test.svg --workspace $(SVSCH_TEMP_DIR); \
+		svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output /tmp/utoss_riscv_test.svg --workspace $(SVSCH_TEMP_DIR) --svsch-data-dir $(SVSCH_DATA_DIR); \
 		rm -rf $(SVSCH_TEMP_DIR); \
 		if ! diff -q $(DIAGRAM_OUT) /tmp/utoss_riscv_test.svg > /dev/null; then \
 			echo "ERROR: Generated diagram differs from existing diagram"; \
@@ -260,5 +270,5 @@ test_diagrams: $(DIAGRAM_OUT)
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv \
-				diagrams test_diagrams \
+				diagrams test_diagrams update_diagrams update_diagrmas \
 				FORCE
