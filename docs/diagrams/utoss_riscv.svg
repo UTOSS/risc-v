@@ -1,0 +1,2697 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4272" height="2328" aria-label="utoss_riscv diagram" class="svsch-diagram" role="img" viewBox="0 0 4272 2328"><defs><pattern id="svsch-interface-stripes" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><path d="M5 0 5 10" class="svsch-interface-stripe"/></pattern><pattern id="svsch-struct-stripes" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><path d="M5 0 5 10" class="svsch-struct-stripe"/></pattern><linearGradient id="svsch-bus-gradient" x1="0%" x2="100%" y1="0%" y2="0%"><stop offset="0%" stop-color="var(--svsch-edge-stacked-back)"/><stop offset="50%" stop-color="var(--svsch-edge-stacked-middle)"/><stop offset="100%" stop-color="var(--svsch-edge-stacked-front)"/></linearGradient></defs><style>/*<![CDATA[*/
+/* this gets exported as style.css and can be used for the default theming */
+/* these are the necessary styles for React/Svelte Flow, they get used by base.css and style.css */
+.react-flow {
+  direction: ltr;
+
+  --xy-edge-stroke-default: #b1b1b7;
+  --xy-edge-stroke-width-default: 1;
+  --xy-edge-stroke-selected-default: #555;
+
+  --xy-connectionline-stroke-default: #b1b1b7;
+  --xy-connectionline-stroke-width-default: 1;
+
+  --xy-attribution-background-color-default: rgba(255, 255, 255, 0.5);
+
+  --xy-minimap-background-color-default: #fff;
+  --xy-minimap-mask-background-color-default: rgba(240, 240, 240, 0.6);
+  --xy-minimap-mask-stroke-color-default: transparent;
+  --xy-minimap-mask-stroke-width-default: 1;
+  --xy-minimap-node-background-color-default: #e2e2e2;
+  --xy-minimap-node-stroke-color-default: transparent;
+  --xy-minimap-node-stroke-width-default: 2;
+
+  --xy-background-color-default: transparent;
+  --xy-background-pattern-dots-color-default: #91919a;
+  --xy-background-pattern-lines-color-default: #eee;
+  --xy-background-pattern-cross-color-default: #e2e2e2;
+  background-color: var(--xy-background-color, var(--xy-background-color-default));
+  --xy-node-color-default: inherit;
+  --xy-node-border-default: 1px solid #1a192b;
+  --xy-node-background-color-default: #fff;
+  --xy-node-group-background-color-default: rgba(240, 240, 240, 0.25);
+  --xy-node-boxshadow-hover-default: 0 1px 4px 1px rgba(0, 0, 0, 0.08);
+  --xy-node-boxshadow-selected-default: 0 0 0 0.5px #1a192b;
+  --xy-node-border-radius-default: 3px;
+
+  --xy-handle-background-color-default: #1a192b;
+  --xy-handle-border-color-default: #fff;
+
+  --xy-selection-background-color-default: rgba(0, 89, 220, 0.08);
+  --xy-selection-border-default: 1px dotted rgba(0, 89, 220, 0.8);
+
+  --xy-controls-button-background-color-default: #fefefe;
+  --xy-controls-button-background-color-hover-default: #f4f4f4;
+  --xy-controls-button-color-default: inherit;
+  --xy-controls-button-color-hover-default: inherit;
+  --xy-controls-button-border-color-default: #eee;
+  --xy-controls-box-shadow-default: 0 0 2px 1px rgba(0, 0, 0, 0.08);
+
+  --xy-edge-label-background-color-default: #ffffff;
+  --xy-edge-label-color-default: inherit;
+  --xy-resize-background-color-default: #3367d9;
+}
+.react-flow.dark {
+  --xy-edge-stroke-default: #3e3e3e;
+  --xy-edge-stroke-width-default: 1;
+  --xy-edge-stroke-selected-default: #727272;
+
+  --xy-connectionline-stroke-default: #b1b1b7;
+  --xy-connectionline-stroke-width-default: 1;
+
+  --xy-attribution-background-color-default: rgba(150, 150, 150, 0.25);
+
+  --xy-minimap-background-color-default: #141414;
+  --xy-minimap-mask-background-color-default: rgba(60, 60, 60, 0.6);
+  --xy-minimap-mask-stroke-color-default: transparent;
+  --xy-minimap-mask-stroke-width-default: 1;
+  --xy-minimap-node-background-color-default: #2b2b2b;
+  --xy-minimap-node-stroke-color-default: transparent;
+  --xy-minimap-node-stroke-width-default: 2;
+
+  --xy-background-color-default: #141414;
+  --xy-background-pattern-dots-color-default: #555;
+  --xy-background-pattern-lines-color-default: #333;
+  --xy-background-pattern-cross-color-default: #333;
+  --xy-node-color-default: #f8f8f8;
+  --xy-node-border-default: 1px solid #3c3c3c;
+  --xy-node-background-color-default: #1e1e1e;
+  --xy-node-group-background-color-default: rgba(240, 240, 240, 0.25);
+  --xy-node-boxshadow-hover-default: 0 1px 4px 1px rgba(255, 255, 255, 0.08);
+  --xy-node-boxshadow-selected-default: 0 0 0 0.5px #999;
+
+  --xy-handle-background-color-default: #bebebe;
+  --xy-handle-border-color-default: #1e1e1e;
+
+  --xy-selection-background-color-default: rgba(200, 200, 220, 0.08);
+  --xy-selection-border-default: 1px dotted rgba(200, 200, 220, 0.8);
+
+  --xy-controls-button-background-color-default: #2b2b2b;
+  --xy-controls-button-background-color-hover-default: #3e3e3e;
+  --xy-controls-button-color-default: #f8f8f8;
+  --xy-controls-button-color-hover-default: #fff;
+  --xy-controls-button-border-color-default: #5b5b5b;
+  --xy-controls-box-shadow-default: 0 0 2px 1px rgba(0, 0, 0, 0.08);
+
+  --xy-edge-label-background-color-default: #141414;
+  --xy-edge-label-color-default: #f8f8f8;
+}
+.react-flow__background {
+  background-color: var(--xy-background-color-props, var(--xy-background-color, var(--xy-background-color-default)));
+  pointer-events: none;
+  z-index: -1;
+}
+.react-flow__container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+.react-flow__pane {
+  z-index: 1;
+  touch-action: none;
+}
+.react-flow__pane.draggable {
+    cursor: grab;
+  }
+.react-flow__pane.dragging {
+    cursor: grabbing;
+  }
+.react-flow__pane.selection {
+    cursor: pointer;
+  }
+.react-flow__viewport {
+  transform-origin: 0 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.react-flow__renderer {
+  z-index: 4;
+}
+.react-flow__selection {
+  z-index: 6;
+}
+.react-flow__nodesselection-rect:focus,
+.react-flow__nodesselection-rect:focus-visible {
+  outline: none;
+}
+.react-flow__edge-path {
+  stroke: var(--xy-edge-stroke, var(--xy-edge-stroke-default));
+  stroke-width: var(--xy-edge-stroke-width, var(--xy-edge-stroke-width-default));
+  fill: none;
+}
+.react-flow__connection-path {
+  stroke: var(--xy-connectionline-stroke, var(--xy-connectionline-stroke-default));
+  stroke-width: var(--xy-connectionline-stroke-width, var(--xy-connectionline-stroke-width-default));
+  fill: none;
+}
+.react-flow .react-flow__edges {
+  position: absolute;
+}
+.react-flow .react-flow__edges svg {
+    overflow: visible;
+    position: absolute;
+    pointer-events: none;
+  }
+.react-flow__edge {
+  pointer-events: visibleStroke;
+}
+.react-flow__edge.selectable {
+    cursor: pointer;
+  }
+.react-flow__edge.animated path {
+    stroke-dasharray: 5;
+    animation: dashdraw 0.5s linear infinite;
+  }
+.react-flow__edge.animated path.react-flow__edge-interaction {
+    stroke-dasharray: none;
+    animation: none;
+  }
+.react-flow__edge.inactive {
+    pointer-events: none;
+  }
+.react-flow__edge.selected,
+  .react-flow__edge:focus,
+  .react-flow__edge:focus-visible {
+    outline: none;
+  }
+.react-flow__edge.selected .react-flow__edge-path,
+  .react-flow__edge.selectable:focus .react-flow__edge-path,
+  .react-flow__edge.selectable:focus-visible .react-flow__edge-path {
+    stroke: var(--xy-edge-stroke-selected, var(--xy-edge-stroke-selected-default));
+  }
+.react-flow__edge-textwrapper {
+    pointer-events: all;
+  }
+.react-flow__edge .react-flow__edge-text {
+    pointer-events: none;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+            user-select: none;
+  }
+/* Arrowhead marker styles - use CSS custom properties as default */
+.react-flow__arrowhead polyline {
+  stroke: var(--xy-edge-stroke, var(--xy-edge-stroke-default));
+}
+.react-flow__arrowhead polyline.arrowclosed {
+  fill: var(--xy-edge-stroke, var(--xy-edge-stroke-default));
+}
+.react-flow__connection {
+  pointer-events: none;
+}
+.react-flow__connection .animated {
+    stroke-dasharray: 5;
+    animation: dashdraw 0.5s linear infinite;
+  }
+svg.react-flow__connectionline {
+  z-index: 1001;
+  overflow: visible;
+  position: absolute;
+}
+.react-flow__nodes {
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+.react-flow__node {
+  position: absolute;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  pointer-events: all;
+  transform-origin: 0 0;
+  box-sizing: border-box;
+  cursor: default;
+}
+.react-flow__node.selectable {
+    cursor: pointer;
+  }
+.react-flow__node.draggable {
+    cursor: grab;
+    pointer-events: all;
+  }
+.react-flow__node.draggable.dragging {
+      cursor: grabbing;
+    }
+.react-flow__nodesselection {
+  z-index: 3;
+  transform-origin: left top;
+  pointer-events: none;
+}
+.react-flow__nodesselection-rect {
+    position: absolute;
+    pointer-events: all;
+    cursor: grab;
+  }
+.react-flow__handle {
+  position: absolute;
+  pointer-events: none;
+  min-width: 5px;
+  min-height: 5px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--xy-handle-background-color, var(--xy-handle-background-color-default));
+  border: 1px solid var(--xy-handle-border-color, var(--xy-handle-border-color-default));
+  border-radius: 100%;
+}
+.react-flow__handle.connectingfrom {
+    pointer-events: all;
+  }
+.react-flow__handle.connectionindicator {
+    pointer-events: all;
+    cursor: crosshair;
+  }
+.react-flow__handle-bottom {
+    top: auto;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 50%);
+  }
+.react-flow__handle-top {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+.react-flow__handle-left {
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+.react-flow__handle-right {
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+.react-flow__edgeupdater {
+  cursor: move;
+  pointer-events: all;
+}
+.react-flow__pane.selection .react-flow__panel {
+  pointer-events: none;
+}
+.react-flow__panel {
+  position: absolute;
+  z-index: 5;
+  margin: 15px;
+}
+.react-flow__panel.top {
+    top: 0;
+  }
+.react-flow__panel.bottom {
+    bottom: 0;
+  }
+.react-flow__panel.top.center, .react-flow__panel.bottom.center {
+      left: 50%;
+      transform: translateX(-15px) translateX(-50%);
+    }
+.react-flow__panel.left {
+    left: 0;
+  }
+.react-flow__panel.right {
+    right: 0;
+  }
+.react-flow__panel.left.center, .react-flow__panel.right.center {
+      top: 50%;
+      transform: translateY(-15px) translateY(-50%);
+    }
+.react-flow__attribution {
+  font-size: 10px;
+  background: var(--xy-attribution-background-color, var(--xy-attribution-background-color-default));
+  padding: 2px 3px;
+  margin: 0;
+}
+.react-flow__attribution a {
+    text-decoration: none;
+    color: #999;
+  }
+@keyframes dashdraw {
+  from {
+    stroke-dashoffset: 10;
+  }
+}
+.react-flow__edgelabel-renderer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  left: 0;
+  top: 0;
+}
+.react-flow__viewport-portal {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.react-flow__minimap {
+  background: var(
+    --xy-minimap-background-color-props,
+    var(--xy-minimap-background-color, var(--xy-minimap-background-color-default))
+  );
+}
+.react-flow__minimap-svg {
+    display: block;
+  }
+.react-flow__minimap-mask {
+    fill: var(
+      --xy-minimap-mask-background-color-props,
+      var(--xy-minimap-mask-background-color, var(--xy-minimap-mask-background-color-default))
+    );
+    stroke: var(
+      --xy-minimap-mask-stroke-color-props,
+      var(--xy-minimap-mask-stroke-color, var(--xy-minimap-mask-stroke-color-default))
+    );
+    stroke-width: var(
+      --xy-minimap-mask-stroke-width-props,
+      var(--xy-minimap-mask-stroke-width, var(--xy-minimap-mask-stroke-width-default))
+    );
+  }
+.react-flow__minimap-node {
+    fill: var(
+      --xy-minimap-node-background-color-props,
+      var(--xy-minimap-node-background-color, var(--xy-minimap-node-background-color-default))
+    );
+    stroke: var(
+      --xy-minimap-node-stroke-color-props,
+      var(--xy-minimap-node-stroke-color, var(--xy-minimap-node-stroke-color-default))
+    );
+    stroke-width: var(
+      --xy-minimap-node-stroke-width-props,
+      var(--xy-minimap-node-stroke-width, var(--xy-minimap-node-stroke-width-default))
+    );
+  }
+.react-flow__background-pattern.dots {
+    fill: var(
+      --xy-background-pattern-color-props,
+      var(--xy-background-pattern-color, var(--xy-background-pattern-dots-color-default))
+    );
+  }
+.react-flow__background-pattern.lines {
+    stroke: var(
+      --xy-background-pattern-color-props,
+      var(--xy-background-pattern-color, var(--xy-background-pattern-lines-color-default))
+    );
+  }
+.react-flow__background-pattern.cross {
+    stroke: var(
+      --xy-background-pattern-color-props,
+      var(--xy-background-pattern-color, var(--xy-background-pattern-cross-color-default))
+    );
+  }
+.react-flow__controls {
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--xy-controls-box-shadow, var(--xy-controls-box-shadow-default));
+}
+.react-flow__controls.horizontal {
+    flex-direction: row;
+  }
+.react-flow__controls-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 26px;
+    width: 26px;
+    padding: 4px;
+    border: none;
+    background: var(--xy-controls-button-background-color, var(--xy-controls-button-background-color-default));
+    border-bottom: 1px solid
+      var(
+        --xy-controls-button-border-color-props,
+        var(--xy-controls-button-border-color, var(--xy-controls-button-border-color-default))
+      );
+    color: var(
+      --xy-controls-button-color-props,
+      var(--xy-controls-button-color, var(--xy-controls-button-color-default))
+    );
+    cursor: pointer;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+            user-select: none;
+  }
+.react-flow__controls-button svg {
+      width: 100%;
+      max-width: 12px;
+      max-height: 12px;
+      fill: currentColor;
+    }
+.react-flow__edge.updating .react-flow__edge-path {
+      stroke: #777;
+    }
+.react-flow__edge-text {
+    font-size: 10px;
+  }
+.react-flow__node.selectable:focus,
+  .react-flow__node.selectable:focus-visible {
+    outline: none;
+  }
+.react-flow__node-input,
+.react-flow__node-default,
+.react-flow__node-output,
+.react-flow__node-group {
+  padding: 10px;
+  border-radius: var(--xy-node-border-radius, var(--xy-node-border-radius-default));
+  width: 150px;
+  font-size: 12px;
+  color: var(--xy-node-color, var(--xy-node-color-default));
+  text-align: center;
+  border: var(--xy-node-border, var(--xy-node-border-default));
+  background-color: var(--xy-node-background-color, var(--xy-node-background-color-default));
+}
+.react-flow__node-input.selectable:hover, .react-flow__node-default.selectable:hover, .react-flow__node-output.selectable:hover, .react-flow__node-group.selectable:hover {
+      box-shadow: var(--xy-node-boxshadow-hover, var(--xy-node-boxshadow-hover-default));
+    }
+.react-flow__node-input.selectable.selected,
+    .react-flow__node-input.selectable:focus,
+    .react-flow__node-input.selectable:focus-visible,
+    .react-flow__node-default.selectable.selected,
+    .react-flow__node-default.selectable:focus,
+    .react-flow__node-default.selectable:focus-visible,
+    .react-flow__node-output.selectable.selected,
+    .react-flow__node-output.selectable:focus,
+    .react-flow__node-output.selectable:focus-visible,
+    .react-flow__node-group.selectable.selected,
+    .react-flow__node-group.selectable:focus,
+    .react-flow__node-group.selectable:focus-visible {
+      box-shadow: var(--xy-node-boxshadow-selected, var(--xy-node-boxshadow-selected-default));
+    }
+.react-flow__node-group {
+  background-color: var(--xy-node-group-background-color, var(--xy-node-group-background-color-default));
+}
+.react-flow__nodesselection-rect,
+.react-flow__selection {
+  background: var(--xy-selection-background-color, var(--xy-selection-background-color-default));
+  border: var(--xy-selection-border, var(--xy-selection-border-default));
+}
+.react-flow__nodesselection-rect:focus,
+  .react-flow__nodesselection-rect:focus-visible,
+  .react-flow__selection:focus,
+  .react-flow__selection:focus-visible {
+    outline: none;
+  }
+.react-flow__controls-button:hover {
+      background: var(
+        --xy-controls-button-background-color-hover-props,
+        var(--xy-controls-button-background-color-hover, var(--xy-controls-button-background-color-hover-default))
+      );
+      color: var(
+        --xy-controls-button-color-hover-props,
+        var(--xy-controls-button-color-hover, var(--xy-controls-button-color-hover-default))
+      );
+    }
+.react-flow__controls-button:disabled {
+      pointer-events: none;
+    }
+.react-flow__controls-button:disabled svg {
+        fill-opacity: 0.4;
+      }
+.react-flow__controls-button:last-child {
+    border-bottom: none;
+  }
+.react-flow__controls.horizontal .react-flow__controls-button {
+    border-bottom: none;
+    border-right: 1px solid
+      var(
+        --xy-controls-button-border-color-props,
+        var(--xy-controls-button-border-color, var(--xy-controls-button-border-color-default))
+      );
+  }
+.react-flow__controls.horizontal .react-flow__controls-button:last-child {
+    border-right: none;
+  }
+.react-flow__resize-control {
+  position: absolute;
+}
+.react-flow__resize-control.left,
+.react-flow__resize-control.right {
+  cursor: ew-resize;
+}
+.react-flow__resize-control.top,
+.react-flow__resize-control.bottom {
+  cursor: ns-resize;
+}
+.react-flow__resize-control.top.left,
+.react-flow__resize-control.bottom.right {
+  cursor: nwse-resize;
+}
+.react-flow__resize-control.bottom.left,
+.react-flow__resize-control.top.right {
+  cursor: nesw-resize;
+}
+/* handle styles */
+.react-flow__resize-control.handle {
+  width: 5px;
+  height: 5px;
+  border: 1px solid #fff;
+  border-radius: 1px;
+  background-color: var(--xy-resize-background-color, var(--xy-resize-background-color-default));
+  translate: -50% -50%;
+}
+.react-flow__resize-control.handle.left {
+  left: 0;
+  top: 50%;
+}
+.react-flow__resize-control.handle.right {
+  left: 100%;
+  top: 50%;
+}
+.react-flow__resize-control.handle.top {
+  left: 50%;
+  top: 0;
+}
+.react-flow__resize-control.handle.bottom {
+  left: 50%;
+  top: 100%;
+}
+.react-flow__resize-control.handle.top.left {
+  left: 0;
+}
+.react-flow__resize-control.handle.bottom.left {
+  left: 0;
+}
+.react-flow__resize-control.handle.top.right {
+  left: 100%;
+}
+.react-flow__resize-control.handle.bottom.right {
+  left: 100%;
+}
+/* line styles */
+.react-flow__resize-control.line {
+  border-color: var(--xy-resize-background-color, var(--xy-resize-background-color-default));
+  border-width: 0;
+  border-style: solid;
+}
+.react-flow__resize-control.line.left,
+.react-flow__resize-control.line.right {
+  width: 1px;
+  transform: translate(-50%, 0);
+  top: 0;
+  height: 100%;
+}
+.react-flow__resize-control.line.left {
+  left: 0;
+  border-left-width: 1px;
+}
+.react-flow__resize-control.line.right {
+  left: 100%;
+  border-right-width: 1px;
+}
+.react-flow__resize-control.line.top,
+.react-flow__resize-control.line.bottom {
+  height: 1px;
+  transform: translate(0, -50%);
+  left: 0;
+  width: 100%;
+}
+.react-flow__resize-control.line.top {
+  top: 0;
+  border-top-width: 1px;
+}
+.react-flow__resize-control.line.bottom {
+  border-bottom-width: 1px;
+  top: 100%;
+}
+.react-flow__edge-textbg {
+  fill: var(--xy-edge-label-background-color, var(--xy-edge-label-background-color-default));
+}
+.react-flow__edge-text {
+  fill: var(--xy-edge-label-color, var(--xy-edge-label-color-default));
+}
+
+:root {
+  --vscode-editor-background: #1e1e1e;
+  --vscode-editor-foreground: #cccccc;
+  --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --vscode-editorWidget-background: #252526;
+  --vscode-panel-border: #333333;
+  --vscode-dropdown-background: #3c3c3c;
+  --vscode-dropdown-border: #3c3c3c;
+  --vscode-dropdown-foreground: #f0f0f0;
+  --vscode-button-background: #0e639c;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #1177bb;
+  --vscode-button-secondaryBackground: #3a3d41;
+  --vscode-button-secondaryForeground: #ffffff;
+  --vscode-button-secondaryHoverBackground: #45494e;
+  --vscode-button-borderRadius: 4px;
+  --vscode-input-borderRadius: 4px;
+  --vscode-descriptionForeground: #8b949e;
+  --vscode-focusBorder: #007fd4;
+  --vscode-charts-blue: #3794ff;
+  --vscode-charts-green: #89d185;
+  --vscode-charts-purple: #c586f6;
+  --vscode-charts-red: #f14c4c;
+  --vscode-charts-yellow: #cca700;
+  --vscode-charts-orange: #d18616;
+  --vscode-inputValidation-warningBackground: #352a05;
+  --vscode-inputValidation-warningBorder: #b89500;
+  --svsch-error-highlight: color-mix(in srgb, var(--vscode-errorForeground, #ff3b30) 88%, #ff3b30);
+  --svsch-error-highlight-fill: color-mix(in srgb, var(--svsch-error-highlight) 9%, transparent);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+text {
+  text-rendering: geometricPrecision;
+}
+
+:root {
+  --svsch-selection-width: 2.5px;
+  --svsch-selection-color: var(--vscode-focusBorder);
+}
+
+.react-flow__node.selected .hdl-node-selection-rect,
+.hdl-node:focus .hdl-node-selection-rect,
+.hdl-node:focus-visible .hdl-node-selection-rect,
+.hdl-bus-node:focus .hdl-node-selection-rect {
+  opacity: 1;
+}
+
+.react-flow__node.selected .hdl-node-array-selection,
+.hdl-node-array:focus .hdl-node-array-selection,
+.hdl-node-array:focus-visible .hdl-node-array-selection {
+  opacity: 1;
+}
+
+/* Error highlight for a block overlapping an unrelated generate arm — reuses the
+   selection outline geometry in the shared error style (red dashed). */
+.react-flow__node.svsch-node-invalid .hdl-node-selection-rect {
+  border-color: var(--svsch-error-highlight);
+  border-style: dashed;
+  opacity: 1;
+}
+
+.react-flow__node.svsch-node-invalid .node-skin-selection,
+.react-flow__node.svsch-node-invalid .port-skin-selection,
+.react-flow__node.svsch-node-invalid .hdl-interface-skin-selection {
+  fill: none;
+  opacity: 1;
+  stroke: var(--svsch-error-highlight);
+  stroke-dasharray: 7 5;
+  stroke-width: var(--svsch-selection-width);
+}
+
+.react-flow__node.svsch-node-invalid .hdl-node-mux .hdl-node-selection-rect,
+.react-flow__node.svsch-node-invalid .hdl-node-select .hdl-node-selection-rect,
+.react-flow__node.svsch-node-invalid .hdl-node-alu .hdl-node-selection-rect,
+.react-flow__node.svsch-node-invalid .hdl-node-inverter .hdl-node-selection-rect {
+  opacity: 0;
+}
+
+.react-flow__node.svsch-node-invalid .hdl-node-array-selection {
+  opacity: 1;
+  stroke: var(--svsch-error-highlight);
+  stroke-dasharray: 7 5;
+}
+
+.react-flow__node.svsch-node-invalid .hdl-net-label::after {
+  border: var(--svsch-selection-width) dashed var(--svsch-error-highlight);
+  content: "";
+  inset: calc(-1 * var(--svsch-selection-width) / 2);
+  pointer-events: none;
+  position: absolute;
+  z-index: 10;
+}
+
+.hdl-node {
+  background: var(--vscode-editorWidget-background);
+  border: none;
+  box-shadow: inset 0 0 0 1px var(--vscode-panel-border);
+  border-radius: 0;
+  color: var(--vscode-editor-foreground);
+  display: grid;
+  gap: 0;
+  grid-template-rows: 16px calc(var(--svsch-node-header-height) - 16px) 1fr;
+  height: var(--svsch-node-height);
+  min-height: var(--svsch-node-height);
+  min-width: var(--svsch-node-width);
+  overflow: visible;
+  padding: 0 10px;
+  position: relative;
+  text-align: left;
+  width: var(--svsch-node-width);
+}
+
+.generate-node-inactive .hdl-node,
+.generate-node-inactive .hdl-bus-node,
+.generate-node-inactive .hdl-net-label,
+.generate-node-inactive.hdl-node,
+.generate-node-inactive.hdl-bus-node,
+.generate-node-inactive.hdl-net-label {
+  filter: grayscale(0.75);
+  opacity: 0.75;
+}
+
+/* Selection brightness must not depend on the arm's active state — the inactive
+   dimming (opacity + grayscale on the node) would fade the selection outline with
+   it, so selection lifts the dimming while the node is selected. */
+.react-flow__node.selected.generate-node-inactive .hdl-node,
+.react-flow__node.selected.generate-node-inactive .hdl-bus-node,
+.react-flow__node.selected.generate-node-inactive .hdl-net-label,
+.react-flow__node.selected .generate-node-inactive.hdl-node,
+.react-flow__node.selected .generate-node-inactive.hdl-bus-node,
+.react-flow__node.selected .generate-node-inactive.hdl-net-label {
+  filter: none;
+  opacity: 1;
+}
+
+.generate-node-active .hdl-node,
+.generate-node-active .hdl-bus-node,
+.generate-node-active .hdl-net-label,
+.generate-node-active.hdl-node,
+.generate-node-active.hdl-bus-node,
+.generate-node-active.hdl-net-label {
+  opacity: 1;
+}
+
+/* "Expand instance in place" (issue #232): the expanded instance's own node
+   stays on screen as a dimmed backdrop — full outline, parameters, port
+   labels and all — behind the unfolded content spliced on top of it (see
+   expandOverlay's dimAsExpandGhost). Same lift-on-select convention as
+   .generate-node-inactive above: selecting the ghost (to reveal the
+   "Collapse" control) restores full brightness rather than fading the
+   selection outline along with the rest of it.
+
+   The interior (the sub-diagram area inside the border ring) is fully
+   transparent: the webview's stacking order paints every node above every
+   wire (see .react-flow__nodes in webview-chrome.css), so any body fill here
+   would veil the spliced wires under it and dim them relative to top-level
+   wires. Only the border-ring grab bands carry the translucent backdrop. */
+.hdl-node-expand-ghost .hdl-node {
+  background: transparent;
+  filter: grayscale(0.4);
+  opacity: 0.35;
+}
+
+.hdl-node-expand-ghost .hdl-node .svsch-node-shape {
+  fill: none;
+}
+
+.hdl-node-expand-ghost .svsch-expand-grab-band {
+  background: var(--vscode-editorWidget-background);
+}
+
+/* The ring's inner boundary, drawn so the user can see where the frame's own
+   grab/interaction area ends and the sub-canvas begins — wire routes are
+   clamped to stay inside it (see OrthogonalEdge's clampPointsToRect pass). */
+.hdl-node-expand-ghost .svsch-expand-content-border {
+  border: 1px dashed var(--vscode-charts-blue);
+  pointer-events: none;
+  position: absolute;
+}
+
+.react-flow__node.selected.hdl-node-expand-ghost .hdl-node {
+  filter: none;
+  opacity: 0.75;
+}
+
+/* While expanded, the boundary-port nodes render each port's label at full
+   brightness exactly where the instance's own (now dimmed) label sits — hide
+   the instance's copy so the two don't read as a doubled label. */
+.hdl-node-expand-ghost .svsch-port-label {
+  visibility: hidden;
+}
+
+/* The sub-diagram area inside the expanded frame behaves like ordinary
+   canvas: the ghost's whole wrapper is pointer-transparent (!important beats
+   React Flow's inline pointerEvents: all), so middle-drag pans and clicks
+   fall through to the pane there. The frame itself is only selectable/
+   draggable from the grab bands HdlNode lays over its reserved border ring
+   (header rows, boundary-label columns, bottom inset — see ExpandGrabBands),
+   plus its resize handles, which sit on that ring anyway. */
+.react-flow__node.hdl-node-expand-ghost {
+  pointer-events: none !important;
+}
+
+.svsch-expand-grab-band {
+  position: absolute;
+}
+
+.hdl-node-expand-ghost .svsch-expand-grab-band {
+  pointer-events: auto;
+}
+
+.hdl-node-expand-ghost .svsch-node-resize-handle {
+  pointer-events: auto;
+}
+
+.hdl-node-has-params {
+  grid-template-rows: 16px var(--svsch-instance-param-height) calc(var(--svsch-node-header-height) - 16px) 1fr;
+}
+
+.hdl-node:focus,
+.hdl-node:focus-visible,
+.hdl-bus-node:focus,
+.hdl-port-skinned:focus {
+  outline: none;
+}
+
+.hdl-node-module,
+.hdl-node-instance {
+  box-shadow: inset 0 0 0 1px var(--vscode-charts-blue);
+  padding: 0 12px;
+}
+
+.hdl-node-module > .node-kind,
+.hdl-node-instance > .node-kind {
+  font-family: var(--vscode-editor-font-family, monospace);
+  padding-top: 6px;
+}
+
+.hdl-node-instance .node-title {
+  max-width: calc(var(--svsch-node-width) - 24px);
+}
+
+.hdl-node-instance .node-port .react-flow__handle-left,
+.hdl-node-instance .node-port .react-flow__handle-right {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  width: 0;
+}
+
+.hdl-node-instance .node-port {
+  padding-left: 0;
+}
+
+.hdl-node-instance .node-port-out {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.hdl-node-register {
+  box-shadow: inset 0 0 0 1px var(--vscode-charts-green);
+  padding: 0 12px;
+}
+
+.hdl-node-register .node-title {
+  max-width: calc(var(--svsch-node-width) - 24px);
+}
+
+.hdl-register-node {
+  overflow: visible;
+}
+
+.hdl-register-node>.node-kind {
+  padding-top: 6px;
+}
+
+.register-clock-glyph {
+  fill: none;
+  height: 12px;
+  overflow: visible;
+  stroke: var(--vscode-charts-green);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.25;
+  width: 12px;
+}
+
+.hdl-node-mux,
+.hdl-node-select,
+.hdl-node-alu,
+.hdl-node-inverter,
+.hdl-node-gate,
+.hdl-node-comparator,
+.hdl-node-zext {
+  background: transparent;
+  box-shadow: none;
+}
+
+.hdl-node-inverter,
+.hdl-node-gate,
+.hdl-node-zext {
+  padding: 0;
+}
+
+/* ── Array stacking layers ─────────────────────────────── */
+
+.hdl-node-array {
+  --svsch-array-content-shift: calc(var(--svsch-grid) / 8);
+  background: transparent;
+  box-shadow: none;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.hdl-node-array-layer {
+  border-radius: inherit;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--svsch-array-border-color, var(--vscode-panel-border));
+  background: var(--vscode-editorWidget-background);
+  box-shadow: inset 0 0 0 1px var(--svsch-array-border-color, var(--vscode-panel-border));
+}
+
+/* Layer offsets come from the SVG transform attribute (see arrayStackGeometry);
+   CSS must not set transform here or it would override the per-node wide spread. */
+.hdl-node-array-back {
+  z-index: 0;
+  opacity: 0.5;
+}
+
+.hdl-node-array-middle {
+  z-index: 1;
+  opacity: 0.75;
+}
+
+.hdl-node-array-front {
+  z-index: 2;
+}
+
+/* Per-kind border colours for array cosmetic layers */
+.hdl-node-register.hdl-node-array .hdl-node-array-layer {
+  --svsch-array-border-color: var(--vscode-charts-green);
+}
+
+.hdl-node-mux.hdl-node-array .hdl-node-array-layer {
+  --svsch-array-border-color: var(--vscode-charts-purple);
+}
+
+.hdl-node-mux.hdl-node-array .mux-array-layer {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.hdl-node-port.hdl-node-array .hdl-node-array-layer,
+.hdl-node-port.hdl-node-array .port-skin-array-layer {
+  --svsch-array-border-color: var(--vscode-charts-yellow);
+}
+
+.hdl-node-array .node-kind,
+.hdl-node-array .node-title,
+.hdl-node-array .instance-parameter-list {
+  transform: translate(calc(-1 * var(--svsch-array-content-shift)), calc(-1 * var(--svsch-array-content-shift)));
+}
+
+.hdl-node-array .node-kind,
+.hdl-node-array .node-title,
+.hdl-node-array .node-ports,
+.hdl-node-array .instance-parameter-list {
+  z-index: 3;
+}
+
+.hdl-node-array .node-kind,
+.hdl-node-array .node-title,
+.hdl-node-array .node-ports,
+.hdl-node-array .instance-parameter-list {
+  position: relative;
+}
+
+.hdl-node-array .port-skin-label {
+  transform: translate(calc(-1 * var(--svsch-array-content-shift)), calc(-1 * var(--svsch-array-content-shift)));
+}
+
+.hdl-node-array .register-clock-glyph {
+  transform: translate(calc(-1 * var(--svsch-array-content-shift)), calc(-1 * var(--svsch-array-content-shift)));
+}
+
+.hdl-node-array .hdl-node-svg .register-clock-glyph {
+  transform: none;
+}
+
+.svsch-array-stack-leads {
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+.svsch-array-stack-leads-target {
+  z-index: 0;
+}
+
+.svsch-array-stack-leads-bottom {
+  z-index: 4;
+}
+
+.svsch-array-stack-leads-source {
+  z-index: 4;
+}
+
+.svsch-array-stack-lead {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--vscode-editor-foreground);
+  stroke-linecap: butt;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+/* Matches .svsch-edge-thick — the lead is a stub of the same wire, so it
+   must carry the same stroke weight where the wire itself renders thick. */
+.svsch-array-stack-lead-thick {
+  stroke-width: 4.5;
+}
+
+.svsch-array-stack-lead-back {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 50%, var(--vscode-editor-background));
+}
+
+.svsch-array-stack-lead-middle {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 75%, var(--vscode-editor-background));
+}
+
+.svsch-array-stack-lead-front {
+  stroke: var(--vscode-editor-foreground);
+}
+
+.hdl-node-mux:focus,
+.hdl-node-select:focus,
+.hdl-node-alu:focus,
+.hdl-node-inverter:focus,
+.hdl-node-gate:focus,
+.hdl-node-comparator:focus,
+.hdl-node-zext:focus {
+  outline: none;
+}
+
+.hdl-node-mux>.node-kind,
+.hdl-node-mux>.node-title,
+.hdl-node-select>.node-kind,
+.hdl-node-select>.node-title,
+.hdl-node-alu>.node-kind,
+.hdl-node-alu>.node-title,
+.hdl-node-inverter>.node-kind,
+.hdl-node-inverter>.node-title,
+.hdl-node-gate>.node-kind,
+.hdl-node-gate>.node-title,
+.hdl-node-comparator>.node-kind,
+.hdl-node-comparator>.node-title,
+.hdl-node-zext>.node-kind,
+.hdl-node-zext>.node-title {
+  display: none;
+}
+
+.hdl-node-comb,
+.hdl-node-loop {
+  box-shadow: inset 0 0 0 1px var(--vscode-charts-red);
+  grid-template-rows: var(--svsch-node-header-height) 1fr;
+  overflow: visible;
+  padding: 0 12px;
+}
+
+.hdl-node-loop {
+  box-shadow: inset 0 0 0 1px var(--vscode-charts-purple);
+}
+
+.hdl-node-comb>.node-kind,
+.hdl-node-loop>.node-kind {
+  padding-top: 6px;
+}
+
+.hdl-node-bus {
+  box-shadow: inset 0 0 0 1px var(--vscode-descriptionForeground);
+}
+
+.hdl-node-port {
+  box-shadow: inset 0 0 0 1px var(--vscode-charts-yellow);
+}
+
+.hdl-node-port {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  height: var(--svsch-port-height);
+  min-height: var(--svsch-port-height);
+  min-width: var(--svsch-port-width);
+  overflow: visible;
+  padding: 0 12px;
+  text-align: center;
+  width: var(--svsch-port-width);
+}
+
+.hdl-port-skinned {
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  padding: 0;
+  position: relative;
+}
+
+.hdl-port-skinned:focus {
+  outline: none;
+}
+
+.hdl-node-port.hdl-port-skinned {
+  box-shadow: none;
+}
+
+.hdl-port-interface .port-skin-body {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 28%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-blue);
+}
+
+.hdl-port-interface .port-skin-selection {
+  stroke: var(--svsch-selection-color);
+}
+
+.hdl-node-unknown {
+  box-shadow: inset 0 0 0 1px var(--vscode-inputValidation-warningBorder);
+}
+
+.hdl-bus-node {
+  background: transparent;
+  border: 0;
+  color: var(--vscode-editor-foreground);
+  height: var(--svsch-node-height);
+  min-height: var(--svsch-node-height);
+  min-width: var(--svsch-node-width);
+  padding: 0;
+  position: relative;
+  text-align: left;
+  width: var(--svsch-node-width);
+}
+
+.hdl-bus-node:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+}
+
+.hdl-bus-node.hdl-bus-breakout .bus-pipe {
+  left: calc(var(--svsch-grid) * 2);
+}
+.hdl-bus-node.hdl-bus-composition .bus-pipe {
+  right: calc(var(--svsch-grid) * 2);
+}
+
+.hdl-bus-node.hdl-bus-array-composition .bus-pipe {
+  background: color-mix(in srgb, var(--vscode-editor-foreground) 72%, var(--vscode-editor-background));
+  right: calc(var(--svsch-grid) * 2.5 - 3px);
+}
+
+.hdl-bus-node.hdl-bus-array-breakout .bus-pipe {
+  background: color-mix(in srgb, var(--vscode-editor-foreground) 72%, var(--vscode-editor-background));
+  left: calc(var(--svsch-grid) * 1.5 - 3px);
+}
+
+.hdl-bus-node.hdl-bus-composition.hdl-bus-array-composition .bus-tap {
+  right: calc(var(--svsch-grid) * 2.5);
+}
+
+.hdl-bus-node.hdl-bus-breakout.hdl-bus-array-breakout .bus-tap {
+  left: calc(var(--svsch-grid) * 1.5);
+}
+
+.hdl-bus-node.hdl-bus-array-composition .bus-pipe::before,
+.hdl-bus-node.hdl-bus-array-breakout .bus-pipe::before {
+  background: linear-gradient(to right, color-mix(in srgb, var(--vscode-editor-foreground) 72%, var(--vscode-editor-background)), color-mix(in srgb, var(--vscode-editor-foreground) 50%, var(--vscode-editor-background)));
+  border-radius: 999px;
+  content: "";
+  height: 6px;
+  position: absolute;
+  left: 2px;
+  top: calc(100% - 3px);
+  transform-origin: left center;
+  transform: translateY(-50%) rotate(45deg);
+  width: 34px;
+}
+
+.hdl-bus-node.hdl-bus-breakout .bus-tap {
+  left: calc(var(--svsch-grid) * 2);
+  right: 0;
+  padding-left: 14px;
+}
+
+.hdl-bus-node.hdl-bus-composition .bus-tap {
+  left: 0;
+  right: calc(var(--svsch-grid) * 2);
+  padding-right: 14px;
+  justify-content: flex-end;
+}
+
+.hdl-bus-node.hdl-bus-breakout .bus-tap::before {
+  left: 3px;
+  right: 0;
+}
+
+.hdl-bus-node.hdl-bus-composition .bus-tap::before {
+  left: 0;
+  right: 3px;
+}
+
+.svsch-port-type-suffix-blue {
+  color: color-mix(in srgb, var(--vscode-charts-blue) 60%, var(--vscode-editor-foreground));
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 60%, var(--vscode-editor-foreground));
+  margin-left: 2px;
+  font-weight: bold;
+}
+
+.svsch-port-type-suffix {
+  fill: currentColor;
+  margin-left: 2px;
+  font-weight: bold;
+}
+
+.svsch-port-width-suffix {
+  opacity: 0.8;
+  font-size: 0.9em;
+}
+
+.hdl-interface-node .bus-pipe,
+.hdl-interface-node .bus-tap::before {
+  background: color-mix(in srgb, var(--vscode-charts-blue) 72%, var(--vscode-editor-foreground));
+}
+
+.hdl-interface-instance {
+  background: transparent;
+  border: 0;
+}
+
+.hdl-interface-skin {
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+}
+
+.hdl-interface-skin-body {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 12%, var(--vscode-editor-background));
+  stroke: color-mix(in srgb, var(--vscode-charts-blue) 60%, var(--vscode-editor-foreground));
+  stroke-width: 1.5;
+}
+
+.hdl-interface-skin-selection {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 3;
+}
+
+.hdl-interface-instance:hover .hdl-interface-skin-selection {
+  stroke: var(--svsch-selection-color);
+  opacity: 0.5;
+}
+
+.hdl-interface-instance.selected .hdl-interface-skin-selection {
+  stroke: var(--svsch-selection-color);
+  opacity: 1;
+}
+
+.hdl-bus-node.hdl-interface-modport .bus-tap-left,
+.hdl-bus-node.hdl-interface-instance .bus-tap-left {
+  left: 0;
+  right: 50%;
+  padding-left: 0;
+  padding-right: 14px;
+  justify-content: flex-end;
+}
+
+.hdl-bus-node.hdl-interface-modport .bus-tap-left::before,
+.hdl-bus-node.hdl-interface-instance .bus-tap-left::before {
+  left: 0;
+  right: 3px;
+}
+
+.hdl-bus-node.hdl-interface-modport .bus-tap-right,
+.hdl-bus-node.hdl-interface-instance .bus-tap-right {
+  left: 50%;
+  right: 0;
+  padding-left: 14px;
+  padding-right: 0;
+  justify-content: flex-start;
+}
+
+.hdl-bus-node.hdl-interface-modport .bus-tap-right::before,
+.hdl-bus-node.hdl-interface-instance .bus-tap-right::before {
+  left: 3px;
+  right: 0;
+}
+
+.hdl-bus-node.hdl-interface-instance .bus-tap-left {
+  justify-content: flex-start;
+  padding-left: 14px;
+  padding-right: 0;
+}
+
+.hdl-bus-node.hdl-interface-instance .bus-tap-right {
+  justify-content: flex-end;
+  padding-left: 0;
+  padding-right: 14px;
+}
+
+.hdl-bus-node.hdl-interface-instance .bus-tap-left::before,
+.hdl-bus-node.hdl-interface-instance .bus-tap-right::before {
+  display: none;
+}
+
+.hdl-bus-node.hdl-interface-modport .bus-pipe {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+.svsch-type-label {
+  pointer-events: all;
+}
+
+.svsch-type-label:hover {
+  filter: brightness(1.2);
+}
+
+.hdl-bus-node .react-flow__handle-left,
+.hdl-bus-node .react-flow__handle-right,
+.bus-tap .react-flow__handle-right,
+.bus-tap .react-flow__handle-left {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  pointer-events: all;
+  width: 0;
+}
+
+.hdl-bus-node.hdl-bus-breakout .bus-tap .react-flow__handle-right {
+  right: 0;
+}
+
+.hdl-bus-node.hdl-bus-composition .bus-tap .react-flow__handle-left {
+  left: 0;
+}
+
+.port-skin {
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+}
+
+.mux-skin .node-skin-body,
+.select-skin .node-skin-body {
+  fill: color-mix(in srgb, var(--vscode-charts-purple) 12%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-purple);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.alu-skin .node-skin-body {
+  fill: color-mix(in srgb, var(--vscode-charts-orange) 14%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-orange);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.inverter-skin .node-skin-body {
+  fill: none;
+  stroke: white;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.inverter-skin .inverter-bubble {
+  fill: none;
+}
+
+.gate-skin .node-skin-body {
+  fill: color-mix(in srgb, white 36%, var(--vscode-editor-background));
+  stroke: white;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.gate-skin .gate-bubble {
+  fill: none;
+}
+
+.hdl-node-gate .gate-back-curve.svsch-node-shape {
+  fill: none;
+}
+
+.node-skin-selection {
+  fill: none;
+  opacity: 0;
+  stroke: var(--svsch-selection-color);
+  stroke-linejoin: round;
+  stroke-width: var(--svsch-selection-width);
+}
+
+.react-flow__node.selected .node-skin-selection,
+.hdl-node-mux:focus .node-skin-selection,
+.hdl-node-mux:focus-visible .node-skin-selection,
+.hdl-node-select:focus .node-skin-selection,
+.hdl-node-select:focus-visible .node-skin-selection,
+.hdl-node-alu:focus .node-skin-selection,
+.hdl-node-alu:focus-visible .node-skin-selection,
+.hdl-node-inverter:focus .node-skin-selection,
+.hdl-node-inverter:focus-visible .node-skin-selection,
+.hdl-node-gate:focus .node-skin-selection,
+.hdl-node-gate:focus-visible .node-skin-selection,
+.hdl-node-comparator:focus .node-skin-selection,
+.hdl-node-comparator:focus-visible .node-skin-selection,
+.hdl-node-zext:focus .node-skin-selection,
+.hdl-node-zext:focus-visible .node-skin-selection {
+  opacity: 1;
+}
+
+.port-skin-input .port-skin-body {
+  fill: color-mix(in srgb, var(--vscode-charts-yellow) 36%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-yellow);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.port-skin-output .port-skin-body {
+  fill: color-mix(in srgb, var(--vscode-charts-yellow) 36%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-yellow);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.port-skin-array-layer {
+  fill: color-mix(in srgb, var(--vscode-charts-yellow) 36%, var(--vscode-editor-background));
+  pointer-events: none;
+  stroke: var(--svsch-array-border-color, var(--vscode-charts-yellow));
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+/* Offsets come from the SVG transform attribute — do not set transform here. */
+.port-skin-array-back {
+  opacity: 0.5;
+}
+
+.port-skin-array-middle {
+  opacity: 0.75;
+}
+
+.port-skin-selection {
+  fill: none;
+  opacity: 0;
+  stroke: var(--svsch-selection-color);
+  stroke-linejoin: round;
+  stroke-width: var(--svsch-selection-width);
+}
+
+.react-flow__node.selected .port-skin-selection,
+.hdl-port-skinned:focus .port-skin-selection,
+.hdl-port-skinned:focus-visible .port-skin-selection {
+  opacity: 1;
+}
+
+.svsch-param-token {
+  color: var(--vscode-descriptionForeground);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.hdl-node-svg .svsch-param-token {
+  fill: var(--vscode-descriptionForeground);
+  pointer-events: all;
+  text-decoration: none;
+}
+
+.port-skin-harness .port-skin-body {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 12%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-blue);
+  stroke-width: 1.5;
+}
+
+.hdl-node-comb .node-port .react-flow__handle-left,
+.hdl-node-comb .node-port .react-flow__handle-right,
+.hdl-node-loop .node-port .react-flow__handle-left,
+.hdl-node-loop .node-port .react-flow__handle-right {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  width: 0;
+}
+
+/* Push all node-port handles to the block boundary to prevent lead-spill */
+.hdl-node .node-port .react-flow__handle-left { left: -10px; }
+.hdl-node .node-port .react-flow__handle-right { right: -10px; }
+
+/* Nodes with 12px padding need a larger offset */
+.hdl-node-comb .node-port .react-flow__handle-left,
+.hdl-node-loop .node-port .react-flow__handle-left,
+.hdl-node-instance .node-port .react-flow__handle-left { left: -12px; }
+
+.hdl-node-comb .node-port .react-flow__handle-right,
+.hdl-node-loop .node-port .react-flow__handle-right,
+.hdl-node-instance .node-port .react-flow__handle-right { right: -12px; }
+
+.hdl-node-comb .node-port,
+.hdl-node-loop .node-port {
+  padding-left: 12px;
+}
+
+.hdl-node-comb .node-port-out,
+.hdl-node-loop .node-port-out {
+  padding-left: 0;
+  padding-right: 12px;
+}
+
+.hdl-node-literal,
+.hdl-node-replicate {
+  background: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-editor-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.hdl-node-replicate {
+  border-color: var(--vscode-charts-red);
+}
+
+.svsch-repeat-label {
+  cursor: default;
+}
+
+.svsch-repeat-label-clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+.hdl-node-svg .svsch-repeat-label-clickable {
+  pointer-events: all;
+}
+
+.hdl-node-literal .react-flow__handle-right,
+.hdl-node-replicate .react-flow__handle-left,
+.hdl-node-replicate .react-flow__handle-right {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  top: 50%;
+  width: 0;
+}
+
+.hdl-node-replicate .react-flow__handle-left {
+  left: 0;
+}
+
+.hdl-node-replicate .react-flow__handle-right {
+  right: 0;
+}
+
+.hdl-net-label {
+  --svsch-net-label-text-gap: 2px;
+  --svsch-net-label-wire-half: 0.75px;
+  --svsch-net-label-wire-height: 1.5px;
+  color: var(--vscode-editor-foreground);
+  display: block;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  height: var(--svsch-node-height);
+  line-height: 1;
+  overflow: visible;
+  position: relative;
+  width: var(--svsch-node-width);
+}
+
+.hdl-net-label-wire-svg .svsch-edge-net-highlight {
+  stroke-width: 9;
+}
+
+/* Tool-invented labels (NET_3, u_alu.result, ...) read as italic; a label
+   that matches the net's actual declared SV name stays regular/upright. */
+.hdl-net-label-text-synthetic {
+  font-style: italic;
+}
+
+.hdl-net-label-alias-marker {
+  color: var(--vscode-descriptionForeground, var(--vscode-editor-foreground));
+  cursor: default;
+  font-style: normal;
+  margin-left: 1px;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.hdl-net-label-wire-svg {
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+}
+
+.hdl-net-label .react-flow__handle {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  pointer-events: all;
+  width: 0;
+}
+
+.hdl-net-label .react-flow__handle-left {
+  left: 0;
+  top: 50%;
+}
+
+.hdl-net-label .react-flow__handle-right {
+  right: 0;
+  top: 50%;
+}
+
+.hdl-net-label .react-flow__handle-top {
+  left: 50%;
+  top: 0;
+}
+
+.hdl-net-label .react-flow__handle-bottom {
+  bottom: 0;
+  left: 50%;
+}
+
+/* Boundary-port node ("Expand instance in place", issue #232) — label-only,
+   anchored flush to the expanded node's border. The 12px padding on the
+   outer side is the same border inset the instance's own port labels use
+   (InstanceNodeSvg's `x={12}`/`x={width - 12}`), so the label doesn't shift
+   horizontally when the instance expands; the flex-growing lead fills the
+   rest of the node from the label's inner edge to the inner handle, so no
+   wire segment is ever drawn across the text. */
+.hdl-boundary-port {
+  align-items: center;
+  box-sizing: border-box;
+  color: var(--vscode-editor-foreground);
+  display: flex;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  gap: 4px;
+  height: var(--svsch-node-height);
+  overflow: visible;
+  position: relative;
+  width: var(--svsch-node-width);
+}
+
+.hdl-boundary-port-outer-left {
+  padding-left: 12px;
+}
+
+.hdl-boundary-port-outer-right {
+  padding-right: 12px;
+}
+
+.hdl-boundary-port-text {
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.hdl-boundary-port-selected .hdl-boundary-port-text {
+  color: var(--vscode-focusBorder);
+}
+
+/* The visible continuation of the internal wire on the label's other side —
+   1.5px tall to match .svsch-edge's stroke-width, vertically centered on the
+   same y the handles (top: 50%) put the wire endpoints on. */
+.hdl-boundary-port-lead {
+  background: color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background));
+  flex: 1;
+  height: 1.5px;
+}
+
+/* Wire-style variants mirroring the edge classes so the lead reads as a stub
+   of the wire it continues: 4.5px matches .svsch-edge-thick, and the 8px
+   striped bands recreate .svsch-edge-struct / .svsch-edge-interface's
+   pattern strokes (2px stripes on a 10px 45° period over the same dimmed
+   -bg backing color) with a CSS gradient, since the lead is a span, not an
+   SVG path that could reference the shared <pattern> defs. */
+.hdl-boundary-port-lead-thick {
+  height: 4.5px;
+}
+
+.hdl-boundary-port-lead-struct,
+.hdl-boundary-port-lead-interface {
+  background-color: color-mix(in srgb, color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background)) 50%, var(--vscode-editor-background));
+  height: 8px;
+}
+
+.hdl-boundary-port-lead-struct {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--vscode-editor-foreground) 0,
+    var(--vscode-editor-foreground) 2px,
+    transparent 2px,
+    transparent 10px
+  );
+}
+
+.hdl-boundary-port-lead-interface {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--vscode-charts-blue) 60%, var(--vscode-editor-foreground)) 0,
+    color-mix(in srgb, var(--vscode-charts-blue) 60%, var(--vscode-editor-foreground)) 2px,
+    transparent 2px,
+    transparent 10px
+  );
+}
+
+.hdl-boundary-port-selected .hdl-boundary-port-lead {
+  background: var(--vscode-focusBorder);
+}
+
+.hdl-boundary-port .react-flow__handle {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  pointer-events: all;
+  width: 0;
+}
+
+.hdl-boundary-port .react-flow__handle-left {
+  left: 0;
+  top: 50%;
+}
+
+.hdl-boundary-port .react-flow__handle-right {
+  right: 0;
+  top: 50%;
+}
+
+.hdl-node-inverter>.react-flow__handle-left,
+.hdl-node-inverter>.react-flow__handle-right {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  pointer-events: all;
+  width: 0;
+}
+
+.hdl-node-inverter>.react-flow__handle-left {
+  left: 0;
+}
+
+.hdl-node-inverter>.react-flow__handle-right {
+  right: 0;
+}
+
+.hdl-node-zext>.react-flow__handle-left,
+.hdl-node-zext>.react-flow__handle-right {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  pointer-events: all;
+  width: 0;
+}
+
+.hdl-node-zext>.react-flow__handle-left {
+  left: 0;
+}
+
+.hdl-node-zext>.react-flow__handle-right {
+  right: 0;
+}
+
+.hdl-node-port .react-flow__handle-left {
+  left: var(--svsch-handle-offset);
+  top: 50%;
+}
+
+.hdl-node-port .react-flow__handle-right {
+  right: var(--svsch-handle-offset);
+  top: 50%;
+}
+
+.hdl-port-skinned .react-flow__handle-right {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  right: 0;
+  width: 0;
+}
+
+.hdl-port-skinned .react-flow__handle-left {
+  background: transparent;
+  border: 0;
+  height: 0;
+  min-height: 0;
+  min-width: 0;
+  left: 0;
+  width: 0;
+}
+
+.svsch-edge,
+.svsch-edge-bridge {
+  fill: none;
+  pointer-events: stroke;
+}
+
+.svsch-edge-jump-halo {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--vscode-editor-background);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 12;
+}
+
+.svsch-edge {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.generate-edge-inactive .svsch-edge,
+.generate-edge-inactive.svsch-edge {
+  opacity: 0.75;
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 42%, var(--vscode-editor-background));
+}
+
+.generate-edge-inactive .svsch-edge-jump-halo {
+  opacity: 0.75;
+}
+
+/* Descendant form: the webview nests the label's foreignObject inside the
+   edge's own generate-edge-inactive-classed group element. Same-element
+   form: the CLI static renderer puts both classes directly on the label's
+   own text element. */
+.generate-edge-inactive .svsch-edge-label,
+.generate-edge-inactive.svsch-edge-label {
+  opacity: 0.75;
+}
+
+.generate-edge-active .svsch-edge,
+.generate-edge-active.svsch-edge {
+  opacity: 1;
+}
+
+.svsch-edge-stacked {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 75%, var(--vscode-editor-background));
+}
+
+.svsch-edge-stacked-back {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 50%, var(--vscode-editor-background));
+  pointer-events: none;
+}
+
+.svsch-edge-stacked-front {
+  stroke: var(--vscode-editor-foreground);
+  pointer-events: none;
+}
+
+.svsch-edge-stacked-breakout {
+  stroke: var(--vscode-editor-foreground);
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.svsch-edge-stacked-side {
+  pointer-events: none;
+}
+
+.svsch-stack-gradient-front-stop {
+  stop-color: var(--vscode-editor-foreground);
+}
+
+.svsch-stack-gradient-middle-stop {
+  stop-color: color-mix(in srgb, var(--vscode-editor-foreground) 75%, var(--vscode-editor-background));
+}
+
+.svsch-stack-gradient-back-stop {
+  stop-color: color-mix(in srgb, var(--vscode-editor-foreground) 50%, var(--vscode-editor-background));
+}
+
+.svsch-stack-gradient-regular-stop {
+  stop-color: color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background));
+}
+
+.svsch-edge-thick {
+  stroke-width: 4.5;
+}
+
+.svsch-edge-struct {
+  stroke: url("#svsch-struct-stripes");
+  stroke-linecap: butt;
+  stroke-width: 8;
+}
+
+.svsch-edge-interface {
+  stroke: url("#svsch-interface-stripes");
+  stroke-linecap: butt;
+  stroke-width: 8;
+}
+
+.svsch-edge-interface-bg,
+.svsch-edge-struct-bg {
+  stroke: color-mix(in srgb, color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background)) 50%, var(--vscode-editor-background));
+  stroke-width: 8;
+}
+
+/* Stripe width stays aligned with .svsch-interface-stripe. */
+.svsch-struct-stripe {
+  stroke: var(--vscode-editor-foreground);
+  stroke-width: 2;
+}
+
+.svsch-edge-net-highlight-group {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.svsch-edge-net-highlight {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--vscode-focusBorder);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 12;
+}
+
+.svsch-edge-overlap-hint {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--svsch-error-highlight);
+  stroke-dasharray: 7 5;
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+
+.svsch-edge-junction {
+  fill: color-mix(in srgb, var(--vscode-editor-foreground) 78%, var(--vscode-editor-background));
+  pointer-events: none;
+  stroke: var(--vscode-editor-background);
+  stroke-width: 0.75;
+}
+
+.svsch-edge-junction-interface {
+  fill: color-mix(in srgb, var(--vscode-editor-foreground) 92%, var(--vscode-charts-blue));
+  stroke-width: 2.5;
+}
+
+.svsch-edge-junction-struct {
+  fill: var(--vscode-editor-foreground);
+  stroke-width: 2.5;
+}
+
+.svsch-edge-junction-stacked-dot {
+  fill: var(--vscode-editor-foreground);
+  stroke-width: 0.5;
+}
+
+/* Same shade as the {} port designator (.svsch-port-type-suffix-blue). */
+.svsch-interface-stripe {
+  stroke: color-mix(in srgb, var(--vscode-charts-blue) 60%, var(--vscode-editor-foreground));
+  stroke-width: 2;
+}
+
+.svsch-edge-label {
+  color: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Plain text sitting just above the wire, matching the cut-net label
+   convention (.hdl-net-label-text) — no box/background of its own. */
+.svsch-edge-label div {
+  display: block;
+  line-height: 13px;
+  max-width: 120px;
+  overflow: hidden;
+  padding: 0 3px;
+  text-align: left;
+  text-overflow: ellipsis;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* ── SVG-native node components ─────────────────────────── */
+
+/* Node background rect/path */
+.svsch-node-shape {
+  fill: var(--vscode-editorWidget-background);
+  stroke: var(--vscode-panel-border);
+  stroke-width: 1;
+}
+
+.svsch-literal-shape {
+  fill: var(--vscode-editor-background);
+  stroke: var(--vscode-editor-foreground);
+  stroke-width: 1;
+}
+
+/* Per-kind stroke colors — match existing box-shadow: inset colors */
+.hdl-node-register .svsch-node-shape,
+.hdl-node-latch .svsch-node-shape,
+.svsch-node-shape.hdl-node-register,
+.svsch-node-shape.hdl-node-latch {
+  stroke: var(--vscode-charts-green);
+}
+.hdl-node-instance .svsch-node-shape,
+.hdl-node-module .svsch-node-shape,
+.svsch-node-shape.hdl-node-instance {
+  stroke: var(--vscode-charts-blue);
+}
+.hdl-node-comb .svsch-node-shape,
+.svsch-node-shape.hdl-node-comb {
+  stroke: var(--vscode-charts-red);
+}
+.hdl-node-loop .svsch-node-shape,
+.svsch-node-shape.hdl-node-loop {
+  stroke: var(--vscode-charts-purple);
+}
+.hdl-bus-node .svsch-node-shape,
+.svsch-node-shape.hdl-bus-node {
+  stroke: var(--vscode-descriptionForeground);
+}
+
+/* Shaped nodes (mux/select/alu/inverter) override fill+stroke */
+.hdl-node-mux .svsch-node-shape,
+.hdl-node-select .svsch-node-shape,
+.svsch-node-shape.hdl-node-mux,
+.svsch-node-shape.hdl-node-select {
+  fill: color-mix(in srgb, var(--vscode-charts-purple) 12%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-purple);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+.hdl-node-alu .svsch-node-shape,
+.svsch-node-shape.hdl-node-alu {
+  fill: color-mix(in srgb, var(--vscode-charts-orange) 14%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-orange);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+.hdl-node-inverter .svsch-node-shape,
+.svsch-node-shape.hdl-node-inverter {
+  fill: none;
+  stroke: white;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+.hdl-node-gate .svsch-node-shape,
+.svsch-node-shape.hdl-node-gate {
+  fill: color-mix(in srgb, white 36%, var(--vscode-editor-background));
+  stroke: white;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+.hdl-node-comparator .svsch-node-shape,
+.svsch-node-shape.hdl-node-comparator {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 14%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-blue);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+.hdl-node-zext .svsch-node-shape,
+.svsch-node-shape.hdl-node-zext {
+  fill: color-mix(in srgb, var(--vscode-descriptionForeground) 10%, var(--vscode-editor-background));
+  stroke: var(--vscode-descriptionForeground);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+.hdl-node-replicate .svsch-node-shape,
+.svsch-node-shape.hdl-node-replicate {
+  fill: var(--vscode-editor-background);
+  stroke: var(--vscode-charts-red);
+}
+.hdl-node-replicate .svsch-repeat-label-underline {
+  stroke: var(--vscode-editor-foreground);
+}
+
+/* Array stack layers */
+.svsch-array-layer-back {
+  fill: var(--vscode-editorWidget-background);
+  stroke: var(--svsch-array-border-color, var(--vscode-panel-border));
+  stroke-width: 1;
+}
+.svsch-array-layer-middle {
+  fill: var(--vscode-editorWidget-background);
+  stroke: var(--svsch-array-border-color, var(--vscode-panel-border));
+  stroke-width: 1;
+}
+.hdl-node-register .svsch-array-layer-back,
+.hdl-node-register .svsch-array-layer-middle,
+.hdl-node-latch .svsch-array-layer-back,
+.hdl-node-latch .svsch-array-layer-middle {
+  --svsch-array-border-color: var(--vscode-charts-green);
+}
+.hdl-node-mux .svsch-array-layer-back,
+.hdl-node-mux .svsch-array-layer-middle,
+.hdl-node-select .svsch-array-layer-back,
+.hdl-node-select .svsch-array-layer-middle {
+  --svsch-array-border-color: var(--vscode-charts-purple);
+}
+
+/* Text elements */
+.svsch-node-kind {
+  fill: var(--vscode-descriptionForeground);
+  font-size: 10px;
+  font-family: var(--vscode-font-family, sans-serif);  /* UI font, matches old .node-kind */
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
+/* Instance/module kind uses monospace (matches old CSS rule) */
+.hdl-node-instance .svsch-node-kind,
+.hdl-node-module .svsch-node-kind {
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+.svsch-node-title {
+  fill: var(--vscode-editor-foreground);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--vscode-editor-font-family, monospace);
+  pointer-events: none;
+  user-select: none;
+}
+
+.svsch-svg-array-index {
+  fill: color-mix(in srgb, var(--vscode-editor-foreground) 45%, transparent);
+  font-size: inherit;
+  font-weight: 400;
+}
+
+.svsch-literal-content {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  font-weight: 400;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hdl-node-literal .svsch-literal-type-label {
+  fill: var(--vscode-descriptionForeground);
+  font-size: 0.9em;
+  font-weight: 400;
+  pointer-events: all;
+}
+
+.hdl-node-literal .svsch-literal-type-label.svsch-svg-link {
+  cursor: pointer;
+}
+
+.hdl-node-literal .svsch-literal-type-link-underline {
+  stroke: var(--vscode-descriptionForeground);
+}
+
+.hdl-register-node .svsch-register-type-label {
+  fill: var(--vscode-descriptionForeground);
+  font-size: 0.9em;
+  font-weight: 400;
+  pointer-events: all;
+}
+
+.hdl-register-node .svsch-register-type-label.svsch-svg-link {
+  cursor: pointer;
+}
+
+.hdl-register-node .svsch-register-type-link-underline {
+  stroke: var(--vscode-descriptionForeground);
+}
+
+.hdl-register-node .svsch-register-width-suffix {
+  font-weight: 400;
+}
+
+.svsch-port-label {
+  fill: var(--vscode-editor-foreground);
+  font-size: 11px;
+  font-family: var(--vscode-editor-font-family, monospace);
+  pointer-events: none;
+  user-select: none;
+}
+
+.hdl-node-port .svsch-port-node-label {
+  font-size: 12px;
+}
+
+.hdl-node-port .svsch-port-type-label,
+.hdl-node-port .svsch-port-modport-label {
+  fill: var(--vscode-descriptionForeground);
+  font-size: 0.9em;
+  font-weight: 400;
+  pointer-events: all;
+}
+
+.hdl-node-port .svsch-port-type-label.svsch-svg-link,
+.hdl-node-port .svsch-port-modport-label.svsch-svg-link {
+  cursor: pointer;
+}
+
+.hdl-node-svg .svsch-svg-link-underline {
+  fill: none;
+  pointer-events: none;
+  stroke-dasharray: 1 2;
+  stroke-linecap: round;
+  stroke-width: 1;
+}
+
+.hdl-node-svg .svsch-param-token-underline {
+  stroke: var(--vscode-descriptionForeground);
+}
+
+.hdl-node-port .svsch-port-type-link-underline {
+  stroke: var(--vscode-descriptionForeground);
+}
+.svsch-instance-param {
+  fill: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 10px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.svsch-instance-param-chip-bg {
+  fill: color-mix(in srgb, var(--vscode-editorWidget-background) 80%, var(--vscode-descriptionForeground));
+  stroke: color-mix(in srgb, var(--vscode-panel-border) 65%, var(--vscode-descriptionForeground));
+  stroke-width: 1;
+}
+
+.svsch-instance-param-name {
+  fill: var(--vscode-editor-foreground);
+  font-weight: 600;
+}
+
+.svsch-instance-param-value {
+  fill: var(--vscode-descriptionForeground);
+}
+
+.svsch-instance-param .svsch-param-token {
+  cursor: pointer;
+  fill: var(--vscode-descriptionForeground);
+  pointer-events: all;
+  text-decoration: none;
+}
+.svsch-array-badge {
+  fill: var(--vscode-descriptionForeground);
+  font-size: 10px;
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+
+/* Bus elements */
+.svsch-bus-pipe {
+  fill: color-mix(in srgb, var(--vscode-editor-foreground) 72%, transparent);
+}
+
+.svsch-bus-pipe-array {
+  fill: color-mix(in srgb, var(--vscode-editor-foreground) 72%, var(--vscode-editor-background));
+}
+
+/* Struct trunk: same dimmed underlay + stripe pattern as struct wires. */
+.svsch-bus-pipe-struct-bg {
+  fill: color-mix(in srgb, color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background)) 50%, var(--vscode-editor-background));
+}
+
+.svsch-bus-pipe-struct {
+  fill: url("#svsch-struct-stripes");
+}
+
+.svsch-bus-array-pipe-cap {
+  pointer-events: none;
+}
+
+.svsch-bus-array-cap-stop-strong {
+  stop-color: color-mix(in srgb, var(--vscode-editor-foreground) 72%, var(--vscode-editor-background));
+}
+
+.svsch-bus-array-cap-stop-dim {
+  stop-color: color-mix(in srgb, var(--vscode-editor-foreground) 50%, var(--vscode-editor-background));
+}
+.svsch-bus-tap-line {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 72%, transparent);
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Multi-bit (or typedef) tap connections match the thick wire weight. */
+.svsch-bus-tap-line-thick {
+  stroke-width: 4.5;
+}
+.svsch-bus-tap-label {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 12px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hdl-interface-node .svsch-bus-pipe {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 72%, var(--vscode-editor-foreground));
+}
+
+.hdl-interface-node .svsch-bus-tap-line {
+  stroke: color-mix(in srgb, var(--vscode-charts-blue) 72%, var(--vscode-editor-foreground));
+}
+
+.hdl-interface-node .svsch-bus-tap-label,
+.hdl-interface-node .svsch-interface-side-label {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 36%, var(--vscode-editor-foreground));
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 12px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hdl-interface-node .svsch-interface-port-label {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 45%, var(--vscode-editor-foreground));
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 10px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.svsch-bus-tap-label .svsch-struct-field-annotation {
+  fill: color-mix(in srgb, var(--vscode-editor-foreground) 48%, var(--vscode-editor-background));
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.hdl-interface-instance .svsch-interface-instance-title {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.hdl-interface-instance .svsch-interface-type-label {
+  fill: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.hdl-interface-node .svsch-interface-modport-title {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 45%, var(--vscode-editor-foreground));
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: all;
+}
+
+.svsch-bus-tap,
+.svsch-bus-tap-label,
+.svsch-interface-field-label,
+.svsch-interface-side-label {
+  pointer-events: all;
+}
+
+.hdl-interface-node .svsch-svg-link {
+  cursor: pointer;
+  pointer-events: all;
+  text-decoration: none;
+}
+
+.hdl-interface-node .svsch-svg-link-underline {
+  fill: none;
+  pointer-events: none;
+  stroke-dasharray: 1 2;
+  stroke-linecap: round;
+  stroke-width: 1;
+}
+
+.hdl-interface-node .svsch-interface-side-link-underline,
+.hdl-interface-node .svsch-interface-field-link-underline,
+.hdl-interface-node .svsch-interface-modport-link-underline {
+  stroke: color-mix(in srgb, var(--vscode-charts-blue) 36%, var(--vscode-editor-foreground));
+}
+
+.hdl-interface-node .svsch-interface-type-link-underline {
+  stroke: var(--vscode-descriptionForeground);
+}
+
+/* Mux select lead */
+.svsch-mux-select-lead {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background));
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* Multi-bit select connections match the thick wire weight. */
+.svsch-mux-select-lead-thick {
+  stroke-width: 4.5;
+}
+
+/* Register clock glyph (already exists in CSS, adding SVG path rule) */
+.register-clock-glyph path {
+  fill: none;
+  stroke: var(--vscode-editor-foreground);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+
+/* Override clock glyph stroke for register/latch nodes to use green */
+.hdl-node-register .register-clock-glyph path,
+.hdl-node-latch .register-clock-glyph path {
+  stroke: var(--vscode-charts-green);
+  fill: none;
+}
+
+/* SVG container inside node button — z-index 2 keeps it above z-index 1 compat layers */
+.hdl-node-svg {
+  display: block;
+  overflow: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* SVG components own the border — suppress the HTML button's box-shadow */
+.hdl-node:has(> .hdl-node-svg) {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Port skin: in SVG the direction class and body class are on the same element,
+   not ancestor+descendant as in the HTML skin. Add combined selectors. */
+path.port-skin-body.port-skin-input,
+path.port-skin-body.port-skin-output {
+  fill: color-mix(in srgb, var(--vscode-charts-yellow) 36%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-yellow);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+path.port-skin-body.port-skin-harness {
+  fill: color-mix(in srgb, var(--vscode-charts-blue) 28%, var(--vscode-editor-background));
+  stroke: var(--vscode-charts-blue);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+/* Hide handle circles on SVG-rendered nodes — handles stay functional but invisible */
+.hdl-node:has(> .hdl-node-svg) .react-flow__handle {
+  background: transparent;
+  border: 0;
+}
+
+/* Remove X-axis shift from handle transform so handles sit exactly at the node boundary */
+.hdl-node:has(> .hdl-node-svg) .react-flow__handle-left {
+  transform: translateY(-50%);
+}
+.hdl-node:has(> .hdl-node-svg) .react-flow__handle-right {
+  transform: translateY(-50%);
+}
+
+/* Array layer offsets come from the SVG transform attribute (arrayStackGeometry),
+   which is conditional on element width — CSS must not override it. */
+
+/* ALU operation symbol: white fill for visibility inside the shaped body */
+.svsch-alu-operation {
+  fill: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ── Fix double-rendering: suppress HTML content that duplicates SVG rendering ── */
+
+/* Literal/replicate nodes have their own border+background — clear them when SVG is present */
+.hdl-node-literal:has(> .hdl-node-svg),
+.hdl-node-replicate:has(> .hdl-node-svg) {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Bus tap lines are drawn via ::before pseudo-elements — SVG now draws them instead */
+.hdl-bus-node:has(> .hdl-node-svg) .bus-tap::before,
+.hdl-bus-node:has(> .hdl-node-svg) .bus-pipe {
+  display: none;
+}
+
+/* Interface modport tap line ::before elements (colored blue) */
+.hdl-bus-node:has(> .hdl-node-svg) .bus-tap-left::before,
+.hdl-bus-node:has(> .hdl-node-svg) .bus-tap-right::before {
+  display: none;
+}
+:root {
+  --vscode-editor-background: #1e1e1e;
+  --vscode-editor-foreground: #cccccc;
+  --vscode-descriptionForeground: #8b949e;
+  --vscode-editorWidget-background: #252526;
+  --vscode-charts-blue: #3794ff;
+  --vscode-charts-green: #89d185;
+  --vscode-charts-red: #f14c4c;
+  --vscode-charts-purple: #c586f6;
+  --vscode-charts-orange: #d18616;
+  --vscode-charts-yellow: #cca700;
+  --svsch-edge-color: #949494;
+  --svsch-edge-stacked-back: #757575;
+  --svsch-edge-stacked-middle: #a1a1a1;
+  --svsch-edge-stacked-front: #cccccc;
+  --svsch-interface-stripe: #9fbbdb;
+  --svsch-interface-bg-edge: #595959;
+  --svsch-mux-fill: #322a38;
+  --svsch-alu-fill: #372d1d;
+  --svsch-interface-fill: #212c39;
+  --svsch-interface-stroke: #73aaeb;
+  --svsch-interface-port-fill: #253f5d;
+  --svsch-port-skin-fill: #5d4f13;
+  --svsch-port-skin-stroke: #cca700;
+  --svsch-label-background: #252526;
+  --svsch-label-border: #8b949e;
+  --svsch-node-fill: #252526;
+  --svsch-node-border: #3794ff;
+  --svsch-node-header: #252526;
+  --svsch-port-fill: #5d4f13;
+  --svsch-port-border: #cca700;
+}
+.svsch-diagram { background: none; }
+.svsch-net-label {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  dominant-baseline: middle;
+}
+/* diagram.css sets a text color on this class for the webview's HTML
+   foreignObject span — an SVG text element ignores that for its own fill,
+   so the exported SVG needs an explicit fill here or it defaults to black. */
+.svsch-edge-label {
+  fill: var(--vscode-editor-foreground);
+}
+.hdl-net-label-alias-marker {
+  fill: var(--vscode-descriptionForeground, var(--vscode-editor-foreground));
+}
+.svsch-generate-region-box {
+  fill: none;
+  stroke: var(--vscode-charts-orange);
+  stroke-width: 1.5;
+}
+.svsch-generate-region.svsch-generate-block .svsch-generate-region-box {
+  fill: color-mix(in srgb, var(--vscode-editor-foreground) 16%, transparent);
+  stroke: none;
+}
+.svsch-node-error-outline {
+  fill: none;
+  stroke: var(--svsch-error-highlight, var(--vscode-charts-red));
+  stroke-dasharray: 7 5;
+  stroke-width: 2.5;
+}
+.svsch-node.svsch-node-invalid .node-skin-selection,
+.svsch-node.svsch-node-invalid .port-skin-selection,
+.svsch-node.svsch-node-invalid .hdl-interface-skin-selection {
+  fill: none;
+  opacity: 1;
+  stroke: var(--svsch-error-highlight, var(--vscode-charts-red));
+  stroke-dasharray: 7 5;
+  stroke-width: var(--svsch-selection-width, 2.5px);
+}
+.svsch-generate-region-label,
+.svsch-generate-region-warning {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  dominant-baseline: middle;
+}
+.svsch-generate-region-warning {
+  fill: var(--svsch-error-highlight, var(--vscode-charts-red));
+  font-size: 14px;
+}
+.svsch-node-warning {
+  fill: var(--svsch-error-highlight, var(--vscode-charts-red));
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 14px;
+  dominant-baseline: middle;
+}
+.svsch-generate-region-inactive {
+  opacity: 0.75;
+}
+.svsch-generate-region-active .svsch-generate-region-box {
+  stroke: var(--vscode-charts-orange);
+}
+.svsch-generate-region-invalid .svsch-generate-region-box {
+  fill: var(--svsch-error-highlight-fill, color-mix(in srgb, var(--vscode-charts-red) 9%, transparent));
+  stroke: var(--svsch-error-highlight, var(--vscode-charts-red));
+  stroke-dasharray: 7 5;
+  stroke-width: 2;
+}
+.svsch-generate-block.svsch-generate-region-invalid .svsch-generate-region-box {
+  fill: var(--svsch-error-highlight-fill, color-mix(in srgb, var(--vscode-charts-red) 9%, transparent));
+  stroke: var(--svsch-error-highlight, var(--vscode-charts-red));
+  stroke-dasharray: 7 5;
+  stroke-width: 2;
+}
+/* Boundary-port node ("Expand instance in place", issue #232) — the DOM
+   version's .hdl-boundary-port rules are a flexbox layout with no equivalent
+   tree in the exported SVG (see BoundaryPortNodeSvg), so the label/lead are
+   drawn with plain SVG text/line elements and styled here instead. */
+.svsch-boundary-port-text {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+}
+.svsch-boundary-port-lead {
+  stroke: color-mix(in srgb, var(--vscode-editor-foreground) 68%, var(--vscode-editor-background));
+  stroke-width: 1.5px;
+}
+.svsch-boundary-port-lead-thick {
+  stroke-width: 4.5px;
+}
+.svsch-boundary-port-lead-struct {
+  stroke: var(--vscode-editor-foreground);
+  stroke-dasharray: 2 2;
+}
+.svsch-boundary-port-lead-interface {
+  stroke: color-mix(in srgb, var(--vscode-charts-blue) 60%, var(--vscode-editor-foreground));
+  stroke-dasharray: 2 2;
+}
+/* An expanded instance's own node, dimmed into a backdrop for its spliced-in
+   child diagram (see DiagramNodeMetadata.expandGhost) — same visual language
+   as the webview's .hdl-node-expand-ghost (dimmed + desaturated body, fully
+   transparent interior so spliced wires read at full brightness) minus the
+   DOM-only grab-band/resize-handle rules, which have no purpose in a static
+   export. */
+g.hdl-node-expand-ghost > svg.hdl-node-svg {
+  filter: grayscale(0.4);
+  opacity: 0.35;
+}
+g.hdl-node-expand-ghost .svsch-node-shape {
+  fill: none;
+}
+.svsch-expand-content-border {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--vscode-charts-blue);
+  stroke-dasharray: 4 3;
+  stroke-width: 1;
+}
+/*]]>*/</style><g transform="translate(432 288)"><g class="svsch-generate-regions"/><g class="svsch-edges"><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs1:sink:edge:instance:utoss_riscv:u_decode_stage:instance:utoss_riscv:u_hazard_unit:id_rs1"><path d="M 3216 1248 L 3216 1248 L 3336 1248 L 3360 1248" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs1:sink:edge:instance:utoss_riscv:u_decode_stage:instance:utoss_riscv:u_hazard_unit:id_rs1" data-net-key="instance:utoss_riscv:u_decode_stage:port:rs1"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs1:source"><path d="M 720 888 L 744 888 L 744 888" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs1:source" data-net-key="instance:utoss_riscv:u_decode_stage:port:rs1"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs2:sink:edge:instance:utoss_riscv:u_decode_stage:instance:utoss_riscv:u_hazard_unit:id_rs2"><path d="M 3216 1272 L 3216 1272 L 3336 1272 L 3360 1272" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs2:sink:edge:instance:utoss_riscv:u_decode_stage:instance:utoss_riscv:u_hazard_unit:id_rs2" data-net-key="instance:utoss_riscv:u_decode_stage:port:rs2"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs2:source"><path d="M 720 912 L 744 912 L 744 912" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_decode_stage:port:rs2:source" data-net-key="instance:utoss_riscv:u_decode_stage:port:rs2"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:instance:utoss_riscv:u_fetch_stage:ex_to_if_out"><path d="M 312 456 L 312 456 L 408 456 L 432 456" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:instance:utoss_riscv:u_fetch_stage:ex_to_if_out"/><path d="M 312 456 L 312 456 L 408 456 L 432 456" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:instance:utoss_riscv:u_fetch_stage:ex_to_if_out" data-net-key="instance:utoss_riscv:u_execute_stage:port:ex_to_if"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:struct:utoss_riscv:ex_to_if_out:ex_to_if_out"><path d="M 2352 1104 L 2352 1104 L 2424 1104 L 2448 1104" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:struct:utoss_riscv:ex_to_if_out:ex_to_if_out"/><path d="M 2352 1104 L 2352 1104 L 2424 1104 L 2448 1104" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:struct:utoss_riscv:ex_to_if_out:ex_to_if_out" data-net-key="instance:utoss_riscv:u_execute_stage:port:ex_to_if"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:source"><path d="M 768 1176 L 792 1176 L 984 1176 L 984 1104 L 2016 1104 L 2016 1104" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:source"/><path d="M 768 1176 L 792 1176 L 984 1176 L 984 1104 L 2016 1104 L 2016 1104" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:instance:utoss_riscv:u_execute_stage:port:ex_to_if:source" data-net-key="instance:utoss_riscv:u_execute_stage:port:ex_to_if"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_fetch_stage:port:imem__address:sink:edge:instance:utoss_riscv:u_fetch_stage:interface_modport:utoss_riscv:i_bus:i_bus.address"><path d="M 1296 -96 L 1296 -96 L 1344 -96 L 1344 -72 L 1392 -72 L 1416 -72" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_fetch_stage:port:imem__address:sink:edge:instance:utoss_riscv:u_fetch_stage:interface_modport:utoss_riscv:i_bus:i_bus.address" data-net-key="instance:utoss_riscv:u_fetch_stage:port:imem__address"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_fetch_stage:port:imem__address:source"><path d="M 720 480 L 744 480 L 744 480" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_fetch_stage:port:imem__address:source" data-net-key="instance:utoss_riscv:u_fetch_stage:port:imem__address"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_d:sink:edge:instance:utoss_riscv:u_hazard_unit:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:flush_d"><path d="M 1320 336 L 1320 336 L 1320 384" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_d:sink:edge:instance:utoss_riscv:u_hazard_unit:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:flush_d" data-net-key="instance:utoss_riscv:u_hazard_unit:port:flush_d"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_d:source"><path d="M 3648 1176 L 3672 1176 L 3696 1176 L 3696 1176" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_d:source" data-net-key="instance:utoss_riscv:u_hazard_unit:port:flush_d"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_e:sink:edge:instance:utoss_riscv:u_hazard_unit:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:flush_e"><path d="M 1176 768 L 1176 768 L 1176 816" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_e:sink:edge:instance:utoss_riscv:u_hazard_unit:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:flush_e" data-net-key="instance:utoss_riscv:u_hazard_unit:port:flush_e"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_e:source"><path d="M 3648 1200 L 3672 1200 L 3696 1200 L 3696 1200" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_e:source" data-net-key="instance:utoss_riscv:u_hazard_unit:port:flush_e"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_f:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_fetch_stage:flush_f"><path d="M 288 552 L 288 552 L 408 552 L 432 552" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_f:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_fetch_stage:flush_f" data-net-key="instance:utoss_riscv:u_hazard_unit:port:flush_f"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_f:source"><path d="M 3648 1152 L 3672 1152 L 3696 1152 L 3696 1152" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:flush_f:source" data-net-key="instance:utoss_riscv:u_hazard_unit:port:flush_f"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_a_e:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_execute_stage:hz_forward_a"><path d="M 312 1200 L 312 1200 L 456 1200 L 480 1200" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_a_e:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_execute_stage:hz_forward_a" data-net-key="instance:utoss_riscv:u_hazard_unit:port:forward_a_e"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_a_e:source"><path d="M 3648 1056 L 3672 1056 L 3672 1056" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_a_e:source" data-net-key="instance:utoss_riscv:u_hazard_unit:port:forward_a_e"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_b_e:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_execute_stage:hz_forward_b"><path d="M 312 1224 L 312 1224 L 456 1224 L 480 1224" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_b_e:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_execute_stage:hz_forward_b" data-net-key="instance:utoss_riscv:u_hazard_unit:port:forward_b_e"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_b_e:source"><path d="M 3648 1080 L 3672 1080 L 3672 1080" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:forward_b_e:source" data-net-key="instance:utoss_riscv:u_hazard_unit:port:forward_b_e"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_d:sink:edge:instance:utoss_riscv:u_hazard_unit:inverter:utoss_riscv:if_sel_n42:n43:expr:stall_d"><path d="M 984 312 L 984 312 L 1008 312" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_d:sink:edge:instance:utoss_riscv:u_hazard_unit:inverter:utoss_riscv:if_sel_n42:n43:expr:stall_d" data-net-key="instance:utoss_riscv:u_hazard_unit:port:stall_d"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_d:source"><path d="M 3648 1128 L 3672 1128 L 3696 1128 L 3696 1128" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_d:source" data-net-key="instance:utoss_riscv:u_hazard_unit:port:stall_d"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_f:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_fetch_stage:stall_f"><path d="M 288 528 L 288 528 L 408 528 L 432 528" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_f:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_fetch_stage:stall_f" data-net-key="instance:utoss_riscv:u_hazard_unit:port:stall_f"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_f:source"><path d="M 3648 1104 L 3672 1104 L 3696 1104 L 3696 1104" class="svsch-edge" data-edge-id="cut-stub:instance:utoss_riscv:u_hazard_unit:port:stall_f:source" data-net-key="instance:utoss_riscv:u_hazard_unit:port:stall_f"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_address:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.address"><path d="M 360 -48 L 360 -48 L 408 -48 L 432 -48" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_address:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.address" data-net-key="instance:utoss_riscv:u_memory_stage:port:mem_address"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_address:source"><path d="M 792 1632 L 816 1632 L 864 1632 L 864 1632" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_address:source" data-net-key="instance:utoss_riscv:u_memory_stage:port:mem_address"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_data:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.write_data"><path d="M 384 0 L 384 0 L 408 0 L 432 0" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_data:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.write_data" data-net-key="instance:utoss_riscv:u_memory_stage:port:mem_write_data"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_data:source"><path d="M 792 1584 L 816 1584 L 840 1584 L 840 1584" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_data:source" data-net-key="instance:utoss_riscv:u_memory_stage:port:mem_write_data"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_enable:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.write_enable"><path d="M 408 48 L 408 48 L 432 48" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_enable:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.write_enable" data-net-key="instance:utoss_riscv:u_memory_stage:port:mem_write_enable"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_enable:source"><path d="M 792 1608 L 816 1608 L 816 1608" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_memory_stage:port:mem_write_enable:source" data-net-key="instance:utoss_riscv:u_memory_stage:port:mem_write_enable"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:rd:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_decode_stage:wb_rd"><path d="M 288 936 L 288 936 L 456 936 L 480 936" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:rd:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_decode_stage:wb_rd" data-net-key="instance:utoss_riscv:u_write_back_stage:port:rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:rd:source"><path d="M 768 1944 L 792 1944 L 792 1944" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:rd:source" data-net-key="instance:utoss_riscv:u_write_back_stage:port:rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:result:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_decode_stage:wb_result"><path d="M 288 984 L 288 984 L 456 984 L 480 984" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:result:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_decode_stage:wb_result" data-net-key="instance:utoss_riscv:u_write_back_stage:port:result"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:result:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_execute_stage:wb_result"><path d="M 288 1248 L 288 1248 L 456 1248 L 480 1248" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:result:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_execute_stage:wb_result" data-net-key="instance:utoss_riscv:u_write_back_stage:port:result"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:result:source"><path d="M 768 1920 L 792 1920 L 792 1920" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:instance:utoss_riscv:u_write_back_stage:port:result:source" data-net-key="instance:utoss_riscv:u_write_back_stage:port:result"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:interface_modport:utoss_riscv:d_bus:out:read_data:sink:edge:interface_modport:utoss_riscv:d_bus:instance:utoss_riscv:u_write_back_stage:d_bus.read_data"><path d="M 456 1944 L 456 1944 L 480 1944" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:interface_modport:utoss_riscv:d_bus:out:read_data:sink:edge:interface_modport:utoss_riscv:d_bus:instance:utoss_riscv:u_write_back_stage:d_bus.read_data" data-net-key="interface_modport:utoss_riscv:d_bus:out:read_data"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:interface_modport:utoss_riscv:d_bus:out:read_data:source"><path d="M 672 -96 L 696 -96 L 696 -96" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:interface_modport:utoss_riscv:d_bus:out:read_data:source" data-net-key="interface_modport:utoss_riscv:d_bus:out:read_data"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:interface_modport:utoss_riscv:i_bus:out:read_data:sink:edge:interface_modport:utoss_riscv:i_bus:instance:utoss_riscv:u_fetch_stage:i_bus.read_data"><path d="M 408 576 L 408 576 L 432 576" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:interface_modport:utoss_riscv:i_bus:out:read_data:sink:edge:interface_modport:utoss_riscv:i_bus:instance:utoss_riscv:u_fetch_stage:i_bus.read_data" data-net-key="interface_modport:utoss_riscv:i_bus:out:read_data"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:interface_modport:utoss_riscv:i_bus:out:read_data:source"><path d="M 1656 -120 L 1680 -120 L 1680 -120" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:interface_modport:utoss_riscv:i_bus:out:read_data:source" data-net-key="interface_modport:utoss_riscv:i_bus:out:read_data"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:sink:edge:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:if_to_id_reg_if_true_n40"><path d="M 1248 408 L 1248 408 L 1272 408" class="svsch-edge" data-edge-id="cut-stub:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:sink:edge:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:if_to_id_reg_if_true_n40" data-net-key="literal:utoss_riscv:if_to_id_reg_if_true_n40:_0"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:source"><path d="M -336 -72 L -312 -72 L -312 -72" class="svsch-edge" data-edge-id="cut-stub:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:source" data-net-key="literal:utoss_riscv:if_to_id_reg_if_true_n40:_0"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_decode_stage:clk"><path d="M 288 888 L 288 888 L 456 888 L 480 888" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_decode_stage:clk" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_fetch_stage:clk"><path d="M 288 480 L 288 480 L 408 480 L 432 480" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_fetch_stage:clk" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_hazard_unit:clk"><path d="M 3216 1056 L 3216 1056 L 3336 1056 L 3360 1056" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_hazard_unit:clk" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:ex_to_mem_reg:clk"><path d="M 1512 1224 L 1512 1224 L 1536 1224" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:ex_to_mem_reg:clk" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:id_to_ex_reg:clk"><path d="M 1512 864 L 1512 864 L 1536 864" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:id_to_ex_reg:clk" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:if_to_id_reg:clk"><path d="M 1512 432 L 1512 432 L 1536 432" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:if_to_id_reg:clk" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:mem_to_wb_reg:clk"><path d="M 1512 1680 L 1512 1680 L 1536 1680" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:mem_to_wb_reg:clk" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:source"><path d="M -264 -216 L -240 -216 L -240 -216" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:clk:port:clk:source" data-net-key="port:utoss_riscv:clk:port:clk"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:instance:utoss_riscv:u_decode_stage:reset"><path d="M 288 912 L 288 912 L 456 912 L 480 912" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:instance:utoss_riscv:u_decode_stage:reset" data-net-key="port:utoss_riscv:reset:port:reset"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:instance:utoss_riscv:u_fetch_stage:reset"><path d="M 288 504 L 288 504 L 408 504 L 432 504" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:instance:utoss_riscv:u_fetch_stage:reset" data-net-key="port:utoss_riscv:reset:port:reset"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:ex_to_mem_reg:reset"><path d="M 1680 1272 L 1680 1272 L 1680 1248" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:ex_to_mem_reg:reset" data-net-key="port:utoss_riscv:reset:port:reset"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:id_to_ex_reg:reset"><path d="M 1680 912 L 1680 912 L 1680 888" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:id_to_ex_reg:reset" data-net-key="port:utoss_riscv:reset:port:reset"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:if_to_id_reg:reset"><path d="M 1680 480 L 1680 480 L 1680 456" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:if_to_id_reg:reset" data-net-key="port:utoss_riscv:reset:port:reset"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:mem_to_wb_reg:reset"><path d="M 1680 1728 L 1680 1728 L 1680 1704" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:mem_to_wb_reg:reset" data-net-key="port:utoss_riscv:reset:port:reset"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:source"><path d="M -264 -168 L -240 -168 L -240 -168" class="svsch-edge" data-edge-id="cut-stub:port:utoss_riscv:reset:port:reset:source" data-net-key="port:utoss_riscv:reset:port:reset"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_memory_stage:ex_to_mem_reg"><path d="M 336 1584 L 336 1584 L 456 1584 L 480 1584" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_memory_stage:ex_to_mem_reg"/><path d="M 336 1584 L 336 1584 L 456 1584 L 480 1584" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_memory_stage:ex_to_mem_reg" data-net-key="reg:utoss_riscv:ex_to_mem_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_write_back_stage:ex_to_mem_reg"><path d="M 336 1968 L 336 1968 L 456 1968 L 480 1968" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_write_back_stage:ex_to_mem_reg"/><path d="M 336 1968 L 336 1968 L 456 1968 L 480 1968" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_write_back_stage:ex_to_mem_reg" data-net-key="reg:utoss_riscv:ex_to_mem_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:struct:utoss_riscv:ex_to_mem_reg:ex_to_mem_reg"><path d="M 2376 1200 L 2376 1200 L 2424 1200 L 2448 1200" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:struct:utoss_riscv:ex_to_mem_reg:ex_to_mem_reg"/><path d="M 2376 1200 L 2376 1200 L 2424 1200 L 2448 1200" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:struct:utoss_riscv:ex_to_mem_reg:ex_to_mem_reg" data-net-key="reg:utoss_riscv:ex_to_mem_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:source"><path d="M 1824 1200 L 1848 1200 L 1992 1200 L 1992 1200" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:source"/><path d="M 1824 1200 L 1848 1200 L 1992 1200 L 1992 1200" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:ex_to_mem_reg:q:source" data-net-key="reg:utoss_riscv:ex_to_mem_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_execute_stage:id_to_ex_reg"><path d="M 312 1176 L 312 1176 L 456 1176 L 480 1176" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_execute_stage:id_to_ex_reg"/><path d="M 312 1176 L 312 1176 L 456 1176 L 480 1176" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_execute_stage:id_to_ex_reg" data-net-key="reg:utoss_riscv:id_to_ex_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:struct:utoss_riscv:id_to_ex_reg:id_to_ex_reg"><path d="M 2352 840 L 2352 840 L 2424 840 L 2448 840" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:struct:utoss_riscv:id_to_ex_reg:id_to_ex_reg"/><path d="M 2352 840 L 2352 840 L 2424 840 L 2448 840" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:struct:utoss_riscv:id_to_ex_reg:id_to_ex_reg" data-net-key="reg:utoss_riscv:id_to_ex_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:source"><path d="M 1824 840 L 1848 840 L 2016 840 L 2016 840" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:source"/><path d="M 1824 840 L 1848 840 L 2016 840 L 2016 840" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:id_to_ex_reg:q:source" data-net-key="reg:utoss_riscv:id_to_ex_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:instance:utoss_riscv:u_decode_stage:if_to_id_reg"><path d="M 312 864 L 312 864 L 456 864 L 480 864" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:instance:utoss_riscv:u_decode_stage:if_to_id_reg"/><path d="M 312 864 L 312 864 L 456 864 L 480 864" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:instance:utoss_riscv:u_decode_stage:if_to_id_reg" data-net-key="reg:utoss_riscv:if_to_id_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_to_id_reg"><path d="M 936 528 L 936 528 L 1008 528 L 1008 480 L 1032 480" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_to_id_reg"/><path d="M 936 528 L 936 528 L 1008 528 L 1008 480 L 1032 480" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_to_id_reg" data-net-key="reg:utoss_riscv:if_to_id_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:source"><path d="M 1824 408 L 1848 408 L 2016 408 L 2016 408" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:source"/><path d="M 1824 408 L 1848 408 L 2016 408 L 2016 408" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:if_to_id_reg:q:source" data-net-key="reg:utoss_riscv:if_to_id_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_write_back_stage:mem_to_wb_reg"><path d="M 336 1920 L 336 1920 L 456 1920 L 480 1920" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_write_back_stage:mem_to_wb_reg"/><path d="M 336 1920 L 336 1920 L 456 1920 L 480 1920" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_write_back_stage:mem_to_wb_reg" data-net-key="reg:utoss_riscv:mem_to_wb_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:struct:utoss_riscv:mem_to_wb_reg:mem_to_wb_reg"><path d="M 2376 1656 L 2376 1656 L 2424 1656 L 2448 1656" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:struct:utoss_riscv:mem_to_wb_reg:mem_to_wb_reg"/><path d="M 2376 1656 L 2376 1656 L 2424 1656 L 2448 1656" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:struct:utoss_riscv:mem_to_wb_reg:mem_to_wb_reg" data-net-key="reg:utoss_riscv:mem_to_wb_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:source"><path d="M 1824 1656 L 1848 1656 L 1992 1656 L 1992 1656" class="svsch-edge svsch-edge-struct-bg" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:source"/><path d="M 1824 1656 L 1848 1656 L 1992 1656 L 1992 1656" class="svsch-edge svsch-edge-struct" data-edge-id="cut-stub:reg:utoss_riscv:mem_to_wb_reg:q:source" data-net-key="reg:utoss_riscv:mem_to_wb_reg:q"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src:sink:edge:struct:utoss_riscv:ex_to_if_out:instance:utoss_riscv:u_hazard_unit:ex_to_if_out.pc_src"><path d="M 3312 1320 L 3312 1320 L 3336 1320 L 3360 1320" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src:sink:edge:struct:utoss_riscv:ex_to_if_out:instance:utoss_riscv:u_hazard_unit:ex_to_if_out.pc_src" data-net-key="struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src:source"><path d="M 2592 1104 L 2616 1104 L 2640 1104 L 2640 1104" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src:source" data-net-key="struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_execute_stage:ex_to_mem_reg.alu_result"><path d="M 408 1272 L 408 1272 L 456 1272 L 480 1272" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_execute_stage:ex_to_mem_reg.alu_result" data-net-key="struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result:source"><path d="M 2592 1200 L 2616 1200 L 2616 1200" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result:source" data-net-key="struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_hazard_unit:ex_to_mem_reg.rd"><path d="M 3288 1128 L 3288 1128 L 3336 1128 L 3360 1128" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_hazard_unit:ex_to_mem_reg.rd" data-net-key="struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd:source"><path d="M 2592 1248 L 2616 1248 L 2664 1248 L 2664 1248" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd:source" data-net-key="struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_hazard_unit:ex_to_mem_reg.reg_write"><path d="M 3336 1176 L 3336 1176 L 3360 1176" class="svsch-edge" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_hazard_unit:ex_to_mem_reg.reg_write" data-net-key="struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write:source"><path d="M 2592 1296 L 2616 1296 L 2616 1296" class="svsch-edge" data-edge-id="cut-stub:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write:source" data-net-key="struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rd"><path d="M 3264 1296 L 3264 1296 L 3336 1296 L 3360 1296" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rd" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd:source"><path d="M 2592 984 L 2616 984 L 2688 984 L 2688 984" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd:source" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.result_src"><path d="M 3336 1224 L 3336 1224 L 3360 1224" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.result_src" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src:source"><path d="M 2592 936 L 2616 936 L 2616 936" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src:source" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rs1"><path d="M 3288 1080 L 3288 1080 L 3336 1080 L 3360 1080" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rs1" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1:source"><path d="M 2592 840 L 2616 840 L 2664 840 L 2664 840" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1:source" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rs2"><path d="M 3288 1104 L 3288 1104 L 3336 1104 L 3360 1104" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rs2" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2:source"><path d="M 2592 888 L 2616 888 L 2664 888 L 2664 888" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2:source" data-net-key="struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_hazard_unit:mem_to_wb_reg.rd"><path d="M 3288 1152 L 3288 1152 L 3336 1152 L 3360 1152" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_hazard_unit:mem_to_wb_reg.rd" data-net-key="struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd:source"><path d="M 2592 1704 L 2616 1704 L 2664 1704 L 2664 1704" class="svsch-edge svsch-edge-thick" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd:source" data-net-key="struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_decode_stage:mem_to_wb_reg.reg_write"><path d="M 408 960 L 408 960 L 456 960 L 480 960" class="svsch-edge" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_decode_stage:mem_to_wb_reg.reg_write" data-net-key="struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_hazard_unit:mem_to_wb_reg.reg_write"><path d="M 3336 1200 L 3336 1200 L 3360 1200" class="svsch-edge" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_hazard_unit:mem_to_wb_reg.reg_write" data-net-key="struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write"/></g><g class="svsch-edge-group" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:source"><path d="M 2592 1656 L 2616 1656 L 2616 1656" class="svsch-edge" data-edge-id="cut-stub:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:source" data-net-key="struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write"/></g><g class="svsch-edge-group" data-edge-id="edge:comb:utoss_riscv:i_bus.write_data:expr:interface_modport:utoss_riscv:i_bus:i_bus.write_data"><path d="M 1200 -24 L 1224 -24 L 1392 -24 L 1416 -24" class="svsch-edge svsch-edge-thick" data-edge-id="edge:comb:utoss_riscv:i_bus.write_data:expr:interface_modport:utoss_riscv:i_bus:i_bus.write_data" data-net-key="comb:utoss_riscv:i_bus.write_data:expr:out:i_bus.write_data"/></g><g class="svsch-edge-group" data-edge-id="edge:instance:utoss_riscv:u_decode_stage:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:id_to_ex_out"><path d="M 720 864 L 744 864 L 1104 864 L 1128 864" class="svsch-edge svsch-edge-struct-bg" data-edge-id="edge:instance:utoss_riscv:u_decode_stage:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:id_to_ex_out"/><path d="M 720 864 L 744 864 L 1104 864 L 1128 864" class="svsch-edge svsch-edge-struct" data-edge-id="edge:instance:utoss_riscv:u_decode_stage:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:id_to_ex_out" data-net-key="instance:utoss_riscv:u_decode_stage:port:id_to_ex"/><text x="732" y="858" class="svsch-edge-label" text-anchor="start">id_to_ex_out</text></g><g class="svsch-edge-group" data-edge-id="edge:instance:utoss_riscv:u_execute_stage:reg:utoss_riscv:ex_to_mem_reg:ex_to_mem_out"><path d="M 768 1200 L 792 1200 L 1512 1200 L 1536 1200" class="svsch-edge svsch-edge-struct-bg" data-edge-id="edge:instance:utoss_riscv:u_execute_stage:reg:utoss_riscv:ex_to_mem_reg:ex_to_mem_out"/><path d="M 768 1200 L 792 1200 L 1512 1200 L 1536 1200" class="svsch-edge svsch-edge-struct" data-edge-id="edge:instance:utoss_riscv:u_execute_stage:reg:utoss_riscv:ex_to_mem_reg:ex_to_mem_out" data-net-key="instance:utoss_riscv:u_execute_stage:port:ex_to_mem"/><text x="780" y="1194" class="svsch-edge-label" text-anchor="start">ex_to_mem_out</text></g><g class="svsch-edge-group" data-edge-id="edge:instance:utoss_riscv:u_fetch_stage:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_to_id_out"><path d="M 720 456 L 744 456 L 1008 456 L 1032 456" class="svsch-edge svsch-edge-struct-bg" data-edge-id="edge:instance:utoss_riscv:u_fetch_stage:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_to_id_out"/><path d="M 720 456 L 744 456 L 1008 456 L 1032 456" class="svsch-edge svsch-edge-struct" data-edge-id="edge:instance:utoss_riscv:u_fetch_stage:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_to_id_out" data-net-key="instance:utoss_riscv:u_fetch_stage:port:if_to_id"/><text x="732" y="450" class="svsch-edge-label" text-anchor="start">if_to_id_out</text></g><g class="svsch-edge-group" data-edge-id="edge:instance:utoss_riscv:u_memory_stage:reg:utoss_riscv:mem_to_wb_reg:mem_to_wb_out"><path d="M 792 1656 L 816 1656 L 1512 1656 L 1536 1656" class="svsch-edge svsch-edge-struct-bg" data-edge-id="edge:instance:utoss_riscv:u_memory_stage:reg:utoss_riscv:mem_to_wb_reg:mem_to_wb_out"/><path d="M 792 1656 L 816 1656 L 1512 1656 L 1536 1656" class="svsch-edge svsch-edge-struct" data-edge-id="edge:instance:utoss_riscv:u_memory_stage:reg:utoss_riscv:mem_to_wb_reg:mem_to_wb_out" data-net-key="instance:utoss_riscv:u_memory_stage:port:mem_to_wb"/><text x="804" y="1650" class="svsch-edge-label" text-anchor="start">mem_to_wb_out</text></g><g class="svsch-edge-group" data-edge-id="edge:interface_modport:utoss_riscv:d_bus:interface:utoss_riscv:d_bus:d_bus"><path d="M 552 -144 L 552 -168 L 552 -192 L 648 -192 L 672 -192" class="svsch-edge svsch-edge-interface-bg" data-edge-id="edge:interface_modport:utoss_riscv:d_bus:interface:utoss_riscv:d_bus:d_bus"/><path d="M 552 -144 L 552 -168 L 552 -192 L 648 -192 L 672 -192" class="svsch-edge svsch-edge-interface" data-edge-id="edge:interface_modport:utoss_riscv:d_bus:interface:utoss_riscv:d_bus:d_bus" data-net-key="interface_modport:utoss_riscv:d_bus:out:consumer"/></g><g class="svsch-edge-group" data-edge-id="edge:interface_modport:utoss_riscv:i_bus:interface:utoss_riscv:i_bus:i_bus"><path d="M 1536 -168 L 1536 -192 L 1728 -192 L 1752 -192" class="svsch-edge svsch-edge-interface-bg" data-edge-id="edge:interface_modport:utoss_riscv:i_bus:interface:utoss_riscv:i_bus:i_bus"/><path d="M 1536 -168 L 1536 -192 L 1728 -192 L 1752 -192" class="svsch-edge svsch-edge-interface" data-edge-id="edge:interface_modport:utoss_riscv:i_bus:interface:utoss_riscv:i_bus:i_bus" data-net-key="interface_modport:utoss_riscv:i_bus:out:consumer"/></g><g class="svsch-edge-group" data-edge-id="edge:inverter:utoss_riscv:if_sel_n42:n43:expr:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_sel_n42"><path d="M 1038.785 312 L 1056 312 L 1080 312 L 1080 384 L 1080 432" class="svsch-edge" data-edge-id="edge:inverter:utoss_riscv:if_sel_n42:n43:expr:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_sel_n42" data-net-key="inverter:utoss_riscv:if_sel_n42:n43:expr:out:if_sel_n42"/></g><g class="svsch-edge-group" data-edge-id="edge:literal:utoss_riscv:i_bus.write_enable:4_b0:interface_modport:utoss_riscv:i_bus:i_bus.write_enable"><path d="M 1200 24 L 1224 24 L 1392 24 L 1416 24" class="svsch-edge svsch-edge-thick" data-edge-id="edge:literal:utoss_riscv:i_bus.write_enable:4_b0:interface_modport:utoss_riscv:i_bus:i_bus.write_enable" data-net-key="literal:utoss_riscv:i_bus.write_enable:4_b0"/></g><g class="svsch-edge-group" data-edge-id="edge:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:reg:utoss_riscv:id_to_ex_reg:id_to_ex_reg_next"><path d="M 1224 840 L 1248 840 L 1512 840 L 1536 840" class="svsch-edge svsch-edge-struct-bg" data-edge-id="edge:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:reg:utoss_riscv:id_to_ex_reg:id_to_ex_reg_next"/><path d="M 1224 840 L 1248 840 L 1512 840 L 1536 840" class="svsch-edge svsch-edge-struct" data-edge-id="edge:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:reg:utoss_riscv:id_to_ex_reg:id_to_ex_reg_next" data-net-key="mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:out"/></g><g class="svsch-edge-group" data-edge-id="edge:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:reg:utoss_riscv:if_to_id_reg:if_to_id_reg_next"><path d="M 1368 408 L 1392 408 L 1512 408 L 1536 408" class="svsch-edge svsch-edge-struct-bg" data-edge-id="edge:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:reg:utoss_riscv:if_to_id_reg:if_to_id_reg_next"/><path d="M 1368 408 L 1392 408 L 1512 408 L 1536 408" class="svsch-edge svsch-edge-struct" data-edge-id="edge:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:reg:utoss_riscv:if_to_id_reg:if_to_id_reg_next" data-net-key="mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:out"/></g><g class="svsch-edge-group" data-edge-id="edge:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:if_to_id_reg_if_false_n40"><path d="M 1128 456 L 1152 456 L 1200 456 L 1200 432 L 1248 432 L 1272 432" class="svsch-edge svsch-edge-struct-bg" data-edge-id="edge:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:if_to_id_reg_if_false_n40"/><path d="M 1128 456 L 1152 456 L 1200 456 L 1200 432 L 1248 432 L 1272 432" class="svsch-edge svsch-edge-struct" data-edge-id="edge:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:if_to_id_reg_if_false_n40" data-net-key="mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:out"/></g></g><g class="svsch-nodes"><g class="svsch-node hdl-node hdl-node-comb" data-node-id="comb:utoss_riscv:i_bus.write_data:expr" data-node-kind="comb" transform="translate(1008 -72)"><svg width="192" height="72" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H192V72H0z" class="svsch-node-shape"/><text x="12" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">COMBINATIONAL</text></svg></g><g class="svsch-node hdl-node hdl-node-literal" data-node-id="literal:utoss_riscv:i_bus.write_enable:4_b0" data-node-kind="literal" transform="translate(1152 12)"><svg width="48" height="24" aria-hidden="true" class="hdl-node-svg"><path d="M.5.5H47.5V23.5H.5z" class="svsch-node-shape svsch-literal-shape"/><text x="24" y="12" class="svsch-node-title svsch-literal-content" dominant-baseline="middle" text-anchor="middle"><tspan>4&apos;b0</tspan></text></svg></g><g class="svsch-node hdl-node hdl-node-literal" data-node-id="literal:utoss_riscv:if_to_id_reg_if_true_n40:_0" data-node-kind="literal" transform="translate(-384 -84)"><svg width="48" height="24" aria-hidden="true" class="hdl-node-svg"><path d="M.5.5H47.5V23.5H.5z" class="svsch-node-shape svsch-literal-shape"/><text x="24" y="12" class="svsch-node-title svsch-literal-content" dominant-baseline="middle" text-anchor="middle"><tspan>&apos;0</tspan></text></svg></g><g class="svsch-node hdl-node hdl-node-inverter" data-node-id="inverter:utoss_riscv:if_sel_n42:n43:expr" data-node-kind="inverter" transform="translate(1008 288)"><svg width="48" height="48" aria-hidden="true" class="hdl-node-svg inverter-skin"><path d="M 0 12 L 20.784609690826528 24 L 0 36 Z" class="svsch-node-shape hdl-node-inverter node-skin-body"/><circle cx="26.785" cy="24" r="4" class="svsch-node-shape hdl-node-inverter node-skin-body inverter-bubble"/><path d="M 0 12 L 20.784609690826528 24 L 0 36 Z" class="node-skin-selection"/><circle cx="26.785" cy="24" r="4" class="node-skin-selection inverter-bubble-selection"/></svg></g><g class="svsch-node hdl-node hdl-node-mux" data-node-id="mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40" data-node-kind="mux" transform="translate(1032 408)"><svg width="96" height="96" aria-hidden="true" class="hdl-node-svg mux-skin"><path d="M 0 0 L 96 24 V 72 L 0 96 Z" class="svsch-node-shape hdl-node-mux node-skin-body"/><g class="svsch-mux-select-port"><text x="48" y="36" class="svsch-port-label" dominant-baseline="middle" text-anchor="middle">s</text></g><text x="12" y="48" class="svsch-port-label svsch-mux-side-port" dominant-baseline="middle">true</text><text x="12" y="72" class="svsch-port-label svsch-mux-side-port" dominant-baseline="middle">false</text><text x="84" y="48" class="svsch-port-label svsch-mux-output-port" dominant-baseline="middle" text-anchor="end">out</text><path d="M 0 0 L 96 24 V 72 L 0 96 Z" class="node-skin-selection" style="stroke-linejoin:round"/></svg></g><g class="svsch-node hdl-node hdl-node-mux" data-node-id="mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next" data-node-kind="mux" transform="translate(1272 360)"><svg width="96" height="96" aria-hidden="true" class="hdl-node-svg mux-skin"><path d="M 0 0 L 96 24 V 72 L 0 96 Z" class="svsch-node-shape hdl-node-mux node-skin-body"/><g class="svsch-mux-select-port"><text x="48" y="36" class="svsch-port-label" dominant-baseline="middle" text-anchor="middle">s</text></g><text x="12" y="48" class="svsch-port-label svsch-mux-side-port" dominant-baseline="middle">true</text><text x="12" y="72" class="svsch-port-label svsch-mux-side-port" dominant-baseline="middle">false</text><text x="84" y="48" class="svsch-port-label svsch-mux-output-port" dominant-baseline="middle" text-anchor="end">out</text><path d="M 0 0 L 96 24 V 72 L 0 96 Z" class="node-skin-selection" style="stroke-linejoin:round"/></svg></g><g class="svsch-node hdl-node hdl-node-register hdl-register-node" data-node-id="reg:utoss_riscv:if_to_id_reg" data-node-kind="register" transform="translate(1536 360)"><svg width="288" height="96" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V96H0z" class="svsch-node-shape"/><text x="10" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">REGISTER</text><text x="10" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start"><tspan>if_to_id_reg</tspan><tspan class="svsch-type-label svsch-register-type-label svsch-svg-link" dx="4">if_to_id_t</tspan></text><path d="M118.16 33.812 187.46 33.812" class="svsch-svg-link-underline svsch-register-type-link-underline"/><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">D</text><text x="276" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">Q</text><g class="svsch-register-clock-port"><svg width="12" height="12" x="0" y="66" aria-hidden="true" class="register-clock-glyph" viewBox="0 0 12 12"><path d="M 1 1.5 L 9 6 L 1 10.5"/></svg></g><g class="svsch-register-reset-port"><text x="144" y="84" class="svsch-port-label svsch-register-reset-label" dominant-baseline="middle" text-anchor="middle">R</text></g></svg></g><g class="svsch-node hdl-node hdl-node-mux" data-node-id="mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next" data-node-kind="mux" transform="translate(1128 792)"><svg width="96" height="96" aria-hidden="true" class="hdl-node-svg mux-skin"><path d="M 0 0 L 96 24 V 72 L 0 96 Z" class="svsch-node-shape hdl-node-mux node-skin-body"/><g class="svsch-mux-select-port"><text x="48" y="36" class="svsch-port-label" dominant-baseline="middle" text-anchor="middle">s</text></g><text x="12" y="48" class="svsch-port-label svsch-mux-side-port" dominant-baseline="middle">true</text><text x="12" y="72" class="svsch-port-label svsch-mux-side-port" dominant-baseline="middle">false</text><text x="84" y="48" class="svsch-port-label svsch-mux-output-port" dominant-baseline="middle" text-anchor="end">out</text><path d="M 0 0 L 96 24 V 72 L 0 96 Z" class="node-skin-selection" style="stroke-linejoin:round"/></svg></g><g class="svsch-node hdl-node hdl-node-register hdl-register-node" data-node-id="reg:utoss_riscv:id_to_ex_reg" data-node-kind="register" transform="translate(1536 792)"><svg width="288" height="96" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V96H0z" class="svsch-node-shape"/><text x="10" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">REGISTER</text><text x="10" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start"><tspan>id_to_ex_reg</tspan><tspan class="svsch-type-label svsch-register-type-label svsch-svg-link" dx="4">id_to_ex_t</tspan></text><path d="M118.16 33.812 187.46 33.812" class="svsch-svg-link-underline svsch-register-type-link-underline"/><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">D</text><text x="276" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">Q</text><g class="svsch-register-clock-port"><svg width="12" height="12" x="0" y="66" aria-hidden="true" class="register-clock-glyph" viewBox="0 0 12 12"><path d="M 1 1.5 L 9 6 L 1 10.5"/></svg></g><g class="svsch-register-reset-port"><text x="144" y="84" class="svsch-port-label svsch-register-reset-label" dominant-baseline="middle" text-anchor="middle">R</text></g></svg></g><g class="svsch-node hdl-node hdl-node-register hdl-register-node" data-node-id="reg:utoss_riscv:ex_to_mem_reg" data-node-kind="register" transform="translate(1536 1152)"><svg width="288" height="96" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V96H0z" class="svsch-node-shape"/><text x="10" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">REGISTER</text><text x="10" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start"><tspan>ex_to_mem_reg</tspan><tspan class="svsch-type-label svsch-register-type-label svsch-svg-link" dx="4">ex_to_mem_t</tspan></text><path d="M126.84 33.812 203.07 33.812" class="svsch-svg-link-underline svsch-register-type-link-underline"/><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">D</text><text x="276" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">Q</text><g class="svsch-register-clock-port"><svg width="12" height="12" x="0" y="66" aria-hidden="true" class="register-clock-glyph" viewBox="0 0 12 12"><path d="M 1 1.5 L 9 6 L 1 10.5"/></svg></g><g class="svsch-register-reset-port"><text x="144" y="84" class="svsch-port-label svsch-register-reset-label" dominant-baseline="middle" text-anchor="middle">R</text></g></svg></g><g class="svsch-node hdl-node hdl-node-register hdl-register-node" data-node-id="reg:utoss_riscv:mem_to_wb_reg" data-node-kind="register" transform="translate(1536 1608)"><svg width="288" height="96" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V96H0z" class="svsch-node-shape"/><text x="10" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">REGISTER</text><text x="10" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start"><tspan>mem_to_wb_reg</tspan><tspan class="svsch-type-label svsch-register-type-label svsch-svg-link" dx="4">mem_to_wb_t</tspan></text><path d="M126.84 33.812 203.07 33.812" class="svsch-svg-link-underline svsch-register-type-link-underline"/><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">D</text><text x="276" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">Q</text><g class="svsch-register-clock-port"><svg width="12" height="12" x="0" y="66" aria-hidden="true" class="register-clock-glyph" viewBox="0 0 12 12"><path d="M 1 1.5 L 9 6 L 1 10.5"/></svg></g><g class="svsch-register-reset-port"><text x="144" y="84" class="svsch-port-label svsch-register-reset-label" dominant-baseline="middle" text-anchor="middle">R</text></g></svg></g><g class="svsch-node hdl-node hdl-node-instance hdl-node-has-params" data-node-id="instance:utoss_riscv:u_fetch_stage" data-node-kind="instance" transform="translate(432 384)"><svg width="288" height="216" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V216H0z" class="svsch-node-shape"/><text x="12" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">fetch_stage</text><g class="svsch-instance-param-chip"><rect width="131.2" height="16" x="12" y="20" class="svsch-instance-param-chip-bg" rx="4"/><text x="16" y="28" class="svsch-instance-param" dominant-baseline="middle" font-size="10"><tspan class="svsch-instance-param-name">BOOT_ADDR</tspan><tspan class="svsch-instance-param-equals">=</tspan><tspan class="svsch-instance-param-value"><tspan class="svsch-param-token">BOOT_ADDR</tspan></tspan></text><path d="M83 34 139 34" class="svsch-svg-link-underline svsch-param-token-underline svsch-instance-param-link-underline"/></g><text x="12" y="50" class="svsch-node-title" dominant-baseline="middle" text-anchor="start">u_fetch_stage</text><text x="12" y="72" class="svsch-port-label" dominant-baseline="middle">ex_to_if<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="12" y="96" class="svsch-port-label" dominant-baseline="middle">clk</text><text x="12" y="120" class="svsch-port-label" dominant-baseline="middle">reset</text><text x="12" y="144" class="svsch-port-label" dominant-baseline="middle">stall_f</text><text x="12" y="168" class="svsch-port-label" dominant-baseline="middle">flush_f</text><text x="12" y="192" class="svsch-port-label" dominant-baseline="middle">imem__data<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="276" y="72" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">if_to_id<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="276" y="96" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">imem__address<tspan class="svsch-port-type-suffix">[]</tspan></text></svg></g><g class="svsch-node hdl-bus-node hdl-struct-node hdl-bus-breakout" data-node-id="struct:utoss_riscv:mem_to_wb_reg" data-node-kind="struct" transform="translate(2448 1632)"><svg width="144" height="96" aria-hidden="true" class="hdl-node-svg"><rect width="8" height="72" x="0" y="12" class="svsch-bus-pipe-struct-bg" rx="3"/><rect width="8" height="72" x="0" y="12" class="svsch-bus-pipe-struct" rx="3"/><g class="svsch-bus-tap" data-port-id="out:mem_to_wb_reg.reg_write"><path d="M8 24 144 24" class="svsch-bus-tap-line"/><path fill="var(--vscode-editor-background)" d="M20 16H152V32H20z"/><text x="30" y="24" class="svsch-bus-tap-label" data-port-id="out:mem_to_wb_reg.reg_write" dominant-baseline="middle">reg_write<tspan class="svsch-struct-field-annotation"> [104]</tspan></text></g><g class="svsch-bus-tap" data-port-id="out:mem_to_wb_reg.rd"><path d="M8 72 144 72" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M20 64H114V80H20z"/><text x="30" y="72" class="svsch-bus-tap-label" data-port-id="out:mem_to_wb_reg.rd" dominant-baseline="middle">rd<tspan class="svsch-struct-field-annotation"> [71:67]</tspan></text></g></svg></g><g class="svsch-node hdl-node hdl-node-instance" data-node-id="instance:utoss_riscv:u_decode_stage" data-node-kind="instance" transform="translate(480 816)"><svg width="240" height="192" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H240V192H0z" class="svsch-node-shape"/><text x="12" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">decode_stage</text><text x="12" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start">u_decode_stage</text><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">if_to_id<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="12" y="72" class="svsch-port-label" dominant-baseline="middle">clk</text><text x="12" y="96" class="svsch-port-label" dominant-baseline="middle">reset</text><text x="12" y="120" class="svsch-port-label" dominant-baseline="middle">rd_wb<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="144" class="svsch-port-label" dominant-baseline="middle">reg_write_w</text><text x="12" y="168" class="svsch-port-label" dominant-baseline="middle">data<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="228" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">id_to_ex<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="228" y="72" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">rs1<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="228" y="96" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">rs2<tspan class="svsch-port-type-suffix">[]</tspan></text></svg></g><g class="svsch-node hdl-bus-node hdl-struct-node hdl-bus-breakout" data-node-id="struct:utoss_riscv:ex_to_mem_reg" data-node-kind="struct" transform="translate(2448 1176)"><svg width="144" height="144" aria-hidden="true" class="hdl-node-svg"><rect width="8" height="120" x="0" y="12" class="svsch-bus-pipe-struct-bg" rx="3"/><rect width="8" height="120" x="0" y="12" class="svsch-bus-pipe-struct" rx="3"/><g class="svsch-bus-tap" data-port-id="out:ex_to_mem_reg.alu_result"><path d="M8 24 144 24" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M20 16H189V32H20z"/><text x="30" y="24" class="svsch-bus-tap-label" data-port-id="out:ex_to_mem_reg.alu_result" dominant-baseline="middle">alu_result<tspan class="svsch-struct-field-annotation"> [135:104]</tspan></text></g><g class="svsch-bus-tap" data-port-id="out:ex_to_mem_reg.rd"><path d="M8 72 144 72" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M20 64H114V80H20z"/><text x="30" y="72" class="svsch-bus-tap-label" data-port-id="out:ex_to_mem_reg.rd" dominant-baseline="middle">rd<tspan class="svsch-struct-field-annotation"> [68:64]</tspan></text></g><g class="svsch-bus-tap" data-port-id="out:ex_to_mem_reg.reg_write"><path d="M8 120 144 120" class="svsch-bus-tap-line"/><path fill="var(--vscode-editor-background)" d="M20 112H152V128H20z"/><text x="30" y="120" class="svsch-bus-tap-label" data-port-id="out:ex_to_mem_reg.reg_write" dominant-baseline="middle">reg_write<tspan class="svsch-struct-field-annotation"> [138]</tspan></text></g></svg></g><g class="svsch-node hdl-node hdl-node-instance" data-node-id="instance:utoss_riscv:u_execute_stage" data-node-kind="instance" transform="translate(480 1128)"><svg width="288" height="168" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V168H0z" class="svsch-node-shape"/><text x="12" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">execute_stage</text><text x="12" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start">u_execute_stage</text><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">id_to_ex<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="12" y="72" class="svsch-port-label" dominant-baseline="middle">hz_forward_a<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="12" y="96" class="svsch-port-label" dominant-baseline="middle">hz_forward_b<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="12" y="120" class="svsch-port-label" dominant-baseline="middle">wb_result<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="144" class="svsch-port-label" dominant-baseline="middle">mem_alu_result<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="276" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">ex_to_if<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="276" y="72" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">ex_to_mem<tspan class="svsch-port-type-suffix">{}</tspan></text></svg></g><g class="svsch-node hdl-node hdl-node-instance" data-node-id="instance:utoss_riscv:u_memory_stage" data-node-kind="instance" transform="translate(480 1536)"><svg width="312" height="144" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H312V144H0z" class="svsch-node-shape"/><text x="12" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">memory_stage</text><text x="12" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start">u_memory_stage</text><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">ex_to_mem<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="300" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">mem_write_data<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="300" y="72" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">mem_write_enable<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="300" y="96" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">mem_address<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="300" y="120" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">mem_to_wb<tspan class="svsch-port-type-suffix">{}</tspan></text></svg></g><g class="svsch-node hdl-node hdl-node-instance" data-node-id="instance:utoss_riscv:u_write_back_stage" data-node-kind="instance" transform="translate(480 1872)"><svg width="288" height="120" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V120H0z" class="svsch-node-shape"/><text x="12" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">write_back_stage</text><text x="12" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start">u_write_back_stage</text><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">from_memory<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="12" y="72" class="svsch-port-label" dominant-baseline="middle">data_from_memory<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="96" class="svsch-port-label" dominant-baseline="middle">ex_to_mem<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="276" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">result<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="276" y="72" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">rd<tspan class="svsch-port-type-suffix">[]</tspan></text></svg></g><g class="svsch-node hdl-bus-node hdl-struct-node hdl-bus-breakout" data-node-id="struct:utoss_riscv:id_to_ex_reg" data-node-kind="struct" transform="translate(2448 816)"><svg width="144" height="192" aria-hidden="true" class="hdl-node-svg"><rect width="8" height="168" x="0" y="12" class="svsch-bus-pipe-struct-bg" rx="3"/><rect width="8" height="168" x="0" y="12" class="svsch-bus-pipe-struct" rx="3"/><g class="svsch-bus-tap" data-port-id="out:id_to_ex_reg.rs1"><path d="M8 24 144 24" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M20 16H122V32H20z"/><text x="30" y="24" class="svsch-bus-tap-label" data-port-id="out:id_to_ex_reg.rs1" dominant-baseline="middle">rs1<tspan class="svsch-struct-field-annotation"> [41:37]</tspan></text></g><g class="svsch-bus-tap" data-port-id="out:id_to_ex_reg.rs2"><path d="M8 72 144 72" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M20 64H122V80H20z"/><text x="30" y="72" class="svsch-bus-tap-label" data-port-id="out:id_to_ex_reg.rs2" dominant-baseline="middle">rs2<tspan class="svsch-struct-field-annotation"> [36:32]</tspan></text></g><g class="svsch-bus-tap" data-port-id="out:id_to_ex_reg.result_src"><path d="M8 120 144 120" class="svsch-bus-tap-line"/><path fill="var(--vscode-editor-background)" d="M20 112H159V128H20z"/><text x="30" y="120" class="svsch-bus-tap-label" data-port-id="out:id_to_ex_reg.result_src" dominant-baseline="middle">result_src<tspan class="svsch-struct-field-annotation"> [184]</tspan></text></g><g class="svsch-bus-tap" data-port-id="out:id_to_ex_reg.rd"><path d="M8 168 144 168" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M20 160H114V176H20z"/><text x="30" y="168" class="svsch-bus-tap-label" data-port-id="out:id_to_ex_reg.rd" dominant-baseline="middle">rd<tspan class="svsch-struct-field-annotation"> [46:42]</tspan></text></g></svg></g><g class="svsch-node hdl-bus-node hdl-struct-node hdl-bus-breakout" data-node-id="struct:utoss_riscv:ex_to_if_out" data-node-kind="struct" transform="translate(2448 1080)"><svg width="144" height="96" aria-hidden="true" class="hdl-node-svg"><rect width="8" height="24" x="0" y="12" class="svsch-bus-pipe-struct-bg" rx="3"/><rect width="8" height="24" x="0" y="12" class="svsch-bus-pipe-struct" rx="3"/><g class="svsch-bus-tap" data-port-id="out:ex_to_if_out.pc_src"><path d="M8 24 144 24" class="svsch-bus-tap-line"/><path fill="var(--vscode-editor-background)" d="M20 16H122V32H20z"/><text x="30" y="24" class="svsch-bus-tap-label" data-port-id="out:ex_to_if_out.pc_src" dominant-baseline="middle">pc_src<tspan class="svsch-struct-field-annotation"> [96]</tspan></text></g></svg></g><g class="svsch-node hdl-node hdl-node-instance" data-node-id="instance:utoss_riscv:u_hazard_unit" data-node-kind="instance" transform="translate(3360 1008)"><svg width="288" height="336" aria-hidden="true" class="hdl-node-svg"><path d="M0 0H288V336H0z" class="svsch-node-shape"/><text x="12" y="14" class="svsch-node-kind" dominant-baseline="middle" text-anchor="start">hazard_unit</text><text x="12" y="26" class="svsch-node-title" dominant-baseline="middle" text-anchor="start">u_hazard_unit</text><text x="12" y="48" class="svsch-port-label" dominant-baseline="middle">clk</text><text x="12" y="72" class="svsch-port-label" dominant-baseline="middle">rs1_e<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="96" class="svsch-port-label" dominant-baseline="middle">rs2_e<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="120" class="svsch-port-label" dominant-baseline="middle">rd_m<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="144" class="svsch-port-label" dominant-baseline="middle">rd_w<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="168" class="svsch-port-label" dominant-baseline="middle">reg_write_m</text><text x="12" y="192" class="svsch-port-label" dominant-baseline="middle">reg_write_w</text><text x="12" y="216" class="svsch-port-label" dominant-baseline="middle">result_src_e<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="12" y="240" class="svsch-port-label" dominant-baseline="middle">rs1_d<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="264" class="svsch-port-label" dominant-baseline="middle">rs2_d<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="288" class="svsch-port-label" dominant-baseline="middle">rd_e<tspan class="svsch-port-type-suffix">[]</tspan></text><text x="12" y="312" class="svsch-port-label" dominant-baseline="middle">pc_src_e<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="276" y="48" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">forward_a_e<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="276" y="72" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">forward_b_e<tspan class="svsch-port-type-suffix">{}</tspan></text><text x="276" y="96" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">stall_f</text><text x="276" y="120" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">stall_d</text><text x="276" y="144" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">flush_f</text><text x="276" y="168" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">flush_d</text><text x="276" y="192" class="svsch-port-label" dominant-baseline="middle" text-anchor="end">flush_e</text></svg></g><g class="svsch-node hdl-node hdl-node-port hdl-interface-node hdl-port-input hdl-port-skinned hdl-port-interface" data-node-id="interface:utoss_riscv:d_bus" data-node-kind="interface" transform="translate(672 -204)"><svg width="240" height="24" aria-hidden="true" class="hdl-node-svg"><g class="port-skin port-skin-harness"><path d="M 12 0 H 228 L 240 12 L 228 24 H 12 L 0 12 Z" class="port-skin-body svsch-array-layer-middle"/><path d="M 12 0 H 228 L 240 12 L 228 24 H 12 L 0 12 Z" class="port-skin-selection"/><text x="120" y="12" class="svsch-port-label svsch-port-node-label" dominant-baseline="middle" font-size="12" font-weight="600" text-anchor="middle"><tspan class="svsch-port-node-name">d_bus</tspan><tspan> </tspan><tspan class="svsch-type-label svsch-port-type-label svsch-svg-link">mem_bus</tspan><tspan class="svsch-modport-label svsch-port-modport-label svsch-svg-link">.consumer</tspan></text><path d="M88.752 18.696 130.332 18.696" class="svsch-svg-link-underline svsch-port-type-link-underline"/><path d="M135.624 18.696 189.084 18.696" class="svsch-svg-link-underline svsch-port-type-link-underline"/></g></svg></g><g class="svsch-node hdl-bus-node hdl-interface-node hdl-interface-modport hdl-bus-breakout" data-node-id="interface_modport:utoss_riscv:d_bus" data-node-kind="interface" transform="translate(432 -144)"><svg width="240" height="216" aria-hidden="true" class="hdl-node-svg"><rect width="6" height="204" x="117" y="0" class="svsch-bus-pipe" rx="3"/><g class="svsch-bus-tap" data-port-id="out:read_data"><path d="M123 48 240 48" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M135 40H289V56H135z"/><text x="145" y="48" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-right" data-port-id="out:read_data" dominant-baseline="middle">read_data<tspan class="svsch-port-type-suffix">{}</tspan><tspan class="svsch-struct-field-annotation"> data_t</tspan></text></g><g class="svsch-bus-tap" data-port-id="in:address"><path d="M0 96 117 96" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M-34 88H105V104H-34z"/><text x="95" y="96" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-left" data-port-id="in:address" dominant-baseline="middle" text-anchor="end">address<tspan class="svsch-port-type-suffix">{}</tspan><tspan class="svsch-struct-field-annotation"> addr_t</tspan></text></g><g class="svsch-bus-tap" data-port-id="in:write_data"><path d="M0 144 117 144" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M-56 136H105V152H-56z"/><text x="95" y="144" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-left" data-port-id="in:write_data" dominant-baseline="middle" text-anchor="end">write_data<tspan class="svsch-port-type-suffix">{}</tspan><tspan class="svsch-struct-field-annotation"> data_t</tspan></text></g><g class="svsch-bus-tap" data-port-id="in:write_enable"><path d="M0 192 117 192" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M-4 184H105V200H-4z"/><text x="95" y="192" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-left" data-port-id="in:write_enable" dominant-baseline="middle" text-anchor="end">write_enable</text></g></svg></g><g class="svsch-node hdl-node hdl-node-port hdl-interface-node hdl-port-input hdl-port-skinned hdl-port-interface" data-node-id="interface:utoss_riscv:i_bus" data-node-kind="interface" transform="translate(1752 -204)"><svg width="240" height="24" aria-hidden="true" class="hdl-node-svg"><g class="port-skin port-skin-harness"><path d="M 12 0 H 228 L 240 12 L 228 24 H 12 L 0 12 Z" class="port-skin-body svsch-array-layer-middle"/><path d="M 12 0 H 228 L 240 12 L 228 24 H 12 L 0 12 Z" class="port-skin-selection"/><text x="120" y="12" class="svsch-port-label svsch-port-node-label" dominant-baseline="middle" font-size="12" font-weight="600" text-anchor="middle"><tspan class="svsch-port-node-name">i_bus</tspan><tspan> </tspan><tspan class="svsch-type-label svsch-port-type-label svsch-svg-link">mem_bus</tspan><tspan class="svsch-modport-label svsch-port-modport-label svsch-svg-link">.consumer</tspan></text><path d="M88.752 18.696 130.332 18.696" class="svsch-svg-link-underline svsch-port-type-link-underline"/><path d="M135.624 18.696 189.084 18.696" class="svsch-svg-link-underline svsch-port-type-link-underline"/></g></svg></g><g class="svsch-node hdl-bus-node hdl-interface-node hdl-interface-modport hdl-bus-breakout" data-node-id="interface_modport:utoss_riscv:i_bus" data-node-kind="interface" transform="translate(1416 -168)"><svg width="240" height="216" aria-hidden="true" class="hdl-node-svg"><rect width="6" height="204" x="117" y="0" class="svsch-bus-pipe" rx="3"/><g class="svsch-bus-tap" data-port-id="out:read_data"><path d="M123 48 240 48" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M135 40H289V56H135z"/><text x="145" y="48" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-right" data-port-id="out:read_data" dominant-baseline="middle">read_data<tspan class="svsch-port-type-suffix">{}</tspan><tspan class="svsch-struct-field-annotation"> data_t</tspan></text></g><g class="svsch-bus-tap" data-port-id="in:address"><path d="M0 96 117 96" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M-34 88H105V104H-34z"/><text x="95" y="96" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-left" data-port-id="in:address" dominant-baseline="middle" text-anchor="end">address<tspan class="svsch-port-type-suffix">{}</tspan><tspan class="svsch-struct-field-annotation"> addr_t</tspan></text></g><g class="svsch-bus-tap" data-port-id="in:write_data"><path d="M0 144 117 144" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M-56 136H105V152H-56z"/><text x="95" y="144" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-left" data-port-id="in:write_data" dominant-baseline="middle" text-anchor="end">write_data<tspan class="svsch-port-type-suffix">{}</tspan><tspan class="svsch-struct-field-annotation"> data_t</tspan></text></g><g class="svsch-bus-tap" data-port-id="in:write_enable"><path d="M0 192 117 192" class="svsch-bus-tap-line svsch-bus-tap-line-thick"/><path fill="var(--vscode-editor-background)" d="M-4 184H105V200H-4z"/><text x="95" y="192" class="svsch-bus-tap-label svsch-interface-field-label svsch-interface-field-left" data-port-id="in:write_enable" dominant-baseline="middle" text-anchor="end">write_enable</text></g></svg></g><g class="svsch-node hdl-node hdl-node-port hdl-port-input hdl-port-skinned" data-node-id="port:utoss_riscv:clk" data-node-kind="port" transform="translate(-384 -228)"><svg width="120" height="24" aria-hidden="true" class="hdl-node-svg"><g class="port-skin port-skin-input"><path d="M 0 0 H 108 L 120 12 L 108 24 H 0 Z" class="port-skin-body svsch-array-layer-middle"/><path d="M 0 0 H 108 L 120 12 L 108 24 H 0 Z" class="port-skin-selection"/><text x="60" y="12" class="svsch-port-label svsch-port-node-label" dominant-baseline="middle" font-size="12" font-weight="600" text-anchor="middle"><tspan class="svsch-port-node-name">clk</tspan></text></g></svg></g><g class="svsch-node hdl-node hdl-node-port hdl-port-input hdl-port-skinned" data-node-id="port:utoss_riscv:reset" data-node-kind="port" transform="translate(-384 -180)"><svg width="120" height="24" aria-hidden="true" class="hdl-node-svg"><g class="port-skin port-skin-input"><path d="M 0 0 H 108 L 120 12 L 108 24 H 0 Z" class="port-skin-body svsch-array-layer-middle"/><path d="M 0 0 H 108 L 120 12 L 108 24 H 0 Z" class="port-skin-selection"/><text x="60" y="12" class="svsch-port-label svsch-port-node-label" dominant-baseline="middle" font-size="12" font-weight="600" text-anchor="middle"><tspan class="svsch-port-node-name">reset</tspan></text></g></svg></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_decode_stage:port:rs1:source" data-node-kind="netLabel" transform="translate(744 864)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">id_rs1</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_decode_stage:port:rs1:sink:edge:instance:utoss_riscv:u_decode_stage:instance:utoss_riscv:u_hazard_unit:id_rs1" data-node-kind="netLabel" transform="translate(3120 1224)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_rs1</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_decode_stage:port:rs2:source" data-node-kind="netLabel" transform="translate(744 888)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">id_rs2</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_decode_stage:port:rs2:sink:edge:instance:utoss_riscv:u_decode_stage:instance:utoss_riscv:u_hazard_unit:id_rs2" data-node-kind="netLabel" transform="translate(3120 1248)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_rs2</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_execute_stage:port:ex_to_if:source" data-node-kind="netLabel" transform="translate(2016 1080)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="117" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">ex_to_if_out</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:instance:utoss_riscv:u_fetch_stage:ex_to_if_out" data-node-kind="netLabel" transform="translate(192 432)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_if_out</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_execute_stage:port:ex_to_if:sink:edge:instance:utoss_riscv:u_execute_stage:struct:utoss_riscv:ex_to_if_out:ex_to_if_out" data-node-kind="netLabel" transform="translate(2232 1080)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_if_out</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_fetch_stage:port:imem__address:source" data-node-kind="netLabel" transform="translate(744 456)"><path d="M 0 24 H 240" class="svsch-edge svsch-edge-thick"/><text x="237" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">u_fetch_stage.imem__address</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_fetch_stage:port:imem__address:sink:edge:instance:utoss_riscv:u_fetch_stage:interface_modport:utoss_riscv:i_bus:i_bus.address" data-node-kind="netLabel" transform="translate(1056 -120)"><path d="M 0 24 H 240" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">u_fetch_stage.imem__address</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:forward_a_e:source" data-node-kind="netLabel" transform="translate(3672 1032)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-thick"/><text x="117" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">hz_forward_a</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:forward_a_e:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_execute_stage:hz_forward_a" data-node-kind="netLabel" transform="translate(192 1176)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">hz_forward_a</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:forward_b_e:source" data-node-kind="netLabel" transform="translate(3672 1056)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-thick"/><text x="117" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">hz_forward_b</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:forward_b_e:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_execute_stage:hz_forward_b" data-node-kind="netLabel" transform="translate(192 1200)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">hz_forward_b</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:flush_f:source" data-node-kind="netLabel" transform="translate(3696 1128)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">flush_f</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:flush_f:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_fetch_stage:flush_f" data-node-kind="netLabel" transform="translate(192 528)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">flush_f</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:stall_f:source" data-node-kind="netLabel" transform="translate(3696 1080)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">stall_f</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:stall_f:sink:edge:instance:utoss_riscv:u_hazard_unit:instance:utoss_riscv:u_fetch_stage:stall_f" data-node-kind="netLabel" transform="translate(192 504)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">stall_f</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:stall_d:source" data-node-kind="netLabel" transform="translate(3696 1104)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">stall_d</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:stall_d:sink:edge:instance:utoss_riscv:u_hazard_unit:inverter:utoss_riscv:if_sel_n42:n43:expr:stall_d" data-node-kind="netLabel" transform="translate(888 288)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">stall_d</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:flush_e:source" data-node-kind="netLabel" transform="translate(3696 1176)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">flush_e</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:flush_e:sink:edge:instance:utoss_riscv:u_hazard_unit:mux:utoss_riscv:id_to_ex_reg:flush_e:id_to_ex_reg_next:flush_e" data-node-kind="netLabel" transform="translate(1128 720)"><path d="M 0 24 H 48M 48 24 V 48" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">flush_e</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:flush_d:source" data-node-kind="netLabel" transform="translate(3696 1152)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">flush_d</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_hazard_unit:port:flush_d:sink:edge:instance:utoss_riscv:u_hazard_unit:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:flush_d" data-node-kind="netLabel" transform="translate(1272 288)"><path d="M 0 24 H 48M 48 24 V 48" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">flush_d</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_memory_stage:port:mem_address:source" data-node-kind="netLabel" transform="translate(864 1608)"><path d="M 0 24 H 240" class="svsch-edge svsch-edge-thick"/><text x="237" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">u_memory_stage.mem_address</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_memory_stage:port:mem_address:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.address" data-node-kind="netLabel" transform="translate(120 -72)"><path d="M 0 24 H 240" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">u_memory_stage.mem_address</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_memory_stage:port:mem_write_data:source" data-node-kind="netLabel" transform="translate(840 1560)"><path d="M 0 24 H 264" class="svsch-edge svsch-edge-thick"/><text x="261" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">u_memory_stage.mem_write_data</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_memory_stage:port:mem_write_data:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.write_data" data-node-kind="netLabel" transform="translate(120 -24)"><path d="M 0 24 H 264" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">u_memory_stage.mem_write_data</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_memory_stage:port:mem_write_enable:source" data-node-kind="netLabel" transform="translate(816 1584)"><path d="M 0 24 H 288" class="svsch-edge svsch-edge-thick"/><text x="285" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">u_memory_stage.mem_write_enable</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_memory_stage:port:mem_write_enable:sink:edge:instance:utoss_riscv:u_memory_stage:interface_modport:utoss_riscv:d_bus:d_bus.write_enable" data-node-kind="netLabel" transform="translate(120 24)"><path d="M 0 24 H 288" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">u_memory_stage.mem_write_enable</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_write_back_stage:port:rd:source" data-node-kind="netLabel" transform="translate(792 1920)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">wb_rd</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_write_back_stage:port:rd:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_decode_stage:wb_rd" data-node-kind="netLabel" transform="translate(192 912)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">wb_rd</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_write_back_stage:port:result:source" data-node-kind="netLabel" transform="translate(792 1896)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">wb_result</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_write_back_stage:port:result:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_decode_stage:wb_result" data-node-kind="netLabel" transform="translate(192 960)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">wb_result</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:instance:utoss_riscv:u_write_back_stage:port:result:sink:edge:instance:utoss_riscv:u_write_back_stage:instance:utoss_riscv:u_execute_stage:wb_result" data-node-kind="netLabel" transform="translate(192 1224)"><path d="M 0 24 H 96" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">wb_result</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:interface_modport:utoss_riscv:d_bus:out:read_data:source" data-node-kind="netLabel" transform="translate(696 -120)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-thick"/><text x="141" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">d_bus.read_data</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:interface_modport:utoss_riscv:d_bus:out:read_data:sink:edge:interface_modport:utoss_riscv:d_bus:instance:utoss_riscv:u_write_back_stage:d_bus.read_data" data-node-kind="netLabel" transform="translate(312 1920)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">d_bus.read_data</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:interface_modport:utoss_riscv:i_bus:out:read_data:source" data-node-kind="netLabel" transform="translate(1680 -144)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-thick"/><text x="141" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">i_bus.read_data</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:interface_modport:utoss_riscv:i_bus:out:read_data:sink:edge:interface_modport:utoss_riscv:i_bus:instance:utoss_riscv:u_fetch_stage:i_bus.read_data" data-node-kind="netLabel" transform="translate(264 552)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">i_bus.read_data</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:source" data-node-kind="netLabel" transform="translate(-312 -96)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label hdl-net-label-text-synthetic" dominant-baseline="middle" text-anchor="end">zero</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:sink:edge:literal:utoss_riscv:if_to_id_reg_if_true_n40:_0:mux:utoss_riscv:if_to_id_reg:flush_d:if_to_id_reg_next:if_to_id_reg_if_true_n40" data-node-kind="netLabel" transform="translate(1152 384)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label hdl-net-label-text-synthetic" dominant-baseline="middle" text-anchor="start">zero</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:source" data-node-kind="netLabel" transform="translate(-240 -240)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_decode_stage:clk" data-node-kind="netLabel" transform="translate(192 864)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_fetch_stage:clk" data-node-kind="netLabel" transform="translate(192 456)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:instance:utoss_riscv:u_hazard_unit:clk" data-node-kind="netLabel" transform="translate(3120 1032)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:ex_to_mem_reg:clk" data-node-kind="netLabel" transform="translate(1416 1200)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:id_to_ex_reg:clk" data-node-kind="netLabel" transform="translate(1416 840)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:if_to_id_reg:clk" data-node-kind="netLabel" transform="translate(1416 408)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:clk:port:clk:sink:edge:port:utoss_riscv:clk:reg:utoss_riscv:mem_to_wb_reg:clk" data-node-kind="netLabel" transform="translate(1416 1656)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">clk</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:reset:port:reset:source" data-node-kind="netLabel" transform="translate(-240 -192)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="93" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">reset</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:instance:utoss_riscv:u_decode_stage:reset" data-node-kind="netLabel" transform="translate(192 888)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">reset</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:instance:utoss_riscv:u_fetch_stage:reset" data-node-kind="netLabel" transform="translate(192 480)"><path d="M 0 24 H 96" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">reset</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:ex_to_mem_reg:reset" data-node-kind="netLabel" transform="translate(1632 1272)"><path d="M 0 24 H 48M 48 24 V 0" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">reset</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:id_to_ex_reg:reset" data-node-kind="netLabel" transform="translate(1632 912)"><path d="M 0 24 H 48M 48 24 V 0" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">reset</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:if_to_id_reg:reset" data-node-kind="netLabel" transform="translate(1632 480)"><path d="M 0 24 H 48M 48 24 V 0" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">reset</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:port:utoss_riscv:reset:port:reset:sink:edge:port:utoss_riscv:reset:reg:utoss_riscv:mem_to_wb_reg:reset" data-node-kind="netLabel" transform="translate(1632 1728)"><path d="M 0 24 H 48M 48 24 V 0" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">reset</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:ex_to_mem_reg:q:source" data-node-kind="netLabel" transform="translate(1992 1176)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct"/><text x="141" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">ex_to_mem_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_memory_stage:ex_to_mem_reg" data-node-kind="netLabel" transform="translate(192 1560)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_mem_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_write_back_stage:ex_to_mem_reg" data-node-kind="netLabel" transform="translate(192 1944)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_mem_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:ex_to_mem_reg:q:sink:edge:reg:utoss_riscv:ex_to_mem_reg:struct:utoss_riscv:ex_to_mem_reg:ex_to_mem_reg" data-node-kind="netLabel" transform="translate(2232 1176)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_mem_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:id_to_ex_reg:q:source" data-node-kind="netLabel" transform="translate(2016 816)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="117" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">id_to_ex_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_execute_stage:id_to_ex_reg" data-node-kind="netLabel" transform="translate(192 1152)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_to_ex_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:id_to_ex_reg:q:sink:edge:reg:utoss_riscv:id_to_ex_reg:struct:utoss_riscv:id_to_ex_reg:id_to_ex_reg" data-node-kind="netLabel" transform="translate(2232 816)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_to_ex_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:if_to_id_reg:q:source" data-node-kind="netLabel" transform="translate(2016 384)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="117" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">if_to_id_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:instance:utoss_riscv:u_decode_stage:if_to_id_reg" data-node-kind="netLabel" transform="translate(192 840)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">if_to_id_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:if_to_id_reg:q:sink:edge:reg:utoss_riscv:if_to_id_reg:mux:utoss_riscv:if_to_id_reg:if_sel_n42:if_to_id_reg_if_false_n40:if_to_id_reg" data-node-kind="netLabel" transform="translate(816 504)"><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 120" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">if_to_id_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:mem_to_wb_reg:q:source" data-node-kind="netLabel" transform="translate(1992 1632)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct"/><text x="141" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">mem_to_wb_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_write_back_stage:mem_to_wb_reg" data-node-kind="netLabel" transform="translate(192 1896)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">mem_to_wb_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:reg:utoss_riscv:mem_to_wb_reg:q:sink:edge:reg:utoss_riscv:mem_to_wb_reg:struct:utoss_riscv:mem_to_wb_reg:mem_to_wb_reg" data-node-kind="netLabel" transform="translate(2232 1632)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct-bg"/><path d="M 0 24 H 144" class="svsch-edge svsch-edge-struct"/><text x="3" y="12.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">mem_to_wb_reg</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src:source" data-node-kind="netLabel" transform="translate(2640 1080)"><path d="M 0 24 H 192" class="svsch-edge svsch-edge-thick"/><text x="189" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">ex_to_if_out.pc_src</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_if_out:out:ex_to_if_out.pc_src:sink:edge:struct:utoss_riscv:ex_to_if_out:instance:utoss_riscv:u_hazard_unit:ex_to_if_out.pc_src" data-node-kind="netLabel" transform="translate(3120 1296)"><path d="M 0 24 H 192" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_if_out.pc_src</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result:source" data-node-kind="netLabel" transform="translate(2616 1176)"><path d="M 0 24 H 216" class="svsch-edge svsch-edge-thick"/><text x="213" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">ex_to_mem_reg.alu_result</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.alu_result:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_execute_stage:ex_to_mem_reg.alu_result" data-node-kind="netLabel" transform="translate(192 1248)"><path d="M 0 24 H 216" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_mem_reg.alu_result</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd:source" data-node-kind="netLabel" transform="translate(2664 1224)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="165" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">ex_to_mem_reg.rd</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.rd:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_hazard_unit:ex_to_mem_reg.rd" data-node-kind="netLabel" transform="translate(3120 1104)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_mem_reg.rd</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write:source" data-node-kind="netLabel" transform="translate(2616 1272)"><path d="M 0 24 H 216" class="svsch-edge"/><text x="213" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">ex_to_mem_reg.reg_write</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:ex_to_mem_reg:out:ex_to_mem_reg.reg_write:sink:edge:struct:utoss_riscv:ex_to_mem_reg:instance:utoss_riscv:u_hazard_unit:ex_to_mem_reg.reg_write" data-node-kind="netLabel" transform="translate(3120 1152)"><path d="M 0 24 H 216" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">ex_to_mem_reg.reg_write</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd:source" data-node-kind="netLabel" transform="translate(2688 960)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-thick"/><text x="141" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">id_to_ex_reg.rd</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rd:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rd" data-node-kind="netLabel" transform="translate(3120 1272)"><path d="M 0 24 H 144" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_to_ex_reg.rd</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src:source" data-node-kind="netLabel" transform="translate(2616 912)"><path d="M 0 24 H 216" class="svsch-edge svsch-edge-thick"/><text x="213" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">id_to_ex_reg.result_src</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.result_src:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.result_src" data-node-kind="netLabel" transform="translate(3120 1200)"><path d="M 0 24 H 216" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_to_ex_reg.result_src</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1:source" data-node-kind="netLabel" transform="translate(2664 816)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="165" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">id_to_ex_reg.rs1</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs1:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rs1" data-node-kind="netLabel" transform="translate(3120 1056)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_to_ex_reg.rs1</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2:source" data-node-kind="netLabel" transform="translate(2664 864)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="165" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">id_to_ex_reg.rs2</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:id_to_ex_reg:out:id_to_ex_reg.rs2:sink:edge:struct:utoss_riscv:id_to_ex_reg:instance:utoss_riscv:u_hazard_unit:id_to_ex_reg.rs2" data-node-kind="netLabel" transform="translate(3120 1080)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">id_to_ex_reg.rs2</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:source" data-node-kind="netLabel" transform="translate(2616 1632)"><path d="M 0 24 H 216" class="svsch-edge"/><text x="213" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">mem_to_wb_reg.reg_write</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_decode_stage:mem_to_wb_reg.reg_write" data-node-kind="netLabel" transform="translate(192 936)"><path d="M 0 24 H 216" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">mem_to_wb_reg.reg_write</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.reg_write:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_hazard_unit:mem_to_wb_reg.reg_write" data-node-kind="netLabel" transform="translate(3120 1176)"><path d="M 0 24 H 216" class="svsch-edge"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">mem_to_wb_reg.reg_write</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd:source" data-node-kind="netLabel" transform="translate(2664 1680)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="165" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="end">mem_to_wb_reg.rd</text></g><g class="svsch-node hdl-net-label" data-node-id="cut-label:struct:utoss_riscv:mem_to_wb_reg:out:mem_to_wb_reg.rd:sink:edge:struct:utoss_riscv:mem_to_wb_reg:instance:utoss_riscv:u_hazard_unit:mem_to_wb_reg.rd" data-node-kind="netLabel" transform="translate(3120 1128)"><path d="M 0 24 H 168" class="svsch-edge svsch-edge-thick"/><text x="3" y="15.5" class="svsch-net-label" dominant-baseline="middle" text-anchor="start">mem_to_wb_reg.rd</text></g></g></g></svg>

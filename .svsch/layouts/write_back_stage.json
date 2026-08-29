@@ -1,0 +1,86 @@
+{
+  "nodes": {
+    "comb:write_back_stage:unused:expr": {
+      "x": 24,
+      "y": 24,
+      "fixed": true
+    },
+    "comb:write_back_stage:_unused_ex_to_mem:expr": {
+      "x": 600,
+      "y": 24,
+      "fixed": true
+    },
+    "comb:write_back_stage:_unused_from_mem:expr": {
+      "x": 552,
+      "y": 528,
+      "fixed": true
+    },
+    "struct:write_back_stage:from_memory": {
+      "x": 552,
+      "y": 168,
+      "fixed": true
+    },
+    "literal:write_back_stage:result_default:32_hxxxxxxxx": {
+      "x": 1080,
+      "y": 492,
+      "fixed": true
+    },
+    "mux:write_back_stage:result:from_memory.result_src:result": {
+      "x": 1464,
+      "y": 384,
+      "fixed": true
+    },
+    "instance:write_back_stage:memory_loader": {
+      "x": 912,
+      "y": 120,
+      "fixed": true
+    },
+    "port:write_back_stage:from_memory": {
+      "x": 24,
+      "y": 180,
+      "fixed": true
+    },
+    "port:write_back_stage:data_from_memory": {
+      "x": 456,
+      "y": 132,
+      "fixed": true
+    },
+    "port:write_back_stage:ex_to_mem": {
+      "x": 264,
+      "y": 60,
+      "fixed": true
+    },
+    "port:write_back_stage:result": {
+      "x": 2112,
+      "y": 444,
+      "fixed": true
+    },
+    "port:write_back_stage:rd": {
+      "x": 912,
+      "y": 276,
+      "fixed": true
+    }
+  },
+  "edges": {
+    "edge:port:write_back_stage:from_memory:comb:write_back_stage:_unused_from_mem:expr:from_memory": {
+      "routePoints": [
+        {
+          "x": 288,
+          "y": 192
+        },
+        {
+          "x": 384,
+          "y": 192
+        },
+        {
+          "x": 384,
+          "y": 576
+        },
+        {
+          "x": 528,
+          "y": 576
+        }
+      ]
+    }
+  }
+}

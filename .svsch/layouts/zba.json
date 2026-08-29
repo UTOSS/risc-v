@@ -1,0 +1,116 @@
+{
+  "nodes": {
+    "comb:zba:out_2_b00_lhs:expr": {
+      "x": 384,
+      "y": 96,
+      "fixed": true
+    },
+    "alu:zba:out_2_b00:expr": {
+      "x": 792,
+      "y": 120,
+      "fixed": true
+    },
+    "comb:zba:out_2_b01_lhs:expr": {
+      "x": 384,
+      "y": 192,
+      "fixed": true
+    },
+    "alu:zba:out_2_b01:expr": {
+      "x": 792,
+      "y": 240,
+      "fixed": true
+    },
+    "comb:zba:out_2_b10_lhs:expr": {
+      "x": 384,
+      "y": 336,
+      "fixed": true
+    },
+    "alu:zba:out_2_b10:expr": {
+      "x": 792,
+      "y": 360,
+      "fixed": true
+    },
+    "literal:zba:out_default:32_d0": {
+      "x": 768,
+      "y": 492,
+      "fixed": true
+    },
+    "mux:zba:out:inst:out": {
+      "x": 1104,
+      "y": 216,
+      "fixed": true
+    },
+    "port:zba:reg1": {
+      "x": 24,
+      "y": 228,
+      "fixed": true
+    },
+    "port:zba:reg2": {
+      "x": 432,
+      "y": 300,
+      "fixed": true
+    },
+    "port:zba:inst": {
+      "x": 768,
+      "y": 84,
+      "fixed": true
+    },
+    "port:zba:funct3": {
+      "x": 24,
+      "y": 36,
+      "fixed": true
+    },
+    "port:zba:funct7": {
+      "x": 216,
+      "y": 36,
+      "fixed": true
+    },
+    "port:zba:out": {
+      "x": 1512,
+      "y": 276,
+      "fixed": true
+    }
+  },
+  "edges": {
+    "edge:port:zba:reg2:alu:zba:out_2_b00:expr:reg2": {
+      "routePoints": [
+        {
+          "x": 600,
+          "y": 312
+        },
+        {
+          "x": 744,
+          "y": 312
+        },
+        {
+          "x": 744,
+          "y": 192
+        },
+        {
+          "x": 768,
+          "y": 192
+        }
+      ]
+    },
+    "edge:port:zba:reg2:alu:zba:out_2_b10:expr:reg2": {
+      "routePoints": [
+        {
+          "x": 600,
+          "y": 312
+        },
+        {
+          "x": 744,
+          "y": 312
+        },
+        {
+          "x": 744,
+          "y": 432
+        },
+        {
+          "x": 768,
+          "y": 432
+        }
+      ]
+    }
+  }
+}

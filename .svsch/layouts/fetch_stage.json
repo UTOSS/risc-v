@@ -1,0 +1,277 @@
+{
+  "nodes": {
+    "comb:fetch_stage:unused:expr": {
+      "x": 24,
+      "y": 24,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:fetch_stage:if_to_id.instruction_src:expr": {
+      "x": 2904,
+      "y": 504,
+      "fixed": true,
+      "stale": true
+    },
+    "struct_comp:fetch_stage:if_to_id": {
+      "x": 3312,
+      "y": 768,
+      "fixed": true,
+      "stale": true
+    },
+    "alu:fetch_stage:if_to_id.pc_plus_4_src:expr": {
+      "x": 2928,
+      "y": 1104,
+      "fixed": true,
+      "stale": true
+    },
+    "alu:fetch_stage:pc_next_PC_SRC_INCREMENT:expr": {
+      "x": 1608,
+      "y": 816,
+      "fixed": true,
+      "stale": true
+    },
+    "struct:fetch_stage:ex_to_if": {
+      "x": 1608,
+      "y": 696,
+      "fixed": true,
+      "stale": true
+    },
+    "literal:fetch_stage:pc_next_default:32_hx": {
+      "x": 1632,
+      "y": 948,
+      "fixed": true,
+      "stale": true
+    },
+    "mux:fetch_stage:pc_next:ex_to_if.pc_src:pc_next": {
+      "x": 1968,
+      "y": 816,
+      "fixed": true,
+      "stale": true
+    },
+    "mux:fetch_stage:pc_cur:if_sel_n12:pc_cur_next": {
+      "x": 2904,
+      "y": 888,
+      "fixed": true,
+      "stale": true
+    },
+    "mux:fetch_stage:pc_prev:if_sel_n16:pc_prev_next": {
+      "x": 2904,
+      "y": 696,
+      "fixed": true,
+      "stale": true
+    },
+    "literal:fetch_stage:1_b0:1_b0": {
+      "x": 168,
+      "y": 372,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:expr_branch_n20:n21:expr": {
+      "x": 1560,
+      "y": 576,
+      "fixed": true,
+      "stale": true
+    },
+    "literal:fetch_stage:1_b1:1_b1": {
+      "x": 168,
+      "y": 420,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:expr_branch_n24:n25:expr": {
+      "x": 432,
+      "y": 288,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:expr_branch_n28:n29:expr": {
+      "x": 1560,
+      "y": 408,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:fetch_stage:if_sel_n30:n31:expr": {
+      "x": 2904,
+      "y": 384,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:fetch_stage:if_sel_n32:n33:expr": {
+      "x": 2904,
+      "y": 264,
+      "fixed": true,
+      "stale": true
+    },
+    "mux:fetch_stage:stalled_instr:if_sel_n32:stalled_instr_if_false_n18": {
+      "x": 3336,
+      "y": 240,
+      "fixed": true,
+      "stale": true
+    },
+    "mux:fetch_stage:stalled_instr_valid:if_sel_n32:stalled_instr_valid_if_false_n19": {
+      "x": 3336,
+      "y": 384,
+      "fixed": true,
+      "stale": true
+    },
+    "mux:fetch_stage:stalled_instr:flush_f:stalled_instr_next": {
+      "x": 3672,
+      "y": 192,
+      "fixed": true,
+      "stale": true
+    },
+    "mux:fetch_stage:stalled_instr_valid:flush_f:stalled_instr_valid_next": {
+      "x": 3672,
+      "y": 336,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:fetch_stage:aggregate_assign:70:6:n35_agg_in0:n36:expr": {
+      "x": 24,
+      "y": 144,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:70:6:n35:compose": {
+      "x": 432,
+      "y": 168,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:70:6:n35:breakout": {
+      "x": 792,
+      "y": 288,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:72:6:n37:compose": {
+      "x": 1584,
+      "y": 168,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:72:6:n37:breakout": {
+      "x": 2016,
+      "y": 168,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:74:6:n38:compose": {
+      "x": 432,
+      "y": 408,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:74:6:n38:breakout": {
+      "x": 792,
+      "y": 408,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:76:6:n39:compose": {
+      "x": 1584,
+      "y": 288,
+      "fixed": true,
+      "stale": true
+    },
+    "bus:fetch_stage:aggregate_assign:76:6:n39:breakout": {
+      "x": 2016,
+      "y": 288,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:if_to_id": {
+      "x": 3672,
+      "y": 780,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:ex_to_if": {
+      "x": 1128,
+      "y": 708,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:clk": {
+      "x": 816,
+      "y": 516,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:reset": {
+      "x": 2088,
+      "y": 732,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:stall_f": {
+      "x": 2088,
+      "y": 540,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:flush_f": {
+      "x": 3336,
+      "y": 180,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:imem__address": {
+      "x": 1560,
+      "y": 972,
+      "fixed": true,
+      "stale": true
+    },
+    "port:fetch_stage:imem__data": {
+      "x": 24,
+      "y": 468,
+      "fixed": true,
+      "stale": true
+    },
+    "literal:fetch_stage:32_h4:32_h4": {
+      "x": 1224,
+      "y": 16644,
+      "fixed": true
+    },
+    "comb:fetch_stage:pc_cur_if_true_n10:n11:expr": {
+      "x": 2448,
+      "y": 16944,
+      "fixed": true
+    },
+    "inverter:fetch_stage:if_sel_n12:n13:expr": {
+      "x": 2544,
+      "y": 16872,
+      "fixed": true
+    },
+    "reg:fetch_stage:pc_cur": {
+      "x": 1200,
+      "y": 16512,
+      "fixed": true
+    },
+    "comb:fetch_stage:pc_prev_if_true_n14:n15:expr": {
+      "x": 2448,
+      "y": 16752,
+      "fixed": true
+    },
+    "inverter:fetch_stage:if_sel_n16:n17:expr": {
+      "x": 2544,
+      "y": 16680,
+      "fixed": true
+    },
+    "reg:fetch_stage:pc_prev": {
+      "x": 2496,
+      "y": 17064,
+      "fixed": true
+    },
+    "reg:fetch_stage:stalled_instr": {
+      "x": 1152,
+      "y": 16392,
+      "fixed": true
+    },
+    "reg:fetch_stage:stalled_instr_valid": {
+      "x": 2424,
+      "y": 16560,
+      "fixed": true
+    }
+  }
+}

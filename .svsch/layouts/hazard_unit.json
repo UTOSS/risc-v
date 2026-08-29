@@ -1,0 +1,255 @@
+{
+  "nodes": {
+    "comb:hazard_unit:unused:expr": {
+      "x": 48,
+      "y": 24,
+      "fixed": true
+    },
+    "bus:hazard_unit:result_src_e": {
+      "x": 792,
+      "y": 24,
+      "fixed": true
+    },
+    "comb:hazard_unit:lw_stall:expr": {
+      "x": 1176,
+      "y": 96,
+      "fixed": true
+    },
+    "comb:hazard_unit:control_hazard:expr": {
+      "x": 1176,
+      "y": 264,
+      "fixed": true
+    },
+    "comb:hazard_unit:flush_e:expr": {
+      "x": 1584,
+      "y": 168,
+      "fixed": true
+    },
+    "literal:hazard_unit:forward_a_e_if_true_n76:HAZARD_FORWARD_A__MEMORY_ALU_RESULT": {
+      "x": 1032,
+      "y": 972,
+      "fixed": true
+    },
+    "literal:hazard_unit:forward_a_e_if_true_n77:HAZARD_FORWARD_A__WRITE_BACK_RESULT": {
+      "x": 360,
+      "y": 1140,
+      "fixed": true
+    },
+    "literal:hazard_unit:forward_a_e_if_false_n77:HAZARD_FORWARD_A__EXECUTE_RD1": {
+      "x": 408,
+      "y": 1188,
+      "fixed": true
+    },
+    "comb:hazard_unit:if_sel_n78:expr": {
+      "x": 456,
+      "y": 984,
+      "fixed": true
+    },
+    "mux:hazard_unit:forward_a_e:if_sel_n78:forward_a_e_if_false_n76": {
+      "x": 1152,
+      "y": 1080,
+      "fixed": true
+    },
+    "comb:hazard_unit:if_sel_n79:expr": {
+      "x": 456,
+      "y": 840,
+      "fixed": true
+    },
+    "mux:hazard_unit:forward_a_e:if_sel_n79:forward_a_e": {
+      "x": 1728,
+      "y": 936,
+      "fixed": true
+    },
+    "literal:hazard_unit:forward_b_e_if_true_n80:HAZARD_FORWARD_B__MEMORY_ALU_RESULT": {
+      "x": 1032,
+      "y": 588,
+      "fixed": true
+    },
+    "literal:hazard_unit:forward_b_e_if_true_n81:HAZARD_FORWARD_B__WRITE_BACK_RESULT": {
+      "x": 360,
+      "y": 732,
+      "fixed": true
+    },
+    "literal:hazard_unit:forward_b_e_if_false_n81:HAZARD_FORWARD_B__EXECUTE_RD2": {
+      "x": 408,
+      "y": 780,
+      "fixed": true
+    },
+    "comb:hazard_unit:if_sel_n82:expr": {
+      "x": 456,
+      "y": 576,
+      "fixed": true
+    },
+    "mux:hazard_unit:forward_b_e:if_sel_n82:forward_b_e_if_false_n80": {
+      "x": 1152,
+      "y": 696,
+      "fixed": true
+    },
+    "comb:hazard_unit:if_sel_n83:expr": {
+      "x": 456,
+      "y": 432,
+      "fixed": true
+    },
+    "mux:hazard_unit:forward_b_e:if_sel_n83:forward_b_e": {
+      "x": 1728,
+      "y": 552,
+      "fixed": true
+    },
+    "reg:hazard_unit:pc_src_e_lag": {
+      "x": 768,
+      "y": 312,
+      "fixed": true
+    },
+    "port:hazard_unit:clk": {
+      "x": 432,
+      "y": 372,
+      "fixed": true
+    },
+    "port:hazard_unit:rs1_e": {
+      "x": 24,
+      "y": 852,
+      "fixed": true
+    },
+    "port:hazard_unit:rs2_e": {
+      "x": 24,
+      "y": 492,
+      "fixed": true
+    },
+    "port:hazard_unit:rd_m": {
+      "x": 48,
+      "y": 540,
+      "fixed": true
+    },
+    "port:hazard_unit:rd_w": {
+      "x": 48,
+      "y": 636,
+      "fixed": true
+    },
+    "port:hazard_unit:reg_write_m": {
+      "x": 24,
+      "y": 588,
+      "fixed": true
+    },
+    "port:hazard_unit:reg_write_w": {
+      "x": 24,
+      "y": 900,
+      "fixed": true
+    },
+    "port:hazard_unit:result_src_e": {
+      "x": 288,
+      "y": 36,
+      "fixed": true
+    },
+    "port:hazard_unit:rs1_d": {
+      "x": 816,
+      "y": 156,
+      "fixed": true
+    },
+    "port:hazard_unit:rs2_d": {
+      "x": 816,
+      "y": 252,
+      "fixed": true
+    },
+    "port:hazard_unit:rd_e": {
+      "x": 840,
+      "y": 204,
+      "fixed": true
+    },
+    "port:hazard_unit:pc_src_e": {
+      "x": 360,
+      "y": 300,
+      "fixed": true
+    },
+    "port:hazard_unit:forward_a_e": {
+      "x": 2088,
+      "y": 972,
+      "fixed": true
+    },
+    "port:hazard_unit:forward_b_e": {
+      "x": 2088,
+      "y": 588,
+      "fixed": true
+    },
+    "port:hazard_unit:stall_f": {
+      "x": 1584,
+      "y": 132,
+      "fixed": true
+    },
+    "port:hazard_unit:stall_d": {
+      "x": 1584,
+      "y": 132,
+      "fixed": true
+    },
+    "port:hazard_unit:flush_f": {
+      "x": 1584,
+      "y": 300,
+      "fixed": true
+    },
+    "port:hazard_unit:flush_d": {
+      "x": 1584,
+      "y": 300,
+      "fixed": true
+    },
+    "port:hazard_unit:flush_e": {
+      "x": 1992,
+      "y": 204,
+      "fixed": true
+    }
+  },
+  "netCuts": {
+    "port:hazard_unit:rd_m:port:rd_m": {
+      "label": "rd_m",
+      "source": {
+        "nodeId": "port:hazard_unit:rd_m",
+        "portId": "port:rd_m"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "rd_m"
+    },
+    "port:hazard_unit:rd_w:port:rd_w": {
+      "label": "rd_w",
+      "source": {
+        "nodeId": "port:hazard_unit:rd_w",
+        "portId": "port:rd_w"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "rd_w"
+    },
+    "port:hazard_unit:reg_write_m:port:reg_write_m": {
+      "label": "reg_write_m",
+      "source": {
+        "nodeId": "port:hazard_unit:reg_write_m",
+        "portId": "port:reg_write_m"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "reg_write_m"
+    },
+    "port:hazard_unit:rs2_e:port:rs2_e": {
+      "label": "rs2_e",
+      "source": {
+        "nodeId": "port:hazard_unit:rs2_e",
+        "portId": "port:rs2_e"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "rs2_e"
+    },
+    "port:hazard_unit:reg_write_w:port:reg_write_w": {
+      "label": "reg_write_w",
+      "source": {
+        "nodeId": "port:hazard_unit:reg_write_w",
+        "portId": "port:reg_write_w"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "reg_write_w"
+    },
+    "port:hazard_unit:rs1_e:port:rs1_e": {
+      "label": "rs1_e",
+      "source": {
+        "nodeId": "port:hazard_unit:rs1_e",
+        "portId": "port:rs1_e"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "rs1_e"
+    }
+  }
+}
