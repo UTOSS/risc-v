@@ -8,7 +8,7 @@ UTOSS' 5-stage pipelined RISC-V core with synchronous memory support.
 
 ## Getting Started
 
-Checkout Setting up Developement Environment wiki page if you wuld like to develop locally. You cant
+Checkout Setting up Developement Environment wiki page if you wuld like to develop locally. You can
 also create a
 [Codespace](https://docs.github.com/en/codespaces/about-codespaces/what-are-codespaces) which will
 use our [devcontainer image](.devcontainer/Dockerfile) with all the necessary tools preinstalled.
