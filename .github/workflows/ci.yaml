@@ -279,6 +279,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+    env:
+      BASE_BRANCH: ${{ github.base_ref }}
 
     strategy:
       matrix: *utoss-risc-v-matrix
@@ -346,6 +348,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+    env:
+      BASE_BRANCH: ${{ github.base_ref }}
 
     steps:
       - name: Checkout code

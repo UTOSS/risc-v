@@ -6,6 +6,7 @@ set -euo pipefail
 
 ARTIFACTS_DIR="${1:-metrics-diff}"
 OUTPUT_FILE="${2:-comparison.md}"
+BASE_BRANCH="${BASE_BRANCH:-base branch}"
 
 append_metric_cell() {
   local file="$1"
@@ -43,4 +44,4 @@ fi
 
 echo "" >> "$OUTPUT_FILE"
 echo "---" >> "$OUTPUT_FILE"
-echo "*Comparing synthesis results from main branch vs. this PR*" >> "$OUTPUT_FILE"
+echo "*Comparing synthesis results from \`$BASE_BRANCH\` branch vs. this PR*" >> "$OUTPUT_FILE"
