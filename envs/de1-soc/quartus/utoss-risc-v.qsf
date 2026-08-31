@@ -323,6 +323,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/interfaces/if_to_id_
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/interfaces/mem_to_wb_if.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/ALU_ALUdecoder/ALU.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/ALU_ALUdecoder/ALUdecoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/Instruction_Decode/extend.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/Instruction_Decode/Instruction_Decode.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/Instruction_Decode/MemoryLoader.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/modules/Instruction_Decode/registerFile.sv
