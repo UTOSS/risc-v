@@ -23,6 +23,12 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 # =============
 
 UTOSS_RISCV_CONFIG ?= RV32I
+UTOSS_RISCV_ENABLE_MUL ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
+UTOSS_RISCV_ENABLE_DIV ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
+UTOSS_RISCV_ENABLE_M := $(if $(filter 1 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
+UTOSS_RISCV_ANY_M := $(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
+
+UTOSS_BOOT_ADDR ?= 32\'h0000_0000
 
 # Convert B extension to Zbb for RISC-V ISA spec
 RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
@@ -42,9 +48,13 @@ ifneq ($(findstring A,$(UTOSS_RISCV_CONFIG)),)
 MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1 )))
 endif
 
-UTOSS_RISCV_VERILATOR_DEFINES := \
+UTOSS_RISCV_VERILATOR_DEFINES := \\
 	$(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) \
-	$(if $(findstring ZICSR,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV__ZICSR_ENABLED)
+	$(if $(findstring ZICSR,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV__ZICSR_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_M)),-DUTOSS_RISCV__M_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL)),-DUTOSS_RISCV__MUL_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_DIV)),-DUTOSS_RISCV__DIV_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ANY_M)),-DUTOSS_RISCV__ANY_M)
 UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 
 # ===========================
@@ -54,7 +64,8 @@ UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 \
 	-CFLAGS "-Wno-unknown-warning-option" \
 	$(UTOSS_RISCV_VERILATOR_DEFINES)
-RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
+TOP_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR)
+RISCOF_VERILATOR_FLAGS := $(TOP_VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
 # Testbench-only defines
 TB_DEFINES := -DTESTBENCH
@@ -95,7 +106,7 @@ run_top: $(OUT_DIR)/top_sim
 
 $(OUT_DIR)/top_sim: $(SRCS)
 	@mkdir -p $(BUILD_DIR)/top
-	$(VERILATOR) $(VERILATOR_FLAGS) \
+	$(VERILATOR) $(TOP_VERILATOR_FLAGS) \
 		--top-module top \
 		--Mdir $(BUILD_DIR)/top \
 		-o top_sim \
@@ -185,6 +196,8 @@ riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 		--suite=riscv-arch-test/riscv-test-suite/ \
 		--env=riscv-arch-test/riscv-test-suite/env
 
+include utoss_riscv_dv/Makefile
+
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
 GITHUB_ORG_NAME=utoss
@@ -206,9 +219,59 @@ svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
 # ===========================
+# Diagrams
+# ===========================
+DIAGRAM_DIR := docs/diagrams
+DIAGRAM_SRC := $(SRC_DIR)/utoss_riscv.sv
+DIAGRAM_OUT := $(DIAGRAM_DIR)/utoss_riscv.svg
+
+SVSCH_TEMP_DIR := .svsch_temp
+SVSCH_FIXER := scripts/svsch_include_fixer.py
+SVSCH_DATA_DIR := .svsch
+
+diagrams: $(DIAGRAM_OUT)
+
+update_diagrams: FORCE
+	@mkdir -p $(DIAGRAM_DIR)
+	@mkdir -p $(SVSCH_TEMP_DIR)
+	@python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR)
+	@svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output $(DIAGRAM_OUT) --workspace $(SVSCH_TEMP_DIR) --svsch-data-dir $(SVSCH_DATA_DIR)
+	@rm -rf $(SVSCH_TEMP_DIR)
+
+update_diagrmas: update_diagrams
+
+$(DIAGRAM_OUT): $(DIAGRAM_SRC)
+	@mkdir -p $(DIAGRAM_DIR)
+	@mkdir -p $(SVSCH_TEMP_DIR)
+	@python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR)
+	@svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output $@ --workspace $(SVSCH_TEMP_DIR) --svsch-data-dir $(SVSCH_DATA_DIR)
+	@rm -rf $(SVSCH_TEMP_DIR)
+
+test_diagrams:
+	@if [ -f $(DIAGRAM_OUT) ]; then \
+		mkdir -p $(SVSCH_TEMP_DIR); \
+		python3 $(SVSCH_FIXER) $(SVSCH_TEMP_DIR); \
+		svsch render $(SVSCH_TEMP_DIR)/src/utoss_riscv.sv --output /tmp/utoss_riscv_test.svg --workspace $(SVSCH_TEMP_DIR) --svsch-data-dir $(SVSCH_DATA_DIR); \
+		rm -rf $(SVSCH_TEMP_DIR); \
+		if ! diff -q $(DIAGRAM_OUT) /tmp/utoss_riscv_test.svg > /dev/null; then \
+			echo "ERROR: Generated diagram differs from existing diagram"; \
+			diff $(DIAGRAM_OUT) /tmp/utoss_riscv_test.svg; \
+			rm /tmp/utoss_riscv_test.svg; \
+			exit 1; \
+		fi; \
+		rm /tmp/utoss_riscv_test.svg; \
+	else \
+		echo "ERROR: Diagram $(DIAGRAM_OUT) does not exist"; \
+		exit 1; \
+	fi
+
+# ===========================
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb \
         svlint svlint_tb \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
-        riscof_generate_testlist riscof_run FORCE
+        riscof_generate_testlist riscof_run \
+        riscv_dv \
+				diagrams test_diagrams update_diagrams update_diagrmas \
+				FORCE

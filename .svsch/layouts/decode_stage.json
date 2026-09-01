@@ -1,0 +1,141 @@
+{
+  "nodes": {
+    "struct:decode_stage:if_to_id": {
+      "x": 456,
+      "y": 816,
+      "fixed": true
+    },
+    "struct_comp:decode_stage:id_to_ex": {
+      "x": 2160,
+      "y": 96,
+      "fixed": true
+    },
+    "comb:decode_stage:if_sel_n41:expr": {
+      "x": 1272,
+      "y": 312,
+      "fixed": true
+    },
+    "mux:decode_stage:rd1_safe:if_sel_n41:rd1_safe": {
+      "x": 1728,
+      "y": 384,
+      "fixed": true
+    },
+    "comb:decode_stage:if_sel_n43:expr": {
+      "x": 1272,
+      "y": 456,
+      "fixed": true
+    },
+    "mux:decode_stage:rd2_safe:if_sel_n43:rd2_safe": {
+      "x": 1728,
+      "y": 600,
+      "fixed": true
+    },
+    "instance:decode_stage:u_ctrl": {
+      "x": 1680,
+      "y": 24,
+      "fixed": true
+    },
+    "instance:decode_stage:instruction_decode": {
+      "x": 816,
+      "y": 480,
+      "fixed": true
+    },
+    "instance:decode_stage:RegFile": {
+      "x": 1248,
+      "y": 600,
+      "fixed": true
+    },
+    "port:decode_stage:if_to_id": {
+      "x": 24,
+      "y": 828,
+      "fixed": true
+    },
+    "port:decode_stage:clk": {
+      "x": 912,
+      "y": 756,
+      "fixed": true
+    },
+    "port:decode_stage:reset": {
+      "x": 912,
+      "y": 804,
+      "fixed": true
+    },
+    "port:decode_stage:rd_wb": {
+      "x": 888,
+      "y": 372,
+      "fixed": true
+    },
+    "port:decode_stage:reg_write_w": {
+      "x": 888,
+      "y": 420,
+      "fixed": true
+    },
+    "port:decode_stage:data": {
+      "x": 888,
+      "y": 708,
+      "fixed": true
+    },
+    "port:decode_stage:id_to_ex": {
+      "x": 2568,
+      "y": 108,
+      "fixed": true
+    },
+    "port:decode_stage:rs1": {
+      "x": 1248,
+      "y": 876,
+      "fixed": true
+    },
+    "port:decode_stage:rs2": {
+      "x": 1248,
+      "y": 828,
+      "fixed": true
+    }
+  },
+  "netCuts": {
+    "port:decode_stage:if_to_id:port:if_to_id": {
+      "label": "if_to_id",
+      "source": {
+        "nodeId": "port:decode_stage:if_to_id",
+        "portId": "port:if_to_id"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "if_to_id"
+    },
+    "struct:decode_stage:if_to_id:out:instruction": {
+      "label": "instruction",
+      "source": {
+        "nodeId": "struct:decode_stage:if_to_id",
+        "portId": "out:instruction"
+      },
+      "origin": "declared",
+      "defaultLabel": "instruction"
+    },
+    "struct:decode_stage:if_to_id:out:if_to_id.pc_cur": {
+      "label": "if_to_id.pc_cur",
+      "source": {
+        "nodeId": "struct:decode_stage:if_to_id",
+        "portId": "out:if_to_id.pc_cur"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "if_to_id.pc_cur"
+    },
+    "struct:decode_stage:if_to_id:out:if_to_id.pc_plus_4": {
+      "label": "if_to_id.pc_plus_4",
+      "source": {
+        "nodeId": "struct:decode_stage:if_to_id",
+        "portId": "out:if_to_id.pc_plus_4"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "if_to_id.pc_plus_4"
+    },
+    "instance:decode_stage:instruction_decode:port:opcode": {
+      "label": "opcode",
+      "source": {
+        "nodeId": "instance:decode_stage:instruction_decode",
+        "portId": "port:opcode"
+      },
+      "origin": "declared",
+      "defaultLabel": "opcode"
+    }
+  }
+}

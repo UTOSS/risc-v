@@ -1,0 +1,1100 @@
+{
+  "nodes": {
+    "comb:ALU:zeroE:expr": {
+      "x": 1704,
+      "y": 768,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:ALU:out_ALU_CONTROL_SLT:expr": {
+      "x": 384,
+      "y": 432,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:ALU:out_ALU_CONTROL_SLTU:expr": {
+      "x": 384,
+      "y": 552,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:ALU:out_ALU_CONTROL_XOR:expr": {
+      "x": 384,
+      "y": 672,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:ALU:out_ALU_CONTROL_OR:expr": {
+      "x": 384,
+      "y": 1032,
+      "fixed": true,
+      "stale": true
+    },
+    "comb:ALU:out_ALU_CONTROL_AND:expr": {
+      "x": 384,
+      "y": 1152,
+      "fixed": true,
+      "stale": true
+    },
+    "literal:ALU:out_default:32_b0": {
+      "x": 480,
+      "y": 1284,
+      "fixed": true,
+      "stale": true
+    },
+    "literal:ALU:0:0": {
+      "x": 2016,
+      "y": 852,
+      "fixed": true
+    },
+    "comparator:ALU:zeroE:expr": {
+      "x": 2328,
+      "y": 696,
+      "fixed": true
+    },
+    "alu:ALU:out_ALU_CONTROL_ADD:expr": {
+      "x": 192,
+      "y": 48,
+      "fixed": true
+    },
+    "alu:ALU:out_ALU_CONTROL_SUB:expr": {
+      "x": 192,
+      "y": 168,
+      "fixed": true
+    },
+    "comb:ALU:out_ALU_CONTROL_SLL:expr": {
+      "x": 576,
+      "y": 288,
+      "fixed": true
+    },
+    "comb:ALU:out_ALU_CONTROL_SLT_sel_lhs:expr": {
+      "x": 168,
+      "y": 408,
+      "fixed": true
+    },
+    "comb:ALU:out_ALU_CONTROL_SLT_sel_rhs:expr": {
+      "x": 168,
+      "y": 504,
+      "fixed": true
+    },
+    "comparator:ALU:out_ALU_CONTROL_SLT_sel:expr": {
+      "x": 624,
+      "y": 408,
+      "fixed": true
+    },
+    "literal:ALU:32_b1:32_b1": {
+      "x": 744,
+      "y": 516,
+      "fixed": true
+    },
+    "literal:ALU:32_b0:32_b0": {
+      "x": 744,
+      "y": 564,
+      "fixed": true
+    },
+    "mux:ALU:out_ALU_CONTROL_SLT:ternary": {
+      "x": 1032,
+      "y": 432,
+      "fixed": true
+    },
+    "comparator:ALU:out_ALU_CONTROL_SLTU_sel:expr": {
+      "x": 192,
+      "y": 600,
+      "fixed": true
+    },
+    "mux:ALU:out_ALU_CONTROL_SLTU:ternary": {
+      "x": 1032,
+      "y": 576,
+      "fixed": true
+    },
+    "gate:ALU:out_ALU_CONTROL_XOR:xor": {
+      "x": 192,
+      "y": 288,
+      "fixed": true
+    },
+    "comb:ALU:out_ALU_CONTROL_SRL:expr": {
+      "x": 1008,
+      "y": 696,
+      "fixed": true
+    },
+    "comb:ALU:out_ALU_CONTROL_SRA:expr": {
+      "x": 576,
+      "y": 720,
+      "fixed": true
+    },
+    "gate:ALU:out_ALU_CONTROL_OR:or": {
+      "x": 192,
+      "y": 720,
+      "fixed": true
+    },
+    "gate:ALU:out_ALU_CONTROL_AND:and": {
+      "x": 192,
+      "y": 840,
+      "fixed": true
+    },
+    "mux:ALU:out:alu_control:out": {
+      "x": 1440,
+      "y": 480,
+      "fixed": true
+    },
+    "port:ALU:a": {
+      "x": -168,
+      "y": 492,
+      "fixed": true
+    },
+    "port:ALU:b": {
+      "x": -168,
+      "y": 540,
+      "fixed": true
+    },
+    "port:ALU:alu_control": {
+      "x": 1440,
+      "y": 228,
+      "fixed": true
+    },
+    "port:ALU:out": {
+      "x": 2328,
+      "y": 636,
+      "fixed": true
+    },
+    "port:ALU:zeroE": {
+      "x": 2640,
+      "y": 732,
+      "fixed": true
+    }
+  },
+  "edges": {
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_AND:expr:a": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 1200
+        },
+        {
+          "x": 360,
+          "y": 1200
+        }
+      ]
+    },
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_OR:expr:a": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 1080
+        },
+        {
+          "x": 360,
+          "y": 1080
+        }
+      ]
+    },
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_SLT:expr:a": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 480
+        },
+        {
+          "x": 360,
+          "y": 480
+        }
+      ]
+    },
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_XOR:expr:a": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 600
+        },
+        {
+          "x": 312,
+          "y": 720
+        },
+        {
+          "x": 360,
+          "y": 720
+        }
+      ]
+    },
+    "edge:literal:ALU:out_default:32_b0:mux:ALU:out:alu_control:out:out_default": {
+      "routePoints": [
+        {
+          "x": 624,
+          "y": 1296
+        },
+        {
+          "x": 744,
+          "y": 1296
+        },
+        {
+          "x": 744,
+          "y": 840
+        },
+        {
+          "x": 792,
+          "y": 840
+        }
+      ]
+    },
+    "edge:comb:ALU:out_ALU_CONTROL_SLT:expr:mux:ALU:out:alu_control:out:out_ALU_CONTROL_SLT": {
+      "routePoints": [
+        {
+          "x": 600,
+          "y": 480
+        },
+        {
+          "x": 672,
+          "y": 480
+        },
+        {
+          "x": 672,
+          "y": 672
+        },
+        {
+          "x": 792,
+          "y": 672
+        }
+      ]
+    },
+    "edge:comb:ALU:out_ALU_CONTROL_SLTU:expr:mux:ALU:out:alu_control:out:out_ALU_CONTROL_SLTU": {
+      "routePoints": [
+        {
+          "x": 600,
+          "y": 600
+        },
+        {
+          "x": 648,
+          "y": 600
+        },
+        {
+          "x": 648,
+          "y": 696
+        },
+        {
+          "x": 792,
+          "y": 696
+        }
+      ]
+    },
+    "edge:comb:ALU:out_ALU_CONTROL_AND:expr:mux:ALU:out:alu_control:out:out_ALU_CONTROL_AND": {
+      "routePoints": [
+        {
+          "x": 600,
+          "y": 1200
+        },
+        {
+          "x": 720,
+          "y": 1200
+        },
+        {
+          "x": 720,
+          "y": 816
+        },
+        {
+          "x": 792,
+          "y": 816
+        }
+      ]
+    },
+    "edge:port:ALU:b:comb:ALU:out_ALU_CONTROL_AND:expr:b": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 1224
+        },
+        {
+          "x": 360,
+          "y": 1224
+        }
+      ]
+    },
+    "edge:port:ALU:b:comb:ALU:out_ALU_CONTROL_OR:expr:b": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 1104
+        },
+        {
+          "x": 360,
+          "y": 1104
+        }
+      ]
+    },
+    "edge:port:ALU:b:comb:ALU:out_ALU_CONTROL_SLT:expr:b": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 504
+        },
+        {
+          "x": 360,
+          "y": 504
+        }
+      ]
+    },
+    "edge:port:ALU:b:comb:ALU:out_ALU_CONTROL_SLTU:expr:b": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 624
+        },
+        {
+          "x": 360,
+          "y": 624
+        }
+      ]
+    },
+    "edge:port:ALU:b:comb:ALU:out_ALU_CONTROL_XOR:expr:b": {
+      "routePoints": [
+        {
+          "x": 168,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 648
+        },
+        {
+          "x": 336,
+          "y": 744
+        },
+        {
+          "x": 360,
+          "y": 744
+        }
+      ]
+    },
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_SLL:expr:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 24
+        },
+        {
+          "x": 480,
+          "y": 24
+        },
+        {
+          "x": 480,
+          "y": 336
+        },
+        {
+          "x": 552,
+          "y": 336
+        }
+      ]
+    },
+    "edge:port:ALU:a:alu:ALU:out_ALU_CONTROL_ADD:expr:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 72
+        },
+        {
+          "x": 168,
+          "y": 72
+        }
+      ]
+    },
+    "edge:port:ALU:a:alu:ALU:out_ALU_CONTROL_SUB:expr:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 192
+        },
+        {
+          "x": 168,
+          "y": 192
+        }
+      ]
+    },
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_SLT_sel_lhs:expr:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 456
+        },
+        {
+          "x": 144,
+          "y": 456
+        }
+      ]
+    },
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_SRA:expr:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 960
+        },
+        {
+          "x": 456,
+          "y": 960
+        },
+        {
+          "x": 456,
+          "y": 768
+        },
+        {
+          "x": 552,
+          "y": 768
+        }
+      ]
+    },
+    "edge:port:ALU:a:comb:ALU:out_ALU_CONTROL_SRL:expr:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 960
+        },
+        {
+          "x": 456,
+          "y": 960
+        },
+        {
+          "x": 456,
+          "y": 696
+        },
+        {
+          "x": 888,
+          "y": 696
+        },
+        {
+          "x": 888,
+          "y": 744
+        },
+        {
+          "x": 984,
+          "y": 744
+        }
+      ]
+    },
+    "edge:port:ALU:a:comparator:ALU:out_ALU_CONTROL_SLTU_sel:expr:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 624
+        },
+        {
+          "x": 168,
+          "y": 624
+        }
+      ]
+    },
+    "edge:port:ALU:a:gate:ALU:out_ALU_CONTROL_AND:and:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 864
+        },
+        {
+          "x": 168,
+          "y": 864
+        }
+      ]
+    },
+    "edge:port:ALU:a:gate:ALU:out_ALU_CONTROL_OR:or:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 744
+        },
+        {
+          "x": 168,
+          "y": 744
+        }
+      ]
+    },
+    "edge:port:ALU:a:gate:ALU:out_ALU_CONTROL_XOR:xor:a": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 504
+        },
+        {
+          "x": 48,
+          "y": 312
+        },
+        {
+          "x": 168,
+          "y": 312
+        }
+      ]
+    },
+    "edge:port:ALU:b:alu:ALU:out_ALU_CONTROL_ADD:expr:b": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 120
+        },
+        {
+          "x": 168,
+          "y": 120
+        }
+      ]
+    },
+    "edge:port:ALU:b:alu:ALU:out_ALU_CONTROL_SUB:expr:b": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 240
+        },
+        {
+          "x": 168,
+          "y": 240
+        }
+      ]
+    },
+    "edge:port:ALU:b:comparator:ALU:out_ALU_CONTROL_SLTU_sel:expr:b": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 672
+        },
+        {
+          "x": 168,
+          "y": 672
+        }
+      ]
+    },
+    "edge:port:ALU:b:gate:ALU:out_ALU_CONTROL_AND:and:b": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 912
+        },
+        {
+          "x": 168,
+          "y": 912
+        }
+      ]
+    },
+    "edge:port:ALU:b:gate:ALU:out_ALU_CONTROL_OR:or:b": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 792
+        },
+        {
+          "x": 168,
+          "y": 792
+        }
+      ]
+    },
+    "edge:port:ALU:b:gate:ALU:out_ALU_CONTROL_XOR:xor:b": {
+      "routePoints": [
+        {
+          "x": -24,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 552
+        },
+        {
+          "x": 72,
+          "y": 360
+        },
+        {
+          "x": 168,
+          "y": 360
+        }
+      ]
+    },
+    "edge:alu:ALU:out_ALU_CONTROL_ADD:expr:mux:ALU:out:alu_control:out:out_ALU_CONTROL_ADD": {
+      "routePoints": [
+        {
+          "x": 312,
+          "y": 96
+        },
+        {
+          "x": 1392,
+          "y": 96
+        },
+        {
+          "x": 1392,
+          "y": 528
+        },
+        {
+          "x": 1416,
+          "y": 528
+        }
+      ]
+    },
+    "edge:alu:ALU:out_ALU_CONTROL_SUB:expr:mux:ALU:out:alu_control:out:out_ALU_CONTROL_SUB": {
+      "routePoints": [
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 312,
+          "y": 216
+        },
+        {
+          "x": 624,
+          "y": 216
+        },
+        {
+          "x": 624,
+          "y": 216
+        },
+        {
+          "x": 1368,
+          "y": 216
+        },
+        {
+          "x": 1368,
+          "y": 552
+        },
+        {
+          "x": 1416,
+          "y": 552
+        }
+      ]
+    },
+    "edge:comb:ALU:out_ALU_CONTROL_SLL:expr:mux:ALU:out:alu_control:out:out_ALU_CONTROL_SLL": {
+      "routePoints": [
+        {
+          "x": 792,
+          "y": 336
+        },
+        {
+          "x": 1344,
+          "y": 336
+        },
+        {
+          "x": 1344,
+          "y": 576
+        },
+        {
+          "x": 1416,
+          "y": 576
+        }
+      ]
+    },
+    "edge:gate:ALU:out_ALU_CONTROL_AND:and:mux:ALU:out:alu_control:out:out_ALU_CONTROL_AND": {
+      "routePoints": [
+        {
+          "x": 312,
+          "y": 888
+        },
+        {
+          "x": 1392,
+          "y": 888
+        },
+        {
+          "x": 1392,
+          "y": 744
+        },
+        {
+          "x": 1416,
+          "y": 744
+        }
+      ]
+    },
+    "edge:literal:ALU:32_b0:32_b0:mux:ALU:out:alu_control:out:out_default": {
+      "routePoints": [
+        {
+          "x": 888,
+          "y": 576
+        },
+        {
+          "x": 936,
+          "y": 576
+        },
+        {
+          "x": 936,
+          "y": 816
+        },
+        {
+          "x": 1416,
+          "y": 816
+        },
+        {
+          "x": 1416,
+          "y": 768
+        }
+      ]
+    },
+    "edge:gate:ALU:out_ALU_CONTROL_OR:or:mux:ALU:out:alu_control:out:out_ALU_CONTROL_OR": {
+      "routePoints": [
+        {
+          "x": 312,
+          "y": 768
+        },
+        {
+          "x": 432,
+          "y": 768
+        },
+        {
+          "x": 432,
+          "y": 864
+        },
+        {
+          "x": 1368,
+          "y": 864
+        },
+        {
+          "x": 1368,
+          "y": 720
+        },
+        {
+          "x": 1416,
+          "y": 720
+        }
+      ]
+    },
+    "edge:comb:ALU:out_ALU_CONTROL_SRA:expr:mux:ALU:out:alu_control:out:out_ALU_CONTROL_SRA": {
+      "routePoints": [
+        {
+          "x": 792,
+          "y": 768
+        },
+        {
+          "x": 888,
+          "y": 768
+        },
+        {
+          "x": 888,
+          "y": 840
+        },
+        {
+          "x": 1344,
+          "y": 840
+        },
+        {
+          "x": 1344,
+          "y": 696
+        },
+        {
+          "x": 1416,
+          "y": 696
+        }
+      ]
+    },
+    "edge:literal:ALU:32_b1:32_b1:mux:ALU:out_ALU_CONTROL_SLT:ternary:32_b1": {
+      "routePoints": [
+        {
+          "x": 792,
+          "y": 552
+        },
+        {
+          "x": 960,
+          "y": 552
+        },
+        {
+          "x": 960,
+          "y": 480
+        },
+        {
+          "x": 1008,
+          "y": 480
+        }
+      ]
+    },
+    "edge:literal:ALU:32_b1:32_b1:mux:ALU:out_ALU_CONTROL_SLTU:ternary:32_b1": {
+      "routePoints": [
+        {
+          "x": 792,
+          "y": 552
+        },
+        {
+          "x": 960,
+          "y": 552
+        },
+        {
+          "x": 960,
+          "y": 624
+        },
+        {
+          "x": 1008,
+          "y": 624
+        }
+      ]
+    },
+    "edge:literal:ALU:32_b0:32_b0:mux:ALU:out_ALU_CONTROL_SLT:ternary:32_b0": {
+      "routePoints": [
+        {
+          "x": 888,
+          "y": 576
+        },
+        {
+          "x": 936,
+          "y": 576
+        },
+        {
+          "x": 936,
+          "y": 504
+        },
+        {
+          "x": 1008,
+          "y": 504
+        }
+      ]
+    },
+    "edge:literal:ALU:32_b0:32_b0:mux:ALU:out_ALU_CONTROL_SLTU:ternary:32_b0": {
+      "routePoints": [
+        {
+          "x": 888,
+          "y": 576
+        },
+        {
+          "x": 936,
+          "y": 576
+        },
+        {
+          "x": 936,
+          "y": 648
+        },
+        {
+          "x": 1008,
+          "y": 648
+        }
+      ]
+    },
+    "edge:comparator:ALU:out_ALU_CONTROL_SLTU_sel:expr:mux:ALU:out_ALU_CONTROL_SLTU:ternary:out_ALU_CONTROL_SLTU_sel": {
+      "routePoints": [
+        {
+          "x": 312,
+          "y": 648
+        },
+        {
+          "x": 600,
+          "y": 648
+        },
+        {
+          "x": 600,
+          "y": 552
+        },
+        {
+          "x": 1104,
+          "y": 552
+        }
+      ]
+    }
+  }
+}

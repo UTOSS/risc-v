@@ -1,0 +1,1108 @@
+{
+  "nodes": {
+    "comb:execute_stage:unused:expr": {
+      "x": -72,
+      "y": 408,
+      "fixed": true
+    },
+    "struct:execute_stage:id_to_ex": {
+      "x": 552,
+      "y": 0,
+      "fixed": true
+    },
+    "comb:execute_stage:should_branch:expr": {
+      "x": 1656,
+      "y": 1992,
+      "fixed": true
+    },
+    "comb:execute_stage:pc_src:expr": {
+      "x": 2064,
+      "y": 1992,
+      "fixed": true
+    },
+    "struct_comp:execute_stage:ex_to_mem": {
+      "x": 2976,
+      "y": -456,
+      "fixed": true
+    },
+    "struct_comp:execute_stage:ex_to_if": {
+      "x": 3000,
+      "y": 24,
+      "fixed": true
+    },
+    "literal:execute_stage:safe_rd1_default:_x": {
+      "x": 336,
+      "y": 1020,
+      "fixed": true
+    },
+    "mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1": {
+      "x": 1536,
+      "y": -48,
+      "fixed": true
+    },
+    "mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2": {
+      "x": 1536,
+      "y": 216,
+      "fixed": true
+    },
+    "mux:execute_stage:alu_input_a:id_to_ex.alu_src_a:alu_input_a": {
+      "x": 1512,
+      "y": 648,
+      "fixed": true
+    },
+    "mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b": {
+      "x": 1512,
+      "y": 912,
+      "fixed": true
+    },
+    "alu:execute_stage:pc_target_PC_TARGET_KIND_RELATIVE:expr": {
+      "x": 1512,
+      "y": 1680,
+      "fixed": true
+    },
+    "comb:execute_stage:pc_target_default:expr": {
+      "x": 1416,
+      "y": 1848,
+      "fixed": true
+    },
+    "mux:execute_stage:pc_target:id_to_ex.pc_target_kind:pc_target": {
+      "x": 1920,
+      "y": 1680,
+      "fixed": true
+    },
+    "inverter:execute_stage:branch_condition_met_FUNCT3_BNE:expr": {
+      "x": 1584,
+      "y": 1272,
+      "fixed": true
+    },
+    "bus:execute_stage:alu_result": {
+      "x": 1464,
+      "y": 1320,
+      "fixed": true
+    },
+    "inverter:execute_stage:branch_condition_met_FUNCT3_BGE:expr": {
+      "x": 1584,
+      "y": 1368,
+      "fixed": true
+    },
+    "mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met": {
+      "x": 1800,
+      "y": 1224,
+      "fixed": true
+    },
+    "instance:execute_stage:alu": {
+      "x": 2112,
+      "y": 744,
+      "fixed": true
+    },
+    "port:execute_stage:id_to_ex": {
+      "x": 24,
+      "y": 12,
+      "fixed": true
+    },
+    "port:execute_stage:hz_forward_a": {
+      "x": 72,
+      "y": 924,
+      "fixed": true
+    },
+    "port:execute_stage:hz_forward_b": {
+      "x": 72,
+      "y": 1164,
+      "fixed": true
+    },
+    "port:execute_stage:wb_result": {
+      "x": 192,
+      "y": 1068,
+      "fixed": true
+    },
+    "port:execute_stage:mem_alu_result": {
+      "x": 168,
+      "y": 1116,
+      "fixed": true
+    },
+    "port:execute_stage:ex_to_if": {
+      "x": 3360,
+      "y": 36,
+      "fixed": true
+    },
+    "port:execute_stage:ex_to_mem": {
+      "x": 3360,
+      "y": -444,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.imm_ext:source": {
+      "x": 792,
+      "y": 432,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.imm_ext:sink:edge:struct:execute_stage:id_to_ex:alu:execute_stage:pc_target_PC_TARGET_KIND_RELATIVE:expr:id_to_ex.imm_ext": {
+      "x": 1320,
+      "y": 1728,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.imm_ext:sink:edge:struct:execute_stage:id_to_ex:mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b:id_to_ex.imm_ext": {
+      "x": 1320,
+      "y": 960,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.imm_ext:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_if:id_to_ex.imm_ext": {
+      "x": 2808,
+      "y": 24,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_cur:source": {
+      "x": 816,
+      "y": 336,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_cur:sink:edge:struct:execute_stage:id_to_ex:alu:execute_stage:pc_target_PC_TARGET_KIND_RELATIVE:expr:id_to_ex.pc_cur": {
+      "x": 1320,
+      "y": 1680,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_cur:sink:edge:struct:execute_stage:id_to_ex:mux:execute_stage:alu_input_a:id_to_ex.alu_src_a:alu_input_a:id_to_ex.pc_cur": {
+      "x": 1344,
+      "y": 696,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_cur:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_if:id_to_ex.pc_cur": {
+      "x": 2832,
+      "y": 168,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_cur:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_mem:id_to_ex.pc_cur": {
+      "x": 2808,
+      "y": -120,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:branch_e:source": {
+      "x": 864,
+      "y": 48,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:branch_e:sink:edge:struct:execute_stage:id_to_ex:comb:execute_stage:should_branch:expr:branch_e": {
+      "x": 1536,
+      "y": 2040,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:jump_e:source": {
+      "x": 864,
+      "y": 0,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:jump_e:sink:edge:struct:execute_stage:id_to_ex:comb:execute_stage:should_branch:expr:jump_e": {
+      "x": 1536,
+      "y": 2016,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.funct3:source": {
+      "x": 816,
+      "y": 240,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.funct3:sink:edge:struct:execute_stage:id_to_ex:mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met:id_to_ex.funct3": {
+      "x": 1896,
+      "y": 1152,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.funct3:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_mem:id_to_ex.funct3": {
+      "x": 2808,
+      "y": -312,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_target_kind:source": {
+      "x": 744,
+      "y": 672,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_target_kind:sink:edge:struct:execute_stage:id_to_ex:mux:execute_stage:pc_target:id_to_ex.pc_target_kind:pc_target:id_to_ex.pc_target_kind": {
+      "x": 1944,
+      "y": 1608,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.rd1:source": {
+      "x": 840,
+      "y": 480,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.rd1:sink:edge:struct:execute_stage:id_to_ex:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:id_to_ex.rd1": {
+      "x": 1368,
+      "y": -24,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.rd2:source": {
+      "x": 840,
+      "y": 528,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.rd2:sink:edge:struct:execute_stage:id_to_ex:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:id_to_ex.rd2": {
+      "x": 1368,
+      "y": 240,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.mem_write:source": {
+      "x": 792,
+      "y": 144,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.mem_write:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_mem:id_to_ex.mem_write": {
+      "x": 2784,
+      "y": -408,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_plus_4:source": {
+      "x": 792,
+      "y": 384,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.pc_plus_4:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_mem:id_to_ex.pc_plus_4": {
+      "x": 2784,
+      "y": -72,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.rd:source": {
+      "x": 840,
+      "y": 288,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.rd:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_mem:id_to_ex.rd": {
+      "x": 2832,
+      "y": -216,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.reg_write:source": {
+      "x": 792,
+      "y": 192,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.reg_write:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_mem:id_to_ex.reg_write": {
+      "x": 2784,
+      "y": -360,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.result_src:source": {
+      "x": 768,
+      "y": 96,
+      "fixed": true
+    },
+    "cut-label:struct:execute_stage:id_to_ex:out:id_to_ex.result_src:sink:edge:struct:execute_stage:id_to_ex:struct_comp:execute_stage:ex_to_mem:id_to_ex.result_src": {
+      "x": 2760,
+      "y": -456,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:wb_result:port:wb_result:source": {
+      "x": 456,
+      "y": 1056,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:wb_result:port:wb_result:sink:edge:port:execute_stage:wb_result:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:wb_result": {
+      "x": 1368,
+      "y": 0,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:wb_result:port:wb_result:sink:edge:port:execute_stage:wb_result:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:wb_result": {
+      "x": 1368,
+      "y": 264,
+      "fixed": true
+    },
+    "cut-label:literal:execute_stage:safe_rd1_default:_x:source": {
+      "x": 408,
+      "y": 1008,
+      "fixed": true
+    },
+    "cut-label:literal:execute_stage:safe_rd1_default:_x:sink:edge:literal:execute_stage:safe_rd1_default:_x:mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b:alu_input_b_default": {
+      "x": 1320,
+      "y": 984,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:mem_alu_result:port:mem_alu_result:source": {
+      "x": 408,
+      "y": 1104,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:mem_alu_result:port:mem_alu_result:sink:edge:port:execute_stage:mem_alu_result:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:mem_alu_result": {
+      "x": 1368,
+      "y": 24,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:mem_alu_result:port:mem_alu_result:sink:edge:port:execute_stage:mem_alu_result:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:mem_alu_result": {
+      "x": 1368,
+      "y": 288,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:hz_forward_b:port:hz_forward_b:source": {
+      "x": 432,
+      "y": 1152,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:hz_forward_b:port:hz_forward_b:sink:edge:port:execute_stage:hz_forward_b:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:hz_forward_b": {
+      "x": 1824,
+      "y": 144,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:hz_forward_a:port:hz_forward_a:source": {
+      "x": 408,
+      "y": 912,
+      "fixed": true
+    },
+    "cut-label:port:execute_stage:hz_forward_a:port:hz_forward_a:sink:edge:port:execute_stage:hz_forward_a:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:hz_forward_a": {
+      "x": 1824,
+      "y": -120,
+      "fixed": true
+    },
+    "cut-label:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:out:source": {
+      "x": 2232,
+      "y": 264,
+      "fixed": true
+    },
+    "cut-label:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:out:sink:edge:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b:safe_rd2": {
+      "x": 1320,
+      "y": 936,
+      "fixed": true
+    },
+    "cut-label:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:out:sink:edge:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:struct_comp:execute_stage:ex_to_mem:safe_rd2": {
+      "x": 2856,
+      "y": -264,
+      "fixed": true
+    },
+    "cut-label:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:out:source": {
+      "x": 2232,
+      "y": 0,
+      "fixed": true
+    },
+    "cut-label:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:out:sink:edge:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:mux:execute_stage:alu_input_a:id_to_ex.alu_src_a:alu_input_a:safe_rd1": {
+      "x": 1344,
+      "y": 672,
+      "fixed": true
+    },
+    "cut-label:instance:execute_stage:alu:port:zeroE:source": {
+      "x": 2352,
+      "y": 792,
+      "fixed": true
+    },
+    "cut-label:instance:execute_stage:alu:port:zeroE:sink:edge:instance:execute_stage:alu:inverter:execute_stage:branch_condition_met_FUNCT3_BNE:expr:zero_flag": {
+      "x": 1416,
+      "y": 1272,
+      "fixed": true
+    },
+    "cut-label:mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met:out:source": {
+      "x": 2160,
+      "y": 1320,
+      "fixed": true
+    },
+    "cut-label:mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met:out:sink:edge:mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met:comb:execute_stage:should_branch:expr:branch_condition_met": {
+      "x": 1440,
+      "y": 2064,
+      "fixed": true
+    },
+    "cut-label:comb:execute_stage:pc_src:expr:out:pc_src:source": {
+      "x": 2280,
+      "y": 2016,
+      "fixed": true
+    },
+    "cut-label:comb:execute_stage:pc_src:expr:out:pc_src:sink:edge:comb:execute_stage:pc_src:expr:struct_comp:execute_stage:ex_to_if:pc_src": {
+      "x": 2880,
+      "y": 72,
+      "fixed": true
+    }
+  },
+  "edges": {
+    "edge:struct:execute_stage:id_to_ex:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:id_to_ex.rd1": {
+      "routePoints": [
+        {
+          "x": 768,
+          "y": 624
+        },
+        {
+          "x": 888,
+          "y": 624
+        },
+        {
+          "x": 888,
+          "y": 936
+        },
+        {
+          "x": 936,
+          "y": 936
+        }
+      ]
+    },
+    "edge:port:execute_stage:wb_result:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:wb_result": {
+      "routePoints": [
+        {
+          "x": 768,
+          "y": 1080
+        },
+        {
+          "x": 888,
+          "y": 1080
+        },
+        {
+          "x": 888,
+          "y": 960
+        },
+        {
+          "x": 936,
+          "y": 960
+        }
+      ]
+    },
+    "edge:port:execute_stage:wb_result:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:wb_result": {
+      "routePoints": [
+        {
+          "x": 768,
+          "y": 1080
+        },
+        {
+          "x": 888,
+          "y": 1080
+        },
+        {
+          "x": 888,
+          "y": 1152
+        },
+        {
+          "x": 936,
+          "y": 1152
+        }
+      ]
+    },
+    "edge:port:execute_stage:mem_alu_result:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:mem_alu_result": {
+      "routePoints": [
+        {
+          "x": 768,
+          "y": 1128
+        },
+        {
+          "x": 912,
+          "y": 1128
+        },
+        {
+          "x": 912,
+          "y": 984
+        },
+        {
+          "x": 936,
+          "y": 984
+        }
+      ]
+    },
+    "edge:port:execute_stage:mem_alu_result:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:mem_alu_result": {
+      "routePoints": [
+        {
+          "x": 768,
+          "y": 1128
+        },
+        {
+          "x": 912,
+          "y": 1128
+        },
+        {
+          "x": 912,
+          "y": 1176
+        },
+        {
+          "x": 936,
+          "y": 1176
+        }
+      ]
+    },
+    "edge:literal:execute_stage:safe_rd1_default:_x:mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b:alu_input_b_default": {
+      "routePoints": [
+        {
+          "x": 768,
+          "y": 1032
+        },
+        {
+          "x": 936,
+          "y": 1032
+        },
+        {
+          "x": 936,
+          "y": 1080
+        },
+        {
+          "x": 1752,
+          "y": 1080
+        },
+        {
+          "x": 1752,
+          "y": 960
+        },
+        {
+          "x": 1824,
+          "y": 960
+        }
+      ]
+    },
+    "edge:literal:execute_stage:safe_rd1_default:_x:mux:execute_stage:alu_input_a:id_to_ex.alu_src_a:alu_input_a:alu_input_a_default": {
+      "routePoints": [
+        {
+          "x": 768,
+          "y": 1032
+        },
+        {
+          "x": 936,
+          "y": 1032
+        },
+        {
+          "x": 936,
+          "y": 1080
+        },
+        {
+          "x": 1728,
+          "y": 1080
+        },
+        {
+          "x": 1728,
+          "y": 744
+        },
+        {
+          "x": 1848,
+          "y": 744
+        }
+      ]
+    },
+    "edge:struct_comp:execute_stage:ex_to_mem:port:execute_stage:ex_to_mem:ex_to_mem": {
+      "routePoints": [
+        {
+          "x": 3168,
+          "y": -432
+        },
+        {
+          "x": 3432,
+          "y": -432
+        }
+      ]
+    },
+    "edge:instance:execute_stage:alu:bus:execute_stage:alu_result:alu_result": {
+      "routePoints": [
+        {
+          "x": 2352,
+          "y": 792
+        },
+        {
+          "x": 2496,
+          "y": 792
+        },
+        {
+          "x": 2496,
+          "y": 1128
+        },
+        {
+          "x": 1224,
+          "y": 1128
+        },
+        {
+          "x": 1224,
+          "y": 1344
+        },
+        {
+          "x": 1440,
+          "y": 1344
+        }
+      ]
+    },
+    "edge:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:struct_comp:execute_stage:ex_to_mem:safe_rd2": {
+      "routePoints": [
+        {
+          "x": 1656,
+          "y": 1344
+        },
+        {
+          "x": 1680,
+          "y": 1344
+        },
+        {
+          "x": 1680,
+          "y": 144
+        },
+        {
+          "x": 2952,
+          "y": 144
+        }
+      ]
+    },
+    "edge:mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b:safe_rd2": {
+      "routePoints": [
+        {
+          "x": 1656,
+          "y": 1344
+        },
+        {
+          "x": 1680,
+          "y": 1344
+        },
+        {
+          "x": 1680,
+          "y": 912
+        },
+        {
+          "x": 1824,
+          "y": 912
+        }
+      ]
+    },
+    "edge:bus:execute_stage:alu_result:inverter:execute_stage:branch_condition_met_FUNCT3_BGE:expr:alu_result_0_": {
+      "routePoints": [
+        {
+          "x": 1632,
+          "y": 1344
+        },
+        {
+          "x": 1536,
+          "y": 1344
+        },
+        {
+          "x": 1536,
+          "y": 1512
+        },
+        {
+          "x": 1536,
+          "y": 1392
+        }
+      ]
+    },
+    "edge:struct_comp:execute_stage:ex_to_if:port:execute_stage:ex_to_if:ex_to_if": {
+      "routePoints": [
+        {
+          "x": 3168,
+          "y": 48
+        },
+        {
+          "x": 3336,
+          "y": 48
+        }
+      ]
+    },
+    "edge:alu:execute_stage:pc_target_PC_TARGET_KIND_RELATIVE:expr:mux:execute_stage:pc_target:id_to_ex.pc_target_kind:pc_target:pc_target_PC_TARGET_KIND_RELATIVE": {
+      "routePoints": [
+        {
+          "x": 1632,
+          "y": 1728
+        },
+        {
+          "x": 1896,
+          "y": 1728
+        }
+      ]
+    },
+    "edge:comb:execute_stage:pc_target_default:expr:mux:execute_stage:pc_target:id_to_ex.pc_target_kind:pc_target:pc_target_default": {
+      "routePoints": [
+        {
+          "x": 1632,
+          "y": 1848
+        },
+        {
+          "x": 1776,
+          "y": 1848
+        },
+        {
+          "x": 1776,
+          "y": 1776
+        },
+        {
+          "x": 1896,
+          "y": 1776
+        }
+      ]
+    },
+    "cut-stub:mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:out:source": {
+      "routePoints": [
+        {
+          "x": 2208,
+          "y": 24
+        },
+        {
+          "x": 2088,
+          "y": 24
+        },
+        {
+          "x": 2088,
+          "y": -648
+        },
+        {
+          "x": 2064,
+          "y": -648
+        }
+      ]
+    },
+    "edge:mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b:instance:execute_stage:alu:alu_input_b": {
+      "routePoints": [
+        {
+          "x": 1776,
+          "y": 984
+        },
+        {
+          "x": 1872,
+          "y": 984
+        },
+        {
+          "x": 1872,
+          "y": 816
+        },
+        {
+          "x": 2088,
+          "y": 816
+        }
+      ]
+    },
+    "edge:mux:execute_stage:alu_input_a:id_to_ex.alu_src_a:alu_input_a:instance:execute_stage:alu:alu_input_a": {
+      "routePoints": [
+        {
+          "x": 1728,
+          "y": 720
+        },
+        {
+          "x": 1872,
+          "y": 720
+        },
+        {
+          "x": 1872,
+          "y": 792
+        },
+        {
+          "x": 2088,
+          "y": 792
+        }
+      ]
+    },
+    "edge:instance:execute_stage:alu:mux:execute_stage:pc_target:id_to_ex.pc_target_kind:pc_target:alu_result": {
+      "routePoints": [
+        {
+          "x": 2352,
+          "y": 792
+        },
+        {
+          "x": 2496,
+          "y": 792
+        },
+        {
+          "x": 2496,
+          "y": 1128
+        },
+        {
+          "x": 1224,
+          "y": 1128
+        },
+        {
+          "x": 1224,
+          "y": 1800
+        },
+        {
+          "x": 1752,
+          "y": 1800
+        },
+        {
+          "x": 1752,
+          "y": 1752
+        },
+        {
+          "x": 1896,
+          "y": 1752
+        }
+      ]
+    },
+    "edge:instance:execute_stage:alu:struct_comp:execute_stage:ex_to_mem:alu_result": {
+      "routePoints": [
+        {
+          "x": 2352,
+          "y": 792
+        },
+        {
+          "x": 2496,
+          "y": 792
+        },
+        {
+          "x": 2496,
+          "y": -144
+        },
+        {
+          "x": 2952,
+          "y": -144
+        }
+      ]
+    },
+    "edge:comb:execute_stage:should_branch:expr:comb:execute_stage:pc_src:expr:should_branch": {
+      "routePoints": [
+        {
+          "x": 1872,
+          "y": 2040
+        },
+        {
+          "x": 2040,
+          "y": 2040
+        }
+      ]
+    },
+    "edge:struct:execute_stage:id_to_ex:mux:execute_stage:alu_input_b:id_to_ex.alu_src_b:alu_input_b:id_to_ex.alu_src_b": {
+      "routePoints": [
+        {
+          "x": 744,
+          "y": 648
+        },
+        {
+          "x": 1272,
+          "y": 648
+        },
+        {
+          "x": 1272,
+          "y": 888
+        },
+        {
+          "x": 1632,
+          "y": 888
+        }
+      ]
+    },
+    "edge:inverter:execute_stage:branch_condition_met_FUNCT3_BGE:expr:mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met:branch_condition_met_FUNCT3_BGE:out:branch_condition_met_FUNCT3_BGE:in:FUNCT3__BGE": {
+      "routePoints": [
+        {
+          "x": 1656,
+          "y": 1392
+        },
+        {
+          "x": 1680,
+          "y": 1392
+        },
+        {
+          "x": 1680,
+          "y": 1368
+        },
+        {
+          "x": 1776,
+          "y": 1368
+        }
+      ]
+    },
+    "edge:bus:execute_stage:alu_result:mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met:alu_result_0_:out:_0_:in:FUNCT3__BLT": {
+      "routePoints": [
+        {
+          "x": 1632,
+          "y": 1344
+        },
+        {
+          "x": 1680,
+          "y": 1344
+        },
+        {
+          "x": 1680,
+          "y": 1320
+        },
+        {
+          "x": 1776,
+          "y": 1320
+        }
+      ]
+    }
+  },
+  "netCuts": {
+    "struct:execute_stage:id_to_ex:out:id_to_ex.imm_ext": {
+      "label": "id_to_ex.imm_ext",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.imm_ext"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.imm_ext"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.pc_cur": {
+      "label": "id_to_ex.pc_cur",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.pc_cur"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.pc_cur"
+    },
+    "struct:execute_stage:id_to_ex:out:branch_e": {
+      "label": "branch_e",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:branch_e"
+      },
+      "origin": "declared",
+      "defaultLabel": "branch_e"
+    },
+    "struct:execute_stage:id_to_ex:out:jump_e": {
+      "label": "jump_e",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:jump_e"
+      },
+      "origin": "declared",
+      "defaultLabel": "jump_e"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.funct3": {
+      "label": "id_to_ex.funct3",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.funct3"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.funct3"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.pc_target_kind": {
+      "label": "id_to_ex.pc_target_kind",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.pc_target_kind"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.pc_target_kind"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.rd1": {
+      "label": "id_to_ex.rd1",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.rd1"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.rd1"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.rd2": {
+      "label": "id_to_ex.rd2",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.rd2"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.rd2"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.mem_write": {
+      "label": "id_to_ex.mem_write",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.mem_write"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.mem_write"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.pc_plus_4": {
+      "label": "id_to_ex.pc_plus_4",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.pc_plus_4"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.pc_plus_4"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.rd": {
+      "label": "id_to_ex.rd",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.rd"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.rd"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.reg_write": {
+      "label": "id_to_ex.reg_write",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.reg_write"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.reg_write"
+    },
+    "struct:execute_stage:id_to_ex:out:id_to_ex.result_src": {
+      "label": "id_to_ex.result_src",
+      "source": {
+        "nodeId": "struct:execute_stage:id_to_ex",
+        "portId": "out:id_to_ex.result_src"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "id_to_ex.result_src"
+    },
+    "port:execute_stage:wb_result:port:wb_result": {
+      "label": "wb_result",
+      "source": {
+        "nodeId": "port:execute_stage:wb_result",
+        "portId": "port:wb_result"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "wb_result"
+    },
+    "literal:execute_stage:safe_rd1_default:_x": {
+      "label": "x",
+      "source": {
+        "nodeId": "literal:execute_stage:safe_rd1_default:_x",
+        "portId": "port:alu_input_b_default"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "NET_1"
+    },
+    "port:execute_stage:mem_alu_result:port:mem_alu_result": {
+      "label": "mem_alu_result",
+      "source": {
+        "nodeId": "port:execute_stage:mem_alu_result",
+        "portId": "port:mem_alu_result"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "mem_alu_result"
+    },
+    "port:execute_stage:hz_forward_b:port:hz_forward_b": {
+      "label": "hz_forward_b",
+      "source": {
+        "nodeId": "port:execute_stage:hz_forward_b",
+        "portId": "port:hz_forward_b"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "hz_forward_b"
+    },
+    "port:execute_stage:hz_forward_a:port:hz_forward_a": {
+      "label": "hz_forward_a",
+      "source": {
+        "nodeId": "port:execute_stage:hz_forward_a",
+        "portId": "port:hz_forward_a"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "hz_forward_a"
+    },
+    "mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2:out": {
+      "label": "safe_rd2",
+      "source": {
+        "nodeId": "mux:execute_stage:safe_rd2:hz_forward_b:safe_rd2",
+        "portId": "out"
+      },
+      "origin": "declared",
+      "defaultLabel": "safe_rd2"
+    },
+    "mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1:out": {
+      "label": "safe_rd1",
+      "source": {
+        "nodeId": "mux:execute_stage:safe_rd1:hz_forward_a:safe_rd1",
+        "portId": "out"
+      },
+      "origin": "declared",
+      "defaultLabel": "safe_rd1"
+    },
+    "instance:execute_stage:alu:port:zeroE": {
+      "label": "zero_flag",
+      "source": {
+        "nodeId": "instance:execute_stage:alu",
+        "portId": "port:zeroE"
+      },
+      "origin": "declared",
+      "defaultLabel": "zero_flag"
+    },
+    "mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met:out": {
+      "label": "branch_condition_met",
+      "source": {
+        "nodeId": "mux:execute_stage:branch_condition_met:id_to_ex.funct3:branch_condition_met",
+        "portId": "out"
+      },
+      "origin": "declared",
+      "defaultLabel": "branch_condition_met"
+    },
+    "comb:execute_stage:pc_src:expr:out:pc_src": {
+      "label": "pc_src",
+      "source": {
+        "nodeId": "comb:execute_stage:pc_src:expr",
+        "portId": "out:pc_src"
+      },
+      "origin": "declared",
+      "defaultLabel": "pc_src"
+    }
+  }
+}

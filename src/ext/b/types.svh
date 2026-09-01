@@ -27,6 +27,9 @@ package ext__b__types;
     , B_ALU_CTRL__RORI   = 5'b10011
     , B_ALU_CTRL__ORCB   = 5'b10100
     , B_ALU_CTRL__REV8   = 5'b10101
+    , B_ALU_CTRL__PACK   = 5'b10110
+    , B_ALU_CTRL__PACKH  = 5'b10111
+    , B_ALU_CTRL__BREV8  = 5'b11000
     } b_alu_control_t;
 
 endpackage

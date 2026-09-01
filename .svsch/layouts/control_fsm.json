@@ -1,0 +1,190 @@
+{
+  "nodes": {
+    "comb:control_fsm:reg_write_next:n44:expr": {
+      "x": 792,
+      "y": 144,
+      "fixed": true
+    },
+    "comb:control_fsm:reg_write:n45:comb": {
+      "x": 1440,
+      "y": 144,
+      "fixed": true
+    },
+    "literal:control_fsm:result_src_RType:RESULT_SRC__ALU_RESULT": {
+      "x": 72,
+      "y": 1068,
+      "fixed": true
+    },
+    "literal:control_fsm:result_src_IType_load:RESULT_SRC__READ_DATA": {
+      "x": 72,
+      "y": 1116,
+      "fixed": true
+    },
+    "literal:control_fsm:result_src_JType:RESULT_SRC__PC_PLUS_4": {
+      "x": 72,
+      "y": 1164,
+      "fixed": true
+    },
+    "comb:control_fsm:result_src_default:expr": {
+      "x": 192,
+      "y": 1224,
+      "fixed": true
+    },
+    "mux:control_fsm:result_src:opcode:result_src": {
+      "x": 624,
+      "y": 1032,
+      "fixed": true
+    },
+    "comb:control_fsm:mem_write_next:n46:expr": {
+      "x": 792,
+      "y": 408,
+      "fixed": true
+    },
+    "comb:control_fsm:mem_write:n47:comb": {
+      "x": 1440,
+      "y": 408,
+      "fixed": true
+    },
+    "comb:control_fsm:jump_next:n48:expr": {
+      "x": 792,
+      "y": 528,
+      "fixed": true
+    },
+    "comb:control_fsm:jump:n49:comb": {
+      "x": 1440,
+      "y": 528,
+      "fixed": true
+    },
+    "comb:control_fsm:branch_next:n50:expr": {
+      "x": 792,
+      "y": 24,
+      "fixed": true
+    },
+    "comb:control_fsm:branch:n51:comb": {
+      "x": 1440,
+      "y": 24,
+      "fixed": true
+    },
+    "literal:control_fsm:pc_target_kind_JType:PC_TARGET_KIND__RELATIVE": {
+      "x": 24,
+      "y": 1332,
+      "fixed": true
+    },
+    "literal:control_fsm:pc_target_kind_IType_jalr:PC_TARGET_KIND__ABSOLUTE": {
+      "x": 24,
+      "y": 1380,
+      "fixed": true
+    },
+    "comb:control_fsm:pc_target_kind_default:expr": {
+      "x": 192,
+      "y": 1440,
+      "fixed": true
+    },
+    "mux:control_fsm:pc_target_kind:opcode:pc_target_kind": {
+      "x": 720,
+      "y": 1272,
+      "fixed": true
+    },
+    "literal:control_fsm:alu_src_a_RType:ALU_SRC_A__RD1": {
+      "x": 144,
+      "y": 516,
+      "fixed": true
+    },
+    "literal:control_fsm:alu_src_a_UType_auipc:ALU_SRC_A__PC": {
+      "x": 144,
+      "y": 900,
+      "fixed": true
+    },
+    "comb:control_fsm:alu_src_a_default:expr": {
+      "x": 192,
+      "y": 960,
+      "fixed": true
+    },
+    "mux:control_fsm:alu_src_a:opcode:alu_src_a": {
+      "x": 600,
+      "y": 696,
+      "fixed": true
+    },
+    "literal:control_fsm:alu_src_b_RType:ALU_SRC_B__RD2": {
+      "x": 144,
+      "y": 1548,
+      "fixed": true
+    },
+    "literal:control_fsm:alu_src_b_UType_auipc:ALU_SRC_B__IMM_EXT": {
+      "x": 120,
+      "y": 1596,
+      "fixed": true
+    },
+    "comb:control_fsm:alu_src_b_default:expr": {
+      "x": 192,
+      "y": 1656,
+      "fixed": true
+    },
+    "mux:control_fsm:alu_src_b:opcode:alu_src_b": {
+      "x": 624,
+      "y": 1464,
+      "fixed": true
+    },
+    "port:control_fsm:opcode": {
+      "x": 240,
+      "y": 564,
+      "fixed": true
+    },
+    "port:control_fsm:reg_write": {
+      "x": 1896,
+      "y": 180,
+      "fixed": true
+    },
+    "port:control_fsm:result_src": {
+      "x": 1392,
+      "y": 1116,
+      "fixed": true
+    },
+    "port:control_fsm:mem_write": {
+      "x": 1896,
+      "y": 444,
+      "fixed": true
+    },
+    "port:control_fsm:jump": {
+      "x": 1896,
+      "y": 564,
+      "fixed": true
+    },
+    "port:control_fsm:branch": {
+      "x": 1896,
+      "y": 60,
+      "fixed": true
+    },
+    "port:control_fsm:pc_target_kind": {
+      "x": 1392,
+      "y": 1332,
+      "fixed": true
+    },
+    "port:control_fsm:alu_src_a": {
+      "x": 1392,
+      "y": 828,
+      "fixed": true
+    },
+    "port:control_fsm:alu_src_b": {
+      "x": 1392,
+      "y": 1596,
+      "fixed": true
+    },
+    "cut-label:port:control_fsm:opcode:port:opcode:sink:edge:port:control_fsm:opcode:mux:control_fsm:alu_src_a:opcode:alu_src_a:opcode": {
+      "x": 840,
+      "y": 648,
+      "fixed": true
+    }
+  },
+  "netCuts": {
+    "port:control_fsm:opcode:port:opcode": {
+      "label": "opcode",
+      "source": {
+        "nodeId": "port:control_fsm:opcode",
+        "portId": "port:opcode"
+      },
+      "origin": "synthetic",
+      "defaultLabel": "opcode"
+    }
+  }
+}

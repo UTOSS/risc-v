@@ -1,5 +1,6 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
+`include "src/ext/m/types.svh"
 `include "src/timescale.svh"
 
 module Instruction_Decode
@@ -11,12 +12,25 @@ module Instruction_Decode
   , output reg_t rd
   , output reg_t rs1
   , output reg_t rs2
+
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
 `endif
+
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   , output csr_addr_t csr_addr
 `endif
+
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  , output logic is_mul
+  , output ext__m__types::m_mul_control_t mul_control
+`endif
+
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  , output logic is_div
+  , output ext__m__types::m_div_control_t div_control
+`endif
+
   );
 
   alu_op_t alu_op;
@@ -177,5 +191,22 @@ module Instruction_Decode
     , .b_alu_control ( b_alu_control )
     );
 `endif
+
+`ifdef UTOSS_RISCV__ANY_M
+  ext__m__decoder u_ext__m__decoder
+    ( .funct3      ( funct3      )
+    , .funct7      ( funct7      )
+    , .opcode      ( opcode      )
+    , .is_mul      ( is_mul      )
+    , .is_div      ( is_div      )
+`ifdef UTOSS_RISCV__MUL_ENABLED
+    , .mul_control ( mul_control )
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    , .div_control ( div_control )
+`endif
+    );
+`endif
+
 
 endmodule

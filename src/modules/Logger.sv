@@ -237,7 +237,8 @@ module Logger
                             );
 
                         $display
-                            ( "MEM: addr=%08h we=%b wdata=%08h rdata=%08h alu_result=%08h rd=%s result_src=%0d regwrite=%0b"
+                            ( "MEM: pc=%08h addr=%08h we=%b wdata=%08h rdata=%08h alu_result=%08h rd=%s result_src=%0d regwrite=%0b"
+                            , mem_stage.pc_cur
                             , dmem_address
                             , dmem_write_enable
                             , dmem_write_data
@@ -249,7 +250,8 @@ module Logger
                             );
 
                         $display
-                            ( "WB : rd=%s(%0d) regwrite=%0b result_src=%0d wb_result=%08h alu_result=%08h"
+                            ( "WB : pc=%08h rd=%s(%0d) regwrite=%0b result_src=%0d wb_result=%08h alu_result=%08h"
+                            , wb_stage.pc_cur
                             , reg_name(wb_rd)
                             , wb_rd
                             , wb_stage.reg_write
