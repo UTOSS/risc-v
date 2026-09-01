@@ -13,11 +13,13 @@ module decode_stage
   , input  reg_t      rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , input  csr_addr_t csr_write_addr // CSR write address from write-back stage
+  , input  logic      csr_write_enable_wb // CSR write enable from write-back stage
+  , input  data_t     csr_write_data_wb // CSR write data from write-back stage
+`endif
 
   , output id_to_ex_t id_to_ex
-
-  , output reg_t      rs1
-  , output reg_t      rs2
   );
 
   wire             cfsm__reg_write;
@@ -46,13 +48,30 @@ module decode_stage
 
   opcode_t opcode;
   imm_t    imm_ext;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  csr_addr_t csr_addr; // CSR read address from decoded instruction
+  data_t     csr_read_data;
+  wire [4:0] csr_zimm;
+  data_t     csr_write_data;
+  logic      csr_write_enable;
+  data_t     csr_src_data;
+`endif
 
   wire [2:0] funct3;
 
   reg_t rd;
+  reg_t rs1_decoded;
+  reg_t rs2_decoded;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  wire  csr_is_imm;
+`endif
+  reg_t rs1_addr;
+  reg_t rs2_addr;
 
   data_t rd1;
   data_t rd2;
+  data_t rd1_safe;
+  data_t rd2_safe;
 
   instr_t instruction;
 
@@ -60,6 +79,7 @@ module decode_stage
 
   control_fsm u_ctrl
     ( .opcode  ( opcode )
+    , .funct3  ( funct3 )
 
     , .reg_write      ( cfsm__reg_write      )
     , .result_src     ( cfsm__result_src     )
@@ -78,8 +98,8 @@ module decode_stage
     , .ALUControl      ( alu_control      )
     , .imm_ext         ( imm_ext          )
     , .rd              ( rd               )
-    , .rs1             ( rs1              )
-    , .rs2             ( rs2              )
+    , .rs1             ( rs1_decoded      )
+    , .rs2             ( rs2_decoded      )
 `ifdef UTOSS_RISCV__MUL_ENABLED
     , .is_mul          ( is_mul           )
 `endif
@@ -95,11 +115,25 @@ module decode_stage
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
 `endif
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_addr        ( csr_addr         )
+`endif
     );
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
+  // actual register dependency for the RF / hazard path.
+  assign csr_is_imm = (opcode == OPCODE_SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
+  assign rs1_addr   = csr_is_imm ? reg_t'(0) : rs1_decoded;
+  assign rs2_addr   = rs2_decoded;
+`else
+  assign rs1_addr   = rs1_decoded;
+  assign rs2_addr   = rs2_decoded;
+`endif
+
   registerFile RegFile
-    ( .Addr1           ( rs1              )
-    , .Addr2           ( rs2              )
+    ( .Addr1           ( rs1_addr         )
+    , .Addr2           ( rs2_addr         )
     , .Addr3           ( rd_wb            )
     , .clk             ( clk              )
     , .reset           ( reset            )
@@ -109,19 +143,69 @@ module decode_stage
     , .writeData       ( rd2              )
     );
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  CSRFile u_csr_file
+    ( .read_addr       ( csr_addr                  )
+    , .write_addr      ( csr_write_addr            )
+    , .clk             ( clk                       )
+    , .reset           ( reset                     )
+    , .csr_write_enable( csr_write_enable_wb       )
+    , .data_in         ( csr_write_data_wb         )
+    , .data_out        ( csr_read_data             )
+    );
+
+  assign csr_zimm = instruction[19:15];
+
+  always_comb begin
+    csr_src_data     = csr_is_imm ? data_t'({27'b0, csr_zimm}) : rd1_safe;
+    csr_write_enable = 1'b0;
+    csr_write_data   = data_t'(0);
+
+    if (opcode == OPCODE_SYSTEM) begin
+      case (funct3)
+        3'b001: begin
+          csr_write_enable = 1'b1;
+          csr_write_data   = csr_src_data;
+        end
+        3'b010: begin
+          csr_write_enable = (csr_src_data != data_t'(0));
+          csr_write_data   = csr_read_data | csr_src_data;
+        end
+        3'b011: begin
+          csr_write_enable = (csr_src_data != data_t'(0));
+          csr_write_data   = csr_read_data & ~csr_src_data;
+        end
+        3'b101: begin
+          csr_write_enable = 1'b1;
+          csr_write_data   = csr_src_data;
+        end
+        3'b110: begin
+          csr_write_enable = (csr_src_data != data_t'(0));
+          csr_write_data   = csr_read_data | csr_src_data;
+        end
+        3'b111: begin
+          csr_write_enable = (csr_src_data != data_t'(0));
+          csr_write_data   = csr_read_data & ~csr_src_data;
+        end
+        default: begin
+          csr_write_enable = 1'b0;
+          csr_write_data   = data_t'(0);
+        end
+      endcase
+    end
+  end
+`endif
   // WB->ID bypass; this is needed in situations where decode is reading the register that
   // write-back stage is about to write to; since register writes happen on clock enge without this
   // decode will pass stale register data to execute stage which the hazard unit will not be able to
   // accomodate since during the following clock cycle the write-back's destination register will
   // already move on to the next instruction
-  data_t rd1_safe;
   always_comb
-    if (rd_wb == rs1 && reg_write_w && rd_wb != 0) rd1_safe = data;
+    if (rd_wb == rs1_addr && reg_write_w && rd_wb != 0) rd1_safe = data;
     else                                           rd1_safe = rd1;
 
-  data_t rd2_safe;
   always_comb
-    if (rd_wb == rs2 && reg_write_w && rd_wb != 0) rd2_safe = data;
+    if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
@@ -134,11 +218,17 @@ module decode_stage
   assign id_to_ex.reg_write      = cfsm__reg_write;
   assign id_to_ex.alu_control    = alu_control;
   assign id_to_ex.funct3         = funct3;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign id_to_ex.csr_addr         = csr_addr;
+  assign id_to_ex.csr_write_enable  = csr_write_enable;
+  assign id_to_ex.csr_write_data    = csr_write_data;
+  assign id_to_ex.csr_read_data     = csr_read_data;
+`endif
   assign id_to_ex.rd1            = rd1_safe;
   assign id_to_ex.rd2            = rd2_safe;
   assign id_to_ex.rd             = rd;
-  assign id_to_ex.rs1            = rs1;
-  assign id_to_ex.rs2            = rs2;
+  assign id_to_ex.rs1            = rs1_addr;
+  assign id_to_ex.rs2            = rs2_addr;
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;

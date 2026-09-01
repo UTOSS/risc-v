@@ -6,6 +6,7 @@
 module control_fsm
 /* verilator lint_off DECLFILENAME */
   ( input opcode_t opcode
+  , input logic [2:0] funct3
 
   , output var logic        reg_write
   , output result_src_t     result_src
@@ -26,7 +27,11 @@ module control_fsm
       (opcode == OPCODE_OP_IMM) ||
       (opcode == OPCODE_JALR) ||
       (opcode == OPCODE_AUIPC) ||
-      (opcode == OPCODE_LUI);
+      (opcode == OPCODE_LUI)
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      || ((opcode == OPCODE_SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111}))
+`endif
+;
 
   always_comb
     case (opcode)
@@ -36,6 +41,13 @@ module control_fsm
         result_src = RESULT_SRC__READ_DATA;
       OPCODE_JAL, OPCODE_JALR:
         result_src = RESULT_SRC__PC_PLUS_4;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      OPCODE_SYSTEM:
+        if (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111})
+          result_src = RESULT_SRC__CSR_READ;
+        else
+          result_src = result_src_t'('0);
+`endif
       default:
         result_src = result_src_t'('0);
     endcase
@@ -59,6 +71,10 @@ module control_fsm
         alu_src_a = ALU_SRC_A__RD1;
       OPCODE_AUIPC, OPCODE_JAL:
         alu_src_a = ALU_SRC_A__PC;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      OPCODE_SYSTEM:
+        alu_src_a = ALU_SRC_A__RD1;
+`endif
       default:
         alu_src_a = alu_src_a_t'('x);
     endcase
@@ -69,7 +85,14 @@ module control_fsm
         alu_src_b = ALU_SRC_B__RD2;
       OPCODE_AUIPC, OPCODE_LUI, OPCODE_OP_IMM, OPCODE_JALR, OPCODE_LOAD, OPCODE_STORE:
         alu_src_b = ALU_SRC_B__IMM_EXT;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      OPCODE_SYSTEM:
+        alu_src_b = ALU_SRC_B__IMM_EXT;
+`endif
       default:
         alu_src_b = alu_src_b_t'('x);
     endcase
+
+  // Keep funct3 referenced for lint when CSR decode is compiled out.
+  wire unused_funct3 = &{1'b0, funct3};
 endmodule

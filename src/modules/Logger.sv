@@ -79,7 +79,7 @@ module Logger
     endfunction
 
         function automatic string op_name
-            ( input logic [6:0] opcode
+            ( input opcode_t opcode
             , input logic [2:0] funct3
             , input logic [6:0] funct7
             );
@@ -146,6 +146,18 @@ module Logger
             OPCODE_LUI:      op_name = "lui";
             OPCODE_JALR:     op_name = "jalr";
             OPCODE_MISC_MEM: op_name = "fence";
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+            OPCODE_SYSTEM:
+                case (funct3)
+                    3'b001: op_name = "csrrw";
+                    3'b010: op_name = "csrrs";
+                    3'b011: op_name = "csrrc";
+                    3'b101: op_name = "csrrwi";
+                    3'b110: op_name = "csrrsi";
+                    3'b111: op_name = "csrrci";
+                    default:;
+                endcase
+`endif
             default:;
         endcase
     endfunction
@@ -183,7 +195,7 @@ module Logger
                             , if_stage.pc_cur
                             , if_stage.instruction
                                                         , op_name
-                                                            ( if_stage.instruction[6:0]
+                                                            ( opcode_t'(if_stage.instruction[6:0])
                                                             , if_stage.instruction[14:12]
                                                             , if_stage.instruction[31:25]
                                                             )
@@ -198,7 +210,7 @@ module Logger
                             , id_stage.pc_cur
                             , id_stage.instruction
                                                         , op_name
-                                                            ( id_stage.instruction[6:0]
+                                                            ( opcode_t'(id_stage.instruction[6:0])
                                                             , id_stage.instruction[14:12]
                                                             , id_stage.instruction[31:25]
                                                             )
@@ -257,34 +269,12 @@ module Logger
                 1'b0
             , ex_stage
             , ex_stage_out
+            , ex_to_if
             , mem_stage
             , if_stage.pc_plus_4
             , id_stage.pc_plus_4
-            , ex_stage.alu_src_a
-            , ex_stage.alu_src_b
-            , ex_stage.result_src
-            , ex_stage.pc_plus_4
-            , ex_stage.pc_target_kind
-            , ex_stage.rs1
-            , ex_stage.rs2
-            , ex_to_if.pc_old
-            , ex_to_if.imm_ext
-            , mem_stage.write_data_e
-            , mem_stage.funct3
-            , mem_stage.pc_cur
-            , mem_stage.pc_plus_4
-            , mem_stage_out.reg_write
-            , mem_stage_out.result_src
-            , mem_stage_out.alu_result
-            , mem_stage_out.rd
-            , mem_stage_out.pc_cur
-            , mem_stage_out.pc_plus_4
-            , mem_stage_out.funct3
-            , wb_stage.rd
-            , wb_stage.pc_cur
-            , wb_stage.pc_plus_4
-            , wb_stage.funct3
-            , dmem_write_enable
+            , mem_stage_out
+            , wb_stage
         };
 
 endmodule

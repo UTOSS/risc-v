@@ -33,7 +33,6 @@ module utoss_riscv
 
   data_t      wb_result;
   reg_t       wb_rd;
-
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
@@ -66,19 +65,19 @@ module utoss_riscv
     else if (flush_d)  if_to_id_reg <= '0;
     else if (!stall_d) if_to_id_reg <= if_to_id_out;
 
-  reg_t id_rs1, id_rs2;
-
   decode_stage u_decode_stage
     ( .if_to_id ( if_to_id_reg )
 
     , .clk         ( clk                     )
     , .reset       ( reset                   )
     , .data        ( wb_result               )
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_write_addr( mem_to_wb_reg.csr_addr        )
+    , .csr_write_enable_wb( mem_to_wb_reg.csr_write_enable )
+    , .csr_write_data_wb( mem_to_wb_reg.csr_write_data )
+`endif
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
-
-    , .rs1 ( id_rs1 )
-    , .rs2 ( id_rs2 )
 
     , .id_to_ex ( id_to_ex_out )
     );
@@ -151,8 +150,8 @@ module utoss_riscv
   hazard_unit u_hazard_unit
     ( .clk ( clk )
 
-    , .rs1_d        ( id_rs1                  )
-    , .rs2_d        ( id_rs2                  )
+    , .rs1_d        ( id_to_ex_out.rs1        )
+    , .rs2_d        ( id_to_ex_out.rs2        )
     , .rs1_e        ( id_to_ex_reg.rs1        )
     , .rs2_e        ( id_to_ex_reg.rs2        )
     , .rd_m         ( ex_to_mem_reg.rd        )
@@ -162,6 +161,17 @@ module utoss_riscv
     , .reg_write_w  ( mem_to_wb_reg.reg_write )
     , .result_src_e ( id_to_ex_reg.result_src )
     , .pc_src_e     ( ex_to_if_out.pc_src     )
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_instr_d        ( id_to_ex_out.funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111} )
+    , .csr_write_intent_e ( id_to_ex_reg.csr_write_enable )
+    , .csr_write_intent_m ( ex_to_mem_reg.csr_write_enable )
+    , .csr_write_intent_w ( mem_to_wb_reg.csr_write_enable )
+    , .csr_addr_d         ( id_to_ex_out.csr_addr )
+    , .csr_addr_e         ( id_to_ex_reg.csr_addr )
+    , .csr_addr_m         ( ex_to_mem_reg.csr_addr )
+    , .csr_addr_w         ( mem_to_wb_reg.csr_addr )
+`endif
 
     , .forward_a_e ( hz_forward_a )
     , .forward_b_e ( hz_forward_b )

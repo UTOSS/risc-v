@@ -12,14 +12,20 @@ module Instruction_Decode
   , output reg_t rd
   , output reg_t rs1
   , output reg_t rs2
+
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
+`endif
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , output csr_addr_t csr_addr
 `endif
 
 `ifdef UTOSS_RISCV__MUL_ENABLED
   , output logic is_mul
   , output ext__m__types::m_mul_control_t mul_control
 `endif
+
 `ifdef UTOSS_RISCV__DIV_ENABLED
   , output logic is_div
   , output ext__m__types::m_div_control_t div_control
@@ -64,6 +70,11 @@ module Instruction_Decode
       funct3 = instr[14:12];
 
     end
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    OPCODE_SYSTEM: begin
+      funct3 = instr[14:12];
+    end
+`endif
     default:;
     endcase
   end
@@ -80,6 +91,9 @@ module Instruction_Decode
       OPCODE_AUIPC: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       OPCODE_LUI:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       OPCODE_MISC_MEM:     alu_op = ALU_OP__UNSET;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      OPCODE_SYSTEM: alu_op = ALU_OP__ADD;
+`endif
       default:    alu_op = ALU_OP__UNSET;
     endcase
   end
@@ -121,6 +135,13 @@ module Instruction_Decode
         rd = instr[11:7];
       end
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      OPCODE_SYSTEM: begin
+        rd = instr[11:7];
+        rs1 = instr[19:15];
+      end
+`endif
+
       default: begin
         rd  = 5'b0;
         rs1 = 5'b0;
@@ -128,6 +149,11 @@ module Instruction_Decode
       end
     endcase
   end
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  always_comb
+    csr_addr = (opcode == OPCODE_SYSTEM) ? csr_addr_t'(instr[31:20]) : csr_addr_t'('0);
+`endif
 
   // case statement for choosing 32-bit immediate format; based on opcode
     // this is essentially the extend module of the processor

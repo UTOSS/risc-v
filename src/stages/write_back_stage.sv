@@ -34,6 +34,9 @@ module write_back_stage
       RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;
       RESULT_SRC__READ_DATA:  result = mem_result;
       RESULT_SRC__PC_PLUS_4:  result = from_memory.pc_plus_4;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      RESULT_SRC__CSR_READ:   result = from_memory.csr_read_data;
+`endif
       default:                result = 32'hxxxxxxxx;
     endcase
 
