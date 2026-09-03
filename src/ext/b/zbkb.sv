@@ -58,6 +58,20 @@ endfunction
     end
   endfunction
 
+  function automatic logic [XLEN - 1:0] get_zip(input logic [XLEN - 1:0] val);
+    for (int i = 0; i < XLEN / 2; i++) begin
+      get_zip[i * 2] = val[i];
+      get_zip[i * 2 + 1] = val[i + XLEN / 2];
+    end
+  endfunction
+
+  function automatic logic [XLEN - 1:0] get_unzip(input logic [XLEN - 1:0] val);
+    for (int i = 0; i < XLEN / 2; i++) begin
+      get_unzip[i] = val[2 * i];
+      get_unzip[i + XLEN / 2] = val[2 * i + 1];
+    end
+  endfunction
+
   always_comb
     case (b_alu_control)
       B_ALU_CTRL__ROL: out = get_rol(a, b[SHIFT_WIDTH - 1:0]); // rol (rotate left)
@@ -70,6 +84,8 @@ endfunction
       B_ALU_CTRL__PACKH: out = get_packh(a, b); // packh (pack lower bytes)
       B_ALU_CTRL__REV8: out = get_rev8(a); // rev8 (byte-reverse)
       B_ALU_CTRL__BREV8: out = get_brev8(a); // brev8 (reverse bits in each byte)
+      B_ALU_CTRL__ZIP: out = get_zip(a); // zip (lower half goes to even bits, upper helf goes to odd bits)
+      B_ALU_CTRL__UNZIP: out = get_unzip(a); // unzip (even bits go into lower half, odd bits go into upper half)
       default: out = '0; // other
     endcase
 
