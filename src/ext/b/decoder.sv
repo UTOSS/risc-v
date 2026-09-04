@@ -120,7 +120,9 @@ module ext__b__decoder
                 endcase
               default:  b_alu_control = B_ALU_CTRL__NONE;
             endcase
+          default:  b_alu_control = B_ALU_CTRL__NONE;
         endcase
+      default:  b_alu_control = B_ALU_CTRL__NONE;
     endcase
 
 endmodule
