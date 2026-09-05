@@ -88,13 +88,26 @@ module utoss_riscv
   // execute stage begin (@MSh-786 and tandr3w)
 
   always_ff @ (posedge clk)
-    if (reset)        id_to_ex_reg <= '0;
-    else if (flush_e) id_to_ex_reg <= '0;
-    else              id_to_ex_reg <= id_to_ex_out;
+    if (reset)         id_to_ex_reg <= '0;
+    else if (flush_e)  id_to_ex_reg <= '0;
+    else if (!stall_e) id_to_ex_reg <= id_to_ex_out;
 
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  logic div_busy_e, div_done_e;
+`endif
   execute_stage u_execute_stage
-    ( .id_to_ex ( id_to_ex_reg )
+    ( .id_to_ex     ( id_to_ex_reg    )
+`ifdef UTOSS_RISCV__ANY_M
+    , .clk          ( clk             )
+    , .reset        ( reset           )
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    , .div_start_e  ( div_start_e     )
+    , .div_cancel_e ( div_cancel_e    )
+    , .div_busy_e   ( div_busy_e      )
+    , .div_done_e   ( div_done_e      )
 
+`endif
     , .hz_forward_a ( hz_forward_a )
     , .hz_forward_b ( hz_forward_b )
 
@@ -110,8 +123,9 @@ module utoss_riscv
   // memory stage begin (@Invisipac)
 
   always_ff @ (posedge clk)
-    if (reset) ex_to_mem_reg <= '0;
-    else       ex_to_mem_reg <= ex_to_mem_out;
+    if (reset)        ex_to_mem_reg <= '0;
+    else if (stall_e) ex_to_mem_reg <= '0;
+    else              ex_to_mem_reg <= ex_to_mem_out;
 
   memory_stage u_memory_stage
   ( .ex_to_mem ( ex_to_mem_reg )
@@ -146,7 +160,10 @@ module utoss_riscv
 
   hazard_forward_a_t hz_forward_a;
   hazard_forward_b_t hz_forward_b;
-  logic stall_f, stall_d, flush_f, flush_d, flush_e;
+  logic stall_f, stall_d, stall_e, flush_f, flush_d, flush_e;
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  logic div_start_e, div_cancel_e;
+`endif
 
   hazard_unit u_hazard_unit
     ( .clk ( clk )
@@ -162,14 +179,21 @@ module utoss_riscv
     , .reg_write_w  ( mem_to_wb_reg.reg_write )
     , .result_src_e ( id_to_ex_reg.result_src )
     , .pc_src_e     ( ex_to_if_out.pc_src     )
-
-    , .forward_a_e ( hz_forward_a )
-    , .forward_b_e ( hz_forward_b )
-    , .stall_f    ( stall_f       )
-    , .stall_d    ( stall_d       )
-    , .flush_f    ( flush_f       )
-    , .flush_d    ( flush_d       )
-    , .flush_e    ( flush_e       )
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    , .div_e        ( id_to_ex_reg.is_div     )
+    , .div_busy_e   ( div_busy_e              )
+    , .div_done_e   ( div_done_e              )
+    , .div_start_e  ( div_start_e             )
+    , .div_cancel_e ( div_cancel_e            )
+`endif
+    , .forward_a_e  ( hz_forward_a  )
+    , .forward_b_e  ( hz_forward_b  )
+    , .stall_f      ( stall_f       )
+    , .stall_d      ( stall_d       )
+    , .stall_e      ( stall_e       )
+    , .flush_f      ( flush_f       )
+    , .flush_d      ( flush_d       )
+    , .flush_e      ( flush_e       )
     );
 
   // hazard module end

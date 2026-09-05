@@ -6,13 +6,24 @@
 
 module execute_stage
   ( input id_to_ex_t id_to_ex
-
+`ifdef UTOSS_RISCV__ANY_M
+  , input logic clk
+  , input logic reset
+`endif
   , input hazard_forward_a_t hz_forward_a
   , input hazard_forward_b_t hz_forward_b
 
   , input data_t wb_result
   , input data_t mem_alu_result
 
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  /* verilator lint_off UNUSEDSIGNAL */
+  , input logic div_start_e
+  /* verilator lint_on UNUSEDSIGNAL */
+  , input logic div_cancel_e
+  , output logic div_busy_e
+  , output logic div_done_e
+`endif
   , output ex_to_if_t ex_to_if
   , output ex_to_mem_t ex_to_mem
   );
@@ -22,6 +33,16 @@ module execute_stage
   data_t safe_rd1; // hazard-safe version of rd1
   data_t safe_rd2; // hazard-safe version of rd2
   data_t alu_result;
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  data_t mul_result;
+  /* verilator lint_off UNUSEDSIGNAL */
+  logic mul_done;
+  /* verilator lint_on UNUSEDSIGNAL */
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  data_t div_result;
+`endif
+  data_t final_result;
   logic zero_flag;
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
@@ -71,6 +92,42 @@ module execute_stage
     , .out            ( alu_result_base          )
     , .zeroE          ( zero_flag_base           ) //added bases for local
     );
+
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  MUL mul
+    ( .clk      ( clk                  )
+    , .rst_n    ( ~reset               )
+    , .start_i  ( id_to_ex.is_mul      )
+    , .rs1_i    ( alu_input_a          )
+    , .rs2_i    ( alu_input_b          )
+    , .op_i     ( id_to_ex.mul_control )
+    , .result_o ( mul_result           )
+    , .ready_o  ( mul_done             )
+    );
+`endif
+
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  DIV div
+    ( .clk       ( clk                  )
+    , .rst_n     ( ~reset               )
+    , .start_i   ( div_start_e          )
+    , .op_i      ( id_to_ex.div_control )
+    , .rs1_i     ( alu_input_a          )
+    , .rs2_i     ( alu_input_b          )
+    , .result_o  ( div_result           )
+    , .ready_o   ( div_done_e           )
+    , .busy_o    ( div_busy_e           )
+    );
+`endif
+
+  assign final_result =
+`ifdef UTOSS_RISCV__MUL_ENABLED
+    id_to_ex.is_mul ? mul_result :
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    id_to_ex.is_div ? div_result :
+`endif
+    alu_result;
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   zbb u_zbb
@@ -144,7 +201,7 @@ assign zero_flag  = zero_flag_base;
   assign ex_to_mem.funct3       = id_to_ex.funct3;
   assign ex_to_mem.write_data_e = safe_rd2;
   assign ex_to_mem.rd           = id_to_ex.rd;
-  assign ex_to_mem.alu_result   = alu_result;
+  assign ex_to_mem.alu_result   = final_result;
   assign ex_to_mem.pc_cur       = id_to_ex.pc_cur;
   assign ex_to_mem.pc_plus_4    = id_to_ex.pc_plus_4;
   assign ex_to_if.imm_ext       = id_to_ex.imm_ext;
@@ -152,5 +209,10 @@ assign zero_flag  = zero_flag_base;
   assign ex_to_if.pc_target     = pc_target;
   assign ex_to_if.pc_old        = id_to_ex.pc_cur;
 
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  wire unused = &{id_to_ex.rs1, id_to_ex.rs2, div_cancel_e};
+`else
   wire unused = &{id_to_ex.rs1, id_to_ex.rs2};
+`endif
+
 endmodule
