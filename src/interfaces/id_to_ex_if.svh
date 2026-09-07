@@ -3,6 +3,9 @@
 
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
+`ifdef UTOSS_RISCV__ANY_M
+`include "src/ext/m/types.svh"
+`endif
 
 typedef struct packed {
   alu_src_a_t   alu_src_a;

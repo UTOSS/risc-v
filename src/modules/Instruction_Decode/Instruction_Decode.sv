@@ -171,12 +171,12 @@ module Instruction_Decode
     ( .funct3      ( funct3      )
     , .funct7      ( funct7      )
     , .opcode      ( opcode      )
-    , .is_mul      ( is_mul      )
-    , .is_div      ( is_div      )
 `ifdef UTOSS_RISCV__MUL_ENABLED
+    , .is_mul      ( is_mul      )
     , .mul_control ( mul_control )
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
+    , .is_div      ( is_div      )
     , .div_control ( div_control )
 `endif
     );

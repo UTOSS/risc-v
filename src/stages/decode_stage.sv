@@ -82,14 +82,10 @@ module decode_stage
     , .rs2             ( rs2              )
 `ifdef UTOSS_RISCV__MUL_ENABLED
     , .is_mul          ( is_mul           )
-`endif
-`ifdef UTOSS_RISCV__DIV_ENABLED
-    , .is_div          ( is_div           )
-`endif
-`ifdef UTOSS_RISCV__MUL_ENABLED
     , .mul_control     ( mul_control      )
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
+    , .is_div          ( is_div           )
     , .div_control     ( div_control      )
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
