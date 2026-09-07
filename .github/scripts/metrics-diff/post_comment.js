@@ -20,7 +20,8 @@ module.exports = async ({github, context, comparisonFile}) => {
   
   const botComment = comments.find(comment => 
     comment.user.type === 'Bot' && 
-    comment.body.includes('🔧 DE1-SoC Synthesis Report Summary Diff')
+    (comment.body.includes('Synthesis & Hardening Report Summary Diff') ||
+     comment.body.includes('🔧 DE1-SoC Synthesis Report Summary Diff'))
   );
   
   const commentBody = comparison;
