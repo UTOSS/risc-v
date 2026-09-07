@@ -28,6 +28,11 @@ envs/de1-soc/quartus/*.qws
 envs/de1-soc/quartus/metrics/*
 !envs/de1-soc/quartus/metrics/.gitkeep
 
+envs/hardening/out/**
+!envs/hardening/out/.gitkeep
+envs/hardening/metrics/*
+!envs/hardening/metrics/.gitkeep
+
 out/**
 !out/.gitkeep
 build/**

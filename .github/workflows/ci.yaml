@@ -81,6 +81,9 @@ jobs:
       - name: lint DE1-SoC environment files
         run: make svlint ENV=de1-soc
 
+      - name: lint Hardening environment files
+        run: make svlint ENV=hardening
+
   test_diagrams:
     needs: select_ci_image
     if: ${{ false }} # temporarily skipped
@@ -311,21 +314,21 @@ jobs:
 
       - name: Compare Fitter Summary
         run: >
-          .github/scripts/de1-soc-synthesis-metrics-diff/compare_metrics_diff.sh
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
           "base-reports/output_files/utoss-risc-v.fit.summary"
           "pr-reports/output_files/utoss-risc-v.fit.summary"
           > metric-diff/fitter_summary.md
 
       - name: Compare Fitter Resource Utilization by Entity
         run: >
-          .github/scripts/de1-soc-synthesis-metrics-diff/compare_metrics_diff.sh
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
           "base-reports/metrics/fitter_utilization.pretty.txt"
           "pr-reports/metrics/fitter_utilization.pretty.txt"
           > metric-diff/fitter_by_entity.md
 
       - name: Compare Timing Analysis Summary
         run: >
-          .github/scripts/de1-soc-synthesis-metrics-diff/compare_metrics_diff.sh
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
           "base-reports/output_files/utoss-risc-v.sta.summary"
           "pr-reports/output_files/utoss-risc-v.sta.summary"
           > metric-diff/timing_summary.md
@@ -337,12 +340,111 @@ jobs:
           path: metric-diff/*.md
           retention-days: 7
 
-  de1-soc-synthesis-metrics-diff-aggregate:
+  hardening:
+    timeout-minutes: 15
+    needs:
+      - select_ci_image
+      - build_and_test
+    if: always() && needs.build_and_test.result == 'success'
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Harden
+        id: harden
+        run: cd envs/hardening && make harden UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      - name: Upload Hardening reports
+        uses: actions/upload-artifact@v4
+        if: steps.harden.outcome == 'success'
+        with:
+          name: hardening-reports-${{ matrix.config }}
+          path: |
+            envs/hardening/out/stats.json
+            envs/hardening/metrics/synthesis_utilization.csv
+            envs/hardening/metrics/synthesis_utilization.pretty.txt
+            envs/hardening/metrics/gate_breakdown.txt
+            envs/hardening/metrics/stat_summary.txt
+          retention-days: 7
+
+  hardening-metrics-diff:
     timeout-minutes: 10
-    needs: de1-soc-synthesis-metrics-diff
+    needs: hardening
     if: >
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download PR Hardening reports
+        uses: actions/download-artifact@v4
+        with:
+          name: hardening-reports-${{ matrix.config }}
+          path: pr-reports
+
+      - name: Download base branch Hardening reports
+        uses: dawidd6/action-download-artifact@v3
+        continue-on-error: true
+        id: download-base
+        with:
+          workflow: ci.yaml
+          branch: ${{ github.base_ref }}
+          name: hardening-reports-${{ matrix.config }}
+          path: base-reports
+          check_artifacts: true
+          search_artifacts: true
+
+      - name: Initialize metrics diff files
+        run: |
+          mkdir -p metric-diff
+
+      - name: Compare Hardening Utilization by Entity
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/metrics/synthesis_utilization.pretty.txt"
+          "pr-reports/metrics/synthesis_utilization.pretty.txt"
+          > metric-diff/hardening_utilization.md
+
+      - name: Compare Hardening Gate Breakdown
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/metrics/gate_breakdown.txt"
+          "pr-reports/metrics/gate_breakdown.txt"
+          > metric-diff/hardening_gate_breakdown.md
+
+      - name: Upload per-config metrics diff
+        uses: actions/upload-artifact@v4
+        with:
+          name: hardening-metrics-diff-${{ matrix.config }}
+          path: metric-diff/*.md
+          retention-days: 7
+
+  metrics-diff-aggregate:
+    timeout-minutes: 10
+    needs:
+      - de1-soc-synthesis-metrics-diff
+      - hardening-metrics-diff
+    if: >
+      always() &&
+      !cancelled() &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name == 'pull_request' &&
+      (needs.de1-soc-synthesis-metrics-diff.result == 'success' || needs.hardening-metrics-diff.result == 'success')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -351,14 +453,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download per-config metrics diff artifacts
+      - name: Download per-config DE1-SoC metrics diff artifacts
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           pattern: de1-soc-synthesis-metrics-diff-*
           path: metrics-diff
 
+      - name: Download per-config Hardening metrics diff artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: hardening-metrics-diff-*
+          path: metrics-diff
+
       - name: Build combined comparison report
-        run: bash .github/scripts/de1-soc-synthesis-metrics-diff/aggregate_metrics.sh metrics-diff comparison.md
+        run: bash .github/scripts/metrics-diff/aggregate_metrics.sh metrics-diff comparison.md
 
       - name: Publish comparison to job summary
         run: cat comparison.md >> "$GITHUB_STEP_SUMMARY"
@@ -367,5 +477,5 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const script = require('./.github/scripts/de1-soc-synthesis-metrics-diff/post_comment.js');
+            const script = require('./.github/scripts/metrics-diff/post_comment.js');
             await script({github, context, comparisonFile: 'comparison.md'});

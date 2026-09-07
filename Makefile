@@ -71,7 +71,7 @@ TB_DEFINES := -DTESTBENCH
 # Sources
 # ===========================
 SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
-        $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
+        $(shell find $(ENVS_DIR)/$(ENV) -not -path "*/out/*" -not -path "*/build/*" \( -name "*.sv" -o -name "*.v" \))
 
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
 TB_UTILS := $(TB_DIR)/utils.svh
@@ -205,6 +205,11 @@ docker_build_quartus_image:
 	docker login ${GITHUB_CONTAINER_REGISTRY}
 	docker push ${QUARTUS_IMAGE_NAME}
 
+# ===========================
+# Hardening
+# ===========================
+harden:
+	$(MAKE) -C envs/hardening harden
 
 # ===========================
 # Linting
@@ -266,7 +271,7 @@ test_diagrams:
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb \
-        svlint svlint_tb \
+        svlint svlint_tb harden \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv \
