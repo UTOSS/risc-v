@@ -31,7 +31,7 @@ UTOSS_RISCV_ANY_M := $(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENA
 UTOSS_BOOT_ADDR ?= 32\'h0000_0000
 
 # Convert B extension to Zbb for RISC-V ISA spec
-RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
+RISCOF_ISA_STRING = $(subst B,Zbb_Zbkb,$(UTOSS_RISCV_CONFIG))
 
 # Generate misa value
 MISA_VALUE = 0x40000100
