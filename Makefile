@@ -48,7 +48,7 @@ ifneq ($(findstring A,$(UTOSS_RISCV_CONFIG)),)
 MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1 )))
 endif
 
-UTOSS_RISCV_VERILATOR_DEFINES := \\
+UTOSS_RISCV_VERILATOR_DEFINES := \
 	$(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) \
 	$(if $(findstring ZICSR,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV__ZICSR_ENABLED) \
 	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_M)),-DUTOSS_RISCV__M_ENABLED) \
