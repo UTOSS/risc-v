@@ -90,6 +90,32 @@ module zbkb_tb;
     a = 32'h1234_5678; ctrl = B_ALU_CTRL__REV8;
     check(32'h7856_3412, "rev8");
 
+    // ---- ZIP ----
+    a = 32'h0000_0000; ctrl = B_ALU_CTRL__ZIP;
+    check(32'h0000_0000, "zip zero");
+
+    a = 32'hFFFF_FFFF; ctrl = B_ALU_CTRL__ZIP;
+    check(32'hFFFF_FFFF, "zip all-ones");
+
+    a = 32'h0000_FFFF; ctrl = B_ALU_CTRL__ZIP;
+    check(32'h5555_5555, "zip low-half-ones");
+
+    a = 32'hFFFF_0000; ctrl = B_ALU_CTRL__ZIP;
+    check(32'hAAAA_AAAA, "zip high-half-ones");
+
+    // ---- UNZIP ----
+    a = 32'h0000_0000; ctrl = B_ALU_CTRL__UNZIP;
+    check(32'h0000_0000, "unzip zero");
+
+    a = 32'hFFFF_FFFF; ctrl = B_ALU_CTRL__UNZIP;
+    check(32'hFFFF_FFFF, "unzip all-ones");
+
+    a = 32'h5555_5555; ctrl = B_ALU_CTRL__UNZIP;
+    check(32'h0000_FFFF, "unzip even-bits-set");
+
+    a = 32'hAAAA_AAAA; ctrl = B_ALU_CTRL__UNZIP;
+    check(32'hFFFF_0000, "unzip odd-bits-set");
+
     // ---- zeroE flag ----
     a = 32'h0000_0000; b = 32'h0000_0000; ctrl = B_ALU_CTRL__ANDN;
     #1;
@@ -158,6 +184,40 @@ module zbkb_tb;
       end
     end
     $display("[PASS] rev8 self-inverse property (20 random trials)");
+
+    // ---- Property: zip/unzip are inverses ----
+    for (int trial = 0; trial < 20; trial++) begin
+      logic [XLEN - 1:0] rand_a, zipped;
+      rand_a = $urandom;
+
+      a = rand_a; ctrl = B_ALU_CTRL__ZIP;
+      #1;
+      zipped = out;
+      a = zipped; ctrl = B_ALU_CTRL__UNZIP;
+      #1;
+      if (out !== rand_a) begin
+        $error("[FAIL] zip/unzip inverse property: got %h, expected %h", out, rand_a);
+        errors++;
+      end
+    end
+    $display("[PASS] zip/unzip inverse property (20 random trials)");
+
+    // ---- Property: unzip/zip are inverses (other direction) ----
+    for (int trial = 0; trial < 20; trial++) begin
+      logic [XLEN - 1:0] rand_a, unzipped;
+      rand_a = $urandom;
+
+      a = rand_a; ctrl = B_ALU_CTRL__UNZIP;
+      #1;
+      unzipped = out;
+      a = unzipped; ctrl = B_ALU_CTRL__ZIP;
+      #1;
+      if (out !== rand_a) begin
+        $error("[FAIL] unzip/zip inverse property: got %h, expected %h", out, rand_a);
+        errors++;
+      end
+    end
+    $display("[PASS] unzip/zip inverse property (20 random trials)");
 
     if (errors == 0)
       $display("\n=== ALL TESTS PASSED ===");

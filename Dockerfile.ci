@@ -123,3 +123,14 @@ RUN apt update && apt install -y curl && \
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
     apt install -y nodejs && \
     npm install -g svsch@0.4.0
+
+# install Nangate45 open cell library
+ARG NANGATE45_LIB_NAME=NangateOpenCellLibrary_typical.lib
+ARG NANGATE45_LIB_URL=https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/master/flow/platforms/nangate45/lib/${NANGATE45_LIB_NAME}
+ARG NANGATE45_LIB_HASH="8d540a4d4cf6d09d27c87ad067857a9c0c2eeb023ab7a56e058cd3113db4e9b1  ${NANGATE45_LIB_NAME}"
+RUN mkdir -p /opt/pdks/nangate45 && \
+    cd /opt/pdks/nangate45 && \
+    wget ${NANGATE45_LIB_URL} && \
+    echo "${NANGATE45_LIB_HASH}" | sha256sum -c && \
+    chmod 644 ${NANGATE45_LIB_NAME}
+ENV NANGATE45_LIB=/opt/pdks/nangate45/NangateOpenCellLibrary_typical.lib

@@ -30,6 +30,8 @@ package ext__b__types;
     , B_ALU_CTRL__PACK   = 5'b10110
     , B_ALU_CTRL__PACKH  = 5'b10111
     , B_ALU_CTRL__BREV8  = 5'b11000
+    , B_ALU_CTRL__ZIP    = 5'b11001
+    , B_ALU_CTRL__UNZIP  = 5'b11010
     } b_alu_control_t;
 
 endpackage
