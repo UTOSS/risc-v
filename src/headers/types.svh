@@ -3,12 +3,15 @@
 
 /* defines the bitness of the processor */
 `define PROCESSOR_BITNESS 32
+`define NUMBER_OF_CSRS 4096
+`define CSR_RF_WIDTH $clog2(`NUMBER_OF_CSRS)
 
 typedef logic [`PROCESSOR_BITNESS -1:0] instr_t;
 typedef logic [`PROCESSOR_BITNESS -1:0] addr_t;
 typedef logic [`PROCESSOR_BITNESS -1:0] imm_t;
 typedef logic [`PROCESSOR_BITNESS -1:0] data_t;
 typedef logic [4:0] reg_t;
+typedef logic [`CSR_RF_WIDTH -1:0] csr_addr_t;
 
 
 // Opcodes
@@ -74,6 +77,7 @@ typedef enum logic [1:0]
   { RESULT_SRC__ALU_RESULT = 2'b00
   , RESULT_SRC__READ_DATA  = 2'b01
   , RESULT_SRC__PC_PLUS_4  = 2'b10
+  , RESULT_SRC__CSR_READ   = 2'b11
   } result_src_t;
 
 typedef enum logic

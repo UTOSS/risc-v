@@ -22,16 +22,16 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 # Build config
 # =============
 
-UTOSS_RISCV_CONFIG ?= RV32I
+# Canonical RISC-V ISA specification format (e.g. RV32I, RV32IZbb_Zbkb, RV32IZicsr)
+UTOSS_RISCV_CONFIG ?= $(if $(RISCOF_ISA_STRING),$(RISCOF_ISA_STRING),RV32I)
+RISCOF_ISA_STRING  := $(UTOSS_RISCV_CONFIG)
+
 UTOSS_RISCV_ENABLE_MUL ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
 UTOSS_RISCV_ENABLE_DIV ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
 UTOSS_RISCV_ENABLE_M := $(if $(filter 1 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
 UTOSS_RISCV_ANY_M := $(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
 
 UTOSS_BOOT_ADDR ?= 32\'h0000_0000
-
-# Convert B extension to Zbb for RISC-V ISA spec
-RISCOF_ISA_STRING = $(subst B,Zbb_Zbkb,$(UTOSS_RISCV_CONFIG))
 
 # Generate misa value
 MISA_VALUE = 0x40000100
@@ -49,18 +49,21 @@ MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1 )))
 endif
 
 UTOSS_RISCV_VERILATOR_DEFINES := \
-$(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) \
-$(if $(filter 1,$(UTOSS_RISCV_ENABLE_M)),-DUTOSS_RISCV__M_ENABLED) \
-$(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL)),-DUTOSS_RISCV__MUL_ENABLED) \
-$(if $(filter 1,$(UTOSS_RISCV_ENABLE_DIV)),-DUTOSS_RISCV__DIV_ENABLED) \
-$(if $(filter 1,$(UTOSS_RISCV_ANY_M)),-DUTOSS_RISCV__ANY_M)
+	$(if $(findstring Zbb,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) \
+	$(if $(findstring Zicsr,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV__ZICSR_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_M)),-DUTOSS_RISCV__M_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL)),-DUTOSS_RISCV__MUL_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_DIV)),-DUTOSS_RISCV__DIV_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ANY_M)),-DUTOSS_RISCV__ANY_M)
 UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 
 # ===========================
 # Verilator flags
 # ===========================
 
-VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 $(UTOSS_RISCV_VERILATOR_DEFINES)
+VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 \
+	-CFLAGS "-Wno-unknown-warning-option" \
+	$(UTOSS_RISCV_VERILATOR_DEFINES)
 TOP_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR)
 RISCOF_VERILATOR_FLAGS := $(TOP_VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
@@ -102,6 +105,7 @@ run_top: $(OUT_DIR)/top_sim
 	./$<
 
 $(OUT_DIR)/top_sim: $(SRCS)
+	@mkdir -p $(OUT_DIR)
 	@mkdir -p $(BUILD_DIR)/top
 	$(VERILATOR) $(TOP_VERILATOR_FLAGS) \
 		--top-module top \
@@ -136,6 +140,8 @@ run_tb: build_tb
 
 # Pattern rule for building individual testbenches
 $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
+	@mkdir -p $(OUT_DIR)
+	@mkdir -p $(BUILD_DIR)/$(basename $(notdir $@))
 	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
 		--top-module $(basename $(notdir $<)) \
 		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
@@ -156,7 +162,8 @@ new_tb:
 # ===========================
 # RISCOF
 # ===========================
-$(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC)
+$(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC) FORCE
+	@mkdir -p $(BUILD_DIR)/riscof
 	$(VERILATOR) $(RISCOF_VERILATOR_FLAGS) \
 		--top-module dut \
 		--Mdir $(BUILD_DIR)/riscof \
@@ -189,9 +196,15 @@ riscof_generate_testlist: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG)
 
 riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 	cd $(RISCOF_DIR) && \
+		riscof testlist --config=config.ini \
+		--suite=riscv-arch-test/riscv-test-suite/ \
+		--env=riscv-arch-test/riscv-test-suite/env && \
+		python3 utoss_riscv/prepare_riscof_testlist.py --config="$(UTOSS_RISCV_CONFIG)" --work-dir="riscof_work" && \
 		riscof run --config=config.ini \
 		--suite=riscv-arch-test/riscv-test-suite/ \
-		--env=riscv-arch-test/riscv-test-suite/env
+		--env=riscv-arch-test/riscv-test-suite/env \
+		--testfile=riscof_work/test_list.yaml \
+		--no-browser
 
 include utoss_riscv_dv/Makefile
 

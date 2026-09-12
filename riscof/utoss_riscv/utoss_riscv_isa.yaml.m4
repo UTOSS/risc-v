@@ -3,6 +3,7 @@ hart0:
   ISA: M4__ISA_STRING
   physical_addr_sz: 32
   User_Spec_Version: '2.3'
+  Privilege_Spec_Version: '0'
   supported_xlen: [32]
   misa:
    reset-val: M4__MISA_VALUE

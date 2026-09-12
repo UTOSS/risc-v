@@ -38,13 +38,15 @@ if {[info exists ::env(BASE_DIR)] && $::env(BASE_DIR) ne ""} {
 	set base_dir $::env(BASE_DIR)
 }
 
-set config_upper [string toupper $utoss_riscv_config]
 set macro_args [list "-DUTOSS_RISCV_HARDENING" "-DUTOSS_RISCV_SYNTHESIS"]
 
-if {[string first "B" $config_upper] >= 0} {
+if {[string first "Zbb" $utoss_riscv_config] >= 0} {
 	lappend macro_args "-DUTOSS_RISCV_ENABLE_B_EXT"
 }
-if {[string first "M" $config_upper] >= 0} {
+if {[string first "Zicsr" $utoss_riscv_config] >= 0} {
+	lappend macro_args "-DUTOSS_RISCV__ZICSR_ENABLED"
+}
+if {[string first "M" $utoss_riscv_config] >= 0} {
 	lappend macro_args "-DUTOSS_RISCV__M_ENABLED" "-DUTOSS_RISCV__MUL_ENABLED" "-DUTOSS_RISCV__DIV_ENABLED" "-DUTOSS_RISCV__ANY_M"
 }
 
@@ -55,6 +57,7 @@ plugin -i slang
 yosys -import
 
 set slang_cmd [list read_slang --top top --best-effort-hierarchy --single-unit --compat vcs \
+    --unroll-limit 10000 \
     -GMEM_SIZE=$mem_size -GBOOT_ADDR=$boot_addr]
 
 foreach m $macro_args {
