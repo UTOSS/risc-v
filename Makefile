@@ -140,6 +140,8 @@ run_tb: build_tb
 
 # Pattern rule for building individual testbenches
 $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
+	@mkdir -p $(OUT_DIR)
+	@mkdir -p $(BUILD_DIR)/$(basename $(notdir $@))
 	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
 		--top-module $(basename $(notdir $<)) \
 		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
@@ -161,6 +163,7 @@ new_tb:
 # RISCOF
 # ===========================
 $(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC) FORCE
+	@mkdir -p $(BUILD_DIR)/riscof
 	$(VERILATOR) $(RISCOF_VERILATOR_FLAGS) \
 		--top-module dut \
 		--Mdir $(BUILD_DIR)/riscof \
