@@ -111,7 +111,8 @@ jobs:
       matrix: &utoss-risc-v-matrix
         config:
           - RV32I
-          - RV32IB
+          - RV32IZbb_Zbkb
+          - RV32IZicsr
 
     steps:
       - name: Checkout code

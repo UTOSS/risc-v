@@ -163,7 +163,8 @@ module utoss_riscv
     , .pc_src_e     ( ex_to_if_out.pc_src     )
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .csr_instr_d        ( id_to_ex_out.funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111} )
+    , .reg_write_e        ( id_to_ex_reg.reg_write  )
+    , .csr_instr_d        ( (id_to_ex_out.result_src == RESULT_SRC__CSR_READ) || id_to_ex_out.csr_write_enable )
     , .csr_write_intent_e ( id_to_ex_reg.csr_write_enable )
     , .csr_write_intent_m ( ex_to_mem_reg.csr_write_enable )
     , .csr_write_intent_w ( mem_to_wb_reg.csr_write_enable )

@@ -14,15 +14,18 @@ if {[info exists ::env(UTOSS_RISCV_CONFIG)] && $::env(UTOSS_RISCV_CONFIG) ne ""}
 	error "need UTOSS_RISCV_CONFIG environment variable"
 }
 
-set config_upper [string toupper $utoss_riscv_config]
 set macro_list {}
 
-if {[string first "B" $config_upper] >= 0} {
+if {[string first "Zbb" $utoss_riscv_config] >= 0} {
 	lappend macro_list UTOSS_RISCV_ENABLE_B_EXT
 }
 
-if {[string first "Zicsr" $config_upper] >= 0} {
+if {[string first "Zicsr" $utoss_riscv_config] >= 0} {
 	lappend macro_list UTOSS_RISCV__ZICSR_ENABLED
+}
+
+if {[string first "M" $utoss_riscv_config] >= 0} {
+	lappend macro_list UTOSS_RISCV__M_ENABLED UTOSS_RISCV__MUL_ENABLED UTOSS_RISCV__DIV_ENABLED UTOSS_RISCV__ANY_M
 }
 
 project_open $project_name

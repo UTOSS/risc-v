@@ -16,6 +16,7 @@ module hazard_unit
   , input  reg_t      rd_e
   , input  pc_src_t pc_src_e
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , input  wire       reg_write_e
   , input  logic      csr_instr_d
   , input  logic      csr_write_intent_e
   , input  logic      csr_write_intent_m
@@ -62,13 +63,16 @@ module hazard_unit
   // away
   logic csr_stall;
 
-//CSR stall for csr-to-csr stall
+//CSR stall for csr-to-csr stall and rs1 register hazards
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   assign csr_stall =
       csr_instr_d &&
-      ((csr_write_intent_e && (csr_addr_d == csr_addr_e)) ||
-       (csr_write_intent_m && (csr_addr_d == csr_addr_m)) ||
-       (csr_write_intent_w && (csr_addr_d == csr_addr_w)));
+      (((csr_write_intent_e && (csr_addr_d == csr_addr_e)) ||
+        (csr_write_intent_m && (csr_addr_d == csr_addr_m)) ||
+        (csr_write_intent_w && (csr_addr_d == csr_addr_w))) ||
+       ((rs1_d != 5'd0) &&
+        ((reg_write_e && (rs1_d == rd_e)) ||
+         (reg_write_m && (rs1_d == rd_m)))));
 `else
   assign csr_stall = 1'b0;
 `endif

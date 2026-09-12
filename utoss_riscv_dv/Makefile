@@ -11,8 +11,7 @@ RISCV_DV_ARGS        ?=
 
 RISCV_DV_TARGET ?= $(shell printf '%s' '$(UTOSS_RISCV_CONFIG)' | tr '[:upper:]' '[:lower:]')
 
-# Note: The provided IMCB target uses outdated instructions so will not work
-RISCV_DV_ISA ?= $(shell printf '%s' '$(subst B,_Zba_Zbb_Zbc_Zbs,$(UTOSS_RISCV_CONFIG))_zicsr_zifencei' | tr '[:upper:]' '[:lower:]')
+RISCV_DV_ISA ?= $(shell printf '%s' '$(UTOSS_RISCV_CONFIG)$(if $(findstring Zicsr,$(UTOSS_RISCV_CONFIG)),,_zicsr)_zifencei' | tr '[:upper:]' '[:lower:]')
 
 riscv_dv:
 	python3 utoss_riscv_dv/utoss_riscv_dv.py \
