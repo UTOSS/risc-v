@@ -192,6 +192,7 @@ module utoss_riscv
 
     , .if_stage      ( if_to_id_out  )
     , .id_stage      ( if_to_id_reg  )
+    , .id_stage_out  ( id_to_ex_out  )
     , .ex_stage      ( id_to_ex_reg  )
     , .ex_stage_out  ( ex_to_mem_out )
     , .ex_to_if      ( ex_to_if_out  )
