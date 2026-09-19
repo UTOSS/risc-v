@@ -226,7 +226,16 @@ module decode_stage
   assign id_to_ex.branch         = cfsm__branch;
   assign id_to_ex.jump           = cfsm__jump;
   assign id_to_ex.pc_target_kind = cfsm__pc_target_kind;
+  // the control FSM sees only the opcode, so it flags every OPCODE_AMO as atomic -- including
+  // malformed ones. The A decoder sees funct3/funct5/rs2 and is the authority on whether the
+  // encoding is real, so defer to it and keep the two signals from contradicting each other.
+`ifdef UTOSS_RISCV__A_ENABLED
+  assign id_to_ex.mem_op         = (cfsm__mem_op == MEM_OP__ATOMIC
+                                    && a_op == ext__a__types::A_OP__NONE)
+                                 ? MEM_OP__NONE : cfsm__mem_op;
+`else
   assign id_to_ex.mem_op         = cfsm__mem_op;
+`endif
   assign id_to_ex.mem_write      = cfsm__mem_write;
   assign id_to_ex.reg_write      = cfsm__reg_write;
   assign id_to_ex.alu_control    = alu_control;
