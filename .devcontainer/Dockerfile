@@ -154,6 +154,7 @@ RUN mkdir -p /tmp/riscv-dv && \
 ENV RISCV_DV_HOME=/opt/riscv-dv
 
 # install Nangate45 open cell library
+USER root
 ARG NANGATE45_LIB_NAME=NangateOpenCellLibrary_typical.lib
 ARG NANGATE45_LIB_URL=https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/master/flow/platforms/nangate45/lib/${NANGATE45_LIB_NAME}
 ARG NANGATE45_LIB_HASH="8d540a4d4cf6d09d27c87ad067857a9c0c2eeb023ab7a56e058cd3113db4e9b1  ${NANGATE45_LIB_NAME}"
@@ -164,4 +165,6 @@ RUN mkdir -p /opt/pdks/nangate45 && \
     chmod 644 ${NANGATE45_LIB_NAME}
 ENV NANGATE45_LIB=/opt/pdks/nangate45/NangateOpenCellLibrary_typical.lib
 
+USER dev
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
