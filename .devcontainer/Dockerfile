@@ -153,13 +153,6 @@ RUN mkdir -p /tmp/riscv-dv && \
     cd .. && rm -rf /tmp/riscv-dv
 ENV RISCV_DV_HOME=/opt/riscv-dv
 
-# install svsch
-USER root
-RUN apt update && apt install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
-    apt install -y nodejs && \
-    npm install -g svsch@0.4.0
-
 # install Nangate45 open cell library
 ARG NANGATE45_LIB_NAME=NangateOpenCellLibrary_typical.lib
 ARG NANGATE45_LIB_URL=https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/master/flow/platforms/nangate45/lib/${NANGATE45_LIB_NAME}

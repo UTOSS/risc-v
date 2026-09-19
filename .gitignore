@@ -38,4 +38,3 @@ out/**
 build/**
 !build/.gitkeep
 
-.svsch/uhdm_cache/

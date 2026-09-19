@@ -4,7 +4,7 @@ UTOSS' 5-stage pipelined RISC-V core with synchronous memory support.
 
 ## Architecture
 
-![Core Architecture](docs/diagrams/utoss_riscv.svg)
+![Core Architecture](docs/diagrams/utoss_riscv_pipelined.png)
 
 ## Getting Started
 
