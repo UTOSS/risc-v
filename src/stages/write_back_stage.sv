@@ -29,6 +29,12 @@ module write_back_stage
   assign rd = from_memory.rd;
 
   // TODO: `REULST_SRC__ALU_OUT` is no longer covered, revisit during integration
+  //
+  // TODO: `RESULT_SRC__ATOMIC` is decoded by the A extension but deliberately not handled here yet
+  // -- the value it selects (loaded word for `lr.w`, success code for `sc.w`, pre-modification
+  // value for an AMO) is produced by the memory-stage FSM, which does not exist yet. Whoever
+  // implements that FSM needs to route its result through `mem_to_wb_t` and add the arm here;
+  // until then an atomic writes x to its destination register.
   always_comb
     case (from_memory.result_src)
       RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;

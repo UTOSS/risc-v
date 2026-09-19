@@ -153,6 +153,7 @@ assign zero_flag  = zero_flag_base;
   assign pc_src = should_branch ? PC_SRC__ALU_RESULT : PC_SRC__INCREMENT;
 
   assign ex_to_mem.result_src   = id_to_ex.result_src;
+  assign ex_to_mem.mem_op       = id_to_ex.mem_op;
   assign ex_to_mem.mem_write    = id_to_ex.mem_write;
   assign ex_to_mem.reg_write    = id_to_ex.reg_write;
   assign ex_to_mem.funct3       = id_to_ex.funct3;
@@ -172,5 +173,24 @@ assign zero_flag  = zero_flag_base;
   assign ex_to_if.pc_target     = pc_target;
   assign ex_to_if.pc_old        = id_to_ex.pc_cur;
 
-  wire unused = &{id_to_ex.rs1, id_to_ex.rs2};
+`ifdef UTOSS_RISCV__A_ENABLED
+  // atomics do all of their real work in the memory stage; execute only computes the address (via
+  // rs1 + 0) and passes the operation description straight through
+  assign ex_to_mem.a_op = id_to_ex.a_op;
+  assign ex_to_mem.a_aq = id_to_ex.a_aq;
+  assign ex_to_mem.a_rl = id_to_ex.a_rl;
+`endif
+
+  // NOTE: the M extension's control fields are produced by decode but have no consumer here yet --
+  // the multiply/divide execute unit is not wired up. Without naming them the struct has unused
+  // bits and -Wall fails. This is pre-existing (origin/main cannot build RV32IMZicsr_Zbb for the
+  // same reason) and should go away when the M execute unit lands.
+  wire unused = &{id_to_ex.rs1, id_to_ex.rs2
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  , id_to_ex.is_mul, id_to_ex.mul_control
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  , id_to_ex.is_div, id_to_ex.div_control
+`endif
+  };
 endmodule

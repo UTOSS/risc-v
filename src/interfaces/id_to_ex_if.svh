@@ -13,6 +13,7 @@ typedef struct packed {
   logic         branch;
   logic         jump;
   logic         pc_target_kind;
+  mem_op_t      mem_op;
   logic         mem_write;
   logic         reg_write;
   alu_control_t alu_control;
@@ -39,6 +40,11 @@ typedef struct packed {
 `ifdef UTOSS_RISCV__DIV_ENABLED
   logic         is_div;
   ext__m__types::m_div_control_t div_control;
+`endif
+`ifdef UTOSS_RISCV__A_ENABLED
+  ext__a__types::a_op_t a_op;
+  logic         a_aq;
+  logic         a_rl;
 `endif
 } id_to_ex_t;
 

@@ -28,6 +28,7 @@ typedef enum logic [6:0]
     , OPCODE_LUI       = 7'b0110111 //U-type
     , OPCODE_MISC_MEM  = 7'b0001111 //FENCE
     , OPCODE_SYSTEM    = 7'b1110011 //SYSTEM
+    , OPCODE_AMO       = 7'b0101111 //R-type, A extension (LR/SC/AMO)
     } opcode_t;
 
 
@@ -73,12 +74,36 @@ typedef enum logic
   , ADR_SRC__RESULT = 1'b1
   } adr_src_t;
 
-typedef enum logic [1:0]
-  { RESULT_SRC__ALU_RESULT = 2'b00
-  , RESULT_SRC__READ_DATA  = 2'b01
-  , RESULT_SRC__PC_PLUS_4  = 2'b10
-  , RESULT_SRC__CSR_READ   = 2'b11
+// NOTE on the encoding: `RESULT_SRC__ATOMIC` deliberately has bit 0 set, matching
+// `RESULT_SRC__READ_DATA`. Both name instructions whose result is produced in the memory stage, so
+// a dependent instruction behind them cannot be served by forwarding alone and has to stall. The
+// hazard unit does not exploit that yet -- `lw_stall` in src/hazard_unit.sv compares against
+// `RESULT_SRC__READ_DATA` for equality -- but keeping the property means the stall condition can
+// later become a bit test that covers atomics without the hazard unit knowing the A extension
+// exists. Preserve it if you renumber these.
+typedef enum logic [2:0]
+  { RESULT_SRC__ALU_RESULT = 3'b000
+  , RESULT_SRC__READ_DATA  = 3'b001
+  , RESULT_SRC__PC_PLUS_4  = 3'b010
+
+  // result is produced by the A extension's memory-stage FSM: the loaded word for `lr.w`, the
+  // success/failure code for `sc.w`, or the pre-modification value for an AMO
+  , RESULT_SRC__ATOMIC     = 3'b011
+  , RESULT_SRC__CSR_READ   = 3'b100
   } result_src_t;
+
+// what the memory stage is being asked to do with the instruction in flight
+//
+// this supersedes the single `mem_write` bit, which could only distinguish "store" from
+// "everything else" -- not enough once an instruction can ask for a read-modify-write sequence
+typedef enum logic [1:0]
+  { MEM_OP__NONE   = 2'b00
+  , MEM_OP__READ   = 2'b01
+  , MEM_OP__WRITE  = 2'b10
+
+  // read-modify-write sequence driven by the A extension's memory-stage FSM
+  , MEM_OP__ATOMIC = 2'b11
+  } mem_op_t;
 
 typedef enum logic
   { PC_SRC__INCREMENT  = 1'b0

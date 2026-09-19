@@ -24,6 +24,7 @@ module decode_stage
 
   wire             cfsm__reg_write;
   result_src_t     cfsm__result_src;
+  mem_op_t         cfsm__mem_op;
   wire             cfsm__mem_write;
   wire             cfsm__jump;
   wire             cfsm__branch;
@@ -43,6 +44,11 @@ module decode_stage
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control; //NEW
+`endif
+`ifdef UTOSS_RISCV__A_ENABLED
+  ext__a__types::a_op_t a_op;
+  wire                  a_aq;
+  wire                  a_rl;
 `endif
 
 
@@ -83,6 +89,7 @@ module decode_stage
 
     , .reg_write      ( cfsm__reg_write      )
     , .result_src     ( cfsm__result_src     )
+    , .mem_op         ( cfsm__mem_op         )
     , .mem_write      ( cfsm__mem_write      )
     , .jump           ( cfsm__jump           )
     , .branch         ( cfsm__branch         )
@@ -114,6 +121,11 @@ module decode_stage
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
+`endif
+`ifdef UTOSS_RISCV__A_ENABLED
+    , .a_op            ( a_op             )
+    , .a_aq            ( a_aq             )
+    , .a_rl            ( a_rl             )
 `endif
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
     , .csr_addr        ( csr_addr         )
@@ -214,6 +226,7 @@ module decode_stage
   assign id_to_ex.branch         = cfsm__branch;
   assign id_to_ex.jump           = cfsm__jump;
   assign id_to_ex.pc_target_kind = cfsm__pc_target_kind;
+  assign id_to_ex.mem_op         = cfsm__mem_op;
   assign id_to_ex.mem_write      = cfsm__mem_write;
   assign id_to_ex.reg_write      = cfsm__reg_write;
   assign id_to_ex.alu_control    = alu_control;
@@ -242,6 +255,11 @@ module decode_stage
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   assign id_to_ex.b_alu_control = b_alu_control;
+`endif
+`ifdef UTOSS_RISCV__A_ENABLED
+  assign id_to_ex.a_op = a_op;
+  assign id_to_ex.a_aq = a_aq;
+  assign id_to_ex.a_rl = a_rl;
 `endif
 
 endmodule

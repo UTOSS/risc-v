@@ -66,4 +66,15 @@ module memory_stage
   assign mem_to_wb.csr_read_data    = ex_to_mem.csr_read_data;
 `endif
 
+  // TODO: the A extension's memory-stage FSM consumes these -- `mem_op` should replace `mem_write`
+  // as the gate on the byte-enable generation above, and `a_op`/`a_aq`/`a_rl` drive the
+  // read-modify-write sequencing. Until that lands they are decoded and delivered but unused.
+  wire unused_a = &{1'b0, ex_to_mem.mem_op
+`ifdef UTOSS_RISCV__A_ENABLED
+  , ex_to_mem.a_op
+  , ex_to_mem.a_aq
+  , ex_to_mem.a_rl
+`endif
+  };
+
 endmodule

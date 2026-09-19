@@ -1,6 +1,7 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 `include "src/ext/m/types.svh"
+`include "src/ext/a/types.svh"
 `include "src/timescale.svh"
 
 module Instruction_Decode
@@ -29,6 +30,12 @@ module Instruction_Decode
 `ifdef UTOSS_RISCV__DIV_ENABLED
   , output logic is_div
   , output ext__m__types::m_div_control_t div_control
+`endif
+
+`ifdef UTOSS_RISCV__A_ENABLED
+  , output ext__a__types::a_op_t a_op
+  , output logic                 a_aq
+  , output logic                 a_rl
 `endif
 
   );
@@ -70,6 +77,15 @@ module Instruction_Decode
       funct3 = instr[14:12];
 
     end
+`ifdef UTOSS_RISCV__A_ENABLED
+    // atomics carry {funct5, aq, rl} in the funct7 field; the A decoder splits it apart
+    OPCODE_AMO: begin
+
+      funct3 = instr[14:12];
+      funct7 = instr[31:25];
+
+    end
+`endif
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
     OPCODE_SYSTEM: begin
       funct3 = instr[14:12];
@@ -91,6 +107,9 @@ module Instruction_Decode
       OPCODE_AUIPC: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       OPCODE_LUI:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       OPCODE_MISC_MEM:     alu_op = ALU_OP__UNSET;
+`ifdef UTOSS_RISCV__A_ENABLED
+      OPCODE_AMO:   alu_op = ALU_OP__ADD; // rs1 + 0, i.e. the address for the memory stage
+`endif
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
       OPCODE_SYSTEM: alu_op = ALU_OP__ADD;
 `endif
@@ -135,6 +154,16 @@ module Instruction_Decode
         rd = instr[11:7];
       end
 
+`ifdef UTOSS_RISCV__A_ENABLED
+      OPCODE_AMO: begin //R-Type layout: rs1 is the address, rs2 the operand, rd the old value
+
+        rd  = instr[11:7];
+        rs1 = instr[19:15];
+        rs2 = instr[24:20];
+
+      end
+`endif
+
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
       OPCODE_SYSTEM: begin
         rd = instr[11:7];
@@ -167,6 +196,10 @@ module Instruction_Decode
       OPCODE_JAL       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
       OPCODE_AUIPC  : imm_ext = {instr[31:12], 12'h000};
       OPCODE_LUI  : imm_ext = {instr[31:12], 12'h000};
+`ifdef UTOSS_RISCV__A_ENABLED
+      // atomics have no immediate field; the zero makes the ALU compute rs1 + 0 = address
+      OPCODE_AMO  : imm_ext = 32'b0;
+`endif
       default:     imm_ext = 32'b0;
     endcase
   end
@@ -189,6 +222,24 @@ module Instruction_Decode
     , .rd            ( rd            )
     , .rs2           ( rs2           )
     , .b_alu_control ( b_alu_control )
+    );
+`endif
+
+`ifdef UTOSS_RISCV__A_ENABLED
+  /* verilator lint_off UNUSEDSIGNAL */
+  wire a_is_illegal;
+  /* verilator lint_on UNUSEDSIGNAL */
+
+  ext__a__decoder u_ext__a__decoder
+    ( .opcode     ( opcode       )
+    , .funct3     ( funct3       )
+    , .funct7     ( funct7       )
+    , .rs2        ( rs2          )
+    , .a_op       ( a_op         )
+    , .aq         ( a_aq         )
+    , .rl         ( a_rl         )
+    // TODO: route into the trap logic once the privileged architecture lands
+    , .is_illegal ( a_is_illegal )
     );
 `endif
 
