@@ -40,7 +40,7 @@ module fetch_compressed
 
   logic need_split_wait;
   logic buffer_after_split;
- // logic hold_pc_for_split_buffer;
+  // logic hold_pc_for_split_buffer;
 
   localparam instr_t NOP = 32'h00000013;
 
@@ -133,7 +133,7 @@ always_ff @ (posedge clk)
       , split_wait_next_word_valid
       } <= {1'b0, data_t'(0), 1'b0};
 
-   /*else if (!stall_f && need_split_wait)
+      /*else if (!stall_f && need_split_wait)
       { split_wait_valid
       , split_wait_cur_word
       , split_wait_pc
@@ -153,8 +153,8 @@ always_ff @ (posedge clk)
       , reader_cur_word_i
       , reader_pc_i
       , reader_next_word
-      , ({pc_prev[31:2], 2'b00}
-          == ({reader_pc_i[31:2], 2'b00} + 32'd4))
+      , ({pc_prev[31:2], 2'b00} ==
+        ({reader_pc_i[31:2], 2'b00} + 32'd4))
       };
 
     else if (stall_f && split_wait_valid && !split_wait_next_word_valid)
@@ -174,8 +174,8 @@ always_ff @ (posedge clk)
 */
 else if (!stall_f && use_buffer)
   if (reader_inst_is_compressed &&
-      ({pc_prev[31:2], 2'b00}
-        == {reader_next_pc[31:2], 2'b00}))
+    ({pc_prev[31:2], 2'b00} ==
+    {reader_next_pc[31:2], 2'b00}))
     {buffered_word_valid, buffered_word, buffered_pc}
       <= {1'b1, reader_next_word, reader_next_pc};
   else
@@ -217,7 +217,7 @@ else if (!stall_f && use_buffer)
     reader_inst_is_split &&
     (reader_next_pc[31:2] == (reader_pc_i[31:2] + 30'd1));
 
- /* assign hold_pc_for_split_buffer =
+    /* assign hold_pc_for_split_buffer =
     buffer_after_split;
 */
 //assign hold_pc_for_split_buffer =
