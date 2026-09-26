@@ -38,3 +38,7 @@ out/**
 build/**
 !build/.gitkeep
 
+docs/build/**
+!docs/build/.gitkeep
+
+

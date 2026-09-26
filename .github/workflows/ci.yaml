@@ -86,7 +86,7 @@ jobs:
 
   test_diagrams:
     needs: select_ci_image
-    if: ${{ false }} # temporarily skipped
+    if: always() # dont skip if build_ci_image is skipped
     runs-on: ubuntu-latest
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
@@ -94,6 +94,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Test diagrams
         run: make test_diagrams

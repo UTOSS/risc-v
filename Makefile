@@ -234,6 +234,16 @@ svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
 # ===========================
+# Diagrams
+# ===========================
+diagrams:
+	$(MAKE) -C docs diagrams
+
+test_diagrams:
+	$(MAKE) -C docs test
+
+
+# ===========================
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb \

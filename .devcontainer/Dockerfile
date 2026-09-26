@@ -165,6 +165,20 @@ RUN mkdir -p /opt/pdks/nangate45 && \
     chmod 644 ${NANGATE45_LIB_NAME}
 ENV NANGATE45_LIB=/opt/pdks/nangate45/NangateOpenCellLibrary_typical.lib
 
+# install minimal TeX Live and diagram generation tools
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-pictures \
+    texlive-latex-extra \
+    texlive-science \
+    texlive-fonts-extra \
+    poppler-utils \
+    dvisvgm && \
+    rm -rf /var/lib/apt/lists/*
+
 USER dev
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
 
