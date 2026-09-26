@@ -4,7 +4,7 @@ BUILD_DIR    := build
 PDFLATEX     := pdflatex
 PDFTOCAIRO   := pdftocairo
 
-TEX_SRCS     := $(wildcard $(DIAGRAMS_DIR)/*.tex)
+TEX_SRCS     := $(filter-out $(DIAGRAMS_DIR)/util.tex, $(wildcard $(DIAGRAMS_DIR)/*.tex))
 SVG_TARGETS  := $(patsubst $(DIAGRAMS_DIR)/%.tex, $(DIAGRAMS_DIR)/%.svg, $(TEX_SRCS))
 
 .PHONY: all diagrams clean distclean test
