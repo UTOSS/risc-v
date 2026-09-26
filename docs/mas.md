@@ -61,7 +61,9 @@ During WB stage, `csr_request` and `csr_data` are used to produce `cst_wb_reques
 `data` containing the new contents of the CSR denoted by `address` as well as whether the write is
 needed via `write_enable`.
 
-CSR decoder also produces `write_intent` to indicate to the hazard unit that sequential CSR
-instructions interested in reading of writing the same CSR address.
+`csr_request` also carries `write_intent`, set by the CSR decoder, which `csr_wb` uses as
+`write_enable`. It is also tapped off the pipelined `csr_request` in EX, MEM and WB and fed to the
+hazard unit so that it can stall a CSR instruction that reads a CSR still being written by an
+earlier instruction.
 
 ## M extension

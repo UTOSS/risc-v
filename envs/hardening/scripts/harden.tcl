@@ -64,7 +64,7 @@ foreach m $macro_args {
     lappend slang_cmd $m
 }
 
-lappend slang_cmd "-I$base_dir" "-I$base_dir/src/headers" "-I$base_dir/src/interfaces" "-I$base_dir/src/ext/b" "-I$base_dir/src/ext/m"
+lappend slang_cmd "-I$base_dir" "-I$base_dir/src/headers" "-I$base_dir/src/interfaces" "-I$base_dir/src/ext/b" "-I$base_dir/src/ext/m" "-I$base_dir/src/ext/zicsr"
 
 # Automatically collect all .sv files in src/
 # With --top top, Slang only elaborates the design hierarchy rooted at top,

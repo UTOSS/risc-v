@@ -31,7 +31,7 @@
     },
     stageline/.style={dashed, draw=boundarycolor, line width=1.2pt},
     thickline/.style={draw=arrowgreen, line width=2.6pt, line cap=butt, line join=miter},
-    hazardline/.style={draw=hazardcolor, line width=1.4pt, line cap=butt, line join=miter}
+    thinline/.style={draw=arrowgreen, line width=1.2pt, line cap=butt, line join=miter}
 ]
 
 % ========================================================
@@ -39,9 +39,10 @@
 %   y =  1.40 : csr_request bus to WB (over csr_data, jogs into csr_wb row 1)
 %   y =  0.60 : csr_decode row 1 (csr_request out)
 %   y = -0.20 : csr_data (csr_data row 1 -> csr_wb row 2)
-%   y = -4.40 : write_intent bus feeding the hazard unit (pipelined)
 %   y = -5.30 : csr_wb_request write-back bus (passes below the pipeline
 %               registers since it is not pipelined; hops over write_intent)
+%   write_intent_{e,m,w} are tapped off the csr_request bus after each
+%   pipeline register and dropped into the hazard unit
 % ========================================================
 
 % ========================================================
@@ -67,17 +68,16 @@
   -- cycle;
 \node[anchor=north west, font=\bfseries\normalsize, text=stagecolor] at (-0.7, 3.05) {\texttt{decode\_stage}};
 
-% Pipeline registers (ID/EX, EX/MEM, MEM/WB); extended down through the
-% write_intent bus to show it is pipelined alongside the CSR signals
+% Pipeline registers (ID/EX, EX/MEM, MEM/WB)
 \foreach \xl in {13.40, 17.15, 21.05} {
   \pgfmathsetmacro{\xr}{\xl + 0.70}
   \path[fill=regcolor, fill opacity=0.15]
-    (\xl, 3.2) -- (\xr, 3.2) -- (\xr, -4.8)
-    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl, -4.8) }
+    (\xl, 3.2) -- (\xr, 3.2) -- (\xr, -3.2)
+    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl, -3.2) }
     -- cycle;
   \draw[draw=regcolor, line width=1.3pt]
-    (\xl, 3.2) -- (\xr, 3.2) -- (\xr, -4.8)
-    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl, -4.8) }
+    (\xl, 3.2) -- (\xr, 3.2) -- (\xr, -3.2)
+    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl, -3.2) }
     -- cycle;
 }
 
@@ -101,7 +101,7 @@
 \drawblock{csr_decode}{3.00}{-0.30}{4.4}{csr\_decode}%
   {instruction/arrowgreen}%
   {csr_request/arrowgreen}%
-  {write_intent/0.0/hazardcolor}%
+  {}%
   {4.20}
 
 % csr_data: x in [6.90, 12.20], top at y = 1.00 (below the WB csr_request bus),
@@ -137,29 +137,28 @@
 % 3. "csr_data": csr_data row 1 straight through the pipeline into csr_wb row 2
 \draw[thickline] (csr_data-csr_data) -- (csr_wb-csr_data);
 
-% 4. "write_intent" hazard bus: csr_decode bottom -> down -> right under the
-%    pipeline, with per-stage drops (_e, _m, _w) into the hazard unit
-\draw[hazardline] (csr_decode-write_intent) -- (3.00, -4.40) -- (23.35, -4.40) -- (23.35, -7.00);
-\foreach \xd/\lbl in {15.55/e, 19.45/m} {
-  \draw[hazardline] (\xd, -4.40) -- (\xd, -7.00);
-  \fill[hazardcolor] (\xd, -4.40) circle (2.2pt);
-  \node[anchor=west, font=\footnotesize\bfseries\ttfamily, text=hazardcolor]
+% 4. "write_intent": thin taps pulled out of the csr_request bus after each
+%    pipeline register (_e, _m, _w) and dropped into the hazard unit; each
+%    hops (radius \hop) over the csr_data wire
+\def\hop{0.22}
+\foreach \xd/\yt/\lbl in {15.55/1.40/e, 19.45/1.40/m, 22.45/0.60/w} {
+  \draw[thinline]
+    (\xd, \yt) -- (\xd, -0.20 + \hop) arc[start angle=90, end angle=-90, radius=\hop]
+    -- (\xd, -7.00);
+  \fill[arrowgreen] (\xd, \yt) circle (3.2pt);
+  \node[anchor=west, font=\footnotesize\bfseries\ttfamily, text=arrowgreen]
     at (\xd + 0.12, -6.15) {write\_intent\_\lbl};
 }
-\node[anchor=west, font=\footnotesize\bfseries\ttfamily, text=hazardcolor]
-  at (23.47, -6.15) {write\_intent\_w};
 
 % 5. "csr_wb_request" write-back bus: csr_wb right -> down below the pipeline
 %    registers -> left -> up into csr_data left row 2 (not pipelined).
 %    Hops (radius \hop) over each write_intent wire it crosses.
-\def\hop{0.22}
 \draw[thickline]
   (csr_wb-csr_wb_request) -- (29.25, 0.60) -- (29.25, -5.30)
-  \foreach \xc in {23.35, 19.45, 15.55} {
+  \foreach \xc in {22.45, 19.45, 15.55} {
     -- (\xc + \hop, -5.30) arc[start angle=0, end angle=180, radius=\hop]
   }
   -- (6.30, -5.30)
-  -- (6.30, -4.40 - \hop) arc[start angle=-90, end angle=90, radius=\hop]
   |- (csr_data-csr_wb_request);
 
 % ========================================================

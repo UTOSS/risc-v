@@ -63,8 +63,8 @@ module zicsr_tb;
     uut.core.u_decode_stage.RegFile.RFMem[3]  = 32'h0000_0007;
     uut.core.u_decode_stage.RegFile.RFMem[4]  = 32'h6767_6767;
     uut.core.u_decode_stage.RegFile.RFMem[7]  = 32'h0000_000f;
-    uut.core.u_decode_stage.u_csr_file.CSRMem[12'h300] = 32'h1234_5678;
-    uut.core.u_decode_stage.u_csr_file.CSRMem[12'h305] = 32'h0000_0055;
+    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300] = 32'h1234_5678;
+    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305] = 32'h0000_0055;
 
     repeat (80) begin
       tick();
@@ -83,8 +83,8 @@ module zicsr_tb;
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[24], 32'h0000_000f)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[25], 32'h0000_0006)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[26], 32'h0000_000f)
-    `assert_equal(uut.core.u_decode_stage.u_csr_file.CSRMem[12'h300], 32'h6767_6767)
-    `assert_equal(uut.core.u_decode_stage.u_csr_file.CSRMem[12'h305], 32'h0000_0006)
+    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300], 32'h6767_6767)
+    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305], 32'h0000_0006)
     `assert_equal(saw_csr_stall,   1'b1)
     `assert_equal(saw_csr_flush_e, 1'b1)
 

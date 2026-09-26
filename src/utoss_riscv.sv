@@ -6,6 +6,7 @@
 `include "src/interfaces/ex_to_if_if.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
 `include "src/interfaces/mem_bus.svh"
+`include "src/ext/zicsr/types.svh"
 
 // pipelined implementation of our core
 module utoss_riscv
@@ -33,6 +34,9 @@ module utoss_riscv
 
   data_t      wb_result;
   reg_t       wb_rd;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  ext__zicsr__types::csr_wb_request_t wb_csr_wb_request;
+`endif
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
@@ -72,9 +76,7 @@ module utoss_riscv
     , .reset       ( reset                   )
     , .data        ( wb_result               )
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .csr_write_addr( mem_to_wb_reg.csr_addr        )
-    , .csr_write_enable_wb( mem_to_wb_reg.csr_write_enable )
-    , .csr_write_data_wb( mem_to_wb_reg.csr_write_data )
+    , .csr_wb_request     ( wb_csr_wb_request                      )
 `endif
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
@@ -137,6 +139,9 @@ module utoss_riscv
     , .data_from_memory ( d_bus.read_data         )
     , .result           ( wb_result               )
     , .rd               ( wb_rd                   )
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_wb_request     ( wb_csr_wb_request                      )
+`endif
     );
 
   // writeback stage end
@@ -163,15 +168,15 @@ module utoss_riscv
     , .pc_src_e     ( ex_to_if_out.pc_src     )
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .reg_write_e        ( id_to_ex_reg.reg_write  )
-    , .csr_instr_d        ( (id_to_ex_out.result_src == RESULT_SRC__CSR_READ) || id_to_ex_out.csr_write_enable )
-    , .csr_write_intent_e ( id_to_ex_reg.csr_write_enable )
-    , .csr_write_intent_m ( ex_to_mem_reg.csr_write_enable )
-    , .csr_write_intent_w ( mem_to_wb_reg.csr_write_enable )
-    , .csr_addr_d         ( id_to_ex_out.csr_addr )
-    , .csr_addr_e         ( id_to_ex_reg.csr_addr )
-    , .csr_addr_m         ( ex_to_mem_reg.csr_addr )
-    , .csr_addr_w         ( mem_to_wb_reg.csr_addr )
+    , .reg_write_e        ( id_to_ex_reg.reg_write                 )
+    , .csr_instr_d        ( id_to_ex_out.csr_request.valid         )
+    , .csr_write_intent_e ( id_to_ex_reg.csr_request.write_intent  )
+    , .csr_write_intent_m ( ex_to_mem_reg.csr_request.write_intent )
+    , .csr_write_intent_w ( mem_to_wb_reg.csr_request.write_intent )
+    , .csr_addr_d         ( id_to_ex_out.csr_request.address       )
+    , .csr_addr_e         ( id_to_ex_reg.csr_request.address       )
+    , .csr_addr_m         ( ex_to_mem_reg.csr_request.address      )
+    , .csr_addr_w         ( mem_to_wb_reg.csr_request.address      )
 `endif
 
     , .forward_a_e ( hz_forward_a )

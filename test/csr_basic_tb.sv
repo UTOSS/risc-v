@@ -50,7 +50,7 @@ module csr_basic_tb;
 
     uut.core.u_decode_stage.RegFile.RFMem[1] = 32'h1111_1111;
     uut.core.u_decode_stage.RegFile.RFMem[2] = 32'h2222_2222;
-    uut.core.u_decode_stage.u_csr_file.CSRMem[12'h300] = 32'h1234_5678;
+    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300] = 32'h1234_5678;
 
     repeat (20) begin
       tick();
@@ -60,7 +60,7 @@ module csr_basic_tb;
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[3], 32'h1234_5678)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[4], 32'h1111_1111)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[5], 32'h3333_3333)
-    `assert_equal(uut.core.u_decode_stage.u_csr_file.CSRMem[12'h300], 32'h1111_1111)
+    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300], 32'h1111_1111)
     `assert_equal(saw_csr_stall, 1'b1)
 
     $finish;
