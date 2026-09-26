@@ -3,7 +3,9 @@
 `include "src/ext/zicsr/types.svh"
 
 module csr_wb
+  /* verilator lint_off UNUSEDSIGNAL */
   ( input  ext__zicsr__types::csr_request_t    csr_request
+  /* verilator lint_on UNUSEDSIGNAL */
   , input  ext__zicsr__types::csr_data_t       csr_data
   , output ext__zicsr__types::csr_wb_request_t csr_wb_request
   );
