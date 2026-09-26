@@ -86,7 +86,7 @@ jobs:
 
   test_diagrams:
     needs: select_ci_image
-    if: ${{ false }} # temporarily skipped
+    if: always() # dont skip if build_ci_image is skipped
     runs-on: ubuntu-latest
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
