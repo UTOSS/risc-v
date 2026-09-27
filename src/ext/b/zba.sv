@@ -9,7 +9,7 @@
 
 module zba(input [31:0] reg1
   , input [31:0] reg2
-  , input [2:0] inst // two bit register, distinguish instruction
+  , input [2:0] inst // three bit register, distinguish instruction
   /* verilator lint_off UNUSEDSIGNAL */
   , output logic[31:0] out
   );
