@@ -18,8 +18,12 @@ module csr_data
   // asynchronous read
   assign csr_data.value = csrs[csr_request.address];
 
+  /* svlint off loop_statement_in_always_ff */
   always_ff @(posedge clk)
-    if (reset)                            csrs                         <= '{default: data_t'(0)};
-    else if (csr_wb_request.write_enable) csrs[csr_wb_request.address] <= csr_wb_request.data;
+    if (reset)
+      for (int i = 0; i < `NUMBER_OF_CSRS; i++) csrs[i] <= data_t'(0);
+    else if (csr_wb_request.write_enable)
+      csrs[csr_wb_request.address] <= csr_wb_request.data;
+  /* svlint on loop_statement_in_always_ff */
 
 endmodule
