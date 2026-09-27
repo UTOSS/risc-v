@@ -48,7 +48,7 @@ module csr_immediate_hazard_tb;
     uut.u_memory.M[2] = encode_csr(12'h305, 5'd8, 3'b111, 5'd1); // csrrci x8, mtvec, 1
     uut.u_memory.M[3] = 32'h00000013; // nop
 
-    uut.core.u_decode_stage.u_csr_file.CSRMem[12'h305] = 32'h0000_0055;
+    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305] = 32'h0000_0055;
 
     repeat (20) begin
       tick();
@@ -58,7 +58,7 @@ module csr_immediate_hazard_tb;
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[6], 32'h0000_0055)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[7], 32'h0000_0007)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[8], 32'h0000_0007)
-    `assert_equal(uut.core.u_decode_stage.u_csr_file.CSRMem[12'h305], 32'h0000_0006)
+    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305], 32'h0000_0006)
     `assert_equal(saw_csr_stall, 1'b1)
 
     $finish;

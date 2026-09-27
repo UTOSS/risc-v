@@ -1,0 +1,81 @@
+% TikZ Utilities for Hardware Architecture Diagrams
+% Provides reusable styles and macros for drawing modules with stacked IO ports.
+
+\usetikzlibrary{calc}
+
+% Pin label style for ports
+\tikzset{
+    pinlabel/.style={font=\footnotesize\ttfamily\bfseries, text=stagecolor}
+}
+
+% Counters for port row stacking (declared once globally)
+\newcount\nL
+\newcount\nR
+\newcount\nRows
+\newcount\iL
+\newcount\iR
+
+% Macro: \drawblock
+% Draws a rectangular hardware module with title and auto-stacked IO port columns.
+% Input ports are stacked vertically on the left; output ports on the right.
+% #1: Module identifier prefix (e.g. csr_decode)
+% #2: Center X
+% #3: Center Y
+% #4: Width
+% #5: Title (typeset with \texttt)
+% #6: Left ports list  {port_name/color, ...}
+% #7: Right ports list {port_name/color, ...}
+% #8: Bottom ports list {port_name/x_offset/color, ...}
+% #9: Custom height override (if empty, auto-computed from row count)
+\newcommand{\drawblock}[9]{%
+  % Count left and right ports to determine row count
+  \nL=0
+  \foreach \p in {#6} { \global\advance\nL by 1 }
+  \nR=0
+  \foreach \p in {#7} { \global\advance\nR by 1 }
+  \ifnum\nL>\nR \nRows=\nL \else \nRows=\nR \fi
+  \ifnum\nRows<1 \nRows=1 \fi
+  % Geometry constants
+  \pgfmathsetmacro{\rowH}{0.80}%
+  \pgfmathsetmacro{\topH}{0.80}%
+  \pgfmathsetmacro{\botH}{0.50}%
+  \pgfmathsetmacro{\calcH}{\topH + \nRows * \rowH + \botH}%
+  \def\overrideH{#9}%
+  \ifx\overrideH\empty
+    \pgfmathsetmacro{\H}{\calcH}%
+  \else
+    \pgfmathsetmacro{\H}{#9}%
+  \fi
+  \pgfmathsetmacro{\xL}{#2 - (#4)/2}%
+  \pgfmathsetmacro{\xR}{#2 + (#4)/2}%
+  \pgfmathsetmacro{\yT}{#3 + \H/2}%
+  \pgfmathsetmacro{\yB}{#3 - \H/2}%
+  % Module box
+  \draw[draw=stagecolor, line width=1.5pt, fill=stagecolor, fill opacity=0.15]
+    (\xL, \yT) rectangle (\xR, \yB);
+  % Title
+  \node[anchor=north, font=\bfseries\normalsize, text=stagecolor]
+    at (#2, \yT - 0.15) {\texttt{#5}};
+  % Left side ports (stacked column, top-to-bottom)
+  \iL=0
+  \foreach \pname/\pcol in {#6} {
+    \global\advance\iL by 1
+    \pgfmathsetmacro{\py}{\yT - \topH - (\the\iL - 0.5)*\rowH}%
+    \coordinate (#1-\pname) at (\xL, \py);
+    \node[pinlabel, anchor=west, text=\pcol] at (\xL + 0.12, \py) {\detokenize\expandafter{\pname}};
+  }
+  % Right side ports (stacked column, top-to-bottom)
+  \iR=0
+  \foreach \pname/\pcol in {#7} {
+    \global\advance\iR by 1
+    \pgfmathsetmacro{\py}{\yT - \topH - (\the\iR - 0.5)*\rowH}%
+    \coordinate (#1-\pname) at (\xR, \py);
+    \node[pinlabel, anchor=east, text=\pcol] at (\xR - 0.12, \py) {\detokenize\expandafter{\pname}};
+  }
+  % Bottom ports
+  \foreach \pname/\pxoff/\pcol in {#8} {
+    \pgfmathsetmacro{\px}{#2 + \pxoff}%
+    \coordinate (#1-\pname) at (\px, \yB);
+    \node[pinlabel, anchor=south, text=\pcol] at (\px, \yB + 0.10) {\detokenize\expandafter{\pname}};
+  }
+}

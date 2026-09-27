@@ -46,4 +46,24 @@ The overall high-level structure is defined below:
 
 ## Zicsr extension
 
+Spec: [5.1. "Zicsr" Extension for Control and Status Register (CSR) Instructions, Version
+2.0](https://docs.riscv.org/reference/isa/v20260120/unpriv/zicsr.html)
+
+![Zicsr Architecture](diagrams/zicsr.svg)
+
+Implemented across ID and WB stages. The CSR data is read via a `csr_request` data structure that
+contains things like `address`, `bit`, etc [TODO: specify more clearly].
+
+Reads are asynchronous, i.e. the `csr_data` containing the register value among other things [TODO:
+specify more clearly] is available immediately and is clocked into ID/EX register.
+
+During WB stage, `csr_request` and `csr_data` are used to produce `cst_wb_request` which carries the
+`data` containing the new contents of the CSR denoted by `address` as well as whether the write is
+needed via `write_enable`.
+
+`csr_request` also carries `write_intent`, set by the CSR decoder, which `csr_wb` uses as
+`write_enable`. It is also tapped off the pipelined `csr_request` in EX, MEM and WB and fed to the
+hazard unit so that it can stall a CSR instruction that reads a CSR still being written by an
+earlier instruction.
+
 ## M extension

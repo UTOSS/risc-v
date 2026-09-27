@@ -66,9 +66,11 @@ syntaxrules.localparam_explicit_type = true
 syntaxrules.parameter_default_value = true
 syntaxrules.parameter_in_generate = true
 syntaxrules.parameter_in_package = true
-syntaxrules.genvar_declaration_in_loop = true
+# Quartus Standard/Lite (DE1-SoC) only has support for SystemVerilog-2005: it rejects `for (genvar i
+# ...)` and needs explicit `generate` region declarations, so these two rules are disabled for now
+syntaxrules.genvar_declaration_in_loop = false
 syntaxrules.genvar_declaration_out_loop = false
-syntaxrules.keyword_forbidden_generate = true
+syntaxrules.keyword_forbidden_generate = false
 syntaxrules.keyword_required_generate = false
 # TODO syntaxrules.explicit_case_default = true
 # TODO syntaxrules.explicit_if_else = true

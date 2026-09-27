@@ -3,6 +3,7 @@
 
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
+`include "src/ext/zicsr/types.svh"
 
 typedef struct packed {
   logic        reg_write;
@@ -15,10 +16,8 @@ typedef struct packed {
   addr_t       pc_cur;
   addr_t       pc_plus_4;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-  csr_addr_t   csr_addr;
-  logic        csr_write_enable;
-  data_t       csr_write_data;
-  data_t       csr_read_data;
+  ext__zicsr__types::csr_request_t csr_request;
+  ext__zicsr__types::csr_data_t    csr_data;
 `endif
 } ex_to_mem_t;
 

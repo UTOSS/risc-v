@@ -3,6 +3,7 @@
 
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
+`include "src/ext/zicsr/types.svh"
 
 typedef struct packed {
   alu_src_a_t   alu_src_a;
@@ -24,10 +25,8 @@ typedef struct packed {
   reg_t         rs2;
   imm_t         imm_ext;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-  csr_addr_t    csr_addr;
-  logic         csr_write_enable;
-  data_t        csr_write_data;
-  data_t        csr_read_data;
+  ext__zicsr__types::csr_request_t csr_request;
+  ext__zicsr__types::csr_data_t    csr_data;
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;
