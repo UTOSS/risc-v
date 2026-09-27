@@ -13,17 +13,23 @@ module csr_data
   , output ext__zicsr__types::csr_data_t       csr_data
   );
 
-  data_t csrs [0:`NUMBER_OF_CSRS - 1];
+  data_t csrs     [`NUMBER_OF_CSRS];
+  data_t next_csrs[`NUMBER_OF_CSRS];
 
   // asynchronous read
   assign csr_data.value = csrs[csr_request.address];
 
-  /* svlint off loop_statement_in_always_ff */
-  always_ff @(posedge clk)
-    if (reset)
-      for (int i = 0; i < `NUMBER_OF_CSRS; i++) csrs[i] <= data_t'(0);
-    else if (csr_wb_request.write_enable)
-      csrs[csr_wb_request.address] <= csr_wb_request.data;
-  /* svlint on loop_statement_in_always_ff */
+  for (genvar i = 0; i < `NUMBER_OF_CSRS; i++) begin: l_csrs
+    always_comb
+      if (reset)
+        next_csrs[i] = data_t'(0);
+      else if (csr_wb_request.write_enable && (csr_wb_request.address == i))
+        next_csrs[i] = csr_wb_request.data;
+      else
+        next_csrs[i] = csrs[i];
+
+    always_ff @(posedge clk)
+      csrs[i] <= next_csrs[i];
+  end
 
 endmodule
