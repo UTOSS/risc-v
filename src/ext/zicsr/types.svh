@@ -7,6 +7,8 @@
 package ext__zicsr__types;
 /* verilator lint_on DECLFILENAME */
 
+  import types::*;
+
   typedef enum logic [1:0]
     { CSR_OP__NONE  = 2'b00
     , CSR_OP__WRITE = 2'b01 // csrrw / csrrwi
