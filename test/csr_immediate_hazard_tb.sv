@@ -42,13 +42,13 @@ module csr_immediate_hazard_tb;
     tick();
     reset = `FALSE;
 
-    // mtvec is used here to exercise the immediate CSR forms and zero-immediate write suppression.
-    uut.u_memory.M[0] = encode_csr(12'h305, 5'd6, 3'b101, 5'd7); // csrrwi x6, mtvec, 7
-    uut.u_memory.M[1] = encode_csr(12'h305, 5'd7, 3'b110, 5'd0); // csrrsi x7, mtvec, 0
-    uut.u_memory.M[2] = encode_csr(12'h305, 5'd8, 3'b111, 5'd1); // csrrci x8, mtvec, 1
+    // mscratch is used here to exercise the immediate CSR forms and zero-immediate write suppression.
+    uut.u_memory.M[0] = encode_csr(12'h340, 5'd6, 3'b101, 5'd7); // csrrwi x6, mscratch, 7
+    uut.u_memory.M[1] = encode_csr(12'h340, 5'd7, 3'b110, 5'd0); // csrrsi x7, mscratch, 0
+    uut.u_memory.M[2] = encode_csr(12'h340, 5'd8, 3'b111, 5'd1); // csrrci x8, mscratch, 1
     uut.u_memory.M[3] = 32'h00000013; // nop
 
-    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305] = 32'h0000_0055;
+    uut.core.u_decode_stage.u_csr_unit.u_csr_data.u_mscratch.raw_value = 32'h0000_0055;
 
     repeat (20) begin
       tick();
@@ -58,7 +58,7 @@ module csr_immediate_hazard_tb;
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[6], 32'h0000_0055)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[7], 32'h0000_0007)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[8], 32'h0000_0007)
-    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305], 32'h0000_0006)
+    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.u_mscratch.raw_value, 32'h0000_0006)
     `assert_equal(saw_csr_stall, 1'b1)
 
     $finish;

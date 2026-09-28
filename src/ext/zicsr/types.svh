@@ -16,8 +16,8 @@ package ext__zicsr__types;
     , CSR_OP__CLEAR = 2'b11 // csrrc / csrrci
     } csr_op_t;
 
-  // Produced by `csr_decode` in ID; used to read the CSR in ID and carried down the pipeline so that
-  // `csr_wb` can compute the write-back in WB
+  // Produced by `csr_decode` in ID; used to read the CSR in ID and carried down the pipeline so
+  // that `csr_wb` can compute the write-back in WB
   typedef struct packed {
     logic      valid;        // instruction is a CSR instruction
     csr_op_t   op;
@@ -25,11 +25,6 @@ package ext__zicsr__types;
     data_t     operand;      // rs1 value, or zero-extended uimm for the immediate forms
     logic      write_intent; // CSR will be written in WB; also used by the hazard unit
   } csr_request_t;
-
-  // Produced by `csr_data` in ID (asynchronous read) and carried down the pipeline
-  typedef struct packed {
-    data_t value;            // contents of the CSR at `csr_request_t.address`
-  } csr_data_t;
 
   // Produced by `csr_wb` in WB and fed back into `csr_data` (not pipelined)
   typedef struct packed {

@@ -17,7 +17,7 @@ typedef struct packed {
   addr_t       pc_plus_4;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   ext__zicsr__types::csr_request_t csr_request;
-  ext__zicsr__types::csr_data_t    csr_data;
+  data_t                           csr_data;
 `endif
 } ex_to_mem_t;
 
