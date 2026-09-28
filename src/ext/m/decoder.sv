@@ -8,23 +8,23 @@ module ext__m__decoder
     ( input [2:0] funct3
     , input [6:0] funct7
     , input opcode_t opcode
-    , output logic is_mul
-    , output logic is_div
 `ifdef UTOSS_RISCV__MUL_ENABLED
+    , output logic is_mul
     , output ext__m__types::m_mul_control_t mul_control
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
+    , output logic is_div
     , output ext__m__types::m_div_control_t div_control
 `endif
     );
 
     always @(*) begin
-        is_mul = 1'b0;
-        is_div = 1'b0;
 `ifdef UTOSS_RISCV__MUL_ENABLED
+        is_mul = 1'b0;
         mul_control = ext__m__types::M_ALU_CTRL__MUL_NONE;
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
+        is_div = 1'b0;
         div_control = ext__m__types::M_ALU_CTRL__DIV_NONE;
 `endif
 
