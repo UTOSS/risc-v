@@ -34,6 +34,21 @@ module div(
     logic [31:0] divisor_q;
     logic [5:0] count;
 
+    // FSM definitions
+    localparam IDLE = 4'd0,
+                LOAD = 4'd1,
+                ITER = 4'd2,
+                CORRECT = 4'd3,
+                FINISH = 4'd4;
+
+    logic [3:0] state = IDLE;
+
+    logic [32:0] rem_sh;
+    logic [31:0] quot_sh;
+    logic [32:0] diff;
+    logic [32:0] quote;
+    logic [32:0] rem;
+
     always_comb begin
         signed_op = (op == 2'b00) | (op == 2'b10);
         dividend_neg = signed_op & dividend[31];
@@ -47,29 +62,16 @@ module div(
         ready_o = (state == FINISH);
         special = (divisor == 32'd0) | (signed_op & (dividend == 32'h8000_0000) & (divisor == 32'hFFFF_FFFF));
 
+        // shift registers
         rem_sh = {rem_q[31:0], quot_q[31]};   // top dividend bit in
         quot_sh = {quot_q[30:0], 1'b0};
         diff = rem_sh - {1'b0, divisor_q};
    
     end
 
-    // FSM definitions
-    localparam IDLE = 4'd0,
-                LOAD = 4'd1,
-                ITER = 4'd2,
-                CORRECT = 4'd3,
-                FINISH = 4'd4;
-
-    logic [3:0] state;
-
-    logic [32:0] rem_sh;
-    logic [31:0] quot_sh;
-    logic [32:0] diff;
-
     always_ff @(posedge clk) begin
 
         if (~rst_n) begin
-            busy_o <= 1'b0;
             dividend <= 32'b0;
             divisor <= 32'b0;
             op <= 2'b0;
@@ -93,22 +95,29 @@ module div(
                 count <= 31;
 
                 state <= ITER;
-                if (special) begin
-                    // todo
-                    state <= FINISH;
-                end
+                if (special) state <= FINISH;
             end
             ITER: begin
-                // todo
-                state <= CORRECT;
+                
+                rem_sh = {rem_q[31:0], quot_q[31]}; // shift the remainder & quotient
+                quot_sh = {quot_q[30:0], 1'b0};
+                diff = rem_sh - {1'b0, divisor_q}; // perform subtraction, 33 bit
+                // keep the difference or restore?
+                rem_q  <= ~diff[32] ? diff : rem_sh;
+                quot_q <= ~diff[32] ? (quot_sh | 32'd1) : quot_sh;
+
+                count <= count - 1;
+
+                if (count == 0) state <= CORRECT;
+                
             end
             CORRECT: begin
-                quot = quot_neg ? -quot_q : quot_q
-                rem = rem_neg ? -rem_q[31:0] : rem_q[31:0]
+                quot = quot_neg ? -quot_q : quot_q;
+                rem = rem_neg ? -rem_q[31:0] : rem_q[31:0];
+                result_o = op[1] ? rem : quot;
                 state <= FINISH;
             end
             FINISH: begin
-                result_o = op[1] ? rem : quot
                 state <= IDLE;
             end
 
