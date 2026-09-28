@@ -21,11 +21,11 @@ module ext__m__decoder
     always @(*) begin
 `ifdef UTOSS_RISCV__MUL_ENABLED
         is_mul = 1'b0;
-        mul_control = ext__m__types::M_ALU_CTRL__MUL_NONE;
+        mul_control = ext__m__types::M_ALU_CTRL__MUL;
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
         is_div = 1'b0;
-        div_control = ext__m__types::M_ALU_CTRL__DIV_NONE;
+        div_control = ext__m__types::M_ALU_CTRL__DIV;
 `endif
 
         if (opcode == OPCODE_OP && funct7 == 7'b0000001) begin
