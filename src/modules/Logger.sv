@@ -13,6 +13,7 @@ module Logger
 
 , input if_to_id_t  if_stage
 , input if_to_id_t  id_stage
+, input id_to_ex_t  id_stage_out
 , input id_to_ex_t  ex_stage
 , input ex_to_mem_t ex_stage_out
 , input ex_to_if_t  ex_to_if
@@ -217,7 +218,7 @@ module Logger
                             , reg_name(id_rs1)
                             , reg_name(id_rs2)
                             , reg_name(id_rd)
-                            , ex_stage.imm_ext
+                            , id_stage_out.imm_ext
                             );
 
                         $display
@@ -267,6 +268,7 @@ module Logger
 
         wire unused = &{
                 1'b0
+            , id_stage_out
             , ex_stage
             , ex_stage_out
             , ex_to_if
