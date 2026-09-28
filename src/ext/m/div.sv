@@ -13,33 +13,108 @@ module div(
     , input [1:0] op_i // operation select
     , input [31:0] rs1_i // dividend
     , input [31:0] rs2_i // divisor
-    , output logic [31:0] result_o // divided / divisor
+    , output logic [31:0] result_o // dividend / divisor
     , output logic ready_o
     , output logic busy_o
 );
 
-logic [31:0] dividend = 32'b0;
-logic [31:0] divisor = 32'b0;
+    logic [31:0] dividend;
+    logic [31:0] divisor;
 
-// pre-processing
 
-logic signed_op = (op_i == 2'b00) | (op_i == 2'b10)
-logic dividend_neg = is_signed & dividend[31];
-logic divisor_neg  = is_signed & divisor[31];
-logic dividend_abs = dividend_neg ? -dividend : dividend;
-logic divisor_abs = divisor_neg  ? -dividend divisor: 
-logic quot_neg = dividend_neg ^ divisor_neg;
-logic rem_neg = dividend_neg;  // remainder takes the dividend's sign
+    // pre-processing
 
-// special case
+    logic signed_op, dividend_neg, divisor_neg, quot_neg, rem_neg;
+    logic [31:0] dividend_abs, divisor_abs;
+    logic [1:0] op;
+    logic special;
 
-always @(posedge clk) begin
-    if (start_i & ~busy_o) begin // on start, while not busy, latch dividend and divisor
-        dividend = rs1_i;
-        divisor = rs2_i;
-        busy_o <= 1'b1;
+    logic [32:0] rem_q;
+    logic [31:0] quot_q;
+    logic [31:0] divisor_q;
+    logic [5:0] count;
+
+    always_comb begin
+        signed_op = (op == 2'b00) | (op == 2'b10);
+        dividend_neg = signed_op & dividend[31];
+        divisor_neg  = signed_op & divisor[31];
+        dividend_abs = dividend_neg ? -dividend : dividend;
+        divisor_abs = divisor_neg  ? -divisor : divisor;
+        quot_neg = dividend_neg ^ divisor_neg;
+        rem_neg = dividend_neg;  // remainder takes the dividend's sign
+
+        busy_o = (state != IDLE);
+        ready_o = (state == FINISH);
+        special = (divisor == 32'd0) | (signed_op & (dividend == 32'h8000_0000) & (divisor == 32'hFFFF_FFFF));
+
+        rem_sh = {rem_q[31:0], quot_q[31]};   // top dividend bit in
+        quot_sh = {quot_q[30:0], 1'b0};
+        diff = rem_sh - {1'b0, divisor_q};
+   
     end
-end
 
+    // FSM definitions
+    localparam IDLE = 4'd0,
+                LOAD = 4'd1,
+                ITER = 4'd2,
+                CORRECT = 4'd3,
+                FINISH = 4'd4;
+
+    logic [3:0] state;
+
+    logic [32:0] rem_sh;
+    logic [31:0] quot_sh;
+    logic [32:0] diff;
+
+    always_ff @(posedge clk) begin
+
+        if (~rst_n) begin
+            busy_o <= 1'b0;
+            dividend <= 32'b0;
+            divisor <= 32'b0;
+            op <= 2'b0;
+            state <= IDLE;
+        end
+
+        else case (state)
+
+            IDLE: begin
+                if (start_i)  begin
+                    state <= LOAD;
+                    dividend <= rs1_i;
+                    divisor <= rs2_i;
+                    op <= op_i;
+                end 
+            end
+            LOAD: begin
+                rem_q <= 0;
+                quot_q <= dividend_abs;
+                divisor_q <= divisor_abs;
+                count <= 31;
+
+                state <= ITER;
+                if (special) begin
+                    // todo
+                    state <= FINISH;
+                end
+            end
+            ITER: begin
+                // todo
+                state <= CORRECT;
+            end
+            CORRECT: begin
+                quot = quot_neg ? -quot_q : quot_q
+                rem = rem_neg ? -rem_q[31:0] : rem_q[31:0]
+                state <= FINISH;
+            end
+            FINISH: begin
+                result_o = op[1] ? rem : quot
+                state <= IDLE;
+            end
+
+            default: state <= IDLE;
+
+        endcase
+    end
 
 endmodule
