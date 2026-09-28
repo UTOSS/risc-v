@@ -16,7 +16,7 @@ module csr_unit
   , input  ext__zicsr__types::csr_wb_request_t csr_wb_request
 
   , output ext__zicsr__types::csr_request_t    csr_request
-  , output ext__zicsr__types::csr_data_t       csr_data
+  , output data_t                              csr_data
   );
 
   csr_decode u_csr_decode

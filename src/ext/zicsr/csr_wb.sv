@@ -6,7 +6,7 @@ module csr_wb
   /* verilator lint_off UNUSEDSIGNAL */
   ( input  ext__zicsr__types::csr_request_t    csr_request
   /* verilator lint_on UNUSEDSIGNAL */
-  , input  ext__zicsr__types::csr_data_t       csr_data
+  , input  data_t                              csr_data
   , output ext__zicsr__types::csr_wb_request_t csr_wb_request
   );
 
@@ -18,9 +18,9 @@ module csr_wb
   always_comb
     case (csr_request.op)
       CSR_OP__WRITE: csr_wb_request.data = csr_request.operand;
-      CSR_OP__SET:   csr_wb_request.data = csr_data.value | csr_request.operand;
-      CSR_OP__CLEAR: csr_wb_request.data = csr_data.value & ~csr_request.operand;
-      default:       csr_wb_request.data = csr_data.value;
+      CSR_OP__SET:   csr_wb_request.data = csr_data | csr_request.operand;
+      CSR_OP__CLEAR: csr_wb_request.data = csr_data & ~csr_request.operand;
+      default:       csr_wb_request.data = csr_data;
     endcase
 
 endmodule

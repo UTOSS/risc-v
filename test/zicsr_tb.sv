@@ -43,19 +43,20 @@ module zicsr_tb;
     tick();
     reset = `FALSE;
 
-    // Program: exercise register and immediate CSR forms, x0 destinations, and zero-source reads.
-    uut.u_memory.M[0]  = encode_csr(12'h300, 5'd8,  3'b001, 5'd1); // csrrw  s0, mstatus, x1
-    uut.u_memory.M[1]  = encode_csr(12'h300, 5'd9,  3'b010, 5'd2); // csrrs  s1, mstatus, x2
-    uut.u_memory.M[2]  = encode_csr(12'h300, 5'd18, 3'b011, 5'd3); // csrrc  s2, mstatus, x3
-    uut.u_memory.M[3]  = encode_csr(12'h300, 5'd0,  3'b001, 5'd7); // csrrw  x0, mstatus, x7
-    uut.u_memory.M[4]  = encode_csr(12'h300, 5'd19, 3'b010, 5'd0); // csrrs  s3, mstatus, x0
-    uut.u_memory.M[5]  = encode_csr(12'h305, 5'd20, 3'b101, 5'd7); // csrrwi s4, mtvec, 7
-    uut.u_memory.M[6]  = encode_csr(12'h305, 5'd21, 3'b110, 5'd0); // csrrsi s5, mtvec, 0
-    uut.u_memory.M[7]  = encode_csr(12'h305, 5'd22, 3'b111, 5'd1); // csrrci s6, mtvec, 1
-    uut.u_memory.M[8]  = encode_csr(12'h305, 5'd23, 3'b010, 5'd0); // csrrs  s7, mtvec, x0
-    uut.u_memory.M[9]  = encode_csr(12'h300, 5'd24, 3'b010, 5'd0); // csrrs  s8, mstatus, x0
-    uut.u_memory.M[10] = encode_csr(12'h305, 5'd25, 3'b010, 5'd0); // csrrs  s9, mtvec, x0
-    uut.u_memory.M[11] = encode_csr(12'h300, 5'd26, 3'b001, 5'd4); // csrrw  s10, mstatus, x4
+    // Program: exercise register and immediate CSR forms, x0 destinations, and zero-source reads,
+    // all on mscratch so each instruction observes the result of the previous one.
+    uut.u_memory.M[0]  = encode_csr(12'h340, 5'd8,  3'b001, 5'd1); // csrrw  s0, mscratch, x1
+    uut.u_memory.M[1]  = encode_csr(12'h340, 5'd9,  3'b010, 5'd2); // csrrs  s1, mscratch, x2
+    uut.u_memory.M[2]  = encode_csr(12'h340, 5'd18, 3'b011, 5'd3); // csrrc  s2, mscratch, x3
+    uut.u_memory.M[3]  = encode_csr(12'h340, 5'd0,  3'b001, 5'd7); // csrrw  x0, mscratch, x7
+    uut.u_memory.M[4]  = encode_csr(12'h340, 5'd19, 3'b010, 5'd0); // csrrs  s3, mscratch, x0
+    uut.u_memory.M[5]  = encode_csr(12'h340, 5'd20, 3'b101, 5'd7); // csrrwi s4, mscratch, 7
+    uut.u_memory.M[6]  = encode_csr(12'h340, 5'd21, 3'b110, 5'd0); // csrrsi s5, mscratch, 0
+    uut.u_memory.M[7]  = encode_csr(12'h340, 5'd22, 3'b111, 5'd1); // csrrci s6, mscratch, 1
+    uut.u_memory.M[8]  = encode_csr(12'h340, 5'd23, 3'b010, 5'd0); // csrrs  s7, mscratch, x0
+    uut.u_memory.M[9]  = encode_csr(12'h340, 5'd24, 3'b010, 5'd0); // csrrs  s8, mscratch, x0
+    uut.u_memory.M[10] = encode_csr(12'h340, 5'd25, 3'b010, 5'd0); // csrrs  s9, mscratch, x0
+    uut.u_memory.M[11] = encode_csr(12'h340, 5'd26, 3'b001, 5'd4); // csrrw  s10, mscratch, x4
     uut.u_memory.M[12] = 32'h00000013; // nop
 
     uut.core.u_decode_stage.RegFile.RFMem[1]  = 32'h1111_1111;
@@ -63,8 +64,7 @@ module zicsr_tb;
     uut.core.u_decode_stage.RegFile.RFMem[3]  = 32'h0000_0007;
     uut.core.u_decode_stage.RegFile.RFMem[4]  = 32'h6767_6767;
     uut.core.u_decode_stage.RegFile.RFMem[7]  = 32'h0000_000f;
-    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300] = 32'h1234_5678;
-    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305] = 32'h0000_0055;
+    uut.core.u_decode_stage.u_csr_unit.u_csr_data.u_mscratch.raw_value = 32'h1234_5678;
 
     repeat (80) begin
       tick();
@@ -76,15 +76,14 @@ module zicsr_tb;
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[9],  32'h1111_1111)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[18], 32'h3333_3333)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[19], 32'h0000_000f)
-    `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[20], 32'h0000_0055)
+    `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[20], 32'h0000_000f)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[21], 32'h0000_0007)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[22], 32'h0000_0007)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[23], 32'h0000_0006)
-    `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[24], 32'h0000_000f)
+    `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[24], 32'h0000_0006)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[25], 32'h0000_0006)
-    `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[26], 32'h0000_000f)
-    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300], 32'h6767_6767)
-    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h305], 32'h0000_0006)
+    `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[26], 32'h0000_0006)
+    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.u_mscratch.raw_value, 32'h6767_6767)
     `assert_equal(saw_csr_stall,   1'b1)
     `assert_equal(saw_csr_flush_e, 1'b1)
 

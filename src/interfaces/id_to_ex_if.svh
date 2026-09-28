@@ -26,7 +26,7 @@ typedef struct packed {
   imm_t         imm_ext;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   ext__zicsr__types::csr_request_t csr_request;
-  ext__zicsr__types::csr_data_t    csr_data;
+  data_t                           csr_data;
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;

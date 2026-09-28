@@ -42,15 +42,15 @@ module csr_basic_tb;
     tick();
     reset = `FALSE;
 
-    // mstatus is a convenient architectural CSR for basic read/write tests.
-    uut.u_memory.M[0] = encode_csr(12'h300, 5'd3, 3'b001, 5'd1); // csrrw x3, mstatus, x1
-    uut.u_memory.M[1] = encode_csr(12'h300, 5'd4, 3'b010, 5'd2); // csrrs x4, mstatus, x2
-    uut.u_memory.M[2] = encode_csr(12'h300, 5'd5, 3'b011, 5'd2); // csrrc x5, mstatus, x2
+    // mscratch is a fully read/write CSR, convenient for basic read/write tests.
+    uut.u_memory.M[0] = encode_csr(12'h340, 5'd3, 3'b001, 5'd1); // csrrw x3, mscratch, x1
+    uut.u_memory.M[1] = encode_csr(12'h340, 5'd4, 3'b010, 5'd2); // csrrs x4, mscratch, x2
+    uut.u_memory.M[2] = encode_csr(12'h340, 5'd5, 3'b011, 5'd2); // csrrc x5, mscratch, x2
     uut.u_memory.M[3] = 32'h00000013; // nop
 
     uut.core.u_decode_stage.RegFile.RFMem[1] = 32'h1111_1111;
     uut.core.u_decode_stage.RegFile.RFMem[2] = 32'h2222_2222;
-    uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300] = 32'h1234_5678;
+    uut.core.u_decode_stage.u_csr_unit.u_csr_data.u_mscratch.raw_value = 32'h1234_5678;
 
     repeat (20) begin
       tick();
@@ -60,7 +60,7 @@ module csr_basic_tb;
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[3], 32'h1234_5678)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[4], 32'h1111_1111)
     `assert_equal(uut.core.u_decode_stage.RegFile.RFMem[5], 32'h3333_3333)
-    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.csrs[12'h300], 32'h1111_1111)
+    `assert_equal(uut.core.u_decode_stage.u_csr_unit.u_csr_data.u_mscratch.raw_value, 32'h1111_1111)
     `assert_equal(saw_csr_stall, 1'b1)
 
     $finish;

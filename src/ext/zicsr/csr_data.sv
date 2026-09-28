@@ -6,33 +6,45 @@ module csr_data
   ( input logic clk
   , input logic reset
 
-  /* verilator lint_off UNUSEDSIGNAL */
+  /* verilator lint_off UNUSEDSIGNAL */ // only `address` is needed for the read
   , input  ext__zicsr__types::csr_request_t    csr_request
   /* verilator lint_on UNUSEDSIGNAL */
   , input  ext__zicsr__types::csr_wb_request_t csr_wb_request
-  , output ext__zicsr__types::csr_data_t       csr_data
+  , output data_t                              csr_data
   );
 
-  data_t csrs     [`NUMBER_OF_CSRS];
-  data_t next_csrs[`NUMBER_OF_CSRS];
+  data_t mscratch_read_value;
+  data_t mhartid_read_value;
 
-  // asynchronous read
-  assign csr_data.value = csrs[csr_request.address];
+  csr_plugin
+    #( .NAME        ( "mscratch"         )
+    , .ADDRESS      ( 12'h340            )
+    , .RESET_VALUE  ( 32'h0000_0000      )
+    , .WRITE_MASK   ( 32'hffff_ffff      )
+    )
+    u_mscratch
+    ( .clk            ( clk                 )
+    , .reset          ( reset               )
+    , .read_address   ( csr_request.address )
+    , .read_value     ( mscratch_read_value )
+    , .csr_wb_request ( csr_wb_request      )
+    );
 
-  genvar i;
-  generate
-    for (i = 0; i < `NUMBER_OF_CSRS; i++) begin: l_csrs
-      always_comb
-        if (reset)
-          next_csrs[i] = data_t'(0);
-        else if (csr_wb_request.write_enable && (csr_wb_request.address == i))
-          next_csrs[i] = csr_wb_request.data;
-        else
-          next_csrs[i] = csrs[i];
+  csr_plugin
+    #( .NAME        ( "mhartid"         )
+    , .ADDRESS      ( 12'hf14           )
+    , .RESET_VALUE  ( 32'h0000_0000     )
+    , .WRITE_MASK   ( 32'h0000_0000     )
+    )
+    u_mhartid
+    ( .clk            ( clk                 )
+    , .reset          ( reset               )
+    , .read_address   ( csr_request.address )
+    , .read_value     ( mhartid_read_value  )
+    , .csr_wb_request ( csr_wb_request      )
+    );
 
-      always_ff @(posedge clk)
-        csrs[i] <= next_csrs[i];
-    end
-  endgenerate
+  // async read
+  assign csr_data = mscratch_read_value | mhartid_read_value;
 
 endmodule

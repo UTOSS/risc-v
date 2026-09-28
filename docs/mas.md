@@ -54,10 +54,10 @@ Spec: [5.1. "Zicsr" Extension for Control and Status Register (CSR) Instructions
 Implemented across ID and WB stages. The CSR data is read via a `csr_request` data structure that
 contains things like `address`, `bit`, etc [TODO: specify more clearly].
 
-Reads are asynchronous, i.e. the `csr_data` containing the register value among other things [TODO:
-specify more clearly] is available immediately and is clocked into ID/EX register.
+Reads are asynchronous, i.e. `csr_data`, the value of the CSR denoted by `address`, is available
+immediately and is clocked into ID/EX register.
 
-During WB stage, `csr_request` and `csr_data` are used to produce `cst_wb_request` which carries the
+During WB stage, `csr_request` and `csr_data` are used to produce `csr_wb_request` which carries the
 `data` containing the new contents of the CSR denoted by `address` as well as whether the write is
 needed via `write_enable`.
 
@@ -65,5 +65,26 @@ needed via `write_enable`.
 `write_enable`. It is also tapped off the pipelined `csr_request` in EX, MEM and WB and fed to the
 hazard unit so that it can stall a CSR instruction that reads a CSR still being written by an
 earlier instruction.
+
+### CSR plugins
+
+`csr_data` houses all the CSRs via the generic `csr_plugin` module.
+
+`csr_data`'s output is simply the OR of all the plugins' `read_value`s since the readout will only
+ever produce one real value, and all the other ones will be zeros. To add a CSR, instantiate a
+`csr_plugin` for it in `csr_data` and OR in its `read_value`.
+
+### Implemented CSRs
+
+| CSR                         | Address | Access     | Reset value |
+|-----------------------------|---------|------------|-------------|
+| [`mscratch`][spec-mscratch] | `0x340` | read/write | `0`         |
+| [`mhartid`][spec-mhartid]   | `0xF14` | read-only  | `0`         |
+
+[spec-mscratch]: https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-13-machine-scratch-mscratch-register
+[spec-mhartid]: https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-5-hart-id-mhartid-register
+
+Accessing an unimplemented CSR reads a zero and writes to it are ignored, and so are writes to
+read-only bits.
 
 ## M extension
