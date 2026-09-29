@@ -109,7 +109,7 @@ module hazard_unit
 
   assign flush_f = control_hazard;
   assign flush_d = control_hazard;
-  assign flush_e = lw_stall || csr_stall || control_hazard;
+  assign flush_e = control_hazard || (!stall_e && (lw_stall || csr_stall));
 
 `ifdef UTOSS_RISCV__DIV_ENABLED
   assign div_start_e = div_e && !div_busy_e && !div_done_e;
