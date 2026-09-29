@@ -26,10 +26,18 @@ module hazard_unit
   , input  csr_addr_t csr_addr_m
   , input  csr_addr_t csr_addr_w
 `endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  , input  logic div_e
+  , input  logic div_busy_e
+  , input  logic div_done_e
+  , output logic div_start_e
+  , output logic div_cancel_e
+`endif
   , output hazard_forward_a_t forward_a_e
   , output hazard_forward_b_t forward_b_e
   , output logic stall_f
   , output logic stall_d
+  , output logic stall_e
   , output logic flush_f
   , output logic flush_d
   , output logic flush_e
@@ -77,9 +85,18 @@ module hazard_unit
   assign csr_stall = 1'b0;
 `endif
 
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  wire div_stall;
+  assign div_stall = div_e && !div_done_e;
+
+  assign stall_f = lw_stall || csr_stall || div_stall;
+  assign stall_d = lw_stall || csr_stall || div_stall;
+  assign stall_e = div_stall;
+`else
   assign stall_f = lw_stall || csr_stall;
   assign stall_d = lw_stall || csr_stall;
-
+  assign stall_e = 1'b0;
+`endif
 
   //Flush when a control hazard occurs; we need to flush one cycle later than we discover the
   // control hazard; this is due to synchronous memory making the instruction available one cycle
@@ -92,6 +109,11 @@ module hazard_unit
 
   assign flush_f = control_hazard;
   assign flush_d = control_hazard;
-  assign flush_e = lw_stall || csr_stall || control_hazard;
+  assign flush_e = control_hazard || (!stall_e && (lw_stall || csr_stall));
+
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  assign div_start_e = div_e && !div_busy_e && !div_done_e;
+  assign div_cancel_e = control_hazard;
+`endif
 
 endmodule
