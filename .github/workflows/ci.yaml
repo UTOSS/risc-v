@@ -171,6 +171,36 @@ jobs:
           path: out/*.vvp
           retention-days: 7
 
+  pyuvm:
+    timeout-minutes: 30
+    needs: select_ci_image
+    # dont skip if build_ci_image is skipped
+    if: always()
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # randomized; the seed of the run is logged, and `make -C pyuvm RANDOM_SEED=<seed>` reproduces it
+      - name: Run pyuvm testbench
+        run: make -C pyuvm UTOSS_RISCV_CONFIG=${{ matrix.config }} NUM_ITEMS=100 WAVES=1
+
+      - name: Upload pyuvm results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyuvm-results-${{ matrix.config }}
+          path: |
+            pyuvm/results.xml
+            pyuvm/dump.vcd
+          retention-days: 7
+
   riscof:
     timeout-minutes: 30
     needs: select_ci_image
