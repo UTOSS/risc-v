@@ -77,7 +77,7 @@ def main():
     test = args.test
     riscv_dv_test = f"{test}_0"
     asm = out / "asm_test" / f"{riscv_dv_test}.S"
-    elf = out / "asm_test" / f"{test}.dut.elf"
+    elf = out / "asm_test" / f"{riscv_dv_test}.o"
     mem = out / "asm_test" / f"{test}.mem"
     sail_log = out / f"{args.iss}_sim" / f"{riscv_dv_test}.log"
     utoss_log = out / "dut.log"
@@ -107,7 +107,7 @@ def main():
         "--target", target,
         "--simulator", args.simulator,
         "--iss", args.iss,
-        "--steps", "gen,gcc_compile,iss_sim",
+        "--steps", "gen",
         "--isa", args.isa,
         "--mabi", args.mabi,
         "-o", str(out),
@@ -119,7 +119,7 @@ def main():
     if args.iss == "sail":
         run_py += ["--iss_yaml", str(script_dir / "sail_iss.yaml")]
     out.mkdir(parents=True, exist_ok=True)
-    # Let riscv-dv do the generation, GCC compile, and Sail reference run.
+    # riscv-dv generates the assembly test
     with riscv_dv_log.open("w") as log:
         command = run_py + extra_riscv_dv_args
         print("+ " + " ".join(str(arg) for arg in command))
@@ -129,8 +129,7 @@ def main():
         print(f"Log: {riscv_dv_log}")
         return result.returncode
 
-    # Recompile the same assembly with the UTOSS/RISCOF linker script and turn it
-    # into the Verilog memory image consumed by the processor simulator.
+    # Compile the assembly with our linker script; both our DUT and Sail use this compiled program.
     command = [
         gcc,
         f"-march={args.isa}",
@@ -141,6 +140,7 @@ def main():
         "-fvisibility=hidden",
         "-nostdlib",
         "-nostartfiles",
+        "-I", str(script_dir / "env"), # Add env to compiler's search list so our user_init.s is used
         "-I", str(riscv_dv / "user_extension"),
         "-T", "utoss_riscv_dv/env/link.ld",
         "-Wl,-e,_start",
@@ -149,6 +149,17 @@ def main():
     ]
     print("+ " + " ".join(str(arg) for arg in command))
     subprocess.run(command, cwd=root, check=True, env=env)
+
+    # Run the reference model on the compiled program
+    command = run_py + extra_riscv_dv_args
+    command[command.index("--steps") + 1] = "iss_sim" # Replace "gen" with "iss_sim"
+    with riscv_dv_log.open("a") as log:
+        print("+ " + " ".join(str(arg) for arg in command))
+        result = subprocess.run(command, cwd=riscv_dv, stdout=log, stderr=subprocess.STDOUT, env=env)
+    if result.returncode:
+        print(f"\nCommand failed with exit code {result.returncode}.")
+        print(f"Log: {riscv_dv_log}")
+        return result.returncode
 
     command = [objcopy, "-O", "verilog", "--verilog-data-width=4", "--change-addresses=-0x80000000", str(elf), str(mem)]
     print("+ " + " ".join(str(arg) for arg in command))
