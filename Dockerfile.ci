@@ -85,6 +85,10 @@ USER root
 RUN apt update && apt install -y python3 python3-pip && \
     pip3 install riscof
 
+# install cocotb and pyuvm (for the pyuvm testbench)
+RUN apt update && apt install -y libpython3-dev && \
+    pip3 install cocotb~=1.9 pyuvm~=5.0
+
 # install riscv-dv
 RUN pip3 install PyYAML bitstring Sphinx Pallets-Sphinx-Themes sphinxcontrib-log-cabinet \
     sphinx-issues sphinx_rtd_theme rst2pdf flake8 pyvsc tabulate pandas

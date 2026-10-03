@@ -96,6 +96,9 @@ print_srcs:
 print_tb_srcs:
 	@echo $(TB_SRCS)
 
+print_verilator_defines:
+	@echo $(UTOSS_RISCV_VERILATOR_DEFINES)
+
 # ===========================
 # Top module
 # ===========================
