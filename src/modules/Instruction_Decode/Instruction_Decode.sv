@@ -207,8 +207,12 @@ module Instruction_Decode
 `endif
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-  // TODO: might not be the best way to tell we are in ecall, but good enough for a first pass
-  assign is_ecall = opcode == OPCODE_SYSTEM && imm_ext == '0;
+  // Match the complete encoding; CSR instructions with address zero are not ECALL.
+  assign is_ecall = (opcode == OPCODE_SYSTEM)
+                 && (imm_ext == '0)
+                 && (funct3 == 3'b000)
+                 && (rd == 5'd0)
+                 && (rs1 == 5'd0);
 `endif
 
 

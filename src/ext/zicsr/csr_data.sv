@@ -13,6 +13,7 @@ module csr_data
   , output data_t                              csr_data
 
   , csr_hw_request_if.plugin mcause_hw_request
+  , csr_hw_request_if.plugin mtvec_hw_request
   , csr_hw_request_if.plugin mepc_hw_request
   );
 
@@ -53,7 +54,7 @@ module csr_data
   // see https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#mtvec
   // only Direct mode is supported: MODE (bits 1:0) is WARL and hardwired to 0, so BASE is the whole
   // trap vector address (always 4-byte aligned)
-  csr_plugin_basic
+  csr_plugin
     #( .NAME        ( "mtvec"           )
     , .ADDRESS      ( 12'h305           )
     , .RESET_VALUE  ( 32'h0000_0000     )
@@ -64,6 +65,7 @@ module csr_data
     , .reset          ( reset               )
     , .read_address   ( csr_request.address )
     , .read_value     ( mtvec_read_value    )
+    , .csr_hw_request ( mtvec_hw_request    )
     , .csr_wb_request ( csr_wb_request      )
     );
 

@@ -191,13 +191,17 @@ jobs:
       - name: Run pyuvm testbench
         run: make -C pyuvm UTOSS_RISCV_CONFIG=${{ matrix.config }} NUM_ITEMS=100 WAVES=1
 
+      - name: Run ECALL pyuvm tests
+        if: contains(matrix.config, 'Zicsr')
+        run: make -C pyuvm MODULE=test_ecall UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
       - name: Upload pyuvm results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pyuvm-results-${{ matrix.config }}
           path: |
-            pyuvm/results.xml
+            pyuvm/results-*.xml
             pyuvm/dump.vcd
           retention-days: 7
 

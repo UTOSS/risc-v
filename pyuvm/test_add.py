@@ -11,8 +11,7 @@ import os
 import random
 
 import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, FallingEdge
+from cocotb.triggers import ClockCycles
 from pyuvm import (
     ConfigDB,
     uvm_analysis_port,
@@ -27,8 +26,8 @@ from pyuvm import (
 )
 import pyuvm
 
-XLEN_MASK = 0xFFFF_FFFF
-NOP = 0x0000_0013  # addi x0, x0, 0
+from core_tb import CoreAccess, RegisterWriteMonitor
+from instructions import XLEN_MASK, encode_add, encode_addi
 
 # memory word the instruction under test is placed at; the preceding nops leave time for the backdoor
 # register file writes after reset is released, before the instruction reaches decode
@@ -39,14 +38,6 @@ CYCLES_PER_ITEM = 20
 # values that tend to expose adder bugs (carries across the whole word, overflow, sign)
 CORNER_VALUES = [0x0000_0000, 0x0000_0001, 0x7FFF_FFFF, 0x8000_0000, 0xFFFF_FFFF]
 CORNER_IMMEDIATES = [0, 1, -1, 2047, -2048]
-
-
-def encode_add(rd, rs1, rs2):
-    return (0b0000000 << 25) | (rs2 << 20) | (rs1 << 15) | (0b000 << 12) | (rd << 7) | 0b0110011
-
-
-def encode_addi(rd, rs1, imm):
-    return ((imm & 0xFFF) << 20) | (rs1 << 15) | (0b000 << 12) | (rd << 7) | 0b0010011
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -127,50 +118,20 @@ class CoreDriver(uvm_driver):
         self.dut = cocotb.top
 
     async def run_phase(self):
-        register_file = self.dut.core.u_decode_stage.RegFile.RFMem
-        memory = self.dut.u_memory.M
-
+        access = CoreAccess()
         while True:
             item = await self.seq_item_port.get_next_item()
             self.logger.info(f"driving {item}")
-
-            # the register file is cleared while reset is asserted
-            self.dut.reset.value = 1
-            for word in range(PROGRAM_WORDS):
-                memory[word].value = NOP
-            memory[INSTRUCTION_WORD].value = item.encode()
-            await ClockCycles(self.dut.clk, 2)
-
-            await FallingEdge(self.dut.clk)
-            self.dut.reset.value = 0
-            register_file[item.rs1].value = item.rs1_value
-            register_file[item.rs2].value = item.rs2_value
+            await access.load(
+                {INSTRUCTION_WORD: item.encode()},
+                {item.rs1: item.rs1_value, item.rs2: item.rs2_value},
+                fill_words=PROGRAM_WORDS,
+            )
 
             self.ap.write(item)
             await ClockCycles(self.dut.clk, CYCLES_PER_ITEM)
 
             self.seq_item_port.item_done()
-
-
-class RegisterWriteMonitor(uvm_component):
-    """Publishes every write to a non-zero register as (register, value), independently of the driver"""
-
-    def build_phase(self):
-        self.ap = uvm_analysis_port("ap", self)
-
-    def start_of_simulation_phase(self):
-        self.dut = cocotb.top
-
-    async def run_phase(self):
-        register_file = self.dut.core.u_decode_stage.RegFile
-
-        while True:
-            # sample mid-cycle, where the write port is stable for the upcoming rising edge
-            await FallingEdge(self.dut.clk)
-            if self.dut.reset.value == 0 and register_file.regWrite.value == 1:
-                rd = int(register_file.Addr3.value)
-                if rd != 0:
-                    self.ap.write((rd, int(register_file.dataIn.value)))
 
 
 class Scoreboard(uvm_component):
@@ -251,10 +212,7 @@ class RandomAddTest(uvm_test):
         self.raise_objection()
         self.logger.info(f"random seed {cocotb.RANDOM_SEED} (rerun with RANDOM_SEED={cocotb.RANDOM_SEED})")
 
-        dut = cocotb.top
-        cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
-        dut.reset.value = 1
-        await ClockCycles(dut.clk, 2)
+        await CoreAccess.start_clock()
 
         await RandomAddSequence("seq").start(self.env.sequencer)
         self.drop_objection()

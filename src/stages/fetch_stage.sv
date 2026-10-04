@@ -44,6 +44,11 @@ module fetch_stage
   // if->id.instr  :                   | < prev instr > | < cur instr > | < next instr >
   //                                   +----------------+
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign mtvec_hw_request.write_enable = 1'b0;
+  assign mtvec_hw_request.write_data = '0;
+`endif
+
   addr_t pc_prev;
   addr_t pc_cur;
   addr_t pc_next;

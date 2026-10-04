@@ -217,6 +217,7 @@ module utoss_riscv
 
     , .mcause_hw_request ( mcause_hw_request )
     , .mepc_hw_request   ( mepc_hw_request   )
+    , .mtvec_hw_request  ( mtvec_hw_request  )
     );
 `endif
 
