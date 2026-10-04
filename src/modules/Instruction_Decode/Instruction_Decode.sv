@@ -27,6 +27,10 @@ module Instruction_Decode
   , output ext__m__types::m_div_control_t div_control
 `endif
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , output logic is_ecall
+`endif
+
   );
 
   alu_op_t alu_op;
@@ -200,6 +204,11 @@ module Instruction_Decode
     , .div_control ( div_control )
 `endif
     );
+`endif
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  // TODO: might not be the best way to tell we are in ecall, but good enough for a first pass
+  assign is_ecall = opcode == OPCODE_SYSTEM && imm_ext == '0;
 `endif
 
 

@@ -33,6 +33,10 @@ package ext__zicsr__types;
     logic      write_enable;
   } csr_wb_request_t;
 
+  typedef enum logic [`PROCESSOR_BITNESS -2:0]
+    { CSR_MCAUSE__EXCEPTION_CODE__ECALL = (`PROCESSOR_BITNESS -1)'(11)
+    } csr_mcause__exception_code;
+
 endpackage
 
 `endif

@@ -21,9 +21,9 @@
 \begin{tikzpicture}[
     >=Latex,
     font=\small,
-    csrunitbox/.style={
-        draw=stagecolor, line width=1.5pt,
-        fill=stagecolor, fill opacity=0.15, text opacity=1.0,
+    csrdatabox/.style={
+        draw=hazardcolor, line width=1.5pt,
+        fill=hazardcolor, fill opacity=0.15, text opacity=1.0,
         inner sep=0pt
     },
     stagetitle/.style={
@@ -35,192 +35,99 @@
     wirelabel/.style={font=\footnotesize\bfseries\ttfamily, text=arrowgreen}
 ]
 
-% ========================================================
-% LAYOUT NOTES
-%   y =  2.05 : csr_request bus to WB (over csr_data, jogs into csr_wb row 1)
-%   y =  0.60 : csr_decode row 1 (csr_request out)
-%   y = -0.20 : csr_data out (OR of the plugins' read_value) -> csr_wb row 2
-%   y = -9.50 : csr_wb_request write-back bus (passes below the pipeline
-%               registers since it is not pipelined; hops over write_intent)
-%   write_intent_{e,m,w} are tapped off the csr_request bus after each
-%   pipeline register and dropped into the hazard unit
-%
-%   csr_data: x in [6.10, 18.00], y in [1.75, -6.30]
-%     x = 7.45 : read address bus (csr_request.address), fans out to row 1 of
-%                each plugin
-%     x = 7.90 : csr_wb_request bus, rises from the bottom and fans out to row 2
-%                of each plugin
-%     plugins at x in [8.35, 13.15]; first plugin rows at y = -0.20 / -1.00,
-%     second plugin rows at y = -3.60 / -4.40; the ellipsis stands for any
-%     further plugins
-%     x = 16.10 : OR of the plugins' read_value
-% ========================================================
 
-% ========================================================
-% STAGE TITLES & BOUNDARY DASHED LINES
-% ========================================================
+% Pipeline above; top-level CSR storage and hazard control below.
 \node[stagetitle] at (8.90, 4.6) {Instruction Decode (ID)};
 \node[stagetitle] at (21.43, 4.6) {Execute (EX)};
 \node[stagetitle] at (25.25, 4.6) {Memory (MEM)};
-\node[stagetitle] at (31.50, 4.6) {Write-Back (WB)};
+\node[stagetitle] at (32.00, 4.6) {Write-Back (WB)};
+\foreach \x in {19.55,23.30,27.20}
+  \draw[stageline] (\x,5.1) -- (\x,3.9);
 
-\draw[stageline] (19.55, 5.1) -- (19.55, 3.9);
-\draw[stageline] (23.30, 5.1) -- (23.30, 3.9);
-\draw[stageline] (27.20, 5.1) -- (27.20, 3.9);
-
-% ========================================================
-% STAGES & PIPELINE REGISTERS
-% ========================================================
-
-% Decode Stage outline (cut off at bottom)
-\draw[draw=stagecolor, line width=1.8pt, fill=none]
-  (-1.0, 3.9) -- (18.80, 3.9) -- (18.80, -7.40)
-  decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (-1.0, -7.40) }
-  -- cycle;
-\node[anchor=north west, font=\bfseries\normalsize, text=stagecolor] at (-0.7, 3.75) {\texttt{decode\_stage}};
-
-% Pipeline registers (ID/EX, EX/MEM, MEM/WB)
-\foreach \xl in {19.20, 22.95, 26.85} {
-  \pgfmathsetmacro{\xr}{\xl + 0.70}
-  \path[fill=regcolor, fill opacity=0.15]
-    (\xl, 3.9) -- (\xr, 3.9) -- (\xr, -7.40)
-    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl, -7.40) }
-    -- cycle;
-  \draw[draw=regcolor, line width=1.3pt]
-    (\xl, 3.9) -- (\xr, 3.9) -- (\xr, -7.40)
-    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl, -7.40) }
-    -- cycle;
+\foreach \xl/\xr/\title in {-1/18.8/decode\_stage,28.9/35.5/write\_back\_stage} {
+  \draw[draw=stagecolor, line width=1.8pt]
+    (\xl,3.9) -- (\xr,3.9) -- (\xr,-3.2)
+    decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (\xl,-3.2) } -- cycle;
+  \node[anchor=north west, font=\bfseries\normalsize, text=stagecolor]
+    at (\xl+0.3,3.75) {\texttt{\title}};
+}
+\foreach \xl in {19.20,22.95,26.85} {
+  \draw[draw=regcolor, line width=1.3pt, fill=regcolor, fill opacity=0.15]
+    (\xl,3.9) -- (\xl+0.7,3.9) -- (\xl+0.7,-3.2)
+    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl,-3.2) } -- cycle;
 }
 
-% Write-Back Stage outline (cut off at bottom)
-\draw[draw=stagecolor, line width=1.8pt, fill=none]
-  (28.90, 3.9) -- (35.50, 3.9) -- (35.50, -7.40)
-  decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (28.90, -7.40) }
-  -- cycle;
-\node[anchor=north west, font=\bfseries\normalsize, text=stagecolor] at (29.20, 3.75) {\texttt{write\_back\_stage}};
-
-% CONTAINER LAYER: csr_unit box
-% 0.4 padding: decode_stage -> csr_unit -> csr_decode / csr_data
-\draw[csrunitbox] (0.40, 3.05) rectangle (18.40, -6.70);
-\node[anchor=north, font=\bfseries\normalsize, text=stagecolor] at (9.40, 2.90) {\texttt{csr\_unit}};
-
-% CONTAINER LAYER: csr_data box, holding the CSR plugins
-\draw[csrunitbox] (6.10, 1.75) rectangle (18.00, -6.30);
-\node[anchor=north, font=\bfseries\normalsize, text=stagecolor] at (12.05, 1.60) {\texttt{csr\_data}};
-
-% ========================================================
-% MODULE BLOCKS WITH STACKED IO PORTS (via util.tex)
-% ========================================================
-
-% csr_decode: x in [0.80, 5.20], y in [1.80, -2.40], row 1 at y = 0.60
-\drawblock{csr_decode}{3.00}{-0.30}{4.4}{csr\_decode}%
-  {instruction/arrowgreen}%
-  {csr_request/arrowgreen}%
-  {}%
-  {4.20}
-
-% CSR plugins: one generic csr_plugin instance per implemented CSR
-\drawblock{pluginA}{10.75}{-0.45}{4.8}{csr\_plugin}%
-  {read_address/arrowgreen, csr_wb_request/arrowgreen}%
-  {read_value/arrowgreen}%
-  {}%
-  {}
-
-\drawblock{pluginB}{10.75}{-3.85}{4.8}{csr\_plugin}%
-  {read_address/arrowgreen, csr_wb_request/arrowgreen}%
-  {read_value/arrowgreen}%
-  {}%
-  {}
-
-% further plugins
-\node[font=\LARGE\bfseries, text=stagecolor] at (10.75, -5.75) {$\vdots$};
-
-% OR of all the plugins' read_value
-\node[or gate US, draw=regcolor, line width=1.3pt, fill=regcolor, fill opacity=0.15,
-      logic gate inputs=nnn, minimum height=1.7cm, minimum width=1.2cm, anchor=center]
-  (readvalueor) at (16.10, -2.00) {};
-
-% csr_wb: x in [29.40, 34.60], top at y = 1.80, rows at y = 0.60 and y = -0.20
-\drawblock{csr_wb}{32.00}{0.35}{5.2}{csr\_wb}%
+\drawblock{decode}{9}{0.35}{7.6}{csr\_decode}%
+  {instruction_fields/arrowgreen, rs1_data/arrowgreen}%
+  {csr_request/arrowgreen}{}{}
+\drawblock{wb}{32}{0.35}{5.2}{csr\_wb}%
   {csr_request/arrowgreen, csr_data/arrowgreen}%
-  {csr_wb_request/arrowgreen}%
-  {}%
-  {}
+  {csr_wb_request/arrowgreen}{}{}
 
-% ========================================================
-% INTERCONNECT WIRING
-% ========================================================
+% Exactly two representative plugins; hardware users belong in the ECALL diagram.
+\draw[csrdatabox] (6.1,-5.1) rectangle (18,-13.6);
+\node[anchor=north, font=\bfseries\normalsize, text=hazardcolor]
+  at (12.05,-5.25) {\texttt{csr\_data}};
+\begin{scope}
+\colorlet{stagecolor}{hazardcolor}
+\drawblock{basic}{10.9}{-7.85}{5.6}{csr\_plugin\_basic}%
+  {read_address/arrowgreen, csr_wb_request/arrowgreen}%
+  {read_value/arrowgreen}{}{}
+\drawblock{hw}{10.9}{-11.55}{5.6}{csr\_plugin}%
+  {read_address/arrowgreen, csr_wb_request/arrowgreen}%
+  {read_value/arrowgreen}{csr_hw_request/0/arrowpurple}{3.3}
+\end{scope}
+\node[or gate US, draw=regcolor, line width=1.3pt, fill=regcolor, fill opacity=0.15,
+      logic gate inputs=nn, minimum height=1.7cm, minimum width=1.2cm]
+  (reador) at (16.1,-9.3) {};
 
 \def\hop{0.22}
+\draw[thickline] (3.7,0.6) -- (decode-instruction_fields);
+\draw[thickline] (3.7,-0.2) -- (decode-rs1_data);
+\draw[thickline] (decode-csr_request) -- (14,0.6) |- (28.25,2.05) |- (wb-csr_request);
+\fill[arrowgreen] (14,0.6) circle (3.2pt);
+% Decode's read address goes to top-level storage, outside the pipeline.
+\draw[thinline] (14,0.6) -- (14,-1.6) -- (4.5,-1.6) -- (4.5,-7.6)
+  -- (7.5-\hop,-7.6) arc[start angle=180,end angle=0,radius=\hop]
+  -- (basic-read_address);
+\node[wirelabel, anchor=south west] at (4.6,-7.6) {address};
+\draw[thinline] (7,-7.6) -- (7,-11.1)
+  -- (7.5-\hop,-11.1) arc[start angle=180,end angle=0,radius=\hop]
+  -- (hw-read_address);
+\fill[arrowgreen] (7,-7.6) circle (2.4pt);
 
-% 1. "instruction" input to csr_decode
-% (driven from decode_stage internals, so the wire starts inside the stage)
-\draw[thickline] (-0.60, 0.60) -- (csr_decode-instruction);
+% Async read result returns to ID before traversing all three registers.
+\draw[thickline] (basic-read_value) -| ($(reador.input 1)+(-0.8,0)$) -- (reador.input 1);
+\draw[thickline] (hw-read_value) -| ($(reador.input 2)+(-0.8,0)$) -- (reador.input 2);
+\draw[thickline] (reador.output) -- (17.5,-9.3) |- (wb-csr_data);
+\node[wirelabel, anchor=south west] at (17.6,-0.2) {csr\_data};
 
-% 2. "csr_request": out of csr_decode to a split point; one arm drops into
-%    csr_data, the other rises over csr_data and runs through the pipeline,
-%    jogging down into csr_wb row 1
-\draw[thickline] (csr_decode-csr_request) -- (5.70, 0.60) |- (6.10, -0.20);
-\draw[thickline] (5.70, 0.60) -- (5.70, 2.05) -- (28.25, 2.05) |- (csr_wb-csr_request);
-\fill[arrowgreen] (5.70, 0.60) circle (3.2pt);
-
-% 3. read address: only `address` of csr_request is used within csr_data; it
-%    fans out to every plugin's read_address, hopping over the csr_wb_request
-%    bus, and continues (dashed) to any further plugins
-\draw[thinline] (6.10, -0.20) -- (pluginA-read_address);
-\draw[thinline]
-  (7.45, -0.20) -- (7.45, -3.60)
-  -- (7.90 - \hop, -3.60) arc[start angle=180, end angle=0, radius=\hop]
-  -- (pluginB-read_address);
-\draw[thinline, dashed] (7.45, -3.60) -- (7.45, -5.75);
-\fill[arrowgreen] (7.45, -0.20) circle (2.4pt);
-\fill[arrowgreen] (7.45, -3.60) circle (2.4pt);
-\node[wirelabel, anchor=south west] at (6.16, -0.14) {address};
-
-% 4. read_value of every plugin OR-ed into "csr_data", which runs straight
-%    through the pipeline into csr_wb row 2; further plugins join in dashed
-\draw[thickline] (pluginA-read_value) -| ($(readvalueor.input 1) + (-0.80, 0)$) -- (readvalueor.input 1);
-\draw[thickline] (pluginB-read_value)  -| ($(readvalueor.input 2) + (-0.80, 0)$) -- (readvalueor.input 2);
-\draw[thickline, dashed] (11.25, -5.75) -| ($(readvalueor.input 3) + (-0.40, 0)$) -- (readvalueor.input 3);
-\draw[thickline] (readvalueor.output) -- ++(0.60, 0) |- (csr_wb-csr_data);
-
-% 5. "write_intent": thin taps pulled out of the csr_request bus after each
-%    pipeline register (_e, _m, _w) and dropped into the hazard unit; each
-%    hops (radius \hop) over the csr_data wire
-\foreach \xd/\yt/\lbl in {21.35/2.05/e, 25.25/2.05/m, 28.25/0.60/w} {
-  \draw[thinline]
-    (\xd, \yt) -- (\xd, -0.20 + \hop) arc[start angle=90, end angle=-90, radius=\hop]
-    -- (\xd, -11.20);
-  \fill[arrowgreen] (\xd, \yt) circle (3.2pt);
-  \node[wirelabel, anchor=west] at (\xd + 0.12, -10.35) {write\_intent\_\lbl};
-}
-
-% 6. "csr_wb_request" write-back bus: csr_wb right -> down below the pipeline
-%    registers -> left -> up into csr_data from below (not pipelined), fanning
-%    out to every plugin's csr_wb_request. Hops (radius \hop) over each
-%    write_intent wire it crosses.
-\draw[thickline]
-  (csr_wb-csr_wb_request) -- (35.05, 0.60) -- (35.05, -9.50)
-  \foreach \xc in {28.25, 25.25, 21.35} {
-    -- (\xc + \hop, -9.50) arc[start angle=0, end angle=180, radius=\hop]
+% WB feedback is not pipelined; bridge the hazard taps at each crossing.
+\draw[thickline] (wb-csr_wb_request) -- (35.05,0.6) -- (35.05,-4.3)
+  \foreach \x in {28.25,25.25,21.35} {
+    -- (\x+\hop,-4.3) arc[start angle=0,end angle=180,radius=\hop]
   }
-  -- (7.90, -9.50)
-  |- (pluginA-csr_wb_request);
-\draw[thickline] (7.90, -4.40) -- (pluginB-csr_wb_request);
-\fill[arrowgreen] (7.90, -4.40) circle (3.2pt);
+  -- (17.5+\hop,-4.3) arc[start angle=0,end angle=180,radius=\hop]
+  -- (7.5,-4.3) |- (basic-csr_wb_request);
+\draw[thickline] (7.5,-8.4) |- (hw-csr_wb_request);
+\fill[arrowgreen] (7.5,-8.4) circle (3.2pt);
+\node[wirelabel, anchor=south] at (25,-4.3) {csr\_wb\_request};
 
-% ========================================================
-% HAZARD UNIT (cut off on the bottom with sawtooth)
-% ========================================================
-\path[fill=hazardcolor, fill opacity=0.15]
-  (-1.0, -11.20) -- (35.50, -11.20) -- (35.50, -12.40)
-  decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (-1.0, -12.40) }
-  -- cycle;
-\draw[draw=hazardcolor, line width=1.5pt]
-  (-1.0, -11.20) -- (35.50, -11.20) -- (35.50, -12.40)
-  decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (-1.0, -12.40) }
-  -- cycle;
-\node[anchor=center, font=\bfseries\normalsize, text=hazardcolor] at (17.25, -11.80) {\texttt{hazard\_unit}};
+\foreach \x/\y/\lbl in {21.35/2.05/e,25.25/2.05/m,28.25/0.6/w} {
+  \draw[thinline] (\x,\y) -- (\x,-0.2+\hop)
+    arc[start angle=90,end angle=-90,radius=\hop] -- (\x,-7.0);
+  \fill[arrowgreen] (\x,\y) circle (3.2pt);
+  \node[wirelabel, font=\scriptsize\bfseries\ttfamily, anchor=west, rotate=90] at (\x-0.12,-6.8) {write\_intent\_\lbl};
+}
+\draw[draw=hazardcolor, line width=1.5pt, fill=hazardcolor, fill opacity=0.15]
+  (20,-7) -- (35.5,-7) -- (35.5,-8.4)
+  decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (20,-8.4) } -- cycle;
+\node[font=\bfseries\normalsize,text=hazardcolor] at (27.75,-7.65) {hazard\_unit};
 
+% Exposed interface stub: deliberately no external hardware connection.
+\draw[draw=arrowpurple,line width=2.6pt] (hw-csr_hw_request) -- (10.9,-14.5);
+\draw[draw=arrowpurple,fill=white,line width=1.2pt] (10.9,-14.5) circle (3pt);
+\node[font=\footnotesize\bfseries,text=arrowpurple,anchor=north] at (10.9,-14.7)
+  {csr\_hw\_request\_if (hardware access)};
 \end{tikzpicture}
 \end{document}

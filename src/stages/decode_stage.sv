@@ -14,8 +14,10 @@ module decode_stage
   , input  reg_t      rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
+
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-  , input  ext__zicsr__types::csr_wb_request_t csr_wb_request // CSR write from write-back stage
+  , output ext__zicsr__types::csr_request_t csr_request
+  , input  data_t                           csr_data
 `endif
 
   , output id_to_ex_t id_to_ex
@@ -47,10 +49,6 @@ module decode_stage
 
   opcode_t opcode;
   imm_t    imm_ext;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
-  ext__zicsr__types::csr_request_t csr_request;
-  data_t                           csr_data;
-`endif
 
   wire [2:0] funct3;
 
@@ -110,6 +108,9 @@ module decode_stage
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
 `endif
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .is_ecall        ( id_to_ex.is_ecall )
+`endif
     );
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
@@ -136,19 +137,14 @@ module decode_stage
     );
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-  csr_unit u_csr_unit
-    ( .clk            ( clk   )
-    , .reset          ( reset )
+  csr_decode u_csr_decode
+    ( .opcode      ( opcode               )
+    , .funct3      ( funct3               )
+    , .rs1_or_uimm ( rs1_decoded          )
+    , .csr_addr    ( csr_addr_t'(imm_ext) ) // not rs1_addr: that is zeroed for uimm forms
+    , .rs1_data    ( rd1_safe             )
 
-    , .opcode         ( opcode               )
-    , .funct3         ( funct3               )
-    , .rs1_or_uimm    ( rs1_decoded          ) // not rs1_addr: that is zeroed for uimm forms
-    , .csr_addr       ( csr_addr_t'(imm_ext) )
-    , .rs1_data       ( rd1_safe             )
-
-    , .csr_wb_request ( csr_wb_request )
-    , .csr_request    ( csr_request    )
-    , .csr_data       ( csr_data       )
+    , .csr_request ( csr_request )
     );
 `endif
 

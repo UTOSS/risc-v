@@ -85,9 +85,12 @@ package types;
     , RESULT_SRC__CSR_READ   = 2'b11
     } result_src_t;
 
-  typedef enum logic
-    { PC_SRC__INCREMENT  = 1'b0
-    , PC_SRC__ALU_RESULT = 1'b1
+  typedef enum logic [1:0]
+    { PC_SRC__INCREMENT  = 2'b00
+    , PC_SRC__ALU_RESULT = 2'b01
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , PC_SRC__MTVEC      = 2'b10
+`endif
     } pc_src_t;
 
   typedef enum logic

@@ -16,6 +16,10 @@ module fetch_stage
 
   , output addr_t imem__address
   , input data_t imem__data
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , csr_hw_request_if.hw mtvec_hw_request
+`endif
 );
   // The use of distinct registers for prev, cur and next PC requires some explanation. Below is the
   // timing diagram of the instruction retireval and subsequenct passing of the relevant data to
@@ -48,6 +52,9 @@ module fetch_stage
     case (ex_to_if.pc_src)
       PC_SRC__INCREMENT:  pc_next = pc_cur + 32'h4;
       PC_SRC__ALU_RESULT: pc_next = ex_to_if.pc_target;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      PC_SRC__MTVEC:      pc_next = mtvec_hw_request.read_data;
+`endif
       default:            pc_next = 32'hx;
     endcase
 

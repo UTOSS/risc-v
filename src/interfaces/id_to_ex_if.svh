@@ -27,6 +27,7 @@ typedef struct packed {
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   ext__zicsr__types::csr_request_t csr_request;
   data_t                           csr_data;
+  logic                            is_ecall;
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;
