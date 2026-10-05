@@ -72,10 +72,10 @@ module hazard_unit
       csr_instr_d &&
       (((csr_write_intent_e && (csr_addr_d == csr_addr_e)) ||
         (csr_write_intent_m && (csr_addr_d == csr_addr_m)) ||
-        (csr_write_intent_w && (csr_addr_d == csr_addr_w))) || // If any of the instructions in EX, MEM, or WB stages are writing to the same CSR as the instruction in ID stage, stall.
+        (csr_write_intent_w && (csr_addr_d == csr_addr_w))) ||
        ((rs1_d != 5'd0) &&
         ((reg_write_e && (rs1_d == rd_e)) ||
-         (reg_write_m && (rs1_d == rd_m))))); // Write hazard on rs1: if the instruction in ID stage reads rs1 and the instruction in EX or MEM stage is writing to the same register, stall.
+         (reg_write_m && (rs1_d == rd_m)))));
 `else
   assign csr_stall = 1'b0;
 `endif
