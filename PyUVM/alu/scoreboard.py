@@ -1,16 +1,13 @@
-from pyuvm import uvm_analysis_export, uvm_scoreboard, uvm_tlm_analysis_fifo
+from pyuvm import uvm_scoreboard, uvm_tlm_analysis_fifo
 
 from .reference_model import predict
 
 
 class ALUScoreboard(uvm_scoreboard):
     def build_phase(self):
-        self.analysis_export = uvm_analysis_export("analysis_export", self)
         self.fifo = uvm_tlm_analysis_fifo("fifo", self)
+        self.analysis_export = self.fifo.analysis_export
         self.checked = 0
-
-    def connect_phase(self):
-        self.analysis_export.connect(self.fifo.analysis_export)
 
     async def run_phase(self):
         while True:

@@ -11,7 +11,7 @@ class ALUMonitor(uvm_monitor):
 
     async def run_phase(self):
         while True:
-            await Timer(self.config.sample_delay_ns, units="ns")
+            await Timer(self.config.sample_delay_ns, unit="ns")
             dut = self.config.dut
             transaction = ALUTransaction()
             transaction.a = int(dut.a.value)

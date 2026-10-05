@@ -6,7 +6,6 @@ module alu_dut;
   logic [3:0] alu_control;
   logic [31:0] out;
   logic zeroE;
-  
 
   ALU dut (
     .a(a),
