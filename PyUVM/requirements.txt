@@ -1,0 +1,2 @@
+cocotb>=1.8
+pyuvm>=3.0

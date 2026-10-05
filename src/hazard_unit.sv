@@ -35,7 +35,9 @@ module hazard_unit
   , output logic flush_e
   );
 
-  // Forwarding
+  // Forwarding: if the operand in EX stage is coming from a prior instruction that is about to
+  // write back or finish memory, select the appropriate source instead of using the stale register
+  // value. Priority is MEM first, then WB, otherwise keep the original EX operand.
   always_comb
     if ((rs1_e == rd_m) && reg_write_m && (rs1_e != 5'd0))
       forward_a_e = HAZARD_FORWARD_A__MEMORY_ALU_RESULT;
@@ -54,7 +56,8 @@ module hazard_unit
 
   logic lw_stall;
 
-  //Stall when a load hazard occurs
+  // Stall on a load-use hazard: if EX is a load and the next instruction reads the loaded register
+  // before the result is available, insert a pipeline bubble to avoid using stale data.
   assign lw_stall = (result_src_e == RESULT_SRC__READ_DATA) &&
                     ((rs1_d == rd_e) || (rs2_d == rd_e)) &&
                     (rd_e != 5'd0);
@@ -69,10 +72,10 @@ module hazard_unit
       csr_instr_d &&
       (((csr_write_intent_e && (csr_addr_d == csr_addr_e)) ||
         (csr_write_intent_m && (csr_addr_d == csr_addr_m)) ||
-        (csr_write_intent_w && (csr_addr_d == csr_addr_w))) ||
+        (csr_write_intent_w && (csr_addr_d == csr_addr_w))) || // If any of the instructions in EX, MEM, or WB stages are writing to the same CSR as the instruction in ID stage, stall.
        ((rs1_d != 5'd0) &&
         ((reg_write_e && (rs1_d == rd_e)) ||
-         (reg_write_m && (rs1_d == rd_m)))));
+         (reg_write_m && (rs1_d == rd_m))))); // Write hazard on rs1: if the instruction in ID stage reads rs1 and the instruction in EX or MEM stage is writing to the same register, stall.
 `else
   assign csr_stall = 1'b0;
 `endif
