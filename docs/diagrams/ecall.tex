@@ -23,7 +23,7 @@
     font=\small,
     csrdatabox/.style={
         draw=hazardcolor, line width=1.5pt,
-        fill=hazardcolor, fill opacity=0.15, text opacity=1.0,
+        fill=none, text opacity=1.0,
         inner sep=0pt
     },
     stagetitle/.style={
@@ -91,7 +91,10 @@
 \draw[thickline,->] (fetch-pc_next) -- (pc-register.west);
 
 % Top-level storage, in the same amber used for the hazard unit.
-\draw[csrdatabox] (1,-13) rectangle (36,-17.7);
+\draw[csrdatabox]
+  (1,-13) -- (36,-13) -- (36,-17.7)
+  decorate[decoration={zigzag,segment length=12pt,amplitude=3pt}] { -- (1,-17.7) }
+  -- cycle;
 \node[anchor=north,font=\bfseries\normalsize,text=hazardcolor] at (20,-13.15) {csr\_data};
 \foreach \xl/\xr/\name in {2/8/mtvec,24.8/30.4/mepc,31/35.4/mcause} {
   \draw[draw=hazardcolor,line width=1.5pt,fill=hazardcolor,fill opacity=0.15]
@@ -114,12 +117,15 @@
 % Flush targets: fetch's skid copy and the two younger pipeline registers.
 \node[draw=regcolor,fill=regcolor,fill opacity=0.15,text=regcolor,text opacity=1,
   minimum width=4.2cm,minimum height=0.8cm,font=\footnotesize]
-  (skid) at (9,-2.4) {instruction skid buffer};
+  (skid) at (9,-2.4) {stalled instruction};
 \coordinate (ifid-clear) at (13.7,-3.3);
 \coordinate (idex-clear) at (24.1,-3.3);
 
 % ECALL control hazard: flush in the redirect cycle and one cycle afterward.
-\draw[csrdatabox] (9,-6.5) rectangle (25,-11.5);
+\draw[csrdatabox]
+  (9,-6.5) -- (25,-6.5) -- (25,-11.5)
+  decorate[decoration={zigzag,segment length=12pt,amplitude=3pt}] { -- (9,-11.5) }
+  -- cycle;
 \node[anchor=north,font=\bfseries\normalsize,text=hazardcolor]
   at (17,-6.65) {hazard\_unit};
 \node[draw=hazardcolor,fill=hazardcolor,fill opacity=0.15,text opacity=1,
