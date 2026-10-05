@@ -35,9 +35,7 @@ module hazard_unit
   , output logic flush_e
   );
 
-  // Forwarding: if the operand in EX stage is coming from a prior instruction that is about to
-  // write back or finish memory, select the appropriate source instead of using the stale register
-  // value. Priority is MEM first, then WB, otherwise keep the original EX operand.
+  // Forwarding
   always_comb
     if ((rs1_e == rd_m) && reg_write_m && (rs1_e != 5'd0))
       forward_a_e = HAZARD_FORWARD_A__MEMORY_ALU_RESULT;
@@ -56,8 +54,7 @@ module hazard_unit
 
   logic lw_stall;
 
-  // Stall on a load-use hazard: if EX is a load and the next instruction reads the loaded register
-  // before the result is available, insert a pipeline bubble to avoid using stale data.
+  //Stall when a load hazard occurs
   assign lw_stall = (result_src_e == RESULT_SRC__READ_DATA) &&
                     ((rs1_d == rd_e) || (rs2_d == rd_e)) &&
                     (rd_e != 5'd0);
