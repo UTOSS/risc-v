@@ -1,121 +1,127 @@
-PyUVM Verification Infrastructure
+# PyUVM Verification Infrastructure
 
 A modular Python-based verification infrastructure for the UTOSS RISC-V processor, built with PyUVM and cocotb.
 
 The infrastructure is designed to start with focused module-level verification and scale toward comprehensive full-core verification as the processor develops.
 
-⸻
+---
 
-Architecture
+## Architecture
 
 The verification infrastructure follows the UVM architecture of tests, environments, agents, sequences, drivers, monitors, scoreboards, reference models, and coverage collectors.
 
 At a high level:
 
-                         PyUVM Test
-                              │
-                              ▼
-                       Verification Env
-                              │
-             ┌────────────────┼────────────────┐
-             │                │                │
-             ▼                ▼                ▼
-          ALU Agent       CSR Agent       Memory Agent
-             │                │                │
-        ┌────┼────┐      ┌────┼────┐      ┌────┼────┐
-        │    │    │      │    │    │      │    │    │
-      Seq  Driver Mon   Seq Driver Mon   Seq Driver Mon
-        │    │    │      │    │    │      │    │    │
-        │    │    └──────┼────┼────┼──────┼────┼────┘
-        │    │           │    │    │      │    │
-        │    ▼           │    ▼    │      │    ▼
-        │   DUT ◄────────┴─────────┴──────┴────────
-        │
-        ▼
-   Transactions
-        │
-        ├──────────────► Reference Model / Predictor
-        │                         │
-        │                         ▼
-        │                     Expected
-        │                         │
-        └──► Monitor ───────► Scoreboard
-                    │
-                    └──────► Coverage
+```mermaid
+flowchart TD
+    Test[PyUVM Test]:::test --> Env
 
-Core verification flow
+    subgraph Env[Verification Env]
+        direction TB
+        subgraph Agents[Agents]
+            direction LR
+            ALU[ALU Agent]:::agent
+            CSR[CSR Agent]:::agent
+            MEM[Memory Agent & etc]:::agent
+        end
+        Ref[Reference Model / Predictor]:::check
+        SB[Scoreboard]:::check
+        Cov[Coverage]:::check
 
-Sequence
-   │
-   │ creates transaction
-   ▼
-Sequencer
-   │
-   │ supplies transaction
-   ▼
-Driver
-   │
-   │ translates transaction → DUT signals
-   ▼
-DUT
-   │
-   │ produces behavior
-   ▼
-Monitor
-   │
-   │ translates DUT activity → transaction
-   ▼
-Scoreboard ◄──── Reference Model
-   │
-   └────► Pass / Fail
+        Agents -->|Transactions| Ref
+        Agents -->|Observed transactions| SB
+        Agents -->|Observed transactions| Cov
+        Ref -->|Expected| SB
+    end
 
-The key separation is:
+    Agents <-->|Drive / Monitor | DUT[DUT]:::dut
 
-* Sequence: determines what stimulus to generate.
-* Sequencer: manages transaction delivery.
-* Driver: converts transactions into signal-level DUT stimulus.
-* Monitor: observes DUT behavior and reconstructs transactions.
-* Reference model: independently predicts expected behavior.
-* Scoreboard: compares expected and observed behavior.
-* Coverage: measures which functional behaviors have been exercised.
+    classDef test fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px
+    classDef agent fill:#0ea5e9,stroke:#0369a1,color:#fff,stroke-width:2px
+    classDef check fill:#22c55e,stroke:#15803d,color:#fff,stroke-width:2px
+    classDef dut fill:#f97316,stroke:#c2410c,color:#fff,stroke-width:2px
+    style Env fill:transparent,stroke:#64748b,stroke-width:2px,stroke-dasharray:6 4
+    style Agents fill:transparent,stroke:#0ea5e9,stroke-width:1px
+```
+
+Each agent contains its own sequence, driver, and monitor (plus a sequencer when active).
+
+### Core verification flow
+
+```mermaid
+flowchart TD
+    Seq["<b>Sequence</b><br/>creates transactions"]:::stim
+    Sqr["<b>Sequencer</b><br/>supplies transactions"]:::stim
+    Drv["<b>Driver</b><br/>transactions → DUT signals"]:::stim
+    DUT["<b>DUT</b><br/>produces behavior"]:::dut
+    Mon["<b>Monitor</b><br/>DUT activity → transactions"]:::check
+    Ref["<b>Reference Model</b><br/>predicts expected behavior"]:::check
+    SB["<b>Scoreboard</b><br/>compares expected vs. observed"]:::check
+    Result{{"Pass / Fail"}}:::result
+
+    Seq --> Sqr --> Drv --> DUT --> Mon --> SB
+    Ref --> SB
+    SB --> Result
+
+    classDef stim fill:#0ea5e9,stroke:#0369a1,color:#fff,stroke-width:2px
+    classDef dut fill:#f97316,stroke:#c2410c,color:#fff,stroke-width:2px
+    classDef check fill:#22c55e,stroke:#15803d,color:#fff,stroke-width:2px
+    classDef result fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px
+```
+
+* **Sequence:** determines what stimulus to generate.
+* **Sequencer:** manages transaction delivery with async & await.
+* **Driver:** converts high-level transactionshigh-level into signal-level DUT stimulus.
+* **Monitor:** observes DUT behavior and reconstructs transactions.
+* **Reference model:** independently predicts expected behavior.
+* **Scoreboard:** compares expected and observed behavior.
+* **Coverage:** measures which functional behaviors have been exercised.
 
 This separation allows individual verification components to be reused as the DUT evolves.
 
-⸻
+---
 
-Configuration
+## Configuration
 
-Verification components receive environment-specific configuration through PyUVM’s ConfigDB.
+Verification components receive environment-specific configuration through PyUVM's `ConfigDB`.
 
 For example:
 
-ALUConfig
-├── DUT handle
-├── active/passive mode
-└── timing configuration
+```mermaid
+flowchart LR
+    Cfg[ALUConfig] --- A[DUT handle]
+    Cfg --- B[active/passive mode]
+    Cfg --- C[timing configuration]
+```
 
 This allows the same agent to operate in different environments without hard-coding DUT connections or verification settings.
 
 Agents can therefore be configured as either:
 
-ACTIVE
-├── Sequencer
-├── Driver
-└── Monitor
+```mermaid
+flowchart LR
+    subgraph ACTIVE
+        direction TB
+        s1[Sequencer]
+        d1[Driver]
+        m1[Monitor]
+    end
 
-or:
-
-PASSIVE
-└── Monitor
+    subgraph PASSIVE
+        direction TB
+        m2[Monitor]
+    end
+```
 
 A passive agent can observe activity generated by another component without driving the DUT.
 
-⸻
+---
 
-Modular Verification Architecture
+## Modular Verification Architecture
 
 The infrastructure is intentionally organized by DUT domain.
 
+```text
 verification/
 ├── alu/
 │   ├── transaction.py
@@ -138,27 +144,24 @@ verification/
 │
 └── core/
     └── ...
+```
 
 Each module/peripheral can have its own verification components while following the same PyUVM architecture.
 
 This allows verification to be developed incrementally:
 
-Individual Module
-       │
-       ▼
-Module Agent
-       │
-       ▼
-Subsystem Environment
-       │
-       ▼
-Full-Core Environment
+```mermaid
+flowchart TD
+    A[Individual Module] --> B[Module Agent]
+    B --> C[Subsystem Environment]
+    C --> D[Full-Core Environment]
+```
 
 For example, the ALU can be verified independently before being integrated into the processor-level environment.
 
-⸻
+---
 
-Coverage Strategy
+## Coverage Strategy
 
 Coverage is also modular.
 
@@ -166,15 +169,16 @@ Individual coverage collectors should measure behavior relevant to their verific
 
 For example:
 
-                    Core Coverage
-                         │
-          ┌──────────────┼──────────────┐
-          ▼              ▼              ▼
-     ALU Coverage   CSR Coverage   Memory Coverage
-          │              │              │
-          ▼              ▼              ▼
-      Operation       CSR ops        Loads/stores
-      × operands      × hazards      × addresses
+```mermaid
+flowchart TD
+    Core[Core Coverage] --> ALUc[ALU Coverage]
+    Core --> CSRc[CSR Coverage]
+    Core --> MEMc[Memory Coverage]
+
+    ALUc --> A1["Operation × operands"]
+    CSRc --> C1["CSR ops × hazards"]
+    MEMc --> M1["Loads/stores × addresses"]
+```
 
 As the processor grows, additional coverage domains can be added without modifying existing verification components.
 
@@ -193,114 +197,94 @@ Examples of eventual full-core coverage include:
 
 The goal is not simply to maximize the number of executed instructions, but to measure whether the architecturally meaningful behaviors and corner cases of the processor have been exercised.
 
-⸻
+---
 
-Long-Term Full-Core Verification
+## Long-Term Full-Core Verification
 
 This repository is intended to serve as a long-lived verification infrastructure rather than a collection of isolated tests.
 
 The architecture provides an eventual entry point for full-core verification:
 
-                    UTOSS Full-Core Test
-                             │
-                             ▼
-                     Core Verification Env
-                             │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-        ▼                    ▼                    ▼
-   Instruction           Memory/Bus           CSR/Control
-      Agent                Agents                Agents
-        │                    │                    │
-        └────────────────────┼────────────────────┘
-                             │
-                             ▼
-                       UTOSS CPU DUT
-                             │
-                    ┌────────┴────────┐
-                    ▼                 ▼
-              Reference Model     Monitors
-                    │                 │
-                    └────────┬────────┘
-                             ▼
-                         Scoreboard
-                             │
-                             ▼
-                      Coverage System
-                             │
-                             ▼
-                    Full-Core Coverage
+```mermaid
+flowchart TD
+    Test[UTOSS Full-Core Test] --> Env[Core Verification Env]
+
+    Env --> IA[Instruction Agent]
+    Env --> MA[Memory/Bus Agents]
+    Env --> CA[CSR/Control Agents]
+
+    IA --> DUT[UTOSS CPU DUT]
+    MA --> DUT
+    CA --> DUT
+
+    DUT --> Ref[Reference Model]
+    DUT --> Mons[Monitors]
+
+    Ref --> SB[Scoreboard]
+    Mons --> SB
+
+    SB --> Cov[Coverage System]
+    Cov --> FCC[Full-Core Coverage]
+```
 
 The intended progression is:
 
-Module Verification
-       ↓
-Subsystem Verification
-       ↓
-Core Integration Verification
-       ↓
-Full Instruction-Set Verification
-       ↓
-Coverage Closure
+```mermaid
+flowchart TD
+    A[Module Verification] --> B[Subsystem Verification]
+    B --> C[Core Integration Verification]
+    C --> D[Full Instruction-Set Verification]
+    D --> E[Coverage Closure]
+```
 
 As new processor extensions, peripherals, pipeline features, hazards, and architectural behaviors are introduced, their verification components can be added to the existing infrastructure rather than creating independent testbenches.
 
-⸻
+---
 
-Current Implementation
+## Current Implementation
 
 The initial implementation uses the ALU as the first verification target.
 
 The ALU environment demonstrates the complete PyUVM flow:
 
-ALUSequence
-     ↓
-ALUSequencer
-     ↓
-ALUDriver
-     ↓
-ALU DUT
-     ↓
-ALUMonitor
-     ↓
-ALUScoreboard
-     ↑
-ALUReferenceModel
+```mermaid
+flowchart TD
+    Seq[ALUSequence] --> Sqr[ALUSequencer]
+    Sqr --> Drv[ALUDriver]
+    Drv --> DUT[ALU DUT]
+    DUT --> Mon[ALUMonitor]
+    Mon --> SB[ALUScoreboard]
+    Ref[ALUReferenceModel] --> SB
+```
 
-Functional coverage is collected independently through an uvm_subscriber.
+Functional coverage is collected independently through a `uvm_subscriber`.
 
 This provides a small but complete proof-of-concept for the architecture that will eventually be applied to the complete UTOSS processor.
 
-⸻
+---
 
-Design Principles
+## Design Principles
 
-Modular
-
+**Modular**
 Verification components should be reusable across different environments and integration levels.
 
-Independent reference models
-
+**Independent reference models**
 Expected behavior should be derived from an independent behavioral model rather than reproducing the RTL implementation.
 
-Configuration-driven
-
+**Configuration-driven**
 DUT handles, active/passive modes, and environment-specific settings should be provided through configuration rather than hard-coded into individual components.
 
-Layered verification
-
+**Layered verification**
 Module-level verification should remain useful even after components are integrated into the full processor.
 
-Coverage-driven development
-
+**Coverage-driven development**
 Verification should progressively measure whether meaningful architectural behaviors and corner cases have been exercised.
 
-Long-term scalability
-
+**Long-term scalability**
 The infrastructure should support incremental development over the lifetime of the UTOSS processor rather than being tied to a single implementation or feature.
 
-⸻
+---
 
-Goal
+## Goal
 
 Build a reusable PyUVM verification infrastructure that can begin with individual RTL modules and peripherals today, while providing the architectural foundation for comprehensive full-core verification and coverage closure as UTOSS evolves over the coming years.
