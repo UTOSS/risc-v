@@ -23,7 +23,7 @@
     font=\small,
     csrdatabox/.style={
         draw=hazardcolor, line width=1.5pt,
-        fill=hazardcolor, fill opacity=0.15, text opacity=1.0,
+        fill=none, text opacity=1.0,
         inner sep=0pt
     },
     stagetitle/.style={
@@ -65,7 +65,10 @@
   {csr_wb_request/arrowgreen}{}{}
 
 % Exactly two representative plugins; hardware users belong in the ECALL diagram.
-\draw[csrdatabox] (6.1,-5.1) rectangle (18,-13.6);
+\draw[csrdatabox]
+  (6.1,-5.1) -- (18,-5.1) -- (18,-13.6)
+  decorate[decoration={zigzag,segment length=12pt,amplitude=3pt}] { -- (6.1,-13.6) }
+  -- cycle;
 \node[anchor=north, font=\bfseries\normalsize, text=hazardcolor]
   at (12.05,-5.25) {\texttt{csr\_data}};
 \begin{scope}
