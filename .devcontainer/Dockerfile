@@ -83,6 +83,16 @@ COPY PyUVM/requirements.txt /tmp/pyuvm-requirements.txt
 RUN apt update && apt install -y python3 python3-pip libpython3-dev && \
     python3 -m pip install --no-cache-dir -r /tmp/pyuvm-requirements.txt
 
+# Select system-Python cocotb without shadowing OSS CAD Suite simulator wrappers.
+RUN mkdir -p /opt/pyuvm/bin && \
+    ln -s /usr/local/bin/cocotb-config /opt/pyuvm/bin/cocotb-config
+ENV PATH="/opt/pyuvm/bin:${PATH}"
+RUN test "$(command -v cocotb-config)" = /opt/pyuvm/bin/cocotb-config && \
+    test "$(cocotb-config --python-bin)" = "$(python3 -c 'import sys; print(sys.executable)')" && \
+    python3 -c "import cocotb, pyuvm; assert cocotb.__version__ == '1.9.2'" && \
+    test "$(command -v verilator)" = /opt/oss-cad-suite/bin/verilator && \
+    verilator --version
+
 # install svlint
 USER dev
 ARG SVLINT_VERSION=0.9.3
