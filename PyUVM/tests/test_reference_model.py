@@ -1,5 +1,5 @@
-from PyUVM.alu.reference_model import predict
-from PyUVM.alu.transaction import ALUTransaction
+from alu.reference_model import predict
+from alu.transaction import ALUTransaction
 
 
 def transaction(a, b, control):

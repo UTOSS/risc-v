@@ -1,14 +1,12 @@
 import cocotb
 from cocotb.triggers import Timer
-from pyuvm import test as pyuvm_test
-from pyuvm import uvm_config_db, uvm_test
+from pyuvm import uvm_config_db, uvm_root, uvm_test
 
-from PyUVM.alu.config import ALUConfig
-from PyUVM.alu.environment import ALUEnvironment
-from PyUVM.alu.sequence import ALUSequence
+from alu.config import ALUConfig
+from alu.environment import ALUEnvironment
+from alu.sequence import ALUSequence
 
 
-@pyuvm_test()
 class ALUTest(uvm_test):
     def build_phase(self):
         config = ALUConfig(cocotb.top)
@@ -19,5 +17,12 @@ class ALUTest(uvm_test):
         self.raise_objection()
         sequence = ALUSequence()
         await sequence.start(self.environment.agent.sequencer)
-        await Timer(2, unit="ns")
+        await Timer(2, units="ns")
         self.drop_objection()
+
+
+@cocotb.test()
+async def test_alu(dut):
+    # Avoid pyuvm.test's stack-based module lookup, which can fail when cached
+    # Python filenames and checkout paths differ in case.
+    await uvm_root().run_test(ALUTest)

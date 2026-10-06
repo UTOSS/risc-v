@@ -13,5 +13,5 @@ class ALUDriver(uvm_driver):
             dut.a.value = transaction.a
             dut.b.value = transaction.b
             dut.alu_control.value = transaction.alu_control
-            await Timer(self.config.sample_delay_ns, unit="ns")
+            await Timer(self.config.sample_delay_ns, units="ns")
             self.seq_item_port.item_done()

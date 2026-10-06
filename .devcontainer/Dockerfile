@@ -77,10 +77,11 @@ COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
 COPY --from=oss-cad-suite /etc/profile.d/oss-cad-suite.sh /etc/profile.d/oss-cad-suite.sh
 ENV PATH="/opt/oss-cad-suite/bin:${PATH}"
 
-# install cocotb
-USER dev
-RUN sudo apt update && sudo apt install -y python3 python3-pip libpython3-dev && \
-  pip3 install cocotb~=1.9
+# install cocotb and pyuvm verification dependencies
+USER root
+COPY PyUVM/requirements.txt /tmp/pyuvm-requirements.txt
+RUN apt update && apt install -y python3 python3-pip libpython3-dev && \
+    python3 -m pip install --no-cache-dir -r /tmp/pyuvm-requirements.txt
 
 # install svlint
 USER dev

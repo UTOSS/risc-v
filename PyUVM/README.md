@@ -4,6 +4,17 @@ A modular Python-based verification infrastructure for the UTOSS RISC-V processo
 
 The infrastructure is designed to start with focused module-level verification and scale toward comprehensive full-core verification as the processor develops.
 
+## Running verification
+
+The devcontainer and CI image install the dependencies from `PyUVM/requirements.txt`,
+including cocotb, pyuvm, and pytest. Rebuild or pull the updated container to use them.
+For a separate environment, install them with `python3 -m pip install -r PyUVM/requirements.txt`;
+Verilator, a C++ compiler, make, and Python development libraries are also required.
+
+From the repository root, run `make test_pyuvm` to execute the reference-model unit
+tests and the ALU simulation. CI runs this same command and uploads the cocotb
+JUnit report. To run only the simulation, use `make -C PyUVM`.
+
 ---
 
 ## Architecture
