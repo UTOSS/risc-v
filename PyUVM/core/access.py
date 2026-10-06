@@ -9,7 +9,7 @@ from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, FallingEdge, ReadOnly, Timer
 from pyuvm import uvm_analysis_port, uvm_component, uvm_driver, uvm_sequence_item
 
-from instructions import NOP
+from .instructions import NOP
 
 
 class CoreAccess:

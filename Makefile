@@ -159,7 +159,8 @@ $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
 .PHONY: test_pyuvm
 test_pyuvm:
 	cd PyUVM && PYTHONPATH="$(CURDIR)/PyUVM" python3 -m pytest --import-mode=importlib tests
-	$(MAKE) -C PyUVM
+	$(MAKE) -C PyUVM MODULE=test_alu
+	$(MAKE) -C PyUVM MODULE=test_ecall UTOSS_RISCV_CONFIG=RV32IZicsr
 
 # ===========================
 # Create new testbench

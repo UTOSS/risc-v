@@ -3,3 +3,4 @@ results.xml
 results-*.xml
 dump.vcd
 __pycache__/
+.pytest_cache/

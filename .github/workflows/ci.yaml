@@ -121,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pyuvm-results
-          path: PyUVM/results.xml
+          path: PyUVM/results-*.xml
           retention-days: 7
 
   build_and_test:
@@ -169,56 +169,6 @@ jobs:
         with:
           name: vvp-files-${{ matrix.config }}
           path: out/*.vvp
-          retention-days: 7
-
-  pyuvm:
-    timeout-minutes: 30
-    needs: select_ci_image
-    # dont skip if build_ci_image is skipped
-    if: always()
-    runs-on: ubuntu-latest
-    container:
-      image: ${{ needs.select_ci_image.outputs.image-tag }}
-
-    strategy:
-      matrix: *utoss-risc-v-matrix
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # OSS CAD Suite also ships cocotb, using a different Python without pyuvm.
-      # Select the environment installed by Dockerfile.ci for both test steps.
-      - name: Select pyuvm Python environment
-        run: |
-          echo "/opt/utoss-pyuvm/bin" >> "$GITHUB_PATH"
-          echo "VIRTUAL_ENV=/opt/utoss-pyuvm" >> "$GITHUB_ENV"
-          /opt/utoss-pyuvm/bin/python - <<'PYTHON'
-          import sys
-          import cocotb
-          import pyuvm
-          from importlib.metadata import version
-          print("Python:", sys.executable)
-          print("cocotb:", version("cocotb"), cocotb.__file__)
-          print("pyuvm:", version("pyuvm"), pyuvm.__file__)
-          PYTHON
-
-      # randomized; the seed of the run is logged, and `make -C pyuvm RANDOM_SEED=<seed>` reproduces it
-      - name: Run pyuvm testbench
-        run: make -C pyuvm UTOSS_RISCV_CONFIG=${{ matrix.config }} NUM_ITEMS=100 WAVES=1
-
-      - name: Run ECALL pyuvm tests
-        if: contains(matrix.config, 'Zicsr')
-        run: make -C pyuvm MODULE=test_ecall UTOSS_RISCV_CONFIG=${{ matrix.config }}
-
-      - name: Upload pyuvm results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pyuvm-results-${{ matrix.config }}
-          path: |
-            pyuvm/results-*.xml
-            pyuvm/dump.vcd
           retention-days: 7
 
   riscof:

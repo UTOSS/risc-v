@@ -12,8 +12,37 @@ For a separate environment, install them with `python3 -m pip install -r PyUVM/r
 Verilator, a C++ compiler, make, and Python development libraries are also required.
 
 From the repository root, run `make test_pyuvm` to execute the reference-model unit
-tests and the ALU simulation. CI runs this same command and uploads the cocotb
-JUnit report. To run only the simulation, use `make -C PyUVM`.
+tests, the ALU simulation, and all four full-core ECALL tests with `RV32IZicsr`.
+CI runs this same command and uploads the cocotb JUnit reports.
+
+```sh
+make -C PyUVM                              # ALU simulation only
+make -C PyUVM MODULE=test_ecall             # ECALL suite (defaults to RV32IZicsr)
+make -C PyUVM MODULE=test_ecall WAVES=1      # ECALL suite with dump.vcd
+make -C PyUVM MODULE=test_ecall TESTCASE=test_ecall_wrong_path
+```
+
+ECALL tests also accept `UTOSS_RISCV_CONFIG=<configuration>`; it must include
+`Zicsr`. Simulator builds are isolated by test module, core configuration, and
+waveform setting. Reports are written to `PyUVM/results-*.xml`, and test failures
+make the command fail.
+
+The ECALL suite runs programs on `envs/simulation/top.sv`. Shared backdoor loading,
+program execution, and register/store monitors live in `core/`; the ECALL program,
+sequence, trap monitor, scoreboard, and environment live in `ecall/`.
+`test_ecall.py` uses cocotb entry points to run the UVM tests, matching the ALU suite.
+The checks cover:
+
+- Machine ECALL redirect to `mtvec`, saved `mepc`, and machine ECALL cause 11.
+- A relocated handler and ECALL instruction address.
+- Flushing younger register, memory, and CSR side effects while preserving older writes.
+- Discarding an ECALL behind a taken jump.
+- A legal CSR instruction that must not be decoded as ECALL.
+
+Every program must reach its completion marker within a bounded cycle count. The
+scoreboard compares complete register-write and trap-event streams and checks a
+memory sentinel for unintended stores. The former lowercase `pyuvm/` tree and its
+ADD smoke test have been replaced by this shared infrastructure.
 
 ---
 
