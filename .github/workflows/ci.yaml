@@ -187,6 +187,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # OSS CAD Suite also ships cocotb, using a different Python without pyuvm.
+      # Select the environment installed by Dockerfile.ci for both test steps.
+      - name: Select pyuvm Python environment
+        run: |
+          echo "/opt/utoss-pyuvm/bin" >> "$GITHUB_PATH"
+          echo "VIRTUAL_ENV=/opt/utoss-pyuvm" >> "$GITHUB_ENV"
+          /opt/utoss-pyuvm/bin/python - <<'PYTHON'
+          import sys
+          import cocotb
+          import pyuvm
+          from importlib.metadata import version
+          print("Python:", sys.executable)
+          print("cocotb:", version("cocotb"), cocotb.__file__)
+          print("pyuvm:", version("pyuvm"), pyuvm.__file__)
+          PYTHON
+
       # randomized; the seed of the run is logged, and `make -C pyuvm RANDOM_SEED=<seed>` reproduces it
       - name: Run pyuvm testbench
         run: make -C pyuvm UTOSS_RISCV_CONFIG=${{ matrix.config }} NUM_ITEMS=100 WAVES=1
