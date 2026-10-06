@@ -101,6 +101,29 @@ jobs:
       - name: Test diagrams
         run: make test_diagrams
 
+  pyuvm:
+    timeout-minutes: 10
+    needs: select_ci_image
+    if: always() && needs.select_ci_image.result == 'success'
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run PyUVM verification
+        run: make test_pyuvm
+
+      - name: Upload PyUVM results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyuvm-results
+          path: PyUVM/results.xml
+          retention-days: 7
+
   build_and_test:
     timeout-minutes: 30
     needs: select_ci_image

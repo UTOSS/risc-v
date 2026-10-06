@@ -151,6 +151,14 @@ $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
 	cp $(BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
 
 # ===========================
+# PyUVM verification
+# ===========================
+.PHONY: test_pyuvm
+test_pyuvm:
+	cd PyUVM && PYTHONPATH="$(CURDIR)/PyUVM" python3 -m pytest --import-mode=importlib tests
+	$(MAKE) -C PyUVM
+
+# ===========================
 # Create new testbench
 # ===========================
 new_tb:

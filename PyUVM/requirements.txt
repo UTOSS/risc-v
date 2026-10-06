@@ -1,0 +1,3 @@
+cocotb==1.9.2
+pyuvm==5.0.0
+pytest==9.1.1
