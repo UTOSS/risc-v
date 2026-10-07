@@ -102,17 +102,37 @@ read of the stored CSR.
 `mtvec` supports Direct mode only: its low two bits are fixed at zero. `mepc` fixes bit zero
 to zero, while `mcause` exposes the interrupt bit and the low five exception-code bits.
 
-### ECALL processing
+### `ECALL` and `MRET` processing
 
-![ECALL Microarchitecture](diagrams/ecall.svg)
 
-The diagram isolates the IF/ID/EX path and the three trap-related CSR plugins. The dashed
-`mtvec` connection shows the intended dedicated hardware read access: fetch selects its
+![ECALL and planned MRET Microarchitecture](diagrams/ecall.svg)
+
+#### `ECALL` processing
+
+> [**Spec**](https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-3-1-environment-call-and-breakpoint)
+>
+> `ECALL` transfers control to the handler configured in `mtvec`. The below demo exemplifies the
+> usage of this instruction:
+>
+> ```asm
+> _start:
+>     la   t0, handler
+>     csrw mtvec, t0        # point mtvec register to the handler
+>     ecall                 # save this PC in mepc, and the cause of call into mcause; jump to handler.
+> handler:
+>     csrr a0, mepc         # Address of the ecall instruction.
+>     csrr a1, mcause       # 11: environment call from machine mode.
+> done:
+>     j    done
+> ```
+
+The diagram isolates the IF/ID/EX path and the three trap-related CSR plugins. The
+`mtvec` connection shows the dedicated hardware read access: fetch selects its
 asynchronous `read_data` as the next PC when EX selects `PC_SRC__MTVEC`. This interface has
 no read-enable or request/response handshake. PC-source selection is EX stage logic alongside
-`ecall_processor`; the processor itself emits the `mepc` and `mcause` hardware writes.
+`trap_processor`; the processor itself emits the `mepc` and `mcause` hardware writes.
 
-Decode carries `is_ecall` and the instruction PC through ID/EX. In EX, `ecall_processor`
+Decode carries `is_ecall` and the instruction PC through ID/EX. In EX, `trap_processor`
 drives the dedicated hardware interfaces to write that PC to `mepc` and machine-mode ECALL
 exception code 11 (interrupt bit clear) to `mcause`. These writes bypass the software WB path
 and take priority over simultaneous software writes to the same plugin.
@@ -120,5 +140,18 @@ and take priority over simultaneous software writes to the same plugin.
 EX selects `PC_SRC__MTVEC` for ECALL. The fetch PC mux uses `mtvec_hw_request.read_data`
 for that selection, and the hazard unit flushes fetch, decode and execute for a control redirect
 and its one-cycle delayed indication to account for synchronous instruction memory.
+
+#### `MRET` processing
+
+> [**Spec**](https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#otherpriv)
+>
+> `MRET` is an insutrction to use to get out of a trap handler (such as one entered by calling
+> `ECALL`).
+
+The shared diagram above includes the planned MRET path: decode carries
+`is_mret` through ID/EX, and EX selects MEPC as the next-PC source. IF reads
+`mepc_hw_request.read_data` and redirects to that address using the same control-hazard
+flush path as ECALL. MRET does not write `mepc` or `mcause`. This path is not yet
+implemented in RTL.
 
 ## M extension
