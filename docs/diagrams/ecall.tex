@@ -1,0 +1,170 @@
+\documentclass[tikz, border=15pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{roboto-mono}
+\renewcommand*\familydefault{\ttdefault}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, decorations.pathmorphing, shapes.gates.logic.US}
+
+\definecolor{stagecolor}{HTML}{1F6FEB}    % Accent Blue
+\definecolor{hazardcolor}{HTML}{D29922}   % Amber / Orange
+\definecolor{regcolor}{HTML}{7D8590}      % Muted Slate / Gray
+\definecolor{boundarycolor}{HTML}{8C959F} % Dashed Line Gray
+\definecolor{arrowgreen}{HTML}{2EA043}    % High-contrast green (GitHub green)
+\definecolor{arrowpurple}{HTML}{8250DF}   % Vibrant Purple (GitHub Purple)
+
+% Load diagram building utilities (e.g. \drawblock)
+\IfFileExists{diagrams/util.tex}{\input{diagrams/util.tex}}{\input{util.tex}}
+
+\begin{document}
+\begin{tikzpicture}[
+    >=Latex,
+    font=\small,
+    csrdatabox/.style={
+        draw=hazardcolor, line width=1.5pt,
+        fill=none, text opacity=1.0,
+        inner sep=0pt
+    },
+    stagetitle/.style={
+        font=\bfseries\small, text=stagecolor, align=center
+    },
+    stageline/.style={dashed, draw=boundarycolor, line width=1.2pt},
+    thickline/.style={draw=arrowgreen, line width=2.6pt, line cap=butt, line join=miter},
+    thinline/.style={draw=arrowgreen, line width=1.2pt, line cap=butt, line join=miter},
+    wirelabel/.style={font=\footnotesize\bfseries\ttfamily, text=arrowgreen}
+]
+
+
+
+% ECALL-only view: IF, ID and EX; MEM/WB do not participate in this path.
+\foreach \xl/\xr/\title in {0/13/fetch\_stage,14.4/23.4/decode\_stage,24.8/36/execute\_stage} {
+  \draw[draw=stagecolor,line width=1.8pt]
+    (\xl,5.5) -- (\xr,5.5) -- (\xr,-3.3)
+    decorate[decoration={zigzag,segment length=12pt,amplitude=3pt}] { -- (\xl,-3.3) } -- cycle;
+  \node[anchor=north west,font=\bfseries\normalsize,text=stagecolor]
+    at (\xl+0.3,5.35) {\texttt{\title}};
+}
+\foreach \x/\title in {6.5/Instruction Fetch (IF),18.9/Instruction Decode (ID),30.4/Execute (EX)}
+  \node[stagetitle] at (\x,6) {\title};
+\foreach \x in {13.35,23.75} {
+  \draw[draw=regcolor,line width=1.3pt,fill=regcolor,fill opacity=0.15]
+    (\x,5.5) -- (\x+0.7,5.5) -- (\x+0.7,-3.3)
+    decorate[decoration={zigzag,segment length=8pt,amplitude=2.5pt}] { -- (\x,-3.3) } -- cycle;
+}
+\node[text=regcolor,font=\scriptsize] at (13.7,5.75) {IF/ID};
+\node[text=regcolor,font=\scriptsize] at (24.1,5.75) {ID/EX};
+
+% Blocks show only ports relevant to ECALL; PC selection is EX stage logic.
+% Mux tapers toward its output; select enters above and MTVEC data enters from the left.
+\draw[draw=stagecolor,line width=1.5pt,fill=stagecolor,fill opacity=0.15]
+  (2,1.5) -- (8,0.8) -- (8,-0.8) -- (2,-1.5) -- cycle;
+\node[font=\bfseries\normalsize,text=stagecolor] at (4.7,0.25) {next PC mux};
+\coordinate (fetch-pc_src) at (5,1.15);
+\coordinate (fetch-pc_next) at (8,0);
+\coordinate (fetch-mtvec) at (2,-0.65);
+\node[pinlabel,text=arrowgreen,anchor=north] at (5,1.05) {pc\_src};
+\node[pinlabel,text=arrowgreen,anchor=east] at (7.88,0) {pc\_next};
+\node[pinlabel,text=arrowpurple,anchor=west] at (2.12,-0.65) {MTVEC};
+\drawblock{decode}{18.9}{0.55}{6.6}{Instruction\_Decode}%
+  {instruction/arrowgreen}{is_ecall/arrowgreen}{}{2.1}
+\drawblock{ecall}{30.1}{0}{7.6}{ecall\_processor}%
+  {enable/arrowgreen, pc/arrowgreen}{}%
+  {mepc_hw_request/-1.9/arrowpurple, mcause_hw_request/1.9/arrowpurple}{4}
+\drawblock{select}{30.1}{3.8}{7.6}{PC source selection}%
+  {is_ecall/arrowgreen}{pc_src/arrowgreen}{}{1.8}
+
+% ECALL and its own PC are registered together at ID/EX.
+\draw[thickline,->] (14.8,0.4) -- (decode-instruction);
+\draw[thickline,->] (decode-is_ecall) -- (25.4,0.4) |- (ecall-enable);
+\fill[arrowgreen] (25.4,0.4) circle (3pt);
+\draw[thinline,->] (25.4,0.4) |- (select-is_ecall);
+\draw[thickline,->] (21.8,-1.6) -- (25,-1.6) |- (ecall-pc);
+\node[wirelabel,anchor=south east] at (23.3,-1.6) {pc\_cur};
+
+% Combinational redirect back to IF, outside the forward pipeline registers.
+\draw[thickline,->] (select-pc_src) -- (35,3.5) -- (35,7.2) -- (-0.5,7.2) -- (-0.5,3.6) -- (5,3.6) -- (fetch-pc_src);
+\node[wirelabel,anchor=south] at (19.5,7.2) {ex\_to\_if.pc\_src};
+
+\node[draw=regcolor,fill=regcolor,fill opacity=0.15,text=regcolor,text opacity=1,
+  minimum width=2.2cm,minimum height=0.9cm] (pc-register) at (10.8,0) {PC register};
+\draw[thickline,->] (fetch-pc_next) -- (pc-register.west);
+
+% Top-level storage, in the same amber used for the hazard unit.
+\draw[csrdatabox]
+  (1,-13) -- (36,-13) -- (36,-17.7)
+  decorate[decoration={zigzag,segment length=12pt,amplitude=3pt}] { -- (1,-17.7) }
+  -- cycle;
+\node[anchor=north,font=\bfseries\normalsize,text=hazardcolor] at (20,-13.15) {csr\_data};
+\foreach \xl/\xr/\name in {2/8/mtvec,24.8/30.4/mepc,31/35.4/mcause} {
+  \draw[draw=hazardcolor,line width=1.5pt,fill=hazardcolor,fill opacity=0.15]
+    (\xl,-14.2) rectangle (\xr,-16.6);
+  \node[font=\bfseries,text=hazardcolor] at ({(\xl+\xr)/2},-15) {csr\_plugin};
+  \node[font=\bfseries,text=hazardcolor] at ({(\xl+\xr)/2},-15.65) {\name};
+}
+\node[font=\footnotesize,text=arrowpurple] at (5,-16.2) {read\_data};
+\node[font=\footnotesize,text=arrowpurple] at (27.6,-16.2) {write\_data = PC};
+\node[font=\footnotesize,text=arrowpurple] at (33.2,-16.2) {write\_data = 11};
+\draw[draw=arrowpurple,line width=2.6pt,->] (ecall-mepc_hw_request) -- (28.2,-14.2);
+\draw[draw=arrowpurple,line width=2.6pt,->] (ecall-mcause_hw_request) -- (32,-14.2);
+\node[font=\footnotesize\bfseries,text=arrowpurple,anchor=east] at (27.9,-12) {write\_enable = is\_ecall};
+
+% Dedicated asynchronous hardware read interface.
+% No read-enable handshake exists in csr_hw_request_if.
+\draw[draw=arrowpurple,line width=2.6pt,->]
+  (5,-14.2) -- (5,-4.6) -- (0.7,-4.6) |- (fetch-mtvec);
+
+% Flush targets: fetch's skid copy and the two younger pipeline registers.
+\node[draw=regcolor,fill=regcolor,fill opacity=0.15,text=regcolor,text opacity=1,
+  minimum width=4.2cm,minimum height=0.8cm,font=\footnotesize]
+  (skid) at (9,-2.4) {stalled instruction};
+\coordinate (ifid-clear) at (13.7,-3.3);
+\coordinate (idex-clear) at (24.1,-3.3);
+
+% ECALL control hazard: flush in the redirect cycle and one cycle afterward.
+\draw[csrdatabox]
+  (9,-6.5) -- (25,-6.5) -- (25,-11.5)
+  decorate[decoration={zigzag,segment length=12pt,amplitude=3pt}] { -- (9,-11.5) }
+  -- cycle;
+\node[anchor=north,font=\bfseries\normalsize,text=hazardcolor]
+  at (17,-6.65) {hazard\_unit};
+\node[draw=hazardcolor,fill=hazardcolor,fill opacity=0.15,text opacity=1,
+  text=hazardcolor,minimum width=6cm,minimum height=0.7cm,font=\footnotesize]
+  (current-redirect) at (19,-7.8) {pc\_src\_e != PC\_SRC\_\_INCREMENT};
+\node[draw=regcolor,fill=regcolor,fill opacity=0.15,text opacity=1,text=regcolor,
+  minimum width=2cm,minimum height=0.8cm,font=\footnotesize,align=center]
+  (pc-lag) at (23,-10) {pc\_src\_e\_lag\\1 cycle};
+\node[draw=hazardcolor,fill=hazardcolor,fill opacity=0.15,text opacity=1,
+  text=hazardcolor,minimum width=6.4cm,minimum height=0.7cm,font=\footnotesize]
+  (previous-redirect) at (17.7,-10) {pc\_src\_e\_lag != PC\_SRC\_\_INCREMENT};
+\node[or gate US,rotate=180,draw=regcolor,line width=1.3pt,fill=regcolor,fill opacity=0.15,
+  logic gate inputs=nn,minimum height=1.4cm,minimum width=1cm]
+  (flush-or) at (12,-8.6) {};
+
+% Tap the same EX selector sent to fetch; bridge the hardware-write wires.
+\fill[arrowgreen] (35,3.5) circle (3pt);
+\draw[thinline,->] (35,3.5) -- (37,3.5) -- (37,-8.6)
+  -- (32.2,-8.6) arc[start angle=0,end angle=180,radius=0.2]
+  -- (28.4,-8.6) arc[start angle=0,end angle=180,radius=0.2]
+  -- (24.7,-8.6) |- (current-redirect.east);
+\node[wirelabel,anchor=south east] at (36.8,-8.6) {pc\_src\_e};
+\fill[arrowgreen] (24.7,-8.6) circle (2.4pt);
+\draw[thinline,->] (24.7,-8.6) |- (pc-lag.east);
+\draw[thinline,->] (pc-lag.west) -- (previous-redirect.east);
+\draw[thinline] (current-redirect.west) -| ($(flush-or.input 2)+(0.6,0)$) -- (flush-or.input 2);
+\draw[thinline] (previous-redirect.west) -| ($(flush-or.input 1)+(0.6,0)$) -- (flush-or.input 1);
+\draw[thinline] (flush-or.output) -- (10,-8.6) -- (10,-5.3) -- (24.1,-5.3);
+\node[wirelabel,anchor=south] at (18,-5.3) {control\_hazard};
+\draw[thinline,->] (10,-5.3) -- (9,-5.3) -- (skid.south);
+\node[wirelabel,anchor=east] at (8.9,-4.1) {flush\_f};
+\draw[thinline,->] (13.7,-5.3) -- (ifid-clear);
+\node[wirelabel,anchor=west] at (13.85,-4.1) {flush\_d};
+\draw[thinline,->] (24.1,-5.3) -- (idex-clear);
+\node[wirelabel,anchor=east] at (23.95,-4.1) {flush\_e};
+\fill[arrowgreen] (10,-5.3) circle (2.4pt);
+\fill[arrowgreen] (13.7,-5.3) circle (2.4pt);
+\node[font=\footnotesize,text=hazardcolor] at (17,-11.05)
+  {Delayed redirect discards the late synchronous instruction-memory response.};
+
+\end{tikzpicture}
+\end{document}

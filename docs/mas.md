@@ -1,7 +1,7 @@
 # Microarchitecture Specification
 
 The goal of this document is to provide a reference specification for the UTOSS RISC-V core
-imeplementation. This document contains the architectural details of the design of the core and its
+implementation. This document contains the architectural details of the design of the core and its
 components.
 
 ## High-level
@@ -51,40 +51,74 @@ Spec: [5.1. "Zicsr" Extension for Control and Status Register (CSR) Instructions
 
 ![Zicsr Architecture](diagrams/zicsr.svg)
 
-Implemented across ID and WB stages. The CSR data is read via a `csr_request` data structure that
-contains things like `address`, `bit`, etc [TODO: specify more clearly].
+`csr_decode` lives in ID, `csr_wb` lives in WB, and `csr_data` is instantiated at the
+core's top level alongside the hazard unit. There is no `csr_unit` wrapper. The diagram shows
+two representative plugins; hardware consumers of the exposed interface are shown in the
+separate ECALL processing diagram below.
 
-Reads are asynchronous, i.e. `csr_data`, the value of the CSR denoted by `address`, is available
-immediately and is clocked into ID/EX register.
+`csr_decode` produces `csr_request` with `valid`, `op` (none, write, set or clear), `address`,
+`operand` (the `rs1` value or zero-extended five-bit immediate), and `write_intent`.
+CSRRW[I] always has write intent; CSRRS[I] and CSRRC[I] only have it when the encoded
+`rs1`/immediate is nonzero. ECALL is not a CSR read/modify/write request.
 
-During WB stage, `csr_request` and `csr_data` are used to produce `csr_wb_request` which carries the
-`data` containing the new contents of the CSR denoted by `address` as well as whether the write is
-needed via `write_enable`.
+Reads are asynchronous: top-level `csr_data` uses the decode request's address and returns the
+selected CSR value to ID. Both the request and the old value are clocked into ID/EX and carried
+through EX/MEM and MEM/WB. In WB the old value is available for the destination register, while
+`csr_wb` computes the new value: operand for write, old value OR operand for set, or old value
+AND NOT operand for clear. Its `csr_wb_request` contains `address`, `data` and `write_enable`
+(from `write_intent`) and feeds directly back to storage without pipeline registers.
 
-`csr_request` also carries `write_intent`, set by the CSR decoder, which `csr_wb` uses as
-`write_enable`. It is also tapped off the pipelined `csr_request` in EX, MEM and WB and fed to the
-hazard unit so that it can stall a CSR instruction that reads a CSR still being written by an
-earlier instruction.
+The hazard unit compares the ID CSR address with pending writes in EX, MEM and WB using their
+`write_intent` bits and addresses. It stalls fetch/decode and inserts an EX bubble for a matching
+CSR dependency or an unresolved `rs1` dependency. Immediate CSR forms do not depend on a GPR.
 
 ### CSR plugins
 
-`csr_data` houses all the CSRs via the generic `csr_plugin` module.
+`csr_data` houses `csr_plugin_basic` instances for software-only access and `csr_plugin`
+instances with a dedicated `csr_hw_request_if` hardware interface. Both expose `read_address`,
+`read_value` and `csr_wb_request` and are parameterized by `NAME`, `ADDRESS`, `RESET_VALUE`
+and `WRITE_MASK`. The basic variant wraps `csr_plugin` with hardware writes disabled.
 
-`csr_data`'s output is simply the OR of all the plugins' `read_value`s since the readout will only
-ever produce one real value, and all the other ones will be zeros. To add a CSR, instantiate a
-`csr_plugin` for it in `csr_data` and OR in its `read_value`.
+Each plugin returns zero unless its address matches. `csr_data` ORs all `read_value` outputs;
+adding a CSR requires an instance and inclusion of its output in that OR. Unimplemented CSRs
+read as zero and ignore writes. Masked-off bits read as their reset values.
+
+`csr_hw_request_if` carries `write_enable`, `write_data` and `read_data`. At the clock edge,
+reset has highest priority, followed by a hardware write, followed by an addressed software WB
+write. The same mask applies to the visible value after either kind of write. Currently hardware
+`read_data` mirrors the address-selected `read_value`; it is not an independent always-visible
+read of the stored CSR.
 
 ### Implemented CSRs
 
-| CSR                         | Address | Access     | Reset value |
-|-----------------------------|---------|------------|-------------|
-| [`mscratch`][spec-mscratch] | `0x340` | read/write | `0`         |
-| [`mhartid`][spec-mhartid]   | `0xF14` | read-only  | `0`         |
+| CSR | Address | Access | Write mask | Reset value |
+|-----|---------|--------|------------|-------------|
+| `mtvec` | `0x305` | read/write | `0xFFFFFFFC` | `0` |
+| `mscratch` | `0x340` | read/write | `0xFFFFFFFF` | `0` |
+| `mepc` | `0x341` | read/write + hardware | `0xFFFFFFFE` |
+| `mcause` | `0x342` | read/write + hardware | `0x8000001F` |
+| `mhartid` | `0xF14` | read-only | `0x00000000` | `0` |
 
-[spec-mscratch]: https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-13-machine-scratch-mscratch-register
-[spec-mhartid]: https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-5-hart-id-mhartid-register
+`mtvec` supports Direct mode only: its low two bits are fixed at zero. `mepc` fixes bit zero
+to zero, while `mcause` exposes the interrupt bit and the low five exception-code bits.
 
-Accessing an unimplemented CSR reads a zero and writes to it are ignored, and so are writes to
-read-only bits.
+### ECALL processing
+
+![ECALL Microarchitecture](diagrams/ecall.svg)
+
+The diagram isolates the IF/ID/EX path and the three trap-related CSR plugins. The dashed
+`mtvec` connection shows the intended dedicated hardware read access: fetch selects its
+asynchronous `read_data` as the next PC when EX selects `PC_SRC__MTVEC`. This interface has
+no read-enable or request/response handshake. PC-source selection is EX stage logic alongside
+`ecall_processor`; the processor itself emits the `mepc` and `mcause` hardware writes.
+
+Decode carries `is_ecall` and the instruction PC through ID/EX. In EX, `ecall_processor`
+drives the dedicated hardware interfaces to write that PC to `mepc` and machine-mode ECALL
+exception code 11 (interrupt bit clear) to `mcause`. These writes bypass the software WB path
+and take priority over simultaneous software writes to the same plugin.
+
+EX selects `PC_SRC__MTVEC` for ECALL. The fetch PC mux uses `mtvec_hw_request.read_data`
+for that selection, and the hazard unit flushes fetch, decode and execute for a control redirect
+and its one-cycle delayed indication to account for synchronous instruction memory.
 
 ## M extension

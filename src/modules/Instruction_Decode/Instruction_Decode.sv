@@ -27,6 +27,10 @@ module Instruction_Decode
   , output ext__m__types::m_div_control_t div_control
 `endif
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , output logic is_ecall
+`endif
+
   );
 
   alu_op_t alu_op;
@@ -200,6 +204,15 @@ module Instruction_Decode
     , .div_control ( div_control )
 `endif
     );
+`endif
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  // Match the complete encoding; CSR instructions with address zero are not ECALL.
+  assign is_ecall = (opcode == OPCODE_SYSTEM)
+                 && (imm_ext == '0)
+                 && (funct3 == 3'b000)
+                 && (rd == 5'd0)
+                 && (rs1 == 5'd0);
 `endif
 
 

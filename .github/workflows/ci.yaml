@@ -121,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pyuvm-results
-          path: PyUVM/results.xml
+          path: PyUVM/results-*.xml
           retention-days: 7
 
   build_and_test:

@@ -34,9 +34,16 @@ module utoss_riscv
 
   data_t      wb_result;
   reg_t       wb_rd;
+
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   ext__zicsr__types::csr_wb_request_t wb_csr_wb_request;
+  ext__zicsr__types::csr_request_t id_csr_request;
+  data_t csr_data;
+  csr_hw_request_if mtvec_hw_request();
+  csr_hw_request_if mepc_hw_request();
+  csr_hw_request_if mcause_hw_request();
 `endif
+
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
@@ -54,6 +61,10 @@ module utoss_riscv
 
     , .imem__address ( i_bus.address   )
     , .imem__data    ( i_bus.read_data )
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .mtvec_hw_request ( mtvec_hw_request )
+`endif
     );
 
   assign i_bus.write_data = data_t'(0);
@@ -75,11 +86,13 @@ module utoss_riscv
     , .clk         ( clk                     )
     , .reset       ( reset                   )
     , .data        ( wb_result               )
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .csr_wb_request     ( wb_csr_wb_request                      )
-`endif
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_request ( id_csr_request )
+    , .csr_data    ( csr_data       )
+`endif
 
     , .id_to_ex ( id_to_ex_out )
     );
@@ -104,6 +117,11 @@ module utoss_riscv
 
     , .ex_to_mem ( ex_to_mem_out )
     , .ex_to_if  ( ex_to_if_out  )
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .mepc_hw_request   ( mepc_hw_request   )
+    , .mcause_hw_request ( mcause_hw_request )
+`endif
     );
 
   // execute stage end
@@ -140,7 +158,7 @@ module utoss_riscv
     , .result           ( wb_result               )
     , .rd               ( wb_rd                   )
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .csr_wb_request     ( wb_csr_wb_request                      )
+    , .csr_wb_request   ( wb_csr_wb_request       )
 `endif
     );
 
@@ -187,6 +205,21 @@ module utoss_riscv
     , .flush_d    ( flush_d       )
     , .flush_e    ( flush_e       )
     );
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  csr_data u_csr_data
+    ( .clk            ( clk   )
+    , .reset          ( reset )
+
+    , .csr_request    ( id_csr_request    )
+    , .csr_wb_request ( wb_csr_wb_request )
+    , .csr_data       ( csr_data          )
+
+    , .mcause_hw_request ( mcause_hw_request )
+    , .mepc_hw_request   ( mepc_hw_request   )
+    , .mtvec_hw_request  ( mtvec_hw_request  )
+    );
+`endif
 
   // hazard module end
 

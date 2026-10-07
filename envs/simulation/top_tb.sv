@@ -86,7 +86,7 @@ module top_tb
       #1;
 
       // Detect self-loop (e.g. `done: j done` where jump target equals jump PC)
-      if (uut.core.ex_to_if_out.pc_src &&
+      if (uut.core.ex_to_if_out.pc_src != PC_SRC__INCREMENT &&
           (uut.core.ex_to_if_out.pc_target == uut.core.id_to_ex_reg.pc_cur)) begin
         loop_count = loop_count + 1;
         if (loop_count >= 2) begin

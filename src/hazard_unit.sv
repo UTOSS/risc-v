@@ -84,11 +84,11 @@ module hazard_unit
   //Flush when a control hazard occurs; we need to flush one cycle later than we discover the
   // control hazard; this is due to synchronous memory making the instruction available one cycle
   // later than with async memory
-  reg pc_src_e_lag;
+  pc_src_t pc_src_e_lag;
   always_ff @ (posedge clk) pc_src_e_lag <= pc_src_e;
 
   wire control_hazard;
-  assign control_hazard = pc_src_e || pc_src_e_lag;
+  assign control_hazard = (pc_src_e != PC_SRC__INCREMENT) || (pc_src_e_lag != PC_SRC__INCREMENT);
 
   assign flush_f = control_hazard;
   assign flush_d = control_hazard;

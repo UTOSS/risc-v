@@ -15,6 +15,11 @@ module execute_stage
 
   , output ex_to_if_t ex_to_if
   , output ex_to_mem_t ex_to_mem
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , csr_hw_request_if.hw mcause_hw_request
+  , csr_hw_request_if.hw mepc_hw_request
+`endif
   );
 
   data_t alu_input_a;
@@ -110,6 +115,17 @@ assign alu_result = alu_result_base;
 assign zero_flag  = zero_flag_base;
 `endif
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+   ecall_processor u_ecall_processor
+    ( .enable ( id_to_ex.is_ecall )
+
+    , .pc ( id_to_ex.pc_cur )
+
+    , .mepc_hw_request   ( mepc_hw_request   )
+    , .mcause_hw_request ( mcause_hw_request )
+    );
+`endif
+
   typedef enum logic [2:0]
     { FUNCT3__BEQ  = 3'b000
     , FUNCT3__BNE  = 3'b001
@@ -148,9 +164,21 @@ assign zero_flag  = zero_flag_base;
     endcase
 
   logic should_branch;
-  assign should_branch = jump_e | (branch_e & branch_condition_met);
+  assign should_branch = jump_e
+    | (branch_e & branch_condition_met)
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    | id_to_ex.is_ecall
+`endif
+;
 
-  assign pc_src = should_branch ? PC_SRC__ALU_RESULT : PC_SRC__INCREMENT;
+  assign pc_src =
+    should_branch ?
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      (id_to_ex.is_ecall ? PC_SRC__MTVEC : PC_SRC__ALU_RESULT)
+`else
+      (PC_SRC__ALU_RESULT)
+`endif
+      : PC_SRC__INCREMENT;
 
   assign ex_to_mem.result_src   = id_to_ex.result_src;
   assign ex_to_mem.mem_write    = id_to_ex.mem_write;
