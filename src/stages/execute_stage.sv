@@ -51,7 +51,7 @@ module execute_stage
   logic zero_flag;
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
-  data_t zbb_result, zbkb_result;
+  data_t zba_result, zbb_result, zbkb_result;
   logic  zbb_zero_flag, zbkb_zero_flag;
 `endif
 
@@ -135,6 +135,12 @@ module execute_stage
     alu_result;
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
+  zba u_zba
+    ( .reg1 (rs1)
+    , .reg2 (rs2)
+    , .inst (id_to_ex.funct3)
+    , .out (zba_result)
+    );
   zbb u_zbb
     ( .a              ( alu_input_a            )
     , .b              ( alu_input_b            )
