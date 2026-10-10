@@ -37,6 +37,7 @@ out/**
 !out/.gitkeep
 build/**
 !build/.gitkeep
+uvm/build/
 
 docs/build/**
 !docs/build/.gitkeep
