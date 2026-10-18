@@ -21,54 +21,63 @@ module div(
     logic [31:0] dividend;
     logic [31:0] divisor;
 
-
     // pre-processing
 
-    logic signed_op, dividend_neg, divisor_neg, quot_neg, rem_neg;
+    logic signed_op, dividend_neg, divisor_neg, quot_neg, rem_neg, div_by_zero, signed_overflow;
     logic [31:0] dividend_abs, divisor_abs;
     logic [1:0] op;
     logic special;
 
+    /* verilator lint_off UNUSEDSIGNAL */
     logic [32:0] rem_q;
+    /* verilator lint_on UNUSEDSIGNAL */
     logic [31:0] quot_q;
     logic [31:0] divisor_q;
     logic [5:0] count;
 
     // FSM definitions
-    localparam IDLE = 4'd0,
-                LOAD = 4'd1,
-                ITER = 4'd2,
-                CORRECT = 4'd3,
-                FINISH = 4'd4;
+    localparam bit [3:0] IDLE = 4'd0;
+    localparam bit [3:0] LOAD = 4'd1;
+    localparam bit [3:0] ITER = 4'd2;
+    localparam bit [3:0] CORRECT = 4'd3;
+    localparam bit [3:0] FINISH = 4'd4;
 
-    logic [3:0] state = IDLE;
+    logic [3:0] state;
 
     logic [32:0] rem_sh;
     logic [31:0] quot_sh;
     logic [32:0] diff;
-    logic [32:0] quote;
-    logic [32:0] rem;
+    logic [31:0] quot;
+    logic [31:0] rem;
 
-    always_comb begin
-        signed_op = (op == 2'b00) | (op == 2'b10);
-        dividend_neg = signed_op & dividend[31];
-        divisor_neg  = signed_op & divisor[31];
-        dividend_abs = dividend_neg ? -dividend : dividend;
-        divisor_abs = divisor_neg  ? -divisor : divisor;
-        quot_neg = dividend_neg ^ divisor_neg;
-        rem_neg = dividend_neg;  // remainder takes the dividend's sign
+    assign signed_op = (op == 2'b00) | (op == 2'b10);
+    assign dividend_neg = signed_op & dividend[31];
+    assign divisor_neg = signed_op & divisor[31];
+    assign dividend_abs = dividend_neg ? -dividend : dividend;
+    assign divisor_abs = divisor_neg ? -divisor : divisor;
+    assign quot_neg = dividend_neg ^ divisor_neg;
+    assign rem_neg = dividend_neg; // remainder takes the dividend's sign
 
-        busy_o = (state != IDLE);
-        ready_o = (state == FINISH);
-        special = (divisor == 32'd0) | (signed_op & (dividend == 32'h8000_0000) & (divisor == 32'hFFFF_FFFF));
+    assign busy_o = (state != IDLE);
+    assign ready_o = (state == FINISH);
 
-        // shift registers
-        rem_sh = {rem_q[31:0], quot_q[31]};   // top dividend bit in
-        quot_sh = {quot_q[30:0], 1'b0};
-        diff = rem_sh - {1'b0, divisor_q};
-   
-    end
+    assign div_by_zero = (divisor == 32'd0);
+    assign signed_overflow =
+        signed_op & (dividend == 32'h8000_0000) & (divisor == 32'hFFFF_FFFF);
+    assign special = div_by_zero | signed_overflow;
 
+
+    assign rem_sh = {rem_q[31:0], quot_q[31]}; // top dividend bit in
+    assign quot_sh = {quot_q[30:0], 1'b0};
+    assign diff = rem_sh - {1'b0, divisor_q};
+
+    // sign correction; only meaningful once the iteration has finished
+    assign quot = quot_neg ? -quot_q : quot_q;
+    assign rem = rem_neg ? -rem_q[31:0] : rem_q[31:0];
+    assign result_o = div_by_zero ? (op[1] ? dividend : 32'hFFFF_FFFF)
+        : op[1] ? rem : quot;
+
+    /* svlint off sequential_block_in_always_ff */
     always_ff @(posedge clk) begin
 
         if (~rst_n) begin
@@ -81,49 +90,38 @@ module div(
         else case (state)
 
             IDLE: begin
-                if (start_i)  begin
+                if (start_i) begin
                     state <= LOAD;
                     dividend <= rs1_i;
                     divisor <= rs2_i;
                     op <= op_i;
-                end 
+                end
             end
+
             LOAD: begin
-                rem_q <= 0;
+                rem_q <= 33'b0;
                 quot_q <= dividend_abs;
                 divisor_q <= divisor_abs;
-                count <= 31;
-
-                state <= ITER;
-                if (special) state <= FINISH;
+                count <= 6'd31;
+                state <= special ? FINISH : ITER;
             end
+
             ITER: begin
-                
-                rem_sh = {rem_q[31:0], quot_q[31]}; // shift the remainder & quotient
-                quot_sh = {quot_q[30:0], 1'b0};
-                diff = rem_sh - {1'b0, divisor_q}; // perform subtraction, 33 bit
                 // keep the difference or restore?
-                rem_q  <= ~diff[32] ? diff : rem_sh;
+                rem_q <= ~diff[32] ? diff : rem_sh;
                 quot_q <= ~diff[32] ? (quot_sh | 32'd1) : quot_sh;
+                count <= count - 6'd1;
+                if (count == 6'd0) state <= CORRECT;
+            end
 
-                count <= count - 1;
+            CORRECT: state <= FINISH;
 
-                if (count == 0) state <= CORRECT;
-                
-            end
-            CORRECT: begin
-                quot = quot_neg ? -quot_q : quot_q;
-                rem = rem_neg ? -rem_q[31:0] : rem_q[31:0];
-                result_o = op[1] ? rem : quot;
-                state <= FINISH;
-            end
-            FINISH: begin
-                state <= IDLE;
-            end
+            FINISH: state <= IDLE;
 
             default: state <= IDLE;
 
         endcase
     end
+    /* svlint on sequential_block_in_always_ff */
 
 endmodule
