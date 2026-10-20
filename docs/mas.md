@@ -80,9 +80,11 @@ ever produce one real value, and all the other ones will be zeros. To add a CSR,
 |-----------------------------|---------|------------|-------------|
 | [`mscratch`][spec-mscratch] | `0x340` | read/write | `0`         |
 | [`mhartid`][spec-mhartid]   | `0xF14` | read-only  | `0`         |
+| [`marcihd`][spec-marchid]   | `0xF12` | read-only  | `0`         |
 
 [spec-mscratch]: https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-13-machine-scratch-mscratch-register
 [spec-mhartid]: https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-5-hart-id-mhartid-register
+[spec-marchid]: https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-3-machine-architecture-id-marchid-register
 
 Accessing an unimplemented CSR reads a zero and writes to it are ignored, and so are writes to
 read-only bits.

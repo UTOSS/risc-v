@@ -15,6 +15,7 @@ module csr_data
 
   data_t mscratch_read_value;
   data_t mhartid_read_value;
+  data_t marchid_read_value;
 
   csr_plugin
     #( .NAME        ( "mscratch"         )
@@ -44,7 +45,21 @@ module csr_data
     , .csr_wb_request ( csr_wb_request      )
     );
 
+  csr_plugin
+    #( .NAME        ( "marchid"         )
+    , .ADDRESS      ( 12'hf12           )
+    , .RESET_VALUE  ( 32'h0000_0000     )
+    , .WRITE_MASK   ( 32'h0000_0000     )
+    )
+    u_marchid
+    ( .clk            ( clk                 )
+    , .reset          ( reset               )
+    , .read_address   ( csr_request.address )
+    , .read_value     ( marchid_read_value  )
+    , .csr_wb_request ( csr_wb_request      )
+    );
+
   // async read
-  assign csr_data = mscratch_read_value | mhartid_read_value;
+  assign csr_data = mscratch_read_value | mhartid_read_value | marchid_read_value;
 
 endmodule
