@@ -93,6 +93,22 @@ RUN test "$(command -v cocotb-config)" = /opt/pyuvm/bin/cocotb-config && \
     test "$(command -v verilator)" = /opt/oss-cad-suite/bin/verilator && \
     verilator --version
 
+# Install the pinned Accellera SystemVerilog UVM reference implementation.
+ARG UVM_VERSION=2020.3.1
+ARG UVM_ARCHIVE=UVM-1800.2-${UVM_VERSION}.tar.gz
+ARG UVM_URL=https://www.accellera.org/images/downloads/standards/uvm/${UVM_ARCHIVE}
+ARG UVM_SHA256=0d6a2ca5811c787e5aa1e945abaaaa5d5c295148d5e704c9fa910d7b288cbcf7
+RUN set -eux; \
+    mkdir -p /tmp/uvm /opt/uvm; \
+    cd /tmp/uvm; \
+    wget "${UVM_URL}" -O "${UVM_ARCHIVE}"; \
+    echo "${UVM_SHA256}  ${UVM_ARCHIVE}" | sha256sum -c -; \
+    tar -xzf "${UVM_ARCHIVE}" -C /opt/uvm; \
+    test -f "/opt/uvm/1800.2-${UVM_VERSION}/src/uvm_pkg.sv"; \
+    rm -rf /tmp/uvm
+ENV UVM_HOME=/opt/uvm/1800.2-${UVM_VERSION}/src
+RUN test -f "${UVM_HOME}/uvm_pkg.sv"
+
 # install svlint
 USER dev
 ARG SVLINT_VERSION=0.9.3
