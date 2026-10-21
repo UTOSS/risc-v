@@ -4,7 +4,7 @@ FROM ghcr.io/utoss/quartus:latest AS quartus
 
 FROM ghcr.io/utoss/oss-cad-suite:latest AS oss-cad-suite
 
-FROM public.ecr.aws/lts/ubuntu:22.04_stable
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG KEYRING_PATH=/usr/share/keyrings
