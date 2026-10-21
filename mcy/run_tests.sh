@@ -27,12 +27,13 @@ for file in "${tests[@]}"; do
     [[ -f "$file" ]] || { echo "Unknown testbench: $file" >&2; exit 1; }
     test=$(basename "$file" .sv)
     echo "Running $test"
-    verilator --binary --timing --assert -sv -Wno-fatal -Wno-lint -Wno-style -Wno-TIMESCALEMOD -DTESTBENCH \
+    verilator --binary --timing --assert -sv -Wno-fatal -Wno-lint -Wno-UNOPTFLAT -Wno-style -Wno-TIMESCALEMOD -DTESTBENCH \
         -I"$root" --top-module "$test" --Mdir "obj_$test" \
         mutated.v "${sources[@]}" "$file"
     if ! timeout 60s "./obj_$test/V$test"; then
         echo "FAILED: $test"
         status=FAIL
+        break
     fi
 done
 
