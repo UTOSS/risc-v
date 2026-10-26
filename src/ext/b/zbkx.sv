@@ -1,7 +1,7 @@
 `include "src/headers/types.svh"
 `include "src/ext/b/types.svh"
 
-module zbkb(
+module zbkx(
     input [`PROCESSOR_BITNESS - 1:0] a
   , input [`PROCESSOR_BITNESS - 1:0] b
   , input ext__b__types::b_alu_control_t b_alu_control
@@ -12,10 +12,10 @@ module zbkb(
   import ext__b__types::*;
 
   localparam int XLEN = `PROCESSOR_BITNESS;
-  localparam int SHIFT_WIDTH = $clog2(XLEN);
 
   function automatic logic [3:0] xperm4_lookup (input [3:0] idx , input [XLEN - 1:0] lut);
-    xperm4_lookup = lut[idx * 4 +: 4];
+    if (int'(idx) < XLEN / 4) xperm4_lookup = lut[idx * 4 +: 4];
+    else xperm4_lookup = 4'b0;
   endfunction
 
   function automatic logic [XLEN - 1:0] get_xperm4 (input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
@@ -25,7 +25,8 @@ module zbkb(
   endfunction
 
   function automatic logic [7:0] xperm8_lookup (input [7:0] idx , input [XLEN - 1:0] lut);
-    xperm8_lookup = lut[idx * 8 +: 8];
+    if (int'(idx) < XLEN / 8) xperm8_lookup = lut[idx * 8 +: 8];
+    else xperm8_lookup = 8'b0;
   endfunction
 
   function automatic logic [XLEN - 1:0] get_xperm8 (input [XLEN - 1:0] rs1, input [XLEN - 1:0] rs2);
