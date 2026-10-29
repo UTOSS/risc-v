@@ -6,6 +6,7 @@
 `include "src/interfaces/ex_to_if_if.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
 `include "src/interfaces/mem_bus.svh"
+`include "src/ext/zicsr/types.svh"
 
 // pipelined implementation of our core
 module utoss_riscv
@@ -33,6 +34,16 @@ module utoss_riscv
 
   data_t      wb_result;
   reg_t       wb_rd;
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  ext__zicsr__types::csr_wb_request_t wb_csr_wb_request;
+  ext__zicsr__types::csr_request_t id_csr_request;
+  data_t csr_data;
+  csr_hw_request_if mtvec_hw_request();
+  csr_hw_request_if mepc_hw_request();
+  csr_hw_request_if mcause_hw_request();
+`endif
+
   // common declarations end
 
   // fetch stage start (@thatlittlegit)
@@ -50,6 +61,10 @@ module utoss_riscv
 
     , .imem__address ( i_bus.address   )
     , .imem__data    ( i_bus.read_data )
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .mtvec_hw_request ( mtvec_hw_request )
+`endif
     );
 
   assign i_bus.write_data = data_t'(0);
@@ -71,13 +86,13 @@ module utoss_riscv
     , .clk         ( clk                     )
     , .reset       ( reset                   )
     , .data        ( wb_result               )
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .csr_write_addr( mem_to_wb_reg.csr_addr        )
-    , .csr_write_enable_wb( mem_to_wb_reg.csr_write_enable )
-    , .csr_write_data_wb( mem_to_wb_reg.csr_write_data )
-`endif
     , .rd_wb       ( wb_rd                   )
     , .reg_write_w ( mem_to_wb_reg.reg_write )
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_request ( id_csr_request )
+    , .csr_data    ( csr_data       )
+`endif
 
     , .id_to_ex ( id_to_ex_out )
     );
@@ -87,13 +102,26 @@ module utoss_riscv
   // execute stage begin (@MSh-786 and tandr3w)
 
   always_ff @ (posedge clk)
-    if (reset)        id_to_ex_reg <= '0;
-    else if (flush_e) id_to_ex_reg <= '0;
-    else              id_to_ex_reg <= id_to_ex_out;
+    if (reset)         id_to_ex_reg <= '0;
+    else if (flush_e)  id_to_ex_reg <= '0;
+    else if (!stall_e) id_to_ex_reg <= id_to_ex_out;
 
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  logic div_busy_e, div_done_e;
+`endif
   execute_stage u_execute_stage
-    ( .id_to_ex ( id_to_ex_reg )
+    ( .id_to_ex     ( id_to_ex_reg    )
+`ifdef UTOSS_RISCV__ANY_M
+    , .clk          ( clk             )
+    , .reset        ( reset           )
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    , .div_start_e  ( div_start_e     )
+    , .div_cancel_e ( div_cancel_e    )
+    , .div_busy_e   ( div_busy_e      )
+    , .div_done_e   ( div_done_e      )
 
+`endif
     , .hz_forward_a ( hz_forward_a )
     , .hz_forward_b ( hz_forward_b )
 
@@ -102,6 +130,11 @@ module utoss_riscv
 
     , .ex_to_mem ( ex_to_mem_out )
     , .ex_to_if  ( ex_to_if_out  )
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .mepc_hw_request   ( mepc_hw_request   )
+    , .mcause_hw_request ( mcause_hw_request )
+`endif
     );
 
   // execute stage end
@@ -109,8 +142,9 @@ module utoss_riscv
   // memory stage begin (@Invisipac)
 
   always_ff @ (posedge clk)
-    if (reset) ex_to_mem_reg <= '0;
-    else       ex_to_mem_reg <= ex_to_mem_out;
+    if (reset)        ex_to_mem_reg <= '0;
+    else if (stall_e) ex_to_mem_reg <= '0;
+    else              ex_to_mem_reg <= ex_to_mem_out;
 
   memory_stage u_memory_stage
   ( .ex_to_mem ( ex_to_mem_reg )
@@ -137,6 +171,9 @@ module utoss_riscv
     , .data_from_memory ( d_bus.read_data         )
     , .result           ( wb_result               )
     , .rd               ( wb_rd                   )
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .csr_wb_request   ( wb_csr_wb_request       )
+`endif
     );
 
   // writeback stage end
@@ -145,7 +182,10 @@ module utoss_riscv
 
   hazard_forward_a_t hz_forward_a;
   hazard_forward_b_t hz_forward_b;
-  logic stall_f, stall_d, flush_f, flush_d, flush_e;
+  logic stall_f, stall_d, stall_e, flush_f, flush_d, flush_e;
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  logic div_start_e, div_cancel_e;
+`endif
 
   hazard_unit u_hazard_unit
     ( .clk ( clk )
@@ -163,25 +203,48 @@ module utoss_riscv
     , .pc_src_e     ( ex_to_if_out.pc_src     )
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-    , .reg_write_e        ( id_to_ex_reg.reg_write  )
-    , .csr_instr_d        ( (id_to_ex_out.result_src == RESULT_SRC__CSR_READ) || id_to_ex_out.csr_write_enable )
-    , .csr_write_intent_e ( id_to_ex_reg.csr_write_enable )
-    , .csr_write_intent_m ( ex_to_mem_reg.csr_write_enable )
-    , .csr_write_intent_w ( mem_to_wb_reg.csr_write_enable )
-    , .csr_addr_d         ( id_to_ex_out.csr_addr )
-    , .csr_addr_e         ( id_to_ex_reg.csr_addr )
-    , .csr_addr_m         ( ex_to_mem_reg.csr_addr )
-    , .csr_addr_w         ( mem_to_wb_reg.csr_addr )
+    , .reg_write_e        ( id_to_ex_reg.reg_write                 )
+    , .csr_instr_d        ( id_to_ex_out.csr_request.valid         )
+    , .csr_write_intent_e ( id_to_ex_reg.csr_request.write_intent  )
+    , .csr_write_intent_m ( ex_to_mem_reg.csr_request.write_intent )
+    , .csr_write_intent_w ( mem_to_wb_reg.csr_request.write_intent )
+    , .csr_addr_d         ( id_to_ex_out.csr_request.address       )
+    , .csr_addr_e         ( id_to_ex_reg.csr_request.address       )
+    , .csr_addr_m         ( ex_to_mem_reg.csr_request.address      )
+    , .csr_addr_w         ( mem_to_wb_reg.csr_request.address      )
 `endif
 
-    , .forward_a_e ( hz_forward_a )
-    , .forward_b_e ( hz_forward_b )
-    , .stall_f    ( stall_f       )
-    , .stall_d    ( stall_d       )
-    , .flush_f    ( flush_f       )
-    , .flush_d    ( flush_d       )
-    , .flush_e    ( flush_e       )
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    , .div_e        ( id_to_ex_reg.is_div     )
+    , .div_busy_e   ( div_busy_e              )
+    , .div_done_e   ( div_done_e              )
+    , .div_start_e  ( div_start_e             )
+    , .div_cancel_e ( div_cancel_e            )
+`endif
+    , .forward_a_e  ( hz_forward_a  )
+    , .forward_b_e  ( hz_forward_b  )
+    , .stall_f      ( stall_f       )
+    , .stall_d      ( stall_d       )
+    , .stall_e      ( stall_e       )
+    , .flush_f      ( flush_f       )
+    , .flush_d      ( flush_d       )
+    , .flush_e      ( flush_e       )
     );
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  csr_data u_csr_data
+    ( .clk            ( clk   )
+    , .reset          ( reset )
+
+    , .csr_request    ( id_csr_request    )
+    , .csr_wb_request ( wb_csr_wb_request )
+    , .csr_data       ( csr_data          )
+
+    , .mcause_hw_request ( mcause_hw_request )
+    , .mepc_hw_request   ( mepc_hw_request   )
+    , .mtvec_hw_request  ( mtvec_hw_request  )
+    );
+`endif
 
   // hazard module end
 
@@ -192,6 +255,7 @@ module utoss_riscv
 
     , .if_stage      ( if_to_id_out  )
     , .id_stage      ( if_to_id_reg  )
+    , .id_stage_out  ( id_to_ex_out  )
     , .ex_stage      ( id_to_ex_reg  )
     , .ex_stage_out  ( ex_to_mem_out )
     , .ex_to_if      ( ex_to_if_out  )

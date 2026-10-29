@@ -4,22 +4,20 @@
 /* verilator lint_off DECLFILENAME */
 package ext__m__types;
 /* verilator lint_on DECLFILENAME */
-  typedef enum logic [2:0]
+  typedef enum logic [1:0]
     {
-      M_ALU_CTRL__MUL_NONE = 3'b000
-    , M_ALU_CTRL__MUL      = 3'b001
-    , M_ALU_CTRL__MULH     = 3'b010
-    , M_ALU_CTRL__MULHSU   = 3'b011
-    , M_ALU_CTRL__MULHU    = 3'b100
+      M_ALU_CTRL__MUL    = 2'b00
+    , M_ALU_CTRL__MULH   = 2'b01
+    , M_ALU_CTRL__MULHSU = 2'b10
+    , M_ALU_CTRL__MULHU  = 2'b11
     } m_mul_control_t;
 
-  typedef enum logic [2:0]
+  typedef enum logic [1:0]
     {
-      M_ALU_CTRL__DIV_NONE = 3'b000
-    , M_ALU_CTRL__DIV      = 3'b001
-    , M_ALU_CTRL__DIVU     = 3'b010
-    , M_ALU_CTRL__REM      = 3'b011
-    , M_ALU_CTRL__REMU     = 3'b100
+      M_ALU_CTRL__DIV  = 2'b00
+    , M_ALU_CTRL__DIVU = 2'b01
+    , M_ALU_CTRL__REM  = 2'b10
+    , M_ALU_CTRL__REMU = 2'b11
     } m_div_control_t;
 
 endpackage

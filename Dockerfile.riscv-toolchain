@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lts/ubuntu:22.04_stable AS builder
+FROM ubuntu:22.04 AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG KEYRING_PATH=/usr/share/keyrings
@@ -34,7 +34,7 @@ RUN sudo apt-get install -y \
     sudo make
 
 # main image stage
-FROM public.ecr.aws/lts/ubuntu:22.04_stable
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG KEYRING_PATH=/usr/share/keyrings

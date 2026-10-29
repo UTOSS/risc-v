@@ -17,10 +17,6 @@ module Instruction_Decode
   , output ext__b__types::b_alu_control_t b_alu_control
 `endif
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
-  , output csr_addr_t csr_addr
-`endif
-
 `ifdef UTOSS_RISCV__MUL_ENABLED
   , output logic is_mul
   , output ext__m__types::m_mul_control_t mul_control
@@ -29,6 +25,10 @@ module Instruction_Decode
 `ifdef UTOSS_RISCV__DIV_ENABLED
   , output logic is_div
   , output ext__m__types::m_div_control_t div_control
+`endif
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , output logic is_ecall
 `endif
 
   );
@@ -150,11 +150,6 @@ module Instruction_Decode
     endcase
   end
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
-  always_comb
-    csr_addr = (opcode == OPCODE_SYSTEM) ? csr_addr_t'(instr[31:20]) : csr_addr_t'('0);
-`endif
-
   // case statement for choosing 32-bit immediate format; based on opcode
     // this is essentially the extend module of the processor
   always @(*) begin
@@ -167,6 +162,9 @@ module Instruction_Decode
       OPCODE_JAL       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
       OPCODE_AUIPC  : imm_ext = {instr[31:12], 12'h000};
       OPCODE_LUI  : imm_ext = {instr[31:12], 12'h000};
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      OPCODE_SYSTEM : imm_ext = {{20{instr[31]}}, instr[31:20]}; // csr address
+`endif
       default:     imm_ext = 32'b0;
     endcase
   end
@@ -197,15 +195,24 @@ module Instruction_Decode
     ( .funct3      ( funct3      )
     , .funct7      ( funct7      )
     , .opcode      ( opcode      )
-    , .is_mul      ( is_mul      )
-    , .is_div      ( is_div      )
 `ifdef UTOSS_RISCV__MUL_ENABLED
+    , .is_mul      ( is_mul      )
     , .mul_control ( mul_control )
 `endif
 `ifdef UTOSS_RISCV__DIV_ENABLED
+    , .is_div      ( is_div      )
     , .div_control ( div_control )
 `endif
     );
+`endif
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  // Match the complete encoding; CSR instructions with address zero are not ECALL.
+  assign is_ecall = (opcode == OPCODE_SYSTEM)
+                 && (imm_ext == '0)
+                 && (funct3 == 3'b000)
+                 && (rd == 5'd0)
+                 && (rs1 == 5'd0);
 `endif
 
 

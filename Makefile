@@ -65,8 +65,9 @@ UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 \
 	-CFLAGS "-Wno-unknown-warning-option" \
 	$(UTOSS_RISCV_VERILATOR_DEFINES)
-TOP_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR)
-RISCOF_VERILATOR_FLAGS := $(TOP_VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
+TOP_MODULE ?= top_tb
+TOP_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR) -DUTOSS_PIPELINE_LOGGER
+RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
 # Testbench-only defines
 TB_DEFINES := -DTESTBENCH
@@ -97,6 +98,9 @@ print_srcs:
 print_tb_srcs:
 	@echo $(TB_SRCS)
 
+print_verilator_defines:
+	@echo $(UTOSS_RISCV_VERILATOR_DEFINES)
+
 # ===========================
 # Top module
 # ===========================
@@ -109,7 +113,7 @@ $(OUT_DIR)/top_sim: $(SRCS)
 	@mkdir -p $(OUT_DIR)
 	@mkdir -p $(BUILD_DIR)/top
 	$(VERILATOR) $(TOP_VERILATOR_FLAGS) \
-		--top-module top \
+		--top-module $(TOP_MODULE) \
 		--Mdir $(BUILD_DIR)/top \
 		-o top_sim \
 		$(SRCS)
@@ -149,6 +153,15 @@ $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
 		-o $(basename $(notdir $@)) \
 		$(SRCS) $<
 	cp $(BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
+
+# ===========================
+# PyUVM verification
+# ===========================
+.PHONY: test_pyuvm
+test_pyuvm:
+	cd PyUVM && PYTHONPATH="$(CURDIR)/PyUVM" python3 -m pytest --import-mode=importlib tests
+	$(MAKE) -C PyUVM MODULE=test_alu
+	$(MAKE) -C PyUVM MODULE=test_ecall UTOSS_RISCV_CONFIG=RV32IZicsr
 
 # ===========================
 # Create new testbench
