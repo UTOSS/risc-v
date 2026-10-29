@@ -25,8 +25,8 @@ module execute_stage
   logic zero_flag;
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
-  data_t zbb_result, zbkb_result;
-  logic  zbb_zero_flag, zbkb_zero_flag;
+  data_t zbb_result, zbkb_result, zbkx_result;
+  logic  zbb_zero_flag, zbkb_zero_flag, zbkx_zero_flag;
 `endif
 
 
@@ -87,6 +87,13 @@ module execute_stage
     , .out            ( zbkb_result             )
     , .zeroE          ( zbkb_zero_flag          )
     );
+  zbkx u_zbkx
+    ( .a              ( alu_input_a            )
+    , .b              ( alu_input_b            )
+    , .b_alu_control  ( id_to_ex.b_alu_control )
+    , .out            ( zbkx_result            )
+    , .zeroE          ( zbkx_zero_flag         )
+    );
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   always_comb begin
@@ -97,6 +104,10 @@ module execute_stage
         id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__UNZIP) begin
         alu_result = zbkb_result;
         zero_flag  = zbkb_zero_flag;
+    end else if (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__XPERM4 ||
+                 id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__XPERM8) begin
+        alu_result = zbkx_result;
+        zero_flag  = zbkx_zero_flag;
     end else if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
         alu_result = zbb_result;
         zero_flag  = zbb_zero_flag;

@@ -19,11 +19,12 @@ module ext__b__decoder
   localparam bit [6:0] FUNCT7_ZBA = 7'b0010000;
   localparam bit [6:0] FUNCT7_ZBB__LOGICAL = 7'b0100000;
   localparam bit [6:0] FUNCT7_ZBB__MINMAX = 7'b0000101;
-  localparam bit [6:0] FUNCT7_PACK_GROUP = 7'b0000100;
+  localparam bit [6:0] FUNCT7_PACK__GROUP = 7'b0000100;
   localparam bit [6:0] FUNCT7_ZBB__ROTATE = 7'b0110000;
   localparam bit [6:0] FUNCT7_ZBB__ORCB  = 7'b0010100;
   localparam bit [6:0] FUNCT7_ZBB__REV8_BREV8  = 7'b0110100;
   localparam bit [6:0] FUNCT7_ZBKB__ZIP_UNZIP  = 7'b0000100;
+  localparam bit [6:0] FUNCT7_ZBKX__XPERM4_XPERM8 = 7'b0010100;
 
   always_comb
     case (opcode)
@@ -57,7 +58,7 @@ module ext__b__decoder
               3'b101:  b_alu_control = B_ALU_CTRL__ROR;
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
-          FUNCT7_PACK_GROUP:
+          FUNCT7_PACK__GROUP:
             case (funct3)
               3'b100:
                 case (rs2)
@@ -67,10 +68,15 @@ module ext__b__decoder
               3'b111: b_alu_control = B_ALU_CTRL__PACKH;
               default: b_alu_control = B_ALU_CTRL__NONE;
             endcase
+          FUNCT7_ZBKX__XPERM4_XPERM8:
+            case (funct3)
+              3'b100:  b_alu_control = B_ALU_CTRL__XPERM8;
+              3'b010:  b_alu_control = B_ALU_CTRL__XPERM4;
+              default: b_alu_control = B_ALU_CTRL__NONE;
+            endcase
           // TODO: Implement zbs into ALU decoder, also confirm what zbb instructions are being implemented.
           default: b_alu_control = B_ALU_CTRL__NONE;
         endcase
-
       7'b0010011:
         case (funct7)
           FUNCT7_ZBB__ROTATE:
