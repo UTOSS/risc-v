@@ -344,6 +344,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/b/types.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/b/zba.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/b/zbb.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/b/zbkb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/b/zbkx.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/zicsr/types.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/zicsr/csr_decode.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../src/ext/zicsr/csr_data.sv

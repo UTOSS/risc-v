@@ -19,6 +19,7 @@ module ext__b__decoder
   b_alu_control_t zba_control;
   b_alu_control_t zbb_control;
   b_alu_control_t zbkb_control;
+  b_alu_control_t zbkx_control;
 
   ext__b__zba_decoder u_ext__b__zba_decoder
     ( .funct3        ( funct3      )
@@ -43,9 +44,17 @@ module ext__b__decoder
     , .b_alu_control ( zbkb_control )
     );
 
+  ext__b__zbkx_decoder u_ext__b__zbkx_decoder
+    ( .funct3        ( funct3       )
+    , .funct7        ( funct7       )
+    , .opcode        ( opcode       )
+    , .b_alu_control ( zbkx_control )
+    );
+
   always_comb
     if (zba_control != B_ALU_CTRL__NONE) b_alu_control = zba_control;
     else if (zbb_control != B_ALU_CTRL__NONE) b_alu_control = zbb_control;
+    else if (zbkx_control != B_ALU_CTRL__NONE) b_alu_control = zbkx_control;
     else b_alu_control = zbkb_control;
 
 endmodule
