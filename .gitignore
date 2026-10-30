@@ -8,6 +8,7 @@ riscof/utoss_riscv/utoss_riscv_isa.yaml
 riscof/sail_cSim/__pycache__
 riscof/config.ini
 riscof/dut_sim
+utoss_riscv_dv/logs/
 
 envs/de1-soc/poc/poc*.mem
 envs/de1-soc/poc/poc*.mif
@@ -27,7 +28,17 @@ envs/de1-soc/quartus/*.qws
 envs/de1-soc/quartus/metrics/*
 !envs/de1-soc/quartus/metrics/.gitkeep
 
+envs/hardening/out/**
+!envs/hardening/out/.gitkeep
+envs/hardening/metrics/*
+!envs/hardening/metrics/.gitkeep
+
 out/**
 !out/.gitkeep
 build/**
 !build/.gitkeep
+
+docs/build/**
+!docs/build/.gitkeep
+
+

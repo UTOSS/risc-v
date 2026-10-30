@@ -14,17 +14,24 @@ package ext__b__types;
     , B_ALU_CTRL__XNOR   = 5'b00110
     , B_ALU_CTRL__MIN    = 5'b00111
     , B_ALU_CTRL__MAX    = 5'b01000
-    , B_ALU_CTRL__SEXTB  = 5'b01001
-    , B_ALU_CTRL__SEXTH  = 5'b01010
-    , B_ALU_CTRL__ZEXTH  = 5'b01011
-    , B_ALU_CTRL__CLZ    = 5'b01100
-    , B_ALU_CTRL__CTZ    = 5'b01101
-    , B_ALU_CTRL__CPOP   = 5'b01110
-    , B_ALU_CTRL__ROL    = 5'b01111
-    , B_ALU_CTRL__ROR    = 5'b10000
-    , B_ALU_CTRL__RORI   = 5'b10001
-    , B_ALU_CTRL__ORCB   = 5'b10010
-    , B_ALU_CTRL__REV8   = 5'b10011
+    , B_ALU_CTRL__MINU   = 5'b01001
+    , B_ALU_CTRL__MAXU   = 5'b01010
+    , B_ALU_CTRL__SEXTB  = 5'b01011
+    , B_ALU_CTRL__SEXTH  = 5'b01100
+    , B_ALU_CTRL__ZEXTH  = 5'b01101
+    , B_ALU_CTRL__CLZ    = 5'b01110
+    , B_ALU_CTRL__CTZ    = 5'b01111
+    , B_ALU_CTRL__CPOP   = 5'b10000
+    , B_ALU_CTRL__ROL    = 5'b10001
+    , B_ALU_CTRL__ROR    = 5'b10010
+    , B_ALU_CTRL__RORI   = 5'b10011
+    , B_ALU_CTRL__ORCB   = 5'b10100
+    , B_ALU_CTRL__REV8   = 5'b10101
+    , B_ALU_CTRL__PACK   = 5'b10110
+    , B_ALU_CTRL__PACKH  = 5'b10111
+    , B_ALU_CTRL__BREV8  = 5'b11000
+    , B_ALU_CTRL__ZIP    = 5'b11001
+    , B_ALU_CTRL__UNZIP  = 5'b11010
     } b_alu_control_t;
 
 endpackage

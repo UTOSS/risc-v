@@ -3,6 +3,7 @@
 `include "src/headers/types.svh"
 `include "src/interfaces/if_to_id_if.svh"
 `include "src/interfaces/id_to_ex_if.svh"
+`include "src/ext/zicsr/types.svh"
 
 module decode_stage
   ( input  if_to_id_t if_to_id
@@ -10,14 +11,16 @@ module decode_stage
   , input  wire       clk
   , input  wire       reset
 
-  , input  wire [4:0] rd_wb // rd from writeback
+  , input  reg_t      rd_wb // rd from writeback
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
 
-  , output id_to_ex_t id_to_ex
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , output ext__zicsr__types::csr_request_t csr_request
+  , input  data_t                           csr_data
+`endif
 
-  , output reg [4:0] rs1
-  , output reg [4:0] rs2
+  , output id_to_ex_t id_to_ex
   );
 
   wire             cfsm__reg_write;
@@ -31,15 +34,37 @@ module decode_stage
 
   alu_control_t    alu_control;
 
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  logic            is_mul;
+  ext__m__types::m_mul_control_t mul_control;
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  logic            is_div;
+  ext__m__types::m_div_control_t div_control;
+`endif
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  ext__b__types::b_alu_control_t b_alu_control; //NEW
+`endif
+
+
   opcode_t opcode;
   imm_t    imm_ext;
 
   wire [2:0] funct3;
 
-  wire [4:0] rd;
+  reg_t rd;
+  reg_t rs1_decoded;
+  reg_t rs2_decoded;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  wire  csr_is_imm;
+`endif
+  reg_t rs1_addr;
+  reg_t rs2_addr;
 
   data_t rd1;
   data_t rd2;
+  data_t rd1_safe;
+  data_t rd2_safe;
 
   instr_t instruction;
 
@@ -47,6 +72,7 @@ module decode_stage
 
   control_fsm u_ctrl
     ( .opcode  ( opcode )
+    , .funct3  ( funct3 )
 
     , .reg_write      ( cfsm__reg_write      )
     , .result_src     ( cfsm__result_src     )
@@ -65,13 +91,38 @@ module decode_stage
     , .ALUControl      ( alu_control      )
     , .imm_ext         ( imm_ext          )
     , .rd              ( rd               )
-    , .rs1             ( rs1              )
-    , .rs2             ( rs2              )
+    , .rs1             ( rs1_decoded      )
+    , .rs2             ( rs2_decoded      )
+`ifdef UTOSS_RISCV__MUL_ENABLED
+    , .is_mul          ( is_mul           )
+    , .mul_control     ( mul_control      )
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    , .is_div          ( is_div           )
+    , .div_control     ( div_control      )
+`endif
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+    , .b_alu_control   ( b_alu_control    )
+`endif
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    , .is_ecall        ( id_to_ex.is_ecall )
+`endif
     );
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
+  // actual register dependency for the RF / hazard path.
+  assign csr_is_imm = (opcode == OPCODE_SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
+  assign rs1_addr   = csr_is_imm ? reg_t'(0) : rs1_decoded;
+  assign rs2_addr   = rs2_decoded;
+`else
+  assign rs1_addr   = rs1_decoded;
+  assign rs2_addr   = rs2_decoded;
+`endif
+
   registerFile RegFile
-    ( .Addr1           ( rs1              )
-    , .Addr2           ( rs2              )
+    ( .Addr1           ( rs1_addr         )
+    , .Addr2           ( rs2_addr         )
     , .Addr3           ( rd_wb            )
     , .clk             ( clk              )
     , .reset           ( reset            )
@@ -81,19 +132,29 @@ module decode_stage
     , .writeData       ( rd2              )
     );
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  csr_decode u_csr_decode
+    ( .opcode      ( opcode               )
+    , .funct3      ( funct3               )
+    , .rs1_or_uimm ( rs1_decoded          )
+    , .csr_addr    ( csr_addr_t'(imm_ext) ) // not rs1_addr: that is zeroed for uimm forms
+    , .rs1_data    ( rd1_safe             )
+
+    , .csr_request ( csr_request )
+    );
+`endif
+
   // WB->ID bypass; this is needed in situations where decode is reading the register that
   // write-back stage is about to write to; since register writes happen on clock enge without this
   // decode will pass stale register data to execute stage which the hazard unit will not be able to
   // accomodate since during the following clock cycle the write-back's destination register will
   // already move on to the next instruction
-  data_t rd1_safe;
   always_comb
-    if (rd_wb == rs1 && reg_write_w && rd_wb != 0) rd1_safe = data;
+    if (rd_wb == rs1_addr && reg_write_w && rd_wb != 0) rd1_safe = data;
     else                                           rd1_safe = rd1;
 
-  data_t rd2_safe;
   always_comb
-    if (rd_wb == rs2 && reg_write_w && rd_wb != 0) rd2_safe = data;
+    if (rd_wb == rs2_addr && reg_write_w && rd_wb != 0) rd2_safe = data;
     else                                           rd2_safe = rd2;
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
@@ -109,10 +170,25 @@ module decode_stage
   assign id_to_ex.rd1            = rd1_safe;
   assign id_to_ex.rd2            = rd2_safe;
   assign id_to_ex.rd             = rd;
-  assign id_to_ex.rs1            = rs1;
-  assign id_to_ex.rs2            = rs2;
+  assign id_to_ex.rs1            = rs1_addr;
+  assign id_to_ex.rs2            = rs2_addr;
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  assign id_to_ex.is_mul         = is_mul;
+  assign id_to_ex.mul_control    = mul_control;
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  assign id_to_ex.is_div         = is_div;
+  assign id_to_ex.div_control    = div_control;
+`endif
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  assign id_to_ex.b_alu_control  = b_alu_control;
+`endif
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign id_to_ex.csr_request    = csr_request;
+  assign id_to_ex.csr_data       = csr_data;
+`endif
 
 endmodule

@@ -5,6 +5,7 @@
 `include "src/interfaces/ex_to_if_if.svh"
 
 module fetch_stage
+  #( parameter addr_t BOOT_ADDR = addr_t'(0) )
   ( output if_to_id_t if_to_id
   , input ex_to_if_t  ex_to_if
 
@@ -15,6 +16,10 @@ module fetch_stage
 
   , output addr_t imem__address
   , input data_t imem__data
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , csr_hw_request_if.hw mtvec_hw_request
+`endif
 );
   // The use of distinct registers for prev, cur and next PC requires some explanation. Below is the
   // timing diagram of the instruction retireval and subsequenct passing of the relevant data to
@@ -39,6 +44,11 @@ module fetch_stage
   // if->id.instr  :                   | < prev instr > | < cur instr > | < next instr >
   //                                   +----------------+
 
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign mtvec_hw_request.write_enable = 1'b0;
+  assign mtvec_hw_request.write_data = '0;
+`endif
+
   addr_t pc_prev;
   addr_t pc_cur;
   addr_t pc_next;
@@ -47,14 +57,17 @@ module fetch_stage
     case (ex_to_if.pc_src)
       PC_SRC__INCREMENT:  pc_next = pc_cur + 32'h4;
       PC_SRC__ALU_RESULT: pc_next = ex_to_if.pc_target;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      PC_SRC__MTVEC:      pc_next = mtvec_hw_request.read_data;
+`endif
       default:            pc_next = 32'hx;
     endcase
 
   always_ff @ (posedge clk)
-    if (!stall_f) pc_cur <= reset ? 0 : pc_next;
+    if (!stall_f) pc_cur <= reset ? BOOT_ADDR : pc_next;
 
   always_ff @ (posedge clk)
-    if (!stall_f) pc_prev <= reset ? 0 : pc_cur;
+    if (!stall_f) pc_prev <= reset ? BOOT_ADDR : pc_cur;
 
   // With synchronous instruction memory, one in-flight instruction can arrive after stall_f rises.
   // Keep a one-entry skid copy so decode can consume it once the stall is released;

@@ -1,80 +1,51 @@
 `include "src/timescale.svh"
+`include "src/headers/types.svh"
 `include "src/ext/b/types.svh"
 /* verilator lint_off DECLFILENAME */
 module ext__b__decoder
 /* verilator lint_on DECLFILENAME */
   ( input [2:0] funct3
   , input [6:0] funct7
-  , input [6:0] opcode
+  , input opcode_t opcode
   /* verilator lint_off UNUSEDSIGNAL */
-  , input [4:0] rd
+  , input reg_t rd
   /* verilator lint_on UNUSEDSIGNAL */
-  , input [4:0] rs2
+  , input reg_t rs2
   , output ext__b__types::b_alu_control_t b_alu_control
   );
 
   import ext__b__types::*;
 
-  localparam bit [6:0] FUNCT7_ZBA = 7'b0010000;
-  localparam bit [6:0] FUNCT7_ZBB__LOGICAL = 7'b0100000;
-  localparam bit [6:0] FUNCT7_ZBB__MINMAX = 7'b0000101;
-  localparam bit [6:0] FUNCT7_ZBB__SEXT = 7'b0110000;
-  localparam bit [6:0] FUNCT7_ZBB__ZEXT = 7'b0000100;
+  b_alu_control_t zba_control;
+  b_alu_control_t zbb_control;
+  b_alu_control_t zbkb_control;
+
+  ext__b__zba_decoder u_ext__b__zba_decoder
+    ( .funct3        ( funct3      )
+    , .funct7        ( funct7      )
+    , .opcode        ( opcode      )
+    , .b_alu_control ( zba_control )
+    );
+
+  ext__b__zbb_decoder u_ext__b__zbb_decoder
+    ( .funct3        ( funct3      )
+    , .funct7        ( funct7      )
+    , .opcode        ( opcode      )
+    , .rs2           ( rs2         )
+    , .b_alu_control ( zbb_control )
+    );
+
+  ext__b__zbkb_decoder u_ext__b__zbkb_decoder
+    ( .funct3        ( funct3       )
+    , .funct7        ( funct7       )
+    , .opcode        ( opcode       )
+    , .rs2           ( rs2          )
+    , .b_alu_control ( zbkb_control )
+    );
 
   always_comb
-    case (opcode)
-      7'b0110011:
-        case (funct7)
-          FUNCT7_ZBA:
-            case (funct3)
-              3'b010:  b_alu_control = B_ALU_CTRL__SH1ADD;
-              3'b100:  b_alu_control = B_ALU_CTRL__SH2ADD;
-              3'b110:  b_alu_control = B_ALU_CTRL__SH3ADD;
-              default: b_alu_control = B_ALU_CTRL__NONE;
-            endcase
-
-          FUNCT7_ZBB__LOGICAL:
-            case (funct3)
-              3'b111:  b_alu_control = B_ALU_CTRL__ANDN;
-              3'b110:  b_alu_control = B_ALU_CTRL__ORN;
-              3'b100:  b_alu_control = B_ALU_CTRL__XNOR;
-              default: b_alu_control = B_ALU_CTRL__NONE;
-            endcase
-          FUNCT7_ZBB__MINMAX:
-            case (funct3)
-              3'b100:  b_alu_control = B_ALU_CTRL__MIN;
-              3'b110:  b_alu_control = B_ALU_CTRL__MAX;
-              default: b_alu_control = B_ALU_CTRL__NONE;
-            endcase
-          FUNCT7_ZBB__ZEXT:
-            case (funct3)
-              3'b100:
-                case (rs2)
-                  5'b00000: b_alu_control = B_ALU_CTRL__ZEXTH;
-                  default: b_alu_control = B_ALU_CTRL__NONE;
-                endcase
-              default: b_alu_control = B_ALU_CTRL__NONE;
-            endcase
-          // TODO: Implement zbs into ALU decoder, also confirm what zbb instructions are being implemented.
-          default: b_alu_control = B_ALU_CTRL__NONE;
-
-        endcase
-      7'b0010011:
-        case (funct7)
-          FUNCT7_ZBB__SEXT:
-            case (funct3)
-              3'b001:
-                case (rs2)
-                  5'b00100:  b_alu_control = B_ALU_CTRL__SEXTB;
-                  5'b00101:  b_alu_control = B_ALU_CTRL__SEXTH;
-                  default: b_alu_control = B_ALU_CTRL__NONE;
-                endcase
-              default: b_alu_control = B_ALU_CTRL__NONE;
-            endcase
-          default: b_alu_control = B_ALU_CTRL__NONE;
-
-        endcase
-      default: b_alu_control = B_ALU_CTRL__NONE;
-    endcase
+    if (zba_control != B_ALU_CTRL__NONE) b_alu_control = zba_control;
+    else if (zbb_control != B_ALU_CTRL__NONE) b_alu_control = zbb_control;
+    else b_alu_control = zbkb_control;
 
 endmodule

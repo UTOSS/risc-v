@@ -20,7 +20,7 @@
         "mshr-h.VerilogHDL",
         "ms-vscode.live-server",
         "dalance.svls-vscode",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
       ]
     }
   }

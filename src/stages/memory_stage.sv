@@ -59,5 +59,9 @@ module memory_stage
   assign mem_to_wb.pc_cur     = ex_to_mem.pc_cur;
   assign mem_to_wb.pc_plus_4  = ex_to_mem.pc_plus_4;
   assign mem_to_wb.funct3     = ex_to_mem.funct3;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign mem_to_wb.csr_request      = ex_to_mem.csr_request;
+  assign mem_to_wb.csr_data         = ex_to_mem.csr_data;
+`endif
 
 endmodule

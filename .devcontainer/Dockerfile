@@ -4,7 +4,7 @@ FROM ghcr.io/utoss/quartus:latest AS quartus
 
 FROM ghcr.io/utoss/oss-cad-suite:latest AS oss-cad-suite
 
-FROM public.ecr.aws/lts/ubuntu:22.04_stable
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG KEYRING_PATH=/usr/share/keyrings
@@ -77,10 +77,21 @@ COPY --from=oss-cad-suite /opt/oss-cad-suite /opt/oss-cad-suite
 COPY --from=oss-cad-suite /etc/profile.d/oss-cad-suite.sh /etc/profile.d/oss-cad-suite.sh
 ENV PATH="/opt/oss-cad-suite/bin:${PATH}"
 
-# install cocotb
-USER dev
-RUN sudo apt update && sudo apt install -y python3 python3-pip libpython3-dev && \
-  pip3 install cocotb~=1.9
+# install cocotb and pyuvm verification dependencies
+USER root
+COPY PyUVM/requirements.txt /tmp/pyuvm-requirements.txt
+RUN apt update && apt install -y python3 python3-pip libpython3-dev && \
+    python3 -m pip install --no-cache-dir -r /tmp/pyuvm-requirements.txt
+
+# Select system-Python cocotb without shadowing OSS CAD Suite simulator wrappers.
+RUN mkdir -p /opt/pyuvm/bin && \
+    ln -s /usr/local/bin/cocotb-config /opt/pyuvm/bin/cocotb-config
+ENV PATH="/opt/pyuvm/bin:${PATH}"
+RUN test "$(command -v cocotb-config)" = /opt/pyuvm/bin/cocotb-config && \
+    test "$(cocotb-config --python-bin)" = "$(python3 -c 'import sys; print(sys.executable)')" && \
+    python3 -c "import cocotb, pyuvm; assert cocotb.__version__ == '1.9.2'" && \
+    test "$(command -v verilator)" = /opt/oss-cad-suite/bin/verilator && \
+    verilator --version
 
 # install svlint
 USER dev
@@ -136,4 +147,49 @@ RUN mkdir -p /tmp/sail-riscv && \
 USER dev
 RUN pip3 install riscof
 
+# install riscv-dv
+USER dev
+RUN pip3 install PyYAML bitstring Sphinx Pallets-Sphinx-Themes sphinxcontrib-log-cabinet \
+    sphinx-issues sphinx_rtd_theme rst2pdf flake8 pyvsc tabulate pandas
+ARG RISCV_DV_VERSION=b7a0b4b0b51346a3c64f159f81ea262d867c14a9
+ARG RISCV_DV_TAR_NAME=${RISCV_DV_VERSION}.tar.gz
+ARG RISCV_DV_TAR_URL=https://github.com/chipsalliance/riscv-dv/archive/${RISCV_DV_TAR_NAME}
+ARG RISCV_DV_TAR_HASH="e95d179b52f3c8dd1566b5b7bf6a5b42c570bfb17cca7f1f2c73460a0c5d0669  ${RISCV_DV_TAR_NAME}"
+RUN mkdir -p /tmp/riscv-dv && \
+    cd /tmp/riscv-dv && \
+    wget ${RISCV_DV_TAR_URL} && \
+    echo ${RISCV_DV_TAR_HASH} | sha256sum -c && \
+    tar -xzf ${RISCV_DV_TAR_NAME} && \
+    sudo mv riscv-dv-* /opt/riscv-dv && \
+    cd .. && rm -rf /tmp/riscv-dv
+ENV RISCV_DV_HOME=/opt/riscv-dv
+
+# install Nangate45 open cell library
+USER root
+ARG NANGATE45_LIB_NAME=NangateOpenCellLibrary_typical.lib
+ARG NANGATE45_LIB_URL=https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/master/flow/platforms/nangate45/lib/${NANGATE45_LIB_NAME}
+ARG NANGATE45_LIB_HASH="8d540a4d4cf6d09d27c87ad067857a9c0c2eeb023ab7a56e058cd3113db4e9b1  ${NANGATE45_LIB_NAME}"
+RUN mkdir -p /opt/pdks/nangate45 && \
+    cd /opt/pdks/nangate45 && \
+    wget ${NANGATE45_LIB_URL} && \
+    echo "${NANGATE45_LIB_HASH}" | sha256sum -c && \
+    chmod 644 ${NANGATE45_LIB_NAME}
+ENV NANGATE45_LIB=/opt/pdks/nangate45/NangateOpenCellLibrary_typical.lib
+
+# install minimal TeX Live and diagram generation tools
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-pictures \
+    texlive-latex-extra \
+    texlive-science \
+    texlive-fonts-extra \
+    poppler-utils \
+    dvisvgm && \
+    rm -rf /var/lib/apt/lists/*
+
+USER dev
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+

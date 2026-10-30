@@ -1,0 +1,3 @@
+- iss: sail
+  path_var: SAIL_RISCV
+  cmd: <path_var>/riscv_sim_RV<xlen> <elf>

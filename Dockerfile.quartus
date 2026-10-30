@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lts/ubuntu:22.04_stable AS quartus-installer
+FROM ubuntu:22.04 AS quartus-installer
 
 RUN apt update && apt install -y wget libglib2.0-0 libfontconfig1
 
@@ -20,6 +20,6 @@ RUN cd /tmp && \
 # drop folders that are large but not relevant
 RUN rm -rf /opt/quartus/nios2eds /opt/quartus/niosv /opt/quartus/ip/altera
 
-FROM public.ecr.aws/lts/ubuntu:22.04_stable
+FROM ubuntu:22.04
 
 COPY --from=quartus-installer /opt/quartus /opt/quartus

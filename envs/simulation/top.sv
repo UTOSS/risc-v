@@ -1,48 +1,37 @@
 `include "src/headers/types.svh"
+`include "src/interfaces/mem_bus.svh"
 
 module top
-  #( parameter MEM_SIZE = 1024 ) //maybe change to 2048 if using dual port?
+  #( parameter MEM_SIZE = 1024 //maybe change to 2048 if using dual port?
+  , parameter addr_t BOOT_ADDR = addr_t'(0)
+  )
   ( input wire clk
   , input wire reset
   );
 
-  addr_t       memory__address;
-  data_t       memory__write_data;
-  logic  [3:0] memory__write_enable;
-  data_t       memory__read_data;
+  mem_bus i_bus();
+  mem_bus d_bus();
 
-  addr_t       imem__address;
-  data_t       imem__read_data;
-
-  data_t       imem__write_data;
-  logic [3:0]  imem__write_enable;
-
-  wire unused = &{imem__write_data, imem__write_enable};
-
-  memory #( .SIZE ( MEM_SIZE ) )
+  wire unused = &{i_bus.write_data, i_bus.write_enable};
+  memory
+    #( .SIZE      ( MEM_SIZE      )
+    , .BOOT_ADDR ( BOOT_ADDR     )
+    )
     u_memory
-      ( .clk                      ( clk                  )
-      , .address                  ( memory__address      )
-      , .instruction_address      ( imem__address        )
-      , .write_data               ( memory__write_data   )
-      , .write_enable             ( memory__write_enable )
-      , .read_data                ( memory__read_data    )
-      , .instruction_read_data    ( imem__read_data      )
+      ( .clk   ( clk )
+
+      , .d_bus ( d_bus.memory )
+      , .i_bus ( i_bus.memory )
       );
 
-  utoss_riscv core
-    ( .clk    ( clk    )
-    , .reset  ( reset  )
+  utoss_riscv
+    #( .BOOT_ADDR ( BOOT_ADDR ) )
+    core
+    ( .clk   ( clk   )
+    , .reset ( reset )
 
-    , .memory_data__address      ( memory__address      )
-    , .memory_data__write_data   ( memory__write_data   )
-    , .memory_data__write_enable ( memory__write_enable )
-    , .memory_data__read_data    ( memory__read_data    )
-
-    , .memory_instr__address      ( imem__address        )
-    , .memory_instr__write_data   ( imem__write_data     )
-    , .memory_instr__write_enable ( imem__write_enable   )
-    , .memory_instr__read_data    ( imem__read_data      )
+    , .d_bus ( d_bus.consumer )
+    , .i_bus ( i_bus.consumer )
     );
 
 endmodule

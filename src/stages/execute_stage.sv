@@ -6,15 +6,31 @@
 
 module execute_stage
   ( input id_to_ex_t id_to_ex
-
+`ifdef UTOSS_RISCV__ANY_M
+  , input logic clk
+  , input logic reset
+`endif
   , input hazard_forward_a_t hz_forward_a
   , input hazard_forward_b_t hz_forward_b
 
   , input data_t wb_result
   , input data_t mem_alu_result
 
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  /* verilator lint_off UNUSEDSIGNAL */
+  , input logic div_start_e
+  /* verilator lint_on UNUSEDSIGNAL */
+  , input logic div_cancel_e
+  , output logic div_busy_e
+  , output logic div_done_e
+`endif
   , output ex_to_if_t ex_to_if
   , output ex_to_mem_t ex_to_mem
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , csr_hw_request_if.hw mcause_hw_request
+  , csr_hw_request_if.hw mepc_hw_request
+`endif
   );
 
   data_t alu_input_a;
@@ -22,7 +38,23 @@ module execute_stage
   data_t safe_rd1; // hazard-safe version of rd1
   data_t safe_rd2; // hazard-safe version of rd2
   data_t alu_result;
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  data_t mul_result;
+  /* verilator lint_off UNUSEDSIGNAL */
+  logic mul_done;
+  /* verilator lint_on UNUSEDSIGNAL */
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  data_t div_result;
+`endif
+  data_t final_result;
   logic zero_flag;
+
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  data_t zbb_result, zbkb_result;
+  logic  zbb_zero_flag, zbkb_zero_flag;
+`endif
+
 
   // ALU computation
 
@@ -56,15 +88,100 @@ module execute_stage
       default:            alu_input_b = 'x;
     endcase
 
+  logic [`PROCESSOR_BITNESS - 1:0] alu_result_base;
+  logic zero_flag_base;
   ALU alu
     ( .a              ( alu_input_a         )
     , .b              ( alu_input_b         )
     , .alu_control    ( id_to_ex.alu_control )
-    , .out            ( alu_result          )
-    , .zeroE          ( zero_flag           )
+    , .out            ( alu_result_base          )
+    , .zeroE          ( zero_flag_base           ) //added bases for local
     );
 
-  // branching logic
+`ifdef UTOSS_RISCV__MUL_ENABLED
+  MUL mul
+    ( .clk      ( clk                  )
+    , .rst_n    ( ~reset               )
+    , .start_i  ( id_to_ex.is_mul      )
+    , .rs1_i    ( alu_input_a          )
+    , .rs2_i    ( alu_input_b          )
+    , .op_i     ( id_to_ex.mul_control )
+    , .result_o ( mul_result           )
+    , .ready_o  ( mul_done             )
+    );
+`endif
+
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  DIV div
+    ( .clk       ( clk                  )
+    , .rst_n     ( ~reset               )
+    , .start_i   ( div_start_e          )
+    , .op_i      ( id_to_ex.div_control )
+    , .rs1_i     ( alu_input_a          )
+    , .rs2_i     ( alu_input_b          )
+    , .result_o  ( div_result           )
+    , .ready_o   ( div_done_e           )
+    , .busy_o    ( div_busy_e           )
+    );
+`endif
+
+  assign final_result =
+`ifdef UTOSS_RISCV__MUL_ENABLED
+    id_to_ex.is_mul ? mul_result :
+`endif
+`ifdef UTOSS_RISCV__DIV_ENABLED
+    id_to_ex.is_div ? div_result :
+`endif
+    alu_result;
+
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  zbb u_zbb
+    ( .a              ( alu_input_a            )
+    , .b              ( alu_input_b            )
+    , .b_alu_control  ( id_to_ex.b_alu_control )
+    , .out            ( zbb_result             )
+    , .zeroE          ( zbb_zero_flag          )
+    );
+  zbkb u_zbkb
+    ( .a              ( alu_input_a            )
+    , .b              ( alu_input_b            )
+    , .b_alu_control  ( id_to_ex.b_alu_control )
+    , .out            ( zbkb_result             )
+    , .zeroE          ( zbkb_zero_flag          )
+    );
+`endif
+`ifdef UTOSS_RISCV_ENABLE_B_EXT
+  always_comb begin
+    if (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__PACK   ||
+        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__PACKH  ||
+        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__BREV8  ||
+        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__ZIP    ||
+        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__UNZIP) begin
+        alu_result = zbkb_result;
+        zero_flag  = zbkb_zero_flag;
+    end else if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
+        alu_result = zbb_result;
+        zero_flag  = zbb_zero_flag;
+    end else begin
+        alu_result = alu_result_base;
+        zero_flag  = zero_flag_base;
+    end
+  end
+`else
+assign alu_result = alu_result_base;
+assign zero_flag  = zero_flag_base;
+`endif
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+   ecall_processor u_ecall_processor
+    ( .enable ( id_to_ex.is_ecall )
+
+    , .pc ( id_to_ex.pc_cur )
+
+    , .mepc_hw_request   ( mepc_hw_request   )
+    , .mcause_hw_request ( mcause_hw_request )
+    );
+`endif
 
   typedef enum logic [2:0]
     { FUNCT3__BEQ  = 3'b000
@@ -104,9 +221,21 @@ module execute_stage
     endcase
 
   logic should_branch;
-  assign should_branch = jump_e | (branch_e & branch_condition_met);
+  assign should_branch = jump_e
+    | (branch_e & branch_condition_met)
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+    | id_to_ex.is_ecall
+`endif
+;
 
-  assign pc_src = should_branch ? PC_SRC__ALU_RESULT : PC_SRC__INCREMENT;
+  assign pc_src =
+    should_branch ?
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      (id_to_ex.is_ecall ? PC_SRC__MTVEC : PC_SRC__ALU_RESULT)
+`else
+      (PC_SRC__ALU_RESULT)
+`endif
+      : PC_SRC__INCREMENT;
 
   assign ex_to_mem.result_src   = id_to_ex.result_src;
   assign ex_to_mem.mem_write    = id_to_ex.mem_write;
@@ -114,13 +243,22 @@ module execute_stage
   assign ex_to_mem.funct3       = id_to_ex.funct3;
   assign ex_to_mem.write_data_e = safe_rd2;
   assign ex_to_mem.rd           = id_to_ex.rd;
-  assign ex_to_mem.alu_result   = alu_result;
+  assign ex_to_mem.alu_result   = final_result;
   assign ex_to_mem.pc_cur       = id_to_ex.pc_cur;
   assign ex_to_mem.pc_plus_4    = id_to_ex.pc_plus_4;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  assign ex_to_mem.csr_request      = id_to_ex.csr_request;
+  assign ex_to_mem.csr_data         = id_to_ex.csr_data;
+`endif
   assign ex_to_if.imm_ext       = id_to_ex.imm_ext;
   assign ex_to_if.pc_src        = pc_src;
   assign ex_to_if.pc_target     = pc_target;
   assign ex_to_if.pc_old        = id_to_ex.pc_cur;
 
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  wire unused = &{id_to_ex.rs1, id_to_ex.rs2, div_cancel_e};
+`else
   wire unused = &{id_to_ex.rs1, id_to_ex.rs2};
+`endif
+
 endmodule

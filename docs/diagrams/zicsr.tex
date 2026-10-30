@@ -1,0 +1,136 @@
+\documentclass[tikz, border=15pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{roboto-mono}
+\renewcommand*\familydefault{\ttdefault}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, decorations.pathmorphing, shapes.gates.logic.US}
+
+\definecolor{stagecolor}{HTML}{1F6FEB}    % Accent Blue
+\definecolor{hazardcolor}{HTML}{D29922}   % Amber / Orange
+\definecolor{regcolor}{HTML}{7D8590}      % Muted Slate / Gray
+\definecolor{boundarycolor}{HTML}{8C959F} % Dashed Line Gray
+\definecolor{arrowgreen}{HTML}{2EA043}    % High-contrast green (GitHub green)
+\definecolor{arrowpurple}{HTML}{8250DF}   % Vibrant Purple (GitHub Purple)
+
+% Load diagram building utilities (e.g. \drawblock)
+\IfFileExists{diagrams/util.tex}{\input{diagrams/util.tex}}{\input{util.tex}}
+
+\begin{document}
+\begin{tikzpicture}[
+    >=Latex,
+    font=\small,
+    csrdatabox/.style={
+        draw=hazardcolor, line width=1.5pt,
+        fill=none, text opacity=1.0,
+        inner sep=0pt
+    },
+    stagetitle/.style={
+        font=\bfseries\small, text=stagecolor, align=center
+    },
+    stageline/.style={dashed, draw=boundarycolor, line width=1.2pt},
+    thickline/.style={draw=arrowgreen, line width=2.6pt, line cap=butt, line join=miter},
+    thinline/.style={draw=arrowgreen, line width=1.2pt, line cap=butt, line join=miter},
+    wirelabel/.style={font=\footnotesize\bfseries\ttfamily, text=arrowgreen}
+]
+
+
+% Pipeline above; top-level CSR storage and hazard control below.
+\node[stagetitle] at (8.90, 4.6) {Instruction Decode (ID)};
+\node[stagetitle] at (21.43, 4.6) {Execute (EX)};
+\node[stagetitle] at (25.25, 4.6) {Memory (MEM)};
+\node[stagetitle] at (32.00, 4.6) {Write-Back (WB)};
+\foreach \x in {19.55,23.30,27.20}
+  \draw[stageline] (\x,5.1) -- (\x,3.9);
+
+\foreach \xl/\xr/\title in {-1/18.8/decode\_stage,28.9/35.5/write\_back\_stage} {
+  \draw[draw=stagecolor, line width=1.8pt]
+    (\xl,3.9) -- (\xr,3.9) -- (\xr,-3.2)
+    decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (\xl,-3.2) } -- cycle;
+  \node[anchor=north west, font=\bfseries\normalsize, text=stagecolor]
+    at (\xl+0.3,3.75) {\texttt{\title}};
+}
+\foreach \xl in {19.20,22.95,26.85} {
+  \draw[draw=regcolor, line width=1.3pt, fill=regcolor, fill opacity=0.15]
+    (\xl,3.9) -- (\xl+0.7,3.9) -- (\xl+0.7,-3.2)
+    decorate[decoration={zigzag, segment length=8pt, amplitude=2.5pt}] { -- (\xl,-3.2) } -- cycle;
+}
+
+\drawblock{decode}{9}{0.35}{7.6}{csr\_decode}%
+  {instruction_fields/arrowgreen, rs1_data/arrowgreen}%
+  {csr_request/arrowgreen}{}{}
+\drawblock{wb}{32}{0.35}{5.2}{csr\_wb}%
+  {csr_request/arrowgreen, csr_data/arrowgreen}%
+  {csr_wb_request/arrowgreen}{}{}
+
+% Exactly two representative plugins; hardware users belong in the ECALL diagram.
+\draw[csrdatabox]
+  (6.1,-5.1) -- (18,-5.1) -- (18,-13.6)
+  decorate[decoration={zigzag,segment length=12pt,amplitude=3pt}] { -- (6.1,-13.6) }
+  -- cycle;
+\node[anchor=north, font=\bfseries\normalsize, text=hazardcolor]
+  at (12.05,-5.25) {\texttt{csr\_data}};
+\begin{scope}
+\colorlet{stagecolor}{hazardcolor}
+\drawblock{basic}{10.9}{-7.85}{5.6}{csr\_plugin\_basic}%
+  {read_address/arrowgreen, csr_wb_request/arrowgreen}%
+  {read_value/arrowgreen}{}{}
+\drawblock{hw}{10.9}{-11.55}{5.6}{csr\_plugin}%
+  {read_address/arrowgreen, csr_wb_request/arrowgreen}%
+  {read_value/arrowgreen}{csr_hw_request/0/arrowpurple}{3.3}
+\end{scope}
+\node[or gate US, draw=regcolor, line width=1.3pt, fill=regcolor, fill opacity=0.15,
+      logic gate inputs=nn, minimum height=1.7cm, minimum width=1.2cm]
+  (reador) at (16.1,-9.3) {};
+
+\def\hop{0.22}
+\draw[thickline] (3.7,0.6) -- (decode-instruction_fields);
+\draw[thickline] (3.7,-0.2) -- (decode-rs1_data);
+\draw[thickline] (decode-csr_request) -- (14,0.6) |- (28.25,2.05) |- (wb-csr_request);
+\fill[arrowgreen] (14,0.6) circle (3.2pt);
+% Decode's read address goes to top-level storage, outside the pipeline.
+\draw[thinline] (14,0.6) -- (14,-1.6) -- (4.5,-1.6) -- (4.5,-7.6)
+  -- (7.5-\hop,-7.6) arc[start angle=180,end angle=0,radius=\hop]
+  -- (basic-read_address);
+\node[wirelabel, anchor=south west] at (4.6,-7.6) {address};
+\draw[thinline] (7,-7.6) -- (7,-11.1)
+  -- (7.5-\hop,-11.1) arc[start angle=180,end angle=0,radius=\hop]
+  -- (hw-read_address);
+\fill[arrowgreen] (7,-7.6) circle (2.4pt);
+
+% Async read result returns to ID before traversing all three registers.
+\draw[thickline] (basic-read_value) -| ($(reador.input 1)+(-0.8,0)$) -- (reador.input 1);
+\draw[thickline] (hw-read_value) -| ($(reador.input 2)+(-0.8,0)$) -- (reador.input 2);
+\draw[thickline] (reador.output) -- (17.5,-9.3) |- (wb-csr_data);
+\node[wirelabel, anchor=south west] at (17.6,-0.2) {csr\_data};
+
+% WB feedback is not pipelined; bridge the hazard taps at each crossing.
+\draw[thickline] (wb-csr_wb_request) -- (35.05,0.6) -- (35.05,-4.3)
+  \foreach \x in {28.25,25.25,21.35} {
+    -- (\x+\hop,-4.3) arc[start angle=0,end angle=180,radius=\hop]
+  }
+  -- (17.5+\hop,-4.3) arc[start angle=0,end angle=180,radius=\hop]
+  -- (7.5,-4.3) |- (basic-csr_wb_request);
+\draw[thickline] (7.5,-8.4) |- (hw-csr_wb_request);
+\fill[arrowgreen] (7.5,-8.4) circle (3.2pt);
+\node[wirelabel, anchor=south] at (25,-4.3) {csr\_wb\_request};
+
+\foreach \x/\y/\lbl in {21.35/2.05/e,25.25/2.05/m,28.25/0.6/w} {
+  \draw[thinline] (\x,\y) -- (\x,-0.2+\hop)
+    arc[start angle=90,end angle=-90,radius=\hop] -- (\x,-7.0);
+  \fill[arrowgreen] (\x,\y) circle (3.2pt);
+  \node[wirelabel, font=\scriptsize\bfseries\ttfamily, anchor=west, rotate=90] at (\x-0.12,-6.8) {write\_intent\_\lbl};
+}
+\draw[draw=hazardcolor, line width=1.5pt, fill=hazardcolor, fill opacity=0.15]
+  (20,-7) -- (35.5,-7) -- (35.5,-8.4)
+  decorate[decoration={zigzag, segment length=12pt, amplitude=3pt}] { -- (20,-8.4) } -- cycle;
+\node[font=\bfseries\normalsize,text=hazardcolor] at (27.75,-7.65) {hazard\_unit};
+
+% Exposed interface stub: deliberately no external hardware connection.
+\draw[draw=arrowpurple,line width=2.6pt] (hw-csr_hw_request) -- (10.9,-14.5);
+\draw[draw=arrowpurple,fill=white,line width=1.2pt] (10.9,-14.5) circle (3pt);
+\node[font=\footnotesize\bfseries,text=arrowpurple,anchor=north] at (10.9,-14.7)
+  {csr\_hw\_request\_if (hardware access)};
+\end{tikzpicture}
+\end{document}

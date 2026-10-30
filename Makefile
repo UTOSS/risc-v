@@ -22,20 +22,51 @@ RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_
 # Build config
 # =============
 
-UTOSS_RISCV_CONFIG ?= RV32I
+# Canonical RISC-V ISA specification format (e.g. RV32I, RV32IZbb_Zbkb, RV32IZicsr)
+UTOSS_RISCV_CONFIG ?= $(if $(RISCOF_ISA_STRING),$(RISCOF_ISA_STRING),RV32I)
+RISCOF_ISA_STRING  := $(UTOSS_RISCV_CONFIG)
 
-# Convert B extension to Zbb for RISC-V ISA spec
-RISCOF_ISA_STRING = $(subst B,Zbb,$(UTOSS_RISCV_CONFIG))
+UTOSS_RISCV_ENABLE_MUL ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
+UTOSS_RISCV_ENABLE_DIV ?= $(if $(findstring M,$(UTOSS_RISCV_CONFIG)),1,0)
+UTOSS_RISCV_ENABLE_M := $(if $(filter 1 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
+UTOSS_RISCV_ANY_M := $(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL) $(UTOSS_RISCV_ENABLE_DIV)),1,0)
 
-UTOSS_RISCV_VERILATOR_DEFINES := $(if $(findstring B,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT)
+UTOSS_BOOT_ADDR ?= 32\'h0000_0000
+
+# Generate misa value
+MISA_VALUE = 0x40000100
+
+ifneq ($(findstring C,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x4 )))
+endif
+
+ifneq ($(findstring M,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1000 )))
+endif
+
+ifneq ($(findstring A,$(UTOSS_RISCV_CONFIG)),)
+MISA_VALUE := $(shell printf "0x%x" $$(( $(MISA_VALUE) | 0x1 )))
+endif
+
+UTOSS_RISCV_VERILATOR_DEFINES := \
+	$(if $(findstring Zbb,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV_ENABLE_B_EXT) \
+	$(if $(findstring Zicsr,$(UTOSS_RISCV_CONFIG)),-DUTOSS_RISCV__ZICSR_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_M)),-DUTOSS_RISCV__M_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_MUL)),-DUTOSS_RISCV__MUL_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ENABLE_DIV)),-DUTOSS_RISCV__DIV_ENABLED) \
+	$(if $(filter 1,$(UTOSS_RISCV_ANY_M)),-DUTOSS_RISCV__ANY_M)
 UTOSS_RISCV_RISCOF_VERILATOR_DEFINES := -DUTOSS_PIPELINE_LOGGER
 
 # ===========================
 # Verilator flags
 # ===========================
 
-VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 $(UTOSS_RISCV_VERILATOR_DEFINES)
-RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
+VERILATOR_FLAGS := -Wall --binary --trace --timing -sv -cc -O3 \
+	-CFLAGS "-Wno-unknown-warning-option" \
+	$(UTOSS_RISCV_VERILATOR_DEFINES)
+TOP_MODULE ?= top_tb
+TOP_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR) -DUTOSS_PIPELINE_LOGGER
+RISCOF_VERILATOR_FLAGS := $(VERILATOR_FLAGS) -GBOOT_ADDR=$(UTOSS_BOOT_ADDR) $(UTOSS_RISCV_RISCOF_VERILATOR_DEFINES)
 
 # Testbench-only defines
 TB_DEFINES := -DTESTBENCH
@@ -44,7 +75,7 @@ TB_DEFINES := -DTESTBENCH
 # Sources
 # ===========================
 SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
-        $(shell find $(ENVS_DIR)/$(ENV) -name "*.sv" -o -name "*.v")
+        $(shell find $(ENVS_DIR)/$(ENV) -not -path "*/out/*" -not -path "*/build/*" \( -name "*.sv" -o -name "*.v" \))
 
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
 TB_UTILS := $(TB_DIR)/utils.svh
@@ -66,6 +97,9 @@ print_srcs:
 print_tb_srcs:
 	@echo $(TB_SRCS)
 
+print_verilator_defines:
+	@echo $(UTOSS_RISCV_VERILATOR_DEFINES)
+
 # ===========================
 # Top module
 # ===========================
@@ -75,9 +109,10 @@ run_top: $(OUT_DIR)/top_sim
 	./$<
 
 $(OUT_DIR)/top_sim: $(SRCS)
+	@mkdir -p $(OUT_DIR)
 	@mkdir -p $(BUILD_DIR)/top
-	$(VERILATOR) $(VERILATOR_FLAGS) \
-		--top-module top \
+	$(VERILATOR) $(TOP_VERILATOR_FLAGS) \
+		--top-module $(TOP_MODULE) \
 		--Mdir $(BUILD_DIR)/top \
 		-o top_sim \
 		$(SRCS)
@@ -109,12 +144,23 @@ run_tb: build_tb
 
 # Pattern rule for building individual testbenches
 $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
+	@mkdir -p $(OUT_DIR)
+	@mkdir -p $(BUILD_DIR)/$(basename $(notdir $@))
 	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
 		--top-module $(basename $(notdir $<)) \
 		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
 		-o $(basename $(notdir $@)) \
 		$(SRCS) $<
 	cp $(BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
+
+# ===========================
+# PyUVM verification
+# ===========================
+.PHONY: test_pyuvm
+test_pyuvm:
+	cd PyUVM && PYTHONPATH="$(CURDIR)/PyUVM" python3 -m pytest --import-mode=importlib tests
+	$(MAKE) -C PyUVM MODULE=test_alu
+	$(MAKE) -C PyUVM MODULE=test_ecall UTOSS_RISCV_CONFIG=RV32IZicsr
 
 # ===========================
 # Create new testbench
@@ -129,7 +175,8 @@ new_tb:
 # ===========================
 # RISCOF
 # ===========================
-$(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC)
+$(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC) FORCE
+	@mkdir -p $(BUILD_DIR)/riscof
 	$(VERILATOR) $(RISCOF_VERILATOR_FLAGS) \
 		--top-module dut \
 		--Mdir $(BUILD_DIR)/riscof \
@@ -141,7 +188,10 @@ $(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
 	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
 
 $(RISCOF_UTOSS_RISCV_ISA_CONFIG): $(RISCOF_UTOSS_RISCV_ISA_CONFIG_TEMPLATE) FORCE
-	m4 -D M4__ISA_STRING="$(RISCOF_ISA_STRING)" $< > $@
+	m4 \
+-D M4__ISA_STRING="$(RISCOF_ISA_STRING)" \
+-D M4__MISA_VALUE="$(MISA_VALUE)" \
+$< > $@
 
 riscof_build_dut: $(RISCOF_DUT_BIN)
 
@@ -159,9 +209,17 @@ riscof_generate_testlist: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG)
 
 riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 	cd $(RISCOF_DIR) && \
+		riscof testlist --config=config.ini \
+		--suite=riscv-arch-test/riscv-test-suite/ \
+		--env=riscv-arch-test/riscv-test-suite/env && \
+		python3 utoss_riscv/prepare_riscof_testlist.py --config="$(UTOSS_RISCV_CONFIG)" --work-dir="riscof_work" && \
 		riscof run --config=config.ini \
 		--suite=riscv-arch-test/riscv-test-suite/ \
-		--env=riscv-arch-test/riscv-test-suite/env
+		--env=riscv-arch-test/riscv-test-suite/env \
+		--testfile=riscof_work/test_list.yaml \
+		--no-browser
+
+include utoss_riscv_dv/Makefile
 
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
@@ -173,6 +231,11 @@ docker_build_quartus_image:
 	docker login ${GITHUB_CONTAINER_REGISTRY}
 	docker push ${QUARTUS_IMAGE_NAME}
 
+# ===========================
+# Hardening
+# ===========================
+harden:
+	$(MAKE) -C envs/hardening harden
 
 # ===========================
 # Linting
@@ -184,9 +247,22 @@ svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
 # ===========================
+# Diagrams
+# ===========================
+diagrams:
+	$(MAKE) -C docs diagrams
+
+test_diagrams:
+	$(MAKE) -C docs test
+
+
+# ===========================
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb \
-        svlint svlint_tb \
+        svlint svlint_tb harden \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
-        riscof_generate_testlist riscof_run FORCE
+        riscof_generate_testlist riscof_run \
+        riscv_dv \
+				diagrams test_diagrams update_diagrams update_diagrmas \
+				FORCE

@@ -2,12 +2,16 @@
 
 `include "test/utils.svh"
 
-module dut;
+module dut
+  #( parameter logic [31:0] BOOT_ADDR = 32'h0000_0000 );
 
   reg clk;
   reg reset;
 
-  top #( .MEM_SIZE ( 500000 /* 2MB */ ) )
+  top
+    #( .MEM_SIZE      ( 500000 /* 2MB */ )
+     , .BOOT_ADDR     ( BOOT_ADDR        )
+     )
     top
       ( .clk   ( clk   )
       , .reset ( reset )
@@ -33,7 +37,7 @@ module dut;
 
   task watch_tohost();
     /* verilator lint_off UNUSEDSIGNAL */
-    integer tohost;
+    integer tohost, tohost_local;
     reg [31:0] tohost_data;
     /* verilator lint_on UNUSEDSIGNAL */
 
@@ -43,7 +47,8 @@ module dut;
 
       while (tohost_data === 0 || tohost_data === 32'bx) begin
         @(posedge clk);
-        tohost_data = top.u_memory.M[19'(tohost[31:2])];
+        tohost_local = tohost - BOOT_ADDR;
+        tohost_data = top.u_memory.M[19'(tohost_local[31:2])];
       end
 
       $display("%m: memory[tohost] written <%0d> at time %t", tohost_data, $time);
@@ -68,7 +73,7 @@ module dut;
     /* verilator lint_off UNUSEDSIGNAL */
     integer begin_signature, end_signature;
     string sig_filename;
-    integer sig_file, i;
+    integer sig_file, i, i_local;
     //integer i_fixed;
     /* verilator lint_on UNUSEDSIGNAL */
 
@@ -90,7 +95,8 @@ module dut;
     sig_file = $fopen(sig_filename, "w");
     if (sig_file != 0) begin
       for (i = begin_signature; i < end_signature; i = i + 4) begin
-        $fwrite(sig_file, "%08x\n", top.u_memory.M[19'(i[31:2])]);
+        i_local = i - BOOT_ADDR;
+        $fwrite(sig_file, "%08x\n", top.u_memory.M[19'(i_local[31:2])]);
       end
       $fclose(sig_file);
       $display("%m: signature written to %s", sig_filename);

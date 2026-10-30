@@ -3,13 +3,18 @@
 `include "src/headers/types.svh"
 `include "src/timescale.svh"
 `include "src/interfaces/mem_to_wb_if.svh"
+`include "src/interfaces/ex_to_mem_if.svh"
+`include "src/ext/zicsr/types.svh"
 
 module write_back_stage
   ( input  mem_to_wb_t     from_memory
   , input  data_t          data_from_memory
   , input  ex_to_mem_t     ex_to_mem
   , output var data_t      result
-  , output var logic [4:0] rd
+  , output var reg_t       rd
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  , output ext__zicsr__types::csr_wb_request_t csr_wb_request
+`endif
   );
 
   data_t alu_result_m;
@@ -33,8 +38,19 @@ module write_back_stage
       RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;
       RESULT_SRC__READ_DATA:  result = mem_result;
       RESULT_SRC__PC_PLUS_4:  result = from_memory.pc_plus_4;
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+      RESULT_SRC__CSR_READ:   result = from_memory.csr_data;
+`endif
       default:                result = 32'hxxxxxxxx;
     endcase
+
+`ifdef UTOSS_RISCV__ZICSR_ENABLED
+  csr_wb u_csr_wb
+    ( .csr_request    ( from_memory.csr_request )
+    , .csr_data       ( from_memory.csr_data    )
+    , .csr_wb_request ( csr_wb_request          )
+    );
+`endif
 
   wire unused = &{from_memory.reg_write
   , from_memory.pc_plus_4
