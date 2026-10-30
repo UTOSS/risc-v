@@ -1,6 +1,6 @@
 [options]
 size M4__MCY_SIZE
-seed M4__MCY_SEED
+ifelse(M4__MCY_SEED, `', `# Let MCY choose a random seed.', `seed M4__MCY_SEED')
 tags COVERED UNCOVERED
 # Only mutate modules from src/, excluding the simulation wrapper and memory.
 select A:mcy_target=1

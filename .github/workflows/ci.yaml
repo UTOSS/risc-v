@@ -238,6 +238,53 @@ jobs:
           path: utoss_riscv_dv/logs/**
           retention-days: 7
 
+  mcy:
+    timeout-minutes: 30
+    needs: select_ci_image
+    # dont skip if build_ci_image is skipped
+    if: always()
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run mcy
+        env:
+          RISCV_DV_DIR: /opt/riscv-dv
+        run: make mcy
+
+      - name: Upload mcy logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcy-logs-${{ matrix.config }}
+          path: |
+            mcy/config.mcy
+            mcy/database/**
+            mcy/tasks/**/logfile.txt
+          retention-days: 7
+
+      - name: Publish MCY coverage
+        if: always()
+        run: |
+          if [ -f mcy/database/db.sqlite3 ]; then
+            {
+              echo '### MCY mutation coverage'
+              echo ''
+              echo '```text'
+              (cd mcy && mcy status)
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'MCY failed before creating its database.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   de1-soc:
     timeout-minutes: 30
     needs:

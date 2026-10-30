@@ -156,7 +156,7 @@ $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
 # ===========================
 # MCY mutation testing
 # ===========================
-MCY_SEED ?= 1
+MCY_SEED ?=
 MCY_SIZE ?= 100 # Number of mutations to run
 MCY_TOP ?= top # Name of top module
 
@@ -170,7 +170,7 @@ MCY_FILES ?=
 mcy:
 	m4 -D M4__MCY_SEED="$(MCY_SEED)" -D M4__MCY_SIZE="$(MCY_SIZE)" \
 		-D M4__MCY_TOP="$(MCY_TOP)" -D M4__MCY_TESTS="$(MCY_TESTS)" mcy/config.mcy.m4 > mcy/config.mcy
-	cd mcy && mcy purge && MCY_FILES="$(MCY_FILES)" mcy init && mcy run && mcy gui
+	cd mcy && mcy purge && MCY_FILES="$(MCY_FILES)" mcy init && mcy run
 
 # ===========================
 # PyUVM verification
