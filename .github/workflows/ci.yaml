@@ -124,6 +124,21 @@ jobs:
           path: PyUVM/results-*.xml
           retention-days: 7
 
+  uvm:
+    timeout-minutes: 15
+    needs: select_ci_image
+    if: always() && needs.select_ci_image.result == 'success'
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run SystemVerilog UVM verification
+        run: make -C uvm run
+
   build_and_test:
     timeout-minutes: 30
     needs: select_ci_image
