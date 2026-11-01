@@ -247,9 +247,6 @@ jobs:
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
 
-    strategy:
-      matrix: *utoss-risc-v-matrix
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -263,7 +260,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mcy-logs-${{ matrix.config }}
+          name: mcy-logs
           path: |
             mcy/config.mcy
             mcy/database/**
