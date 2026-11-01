@@ -26,7 +26,7 @@ done < database/setup/rtl_files.txt
 
 [script]
 plugin -i slang
-read_slang -I.. --single-unit --keep-hierarchy -DTESTBENCH -DUTOSS_RISCV_HARDENING --top M4__MCY_TOP -f database/setup/rtl_files.txt ../envs/simulation/top.sv ../envs/simulation/memory.sv
+read_slang -I.. --single-unit --keep-hierarchy -DTESTBENCH -DUTOSS_RISCV_HARDENING M4__MCY_DEFINES --top M4__MCY_TOP -f database/setup/rtl_files.txt ../envs/simulation/top.sv ../envs/simulation/memory.sv
 script database/setup/targets.ys
 # Tests access internal state; retain instances even though top has no outputs.
 setattr -set keep 1 */c:*
@@ -50,4 +50,4 @@ if tags("COVERED") + tags("UNCOVERED"):
 
 [test regression]
 expect PASS FAIL
-run bash "$PRJDIR/run_tests.sh" "M4__MCY_TESTS"
+run bash "$PRJDIR/run_tests.sh" "M4__MCY_TESTS" "M4__MCY_DEFINES"

@@ -4,6 +4,11 @@ set -euo pipefail
 bash "$SCRIPTS/create_mutated.sh"
 root="$PRJDIR/.."
 
+# Use the same ISA feature defines as Slang's elaboration of the mutated design.
+defines=()
+if [[ -n "${2:-}" ]]; then
+    read -r -a defines <<< "$2"
+fi
 
 sed -nE 's/^[[:space:]]*module[[:space:]]+([^[:space:](;]+).*/\1/p' mutated.v > modules.txt
 sources=()
@@ -28,6 +33,7 @@ for file in "${tests[@]}"; do
     test=$(basename "$file" .sv)
     echo "Running $test"
     verilator --binary --timing --assert -sv -Wno-fatal -Wno-lint -Wno-UNOPTFLAT -Wno-style -Wno-TIMESCALEMOD -DTESTBENCH \
+        "${defines[@]}" \
         -MAKEFLAGS "PYTHON3='env -u PYTHONHOME -u PYTHONPATH python3'" \
         -I"$root" --top-module "$test" --Mdir "obj_$test" \
         mutated.v "${sources[@]}" "$file"

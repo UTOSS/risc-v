@@ -247,6 +247,9 @@ jobs:
     container:
       image: ${{ needs.select_ci_image.outputs.image-tag }}
 
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -254,13 +257,13 @@ jobs:
       - name: Run mcy
         env:
           RISCV_DV_DIR: /opt/riscv-dv
-        run: make mcy
+        run: make mcy UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Upload mcy logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mcy-logs
+          name: mcy-logs-${{ matrix.config }}
           path: |
             mcy/config.mcy
             mcy/database/**
@@ -272,14 +275,14 @@ jobs:
         run: |
           if [ -f mcy/database/db.sqlite3 ]; then
             {
-              echo '### MCY mutation coverage'
+              echo '### MCY mutation coverage (${{ matrix.config }})'
               echo ''
               echo '```text'
               (cd mcy && mcy status)
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
           else
-            echo 'MCY failed before creating its database.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'MCY (${{ matrix.config }}) failed before creating its database.' >> "$GITHUB_STEP_SUMMARY"
           fi
 
   de1-soc:
