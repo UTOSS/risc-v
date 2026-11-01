@@ -28,6 +28,7 @@ for file in "${tests[@]}"; do
     test=$(basename "$file" .sv)
     echo "Running $test"
     verilator --binary --timing --assert -sv -Wno-fatal -Wno-lint -Wno-UNOPTFLAT -Wno-style -Wno-TIMESCALEMOD -DTESTBENCH \
+        -MAKEFLAGS "PYTHON3='env -u PYTHONHOME -u PYTHONPATH python3'" \
         -I"$root" --top-module "$test" --Mdir "obj_$test" \
         mutated.v "${sources[@]}" "$file"
     if ! timeout 60s "./obj_$test/V$test"; then
