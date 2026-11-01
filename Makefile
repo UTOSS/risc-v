@@ -154,6 +154,26 @@ $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
 	cp $(BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
 
 # ===========================
+# MCY mutation testing
+# ===========================
+MCY_SEED ?=
+MCY_SIZE ?= 50 # Number of mutations to run
+MCY_TOP ?= top # Name of top module
+
+# List of tb files to check against. By default. uses all files in test/
+MCY_TESTS ?=
+
+# List of files to mutate. By default, uses all files in src/
+# Note that files that are not reachable by MCY_TOP are automatically ignored.
+MCY_FILES ?=
+
+mcy:
+	m4 -D M4__MCY_SEED="$(MCY_SEED)" -D M4__MCY_SIZE="$(MCY_SIZE)" \
+		-D M4__MCY_TOP="$(MCY_TOP)" -D M4__MCY_TESTS="$(MCY_TESTS)" \
+		-D M4__MCY_DEFINES="$(strip $(UTOSS_RISCV_VERILATOR_DEFINES))" mcy/config.mcy.m4 > mcy/config.mcy
+	cd mcy && mcy purge && MCY_FILES="$(MCY_FILES)" mcy init && mcy run
+
+# ===========================
 # PyUVM verification
 # ===========================
 .PHONY: test_pyuvm
@@ -259,7 +279,7 @@ test_diagrams:
 # ===========================
 # Phony targets
 # ===========================
-.PHONY: all build_top run_top build_tb run_tb new_tb \
+.PHONY: all build_top run_top build_tb run_tb new_tb mcy \
         svlint svlint_tb harden \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
