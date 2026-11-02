@@ -158,9 +158,10 @@ $(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
 # ===========================
 .PHONY: test_pyuvm
 test_pyuvm:
-	cd PyUVM && PYTHONPATH="$(CURDIR)/PyUVM" python3 -m pytest --import-mode=importlib tests
+	cd PyUVM && PYTHONPATH="$(CURDIR)/PyUVM" $(shell cocotb-config --python-bin) -m pytest --import-mode=importlib tests
 	$(MAKE) -C PyUVM MODULE=test_alu
 	$(MAKE) -C PyUVM MODULE=test_ecall UTOSS_RISCV_CONFIG=RV32IZicsr
+	$(MAKE) -C PyUVM MODULE=test_csr UTOSS_RISCV_CONFIG=RV32IZicsr
 
 # ===========================
 # Create new testbench

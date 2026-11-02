@@ -12,7 +12,7 @@ For a separate environment, install them with `python3 -m pip install -r PyUVM/r
 Verilator, a C++ compiler, make, and Python development libraries are also required.
 
 From the repository root, run `make test_pyuvm` to execute the reference-model unit
-tests, the ALU simulation, and all four full-core ECALL tests with `RV32IZicsr`.
+tests, the ALU simulation, and the full-core ECALL and CSR suites with `RV32IZicsr`.
 CI runs this same command and uploads the cocotb JUnit reports.
 
 ```sh
@@ -20,14 +20,15 @@ make -C PyUVM                              # ALU simulation only
 make -C PyUVM MODULE=test_ecall             # ECALL suite (defaults to RV32IZicsr)
 make -C PyUVM MODULE=test_ecall WAVES=1      # ECALL suite with dump.vcd
 make -C PyUVM MODULE=test_ecall TESTCASE=test_ecall_wrong_path
+make -C PyUVM MODULE=test_csr               # Full-core instruction-driven CSR suite
 ```
 
-ECALL tests also accept `UTOSS_RISCV_CONFIG=<configuration>`; it must include
+ECALL and CSR tests also accept `UTOSS_RISCV_CONFIG=<configuration>`; it must include
 `Zicsr`. Simulator builds are isolated by test module, core configuration, and
 waveform setting. Reports are written to `PyUVM/results-*.xml`, and test failures
 make the command fail.
 
-The ECALL suite runs programs on `envs/simulation/top.sv`. Shared backdoor loading,
+The ECALL and CSR suites run programs on `envs/simulation/top.sv`. Shared backdoor loading,
 program execution, and register/store monitors live in `core/`; the ECALL program,
 sequence, trap monitor, scoreboard, and environment live in `ecall/`.
 `test_ecall.py` uses cocotb entry points to run the UVM tests, matching the ALU suite.
@@ -39,10 +40,75 @@ The checks cover:
 - Discarding an ECALL behind a taken jump.
 - A legal CSR instruction that must not be decoded as ECALL.
 
-Every program must reach its completion marker within a bounded cycle count. The
-scoreboard compares complete register-write and trap-event streams and checks a
-memory sentinel for unintended stores. The former lowercase `pyuvm/` tree and its
-ADD smoke test have been replaced by this shared infrastructure.
+The CSR suite uses the same program driver, register monitor, instruction encoders,
+and backdoor access layer. Its independent reference model checks register results
+and ordered software CSR write requests across register and immediate WRITE/SET/CLEAR
+operations, x0 write suppression, read-only and unimplemented CSRs, and WARL masks.
+Separate monitors capture hardware CSR requests and pipeline stall/flush/PC activity.
+
+Each full-core program must reach its completion marker within a bounded cycle
+count. The ECALL scoreboard compares complete register-write and trap-event
+streams and checks a memory sentinel for unintended stores. The former lowercase
+`pyuvm/` tree and its ADD smoke test have been replaced by this shared infrastructure.
+
+### What the current suites establish
+
+The current suites establish that the listed directed scenarios work in the full
+core and that the checked architectural event streams match their reference
+expectations. They are a useful baseline for this framework, not evidence that all
+RISC-V behavior or all interactions have been verified.
+
+To decide whether coverage is sufficient for a feature, write down its behavioral
+requirements first and map each one to (1) stimulus that reaches it, (2) an
+independent expected result, and (3) an observation that would fail if the DUT were
+wrong. Check that both positive and negative cases are covered, including boundary
+values, back-to-back instructions, hazards, and interactions with traps or flushes
+where relevant. Review the mapping whenever the RTL or supported ISA changes.
+
+For stronger evidence, add functional coverage for those requirement bins and
+crosses, then use fault injection or temporary RTL mutations to confirm that the
+scoreboard fails when a covered behavior is broken. A passing regression alone
+cannot show that an un-stimulated behavior is correct.
+
+For CSR specifically, the current program checks ordered GPR results and software
+write requests, and requires CSR decode stalls to occur. The pipeline monitor
+records flush and PC signals, but the CSR scoreboard does not yet compare those
+streams against a cycle-accurate expectation. The CSR suite also does not exercise
+CSR updates caused by traps; those are checked by the ECALL suite. Add cases for
+these interactions, CSR read-after-write timing, randomized CSR sequences, and
+coverage tracking as the feature's verification goals require. The read-only CSR
+write checks currently verify the implemented write-mask behavior; architectural
+illegal-instruction trapping for read-only access is outside this core's present
+CSR contract.
+
+### Adding a test
+
+For another case in an existing domain, keep the stimulus, prediction, and checks
+in that domain's existing components:
+
+1. Add the instruction sequence or program mode in `csr/program.py` or
+   `ecall/program.py`. Use `core/instructions.py` encoders and the shared
+   `ProgramItem` fields for initial registers, completion, and timeout.
+2. Extend the reference model independently of the DUT signals. Record expected
+   register and CSR events in program order; do not use observed monitor values to
+   construct expectations.
+3. Add a UVM test class or test entry point in `test_csr.py` or `test_ecall.py` that
+   creates the program and runs its sequence. Reuse the existing environment unless
+   the new scenario needs a different set of monitors.
+4. Add assertions in the domain scoreboard for the architectural events and any
+   relevant side effects. Keep hierarchy access in `core/access.py`; add or extend
+   a shared monitor there when a new core signal must be observed.
+5. Add focused reference-model tests under `tests/` when model behavior changes.
+   Run the selected case with `make -C PyUVM MODULE=test_csr TESTCASE=<name>` or
+   `make -C PyUVM MODULE=test_ecall TESTCASE=<name>`, then run `make test_pyuvm`
+   for the full regression.
+
+For a new verification domain, create a directory containing its program or
+transaction type, sequence, environment, monitors, reference model, and scoreboard.
+Use `core/ProgramDriver` and the shared monitors where they fit. Add its cocotb test
+module and register the module in `PyUVM/Makefile`; if it belongs in the standard
+regression, add it to the root `test_pyuvm` target. Add a README run command and make
+sure the top-level build enables the RTL configuration the test requires.
 
 ---
 
