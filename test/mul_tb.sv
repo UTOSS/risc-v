@@ -13,10 +13,10 @@ module mul_tb;
   logic [31:0] result_o;
   logic        ready_o;
 
-  localparam logic [1:0] MUL    = 2'b00;
-  localparam logic [1:0] MULH   = 2'b01;
-  localparam logic [1:0] MULHSU = 2'b10;
-  localparam logic [1:0] MULHU  = 2'b11;
+  localparam bit [1:0] MUL    = 2'b00;
+  localparam bit [1:0] MULH   = 2'b01;
+  localparam bit [1:0] MULHSU = 2'b10;
+  localparam bit [1:0] MULHU  = 2'b11;
 
   mul uut
     ( .clk      ( clk      )
