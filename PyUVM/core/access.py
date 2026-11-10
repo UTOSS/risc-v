@@ -83,6 +83,63 @@ class MemoryWriteMonitor(uvm_component):
                 self.ap.write((int(bus.address.value), mask, int(bus.write_data.value)))
 
 
+class CSRWriteMonitor(uvm_component):
+    """Observe committed software CSR writes at the writeback boundary."""
+
+    def build_phase(self):
+        self.ap = uvm_analysis_port("ap", self)
+
+    async def run_phase(self):
+        access = CoreAccess()
+        request = access.core.wb_csr_wb_request
+        while True:
+            await FallingEdge(access.dut.clk)
+            await ReadOnly()
+            packed = int(request.value)
+            # Verilator exposes packed SystemVerilog structs as a single VPI value.
+            if not int(access.dut.reset.value) and (packed & 1):
+                self.ap.write(((packed >> 33) & 0xFFF, (packed >> 1) & 0xFFFF_FFFF))
+
+
+class CSRHardwareWriteMonitor(uvm_component):
+    """Observe CSR updates initiated by core hardware, separately from software."""
+
+    def build_phase(self):
+        self.ap = uvm_analysis_port("ap", self)
+
+    async def run_phase(self):
+        access = CoreAccess()
+        requests = (access.core.mepc_hw_request, access.core.mcause_hw_request,
+                    access.core.mtvec_hw_request)
+        while True:
+            await FallingEdge(access.dut.clk)
+            await ReadOnly()
+            if int(access.dut.reset.value):
+                continue
+            for address, request in zip((0x341, 0x342, 0x305), requests):
+                if int(request.write_enable.value):
+                    self.ap.write((address, int(request.write_data.value)))
+
+
+class PipelineMonitor(uvm_component):
+    """Capture pipeline control and fetch PC for CSR hazard/flush diagnostics."""
+
+    def build_phase(self):
+        self.ap = uvm_analysis_port("ap", self)
+
+    async def run_phase(self):
+        access = CoreAccess()
+        core = access.core
+        while True:
+            await FallingEdge(access.dut.clk)
+            await ReadOnly()
+            if not int(access.dut.reset.value):
+                self.ap.write((int(core.stall_f.value), int(core.stall_d.value),
+                               int(core.stall_e.value), int(core.flush_f.value),
+                               int(core.flush_d.value), int(core.flush_e.value),
+                               int(core.u_fetch_stage.pc_next.value)))
+
+
 class ProgramItem(uvm_sequence_item):
     """One reset-isolated program, with a completion marker and bounded runtime."""
 
