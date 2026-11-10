@@ -9,6 +9,10 @@ riscof/sail_cSim/__pycache__
 riscof/config.ini
 riscof/dut_sim
 utoss_riscv_dv/logs/
+mcy/database/
+mcy/tasks/
+mcy/config.mcy
+debug.log
 
 envs/de1-soc/poc/poc*.mem
 envs/de1-soc/poc/poc*.mif
