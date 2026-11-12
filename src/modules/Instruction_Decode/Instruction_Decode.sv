@@ -1,6 +1,9 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 `include "src/ext/m/types.svh"
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+`include "src/ext/zknh/types.svh"
+`endif
 `include "src/timescale.svh"
 
 module Instruction_Decode
@@ -15,6 +18,10 @@ module Instruction_Decode
 
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
+`endif
+
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+  , output ext__zknh__types::zknh_control_t zknh_control
 `endif
 
 `ifdef UTOSS_RISCV__MUL_ENABLED
@@ -187,6 +194,16 @@ module Instruction_Decode
     , .rd            ( rd            )
     , .rs2           ( rs2           )
     , .b_alu_control ( b_alu_control )
+    );
+`endif
+
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+  ext__zknh__decoder u_ext__zknh__decoder
+    ( .funct3        ( funct3        )
+    , .funct7        ( funct7        )
+    , .opcode        ( opcode        )
+    , .rs2           ( rs2           )
+    , .zknh_control  ( zknh_control  )
     );
 `endif
 

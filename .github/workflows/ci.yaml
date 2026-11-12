@@ -139,6 +139,7 @@ jobs:
           - RV32I
           - RV32IZbb_Zbkb
           - RV32IZicsr
+          - RV32IZknh
 
     steps:
       - name: Checkout code

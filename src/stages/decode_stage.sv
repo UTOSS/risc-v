@@ -4,6 +4,9 @@
 `include "src/interfaces/if_to_id_if.svh"
 `include "src/interfaces/id_to_ex_if.svh"
 `include "src/ext/zicsr/types.svh"
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+`include "src/ext/zknh/types.svh"
+`endif
 
 module decode_stage
   ( input  if_to_id_t if_to_id
@@ -44,6 +47,9 @@ module decode_stage
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control; //NEW
+`endif
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+  ext__zknh__types::zknh_control_t zknh_control;
 `endif
 
 
@@ -104,6 +110,9 @@ module decode_stage
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
 `endif
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+    , .zknh_control    ( zknh_control     )
+`endif
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
     , .is_ecall        ( id_to_ex.is_ecall )
 `endif
@@ -158,7 +167,15 @@ module decode_stage
     else                                           rd2_safe = rd2;
 
   assign id_to_ex.alu_src_a      = cfsm__alu_src_a;
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+  // Zknh reads both source registers, but the SHA2-256 instructions are encoded
+  // as OP-IMM, for which the control FSM selects the immediate as the ALU operand.
+  assign id_to_ex.alu_src_b      = (zknh_control == ext__zknh__types::ZKNH_CTRL__NONE)
+                                 ? cfsm__alu_src_b
+                                 : ALU_SRC_B__RD2;
+`else
   assign id_to_ex.alu_src_b      = cfsm__alu_src_b;
+`endif
   assign id_to_ex.result_src     = cfsm__result_src;
   assign id_to_ex.branch         = cfsm__branch;
   assign id_to_ex.jump           = cfsm__jump;
@@ -185,6 +202,9 @@ module decode_stage
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   assign id_to_ex.b_alu_control  = b_alu_control;
+`endif
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+  assign id_to_ex.zknh_control   = zknh_control;
 `endif
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   assign id_to_ex.csr_request    = csr_request;
