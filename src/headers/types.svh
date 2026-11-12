@@ -1,6 +1,8 @@
 `ifndef TYPES_VH
 `define TYPES_VH
 
+`include "src/timescale.svh"
+
 /* defines the bitness of the processor */
 `define PROCESSOR_BITNESS 32
 `define NUMBER_OF_CSRS 4096
