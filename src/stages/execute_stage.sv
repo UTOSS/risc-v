@@ -3,6 +3,9 @@
 `include "src/interfaces/id_to_ex_if.svh"
 `include "src/interfaces/ex_to_mem_if.svh"
 `include "src/interfaces/ex_to_if_if.svh"
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+`include "src/ext/zknh/types.svh"
+`endif
 
 module execute_stage
   ( input id_to_ex_t id_to_ex
@@ -157,6 +160,9 @@ module execute_stage
     , .zeroE          ( zbkx_zero_flag         )
     );
 `endif
+  data_t ext_result;
+  logic  ext_zero_flag;
+
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   always_comb begin
     if (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__PACK   ||
@@ -164,23 +170,49 @@ module execute_stage
         id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__BREV8  ||
         id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__ZIP    ||
         id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__UNZIP) begin
-        alu_result = zbkb_result;
-        zero_flag  = zbkb_zero_flag;
+        ext_result = zbkb_result;
+        ext_zero_flag  = zbkb_zero_flag;
     end else if (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__XPERM4 ||
                  id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__XPERM8) begin
-        alu_result = zbkx_result;
-        zero_flag  = zbkx_zero_flag;
+        ext_result = zbkx_result;
+        ext_zero_flag  = zbkx_zero_flag;
     end else if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
-        alu_result = zbb_result;
-        zero_flag  = zbb_zero_flag;
+        ext_result = zbb_result;
+        ext_zero_flag  = zbb_zero_flag;
     end else begin
-        alu_result = alu_result_base;
-        zero_flag  = zero_flag_base;
+        ext_result = alu_result_base;
+        ext_zero_flag  = zero_flag_base;
     end
   end
 `else
-assign alu_result = alu_result_base;
-assign zero_flag  = zero_flag_base;
+  assign ext_result = alu_result_base;
+  assign ext_zero_flag = zero_flag_base;
+`endif
+
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+  data_t zknh_result;
+  logic  zknh_zero_flag;
+
+  ext__zknh__logic u_ext__zknh__logic
+    ( .a              ( alu_input_a           )
+    , .b              ( alu_input_b           )
+    , .zknh_control   ( id_to_ex.zknh_control )
+    , .out            ( zknh_result           )
+    , .zeroE          ( zknh_zero_flag        )
+    );
+
+  always_comb begin
+    if (id_to_ex.zknh_control != ext__zknh__types::ZKNH_CTRL__NONE) begin
+      alu_result = zknh_result;
+      zero_flag  = zknh_zero_flag;
+    end else begin
+      alu_result = ext_result;
+      zero_flag  = ext_zero_flag;
+    end
+  end
+`else
+  assign alu_result = ext_result;
+  assign zero_flag  = ext_zero_flag;
 `endif
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
