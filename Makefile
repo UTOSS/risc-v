@@ -74,8 +74,8 @@ TB_DEFINES := -DTESTBENCH
 # ===========================
 # Sources
 # ===========================
-SRCS := $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v") \
-        $(shell find $(ENVS_DIR)/$(ENV) -not -path "*/out/*" -not -path "*/build/*" \( -name "*.sv" -o -name "*.v" \))
+SRCS := $(sort $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v")) \
+        $(sort $(shell find $(ENVS_DIR)/$(ENV) -not -path "*/out/*" -not -path "*/build/*" \( -name "*.sv" -o -name "*.v" \)))
 
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
 TB_UTILS := $(TB_DIR)/utils.svh

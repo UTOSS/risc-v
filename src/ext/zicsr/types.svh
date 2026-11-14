@@ -1,6 +1,8 @@
 `ifndef EXT__ZICSR__TYPES
 `define EXT__ZICSR__TYPES
 
+`include "src/timescale.svh"
+
 `include "src/headers/types.svh"
 
 /* verilator lint_off DECLFILENAME */
