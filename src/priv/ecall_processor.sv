@@ -1,3 +1,4 @@
+`include "src/timescale.svh"
 `include "src/ext/zicsr/types.svh"
 
 module ecall_processor
