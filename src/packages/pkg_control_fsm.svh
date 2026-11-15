@@ -1,9 +1,9 @@
 `ifndef PKG_CONTROL_FSM_VH
 `define PKG_CONTROL_FSM_VH
 
-/* verilator lint_off TIMESCALEMOD */
+`include "src/timescale.svh"
+
 package pkg_control_fsm;
-/* verilator lint_on TIMESCALEMOD */
 
     // parameterize states (binary encoding)
     typedef enum logic[4:0]

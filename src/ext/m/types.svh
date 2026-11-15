@@ -1,6 +1,8 @@
 `ifndef EXT__M__TYPES
 `define EXT__M__TYPES
 
+`include "src/timescale.svh"
+
 /* verilator lint_off DECLFILENAME */
 package ext__m__types;
 /* verilator lint_on DECLFILENAME */
