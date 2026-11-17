@@ -7,6 +7,9 @@
 `ifdef UTOSS_RISCV__ANY_M
 `include "src/ext/m/types.svh"
 `endif
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+`include "src/ext/zknh/types.svh"
+`endif
 
 typedef struct packed {
   alu_src_a_t   alu_src_a;
@@ -34,6 +37,9 @@ typedef struct packed {
 `endif
 `ifdef UTOSS_RISCV_ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;
+`endif
+`ifdef UTOSS_RISCV_ENABLE_ZKNH_EXT
+  ext__zknh__types::zknh_control_t zknh_control;
 `endif
 `ifdef UTOSS_RISCV__MUL_ENABLED
   logic         is_mul;
