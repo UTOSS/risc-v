@@ -144,15 +144,22 @@ RUN mkdir -p /opt/pdks/nangate45 && \
     chmod 644 ${NANGATE45_LIB_NAME}
 ENV NANGATE45_LIB=/opt/pdks/nangate45/NangateOpenCellLibrary_typical.lib
  
-# install minimal TeX Live and diagram generation tools
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    texlive-latex-base \
-    texlive-latex-recommended \
-    texlive-pictures \
-    texlive-latex-extra \
-    texlive-science \
-    texlive-fonts-extra \
-    poppler-utils \
-    dvisvgm && \
+# install draw.io desktop (run headless via xvfb) for diagram SVG export
+# (hash matches Files-SHA256-Hashes.txt published with the release; the .deb does not declare
+# its libgbm1/libasound2 runtime deps, so they are installed explicitly)
+ARG DRAWIO_VERSION=32.6.1
+ARG DRAWIO_DEB_NAME=drawio-amd64-${DRAWIO_VERSION}.deb
+ARG DRAWIO_DEB_URL=https://github.com/jgraph/drawio-desktop/releases/download/v${DRAWIO_VERSION}/${DRAWIO_DEB_NAME}
+ARG DRAWIO_DEB_HASH="515a975fbdb982e0d736b6f99248dbbb856a8b07bb72d6d3648a54b850fa33db  ${DRAWIO_DEB_NAME}"
+RUN cd /tmp && \
+    wget ${DRAWIO_DEB_URL} && \
+    echo "${DRAWIO_DEB_HASH}" | sha256sum -c && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    ./${DRAWIO_DEB_NAME} \
+    libgbm1 \
+    libasound2 \
+    xvfb \
+    xauth && \
+    rm ${DRAWIO_DEB_NAME} && \
     rm -rf /var/lib/apt/lists/*
 
