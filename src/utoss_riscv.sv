@@ -35,6 +35,13 @@ module utoss_riscv
   data_t      wb_result;
   reg_t       wb_rd;
 
+  hazard_forward_a_t hz_forward_a;
+  hazard_forward_b_t hz_forward_b;
+  logic stall_f, stall_d, stall_e, flush_f, flush_d, flush_e;
+`ifdef UTOSS_RISCV__DIV_ENABLED
+  logic div_start_e, div_cancel_e;
+`endif
+
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
   ext__zicsr__types::csr_wb_request_t wb_csr_wb_request;
   ext__zicsr__types::csr_request_t id_csr_request;
@@ -179,13 +186,6 @@ module utoss_riscv
   // writeback stage end
 
   // hazard module begin (@DanielTaoHuang123)
-
-  hazard_forward_a_t hz_forward_a;
-  hazard_forward_b_t hz_forward_b;
-  logic stall_f, stall_d, stall_e, flush_f, flush_d, flush_e;
-`ifdef UTOSS_RISCV__DIV_ENABLED
-  logic div_start_e, div_cancel_e;
-`endif
 
   hazard_unit u_hazard_unit
     ( .clk ( clk )
