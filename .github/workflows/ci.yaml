@@ -242,7 +242,7 @@ jobs:
           retention-days: 7
 
   mcy:
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: select_ci_image
     # dont skip if build_ci_image is skipped
     if: always()
