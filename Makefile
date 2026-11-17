@@ -266,6 +266,13 @@ svlint:
 svlint_tb:
 	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
+# every design unit in src/ must bring in a timescale itself, so that Verilator's TIMESCALEMOD
+# check does not depend on the order in which source files are passed to it
+check_timescale:
+	python3 checks/check_timescale.py $(if $(CI),--github-actions) $(SRC_DIR)
+
+lint: svlint svlint_tb check_timescale
+
 # ===========================
 # Diagrams
 # ===========================
@@ -280,7 +287,7 @@ test_diagrams:
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb mcy \
-        svlint svlint_tb harden \
+        svlint svlint_tb check_timescale harden \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv \
