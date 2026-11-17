@@ -1,5 +1,5 @@
 /* Generic register module */
-`timescale 1ns/1ps
+`include "src/timescale.svh"
 
 
 module register #( type DATA_TYPE )

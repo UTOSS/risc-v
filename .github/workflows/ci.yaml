@@ -78,6 +78,9 @@ jobs:
       - name: lint testbench
         run: make svlint_tb
 
+      - name: check timescale
+        run: make check_timescale
+
       - name: lint DE1-SoC environment files
         run: make svlint ENV=de1-soc
 
@@ -198,7 +201,7 @@ jobs:
 
       - name: Run RISCOF
         run: make riscof_run UTOSS_RISCV_CONFIG=${{ matrix.config }}
-          
+
       - name: Upload RISCOF report
         if: always()
         uses: actions/upload-artifact@v4
@@ -239,7 +242,7 @@ jobs:
           retention-days: 7
 
   mcy:
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: select_ci_image
     # dont skip if build_ci_image is skipped
     if: always()

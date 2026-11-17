@@ -1,3 +1,5 @@
+`include "src/timescale.svh"
+
 // operation select (op_i):
 // 00: DIV signed quotient
 // 01: DIVU unsigned quotient

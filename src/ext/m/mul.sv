@@ -1,3 +1,5 @@
+`include "src/timescale.svh"
+
 module mul(
     /* verilator lint_off UNUSEDSIGNAL */
       input clk
