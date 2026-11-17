@@ -91,11 +91,11 @@ module execute_stage
   logic [`PROCESSOR_BITNESS - 1:0] alu_result_base;
   logic zero_flag_base;
   ALU alu
-    ( .a              ( alu_input_a         )
-    , .b              ( alu_input_b         )
+    ( .a              ( alu_input_a          )
+    , .b              ( alu_input_b          )
     , .alu_control    ( id_to_ex.alu_control )
-    , .out            ( alu_result_base          )
-    , .zeroE          ( zero_flag_base           ) //added bases for local
+    , .out            ( alu_result_base      )
+    , .zeroE          ( zero_flag_base       ) //added bases for local
     );
 
 `ifdef UTOSS_RISCV__MUL_ENABLED
@@ -146,8 +146,8 @@ module execute_stage
     ( .a              ( alu_input_a            )
     , .b              ( alu_input_b            )
     , .b_alu_control  ( id_to_ex.b_alu_control )
-    , .out            ( zbkb_result             )
-    , .zeroE          ( zbkb_zero_flag          )
+    , .out            ( zbkb_result            )
+    , .zeroE          ( zbkb_zero_flag         )
     );
   zbkx u_zbkx
     ( .a              ( alu_input_a            )
@@ -156,31 +156,18 @@ module execute_stage
     , .out            ( zbkx_result            )
     , .zeroE          ( zbkx_zero_flag         )
     );
-`endif
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
-  always_comb begin
-    if (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__PACK   ||
-        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__PACKH  ||
-        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__BREV8  ||
-        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__ZIP    ||
-        id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__UNZIP) begin
-        alu_result = zbkb_result;
-        zero_flag  = zbkb_zero_flag;
-    end else if (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__XPERM4 ||
-                 id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__XPERM8) begin
-        alu_result = zbkx_result;
-        zero_flag  = zbkx_zero_flag;
-    end else if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
-        alu_result = zbb_result;
-        zero_flag  = zbb_zero_flag;
+
+  always_comb
+    if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
+        alu_result = zbb_result    | zbkb_result    | zbkx_result;
+        zero_flag  = zbb_zero_flag | zbkb_zero_flag | zbkx_zero_flag;
     end else begin
         alu_result = alu_result_base;
         zero_flag  = zero_flag_base;
     end
-  end
 `else
-assign alu_result = alu_result_base;
-assign zero_flag  = zero_flag_base;
+  assign alu_result = alu_result_base;
+  assign zero_flag  = zero_flag_base;
 `endif
 
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
@@ -258,8 +245,8 @@ assign zero_flag  = zero_flag_base;
   assign ex_to_mem.pc_cur       = id_to_ex.pc_cur;
   assign ex_to_mem.pc_plus_4    = id_to_ex.pc_plus_4;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-  assign ex_to_mem.csr_request      = id_to_ex.csr_request;
-  assign ex_to_mem.csr_data         = id_to_ex.csr_data;
+  assign ex_to_mem.csr_request  = id_to_ex.csr_request;
+  assign ex_to_mem.csr_data     = id_to_ex.csr_data;
 `endif
   assign ex_to_if.imm_ext       = id_to_ex.imm_ext;
   assign ex_to_if.pc_src        = pc_src;
