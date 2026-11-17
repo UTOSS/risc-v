@@ -1,15 +1,15 @@
-# ALU unit tests by default; MODULE=test_ecall selects the full-core ECALL suite.
+# ALU unit tests by default; test_ecall and test_csr select full-core suites.
 REPO_ROOT := $(abspath ..)
 TOPLEVEL_LANG := verilog
 SIM ?= verilator
 MODULE ?= test_alu
 export PYTHONPATH := $(CURDIR):$(PYTHONPATH)
 
-ifeq ($(MODULE),test_ecall)
+ifneq ($(filter $(MODULE),test_ecall test_csr),)
 UTOSS_RISCV_CONFIG ?= RV32IZicsr
 export UTOSS_RISCV_CONFIG
 ifeq ($(findstring Zicsr,$(UTOSS_RISCV_CONFIG)),)
-$(error ECALL tests require a Zicsr configuration, e.g. UTOSS_RISCV_CONFIG=RV32IZicsr)
+$(error $(MODULE) requires a Zicsr configuration, e.g. UTOSS_RISCV_CONFIG=RV32IZicsr)
 endif
 TOPLEVEL := top
 ROOT_MAKE := $(MAKE) -s --no-print-directory -C $(REPO_ROOT) UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
@@ -29,7 +29,7 @@ VERILATOR_TRACE := 1
 endif
 
 # Keep different DUTs, configurations and tracing settings in separate builds.
-BUILD_VARIANT := $(MODULE)$(if $(filter test_ecall,$(MODULE)),-$(UTOSS_RISCV_CONFIG))$(if $(filter 1,$(WAVES)),-waves)
+BUILD_VARIANT := $(MODULE)$(if $(filter test_ecall test_csr,$(MODULE)),-$(UTOSS_RISCV_CONFIG))$(if $(filter 1,$(WAVES)),-waves)
 SIM_BUILD := sim_build/$(BUILD_VARIANT)
 COCOTB_RESULTS_FILE ?= results-$(BUILD_VARIANT).xml
 

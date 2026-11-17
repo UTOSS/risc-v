@@ -1,5 +1,6 @@
 *.vvp
 *.vcd
+.venv/
 
 riscof/riscof_work/
 riscof/riscv-arch-test/
@@ -41,6 +42,7 @@ out/**
 !out/.gitkeep
 build/**
 !build/.gitkeep
+uvm/build/
 
 
 
