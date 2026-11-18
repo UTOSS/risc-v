@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Openbox right-click desktop menu for the noVNC desktop.
+  Installed to ~/.config/openbox/menu.xml by .devcontainer/scripts/start-desktop.sh, which also
+  replaces @WORKSPACE@ with the repository path.
+-->
+<openbox_menu xmlns="http://openbox.org/3.4/menu">
+  <menu id="root-menu" label="utoss-risc-v">
+    <item label="OpenROAD GUI: hardened layout">
+      <action name="Execute">
+        <command>@WORKSPACE@/.devcontainer/scripts/openroad-gui.sh</command>
+      </action>
+    </item>
+    <item label="OpenROAD GUI: empty">
+      <action name="Execute">
+        <command>@WORKSPACE@/.devcontainer/scripts/openroad-gui.sh --empty</command>
+      </action>
+    </item>
+    <separator />
+    <item label="Terminal">
+      <action name="Execute">
+        <command>xterm -fa Monospace -fs 11 -e "cd @WORKSPACE@ &amp;&amp; exec zsh -l"</command>
+      </action>
+    </item>
+    <separator />
+    <item label="Reconfigure menu">
+      <action name="Reconfigure" />
+    </item>
+  </menu>
+</openbox_menu>

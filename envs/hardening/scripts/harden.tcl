@@ -2,7 +2,8 @@
 # with OpenSTA (the STA engine built into OpenROAD).
 #
 # Input : $OUT_DIR/top_pnr.v (written by scripts/harden_pre_pnr.tcl, i.e. `make harden_pre_pnr`)
-# Output: $OUT_DIR/pnr/*            (odb/def/netlist/spef + raw tool reports)
+# Output: $OUT_DIR/pnr/*            (odb/def/netlist + raw tool reports; 1_floorplan/2_place/
+#                                    3_cts.odb stage snapshots for scripts/dump_layout.tcl)
 #         $OUT_DIR/pnr/cells.tsv    (per-instance dump, parsed by scripts/parse_pnr_metrics.py)
 #         $OUT_DIR/pnr/summary.json (floorplan/timing/power numbers, ditto)
 #
@@ -85,6 +86,9 @@ pdngen
 # drop buffers yosys left on the netlist; the resizer re-buffers from scratch
 remove_buffers
 
+# stage snapshots are only used to draw the layout figures (scripts/dump_layout.tcl)
+write_db "$pnr_dir/1_floorplan.odb"
+
 # ---------------------------------------------------------------------------
 # Placement
 # ---------------------------------------------------------------------------
@@ -100,6 +104,7 @@ repair_tie_fanout -separation 5 [join $::env(TIEHI_CELL_AND_PORT) /]
 set_placement_padding -global -left 1 -right 1
 detailed_placement
 check_placement -verbose
+write_db "$pnr_dir/2_place.odb"
 
 # ---------------------------------------------------------------------------
 # Clock tree synthesis + timing repair
@@ -118,6 +123,7 @@ repair_timing -setup -skip_pin_swap
 repair_timing -hold -hold_margin 0.05
 detailed_placement
 check_placement -verbose
+write_db "$pnr_dir/3_cts.odb"
 
 # ---------------------------------------------------------------------------
 # Routing

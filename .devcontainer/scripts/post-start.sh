@@ -22,3 +22,6 @@ if [[ -z "${CODESPACES:-}" ]]; then
 else
   echo "⏩ Skipping SSH_AUTH_SOCK setup for Codespaces"
 fi
+
+# browser desktop for the OpenROAD GUI (noVNC on port 6080); don't fail the container start over it
+"$WORKSPACE/.devcontainer/scripts/start-desktop.sh" "$WORKSPACE" || echo "⚠️  noVNC desktop failed to start; see /tmp/desktop-logs"

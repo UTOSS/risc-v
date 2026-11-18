@@ -442,6 +442,21 @@ jobs:
         id: harden
         run: cd envs/hardening && make harden UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Check layout images are up to date
+        run: cd envs/hardening && make test_harden_images UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      # the images CI rendered, so they can be downloaded and committed if a local render differs
+      - name: Upload layout images
+        uses: actions/upload-artifact@v4
+        if: always() && steps.harden.outcome == 'success'
+        with:
+          name: hardening-images-${{ matrix.config }}
+          path: envs/hardening/images/${{ matrix.config }}/*.png
+          retention-days: 7
+
       # upload even if PnR failed so the pre-PnR reports and the PnR log are still available
       - name: Upload Hardening reports
         uses: actions/upload-artifact@v4

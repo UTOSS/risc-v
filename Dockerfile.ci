@@ -167,6 +167,13 @@ RUN cd /tmp && \
     apt-get update && apt-get install -y ./${OPENROAD_DEB_NAME} && \
     rm ${OPENROAD_DEB_NAME} && rm -rf /var/lib/apt/lists/* && \
     openroad -version
+
+# hardening layout figures: matplotlib + lossless PNG optimizer; matplotlib is pinned because the
+# checked-in figures must render byte-for-byte the same (keep envs/hardening/requirements.txt in sync)
+ARG MATPLOTLIB_VERSION=3.9.2
+RUN apt-get update && apt-get install -y --no-install-recommends optipng && \
+    rm -rf /var/lib/apt/lists/* && \
+    python3 -m pip install --no-cache-dir matplotlib==${MATPLOTLIB_VERSION}
  
 # install draw.io desktop (run headless via xvfb) for diagram SVG export
 # (hash matches Files-SHA256-Hashes.txt published with the release; the .deb does not declare
