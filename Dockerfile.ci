@@ -143,6 +143,30 @@ RUN mkdir -p /opt/pdks/nangate45 && \
     echo "${NANGATE45_LIB_HASH}" | sha256sum -c && \
     chmod 644 ${NANGATE45_LIB_NAME}
 ENV NANGATE45_LIB=/opt/pdks/nangate45/NangateOpenCellLibrary_typical.lib
+
+# install Nangate45 LEFs (technology + standard cells) for place & route
+ARG NANGATE45_PLATFORM_COMMIT=7a57dddc8427845f75a14bd975328ee8717a1c8b
+ARG NANGATE45_LEF_URL=https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/${NANGATE45_PLATFORM_COMMIT}/flow/platforms/nangate45/lef
+ARG NANGATE45_TECH_LEF_HASH="834a79295054cd4209178d1bade67c353863c47bb4b3c22ee38b862b7cec37f2  NangateOpenCellLibrary.tech.lef"
+ARG NANGATE45_CELLS_LEF_HASH="a43aea339f12a57a63497783e508ba16f3da2dc056d3247dec7d99707c2dedef  NangateOpenCellLibrary.macro.mod.lef"
+RUN cd /opt/pdks/nangate45 && \
+    wget ${NANGATE45_LEF_URL}/NangateOpenCellLibrary.tech.lef && \
+    wget ${NANGATE45_LEF_URL}/NangateOpenCellLibrary.macro.mod.lef && \
+    echo "${NANGATE45_TECH_LEF_HASH}" | sha256sum -c && \
+    echo "${NANGATE45_CELLS_LEF_HASH}" | sha256sum -c && \
+    chmod 644 *.lef
+
+# install OpenROAD (place & route; bundles OpenSTA for post-PnR timing)
+ARG OPENROAD_RELEASE=2024-12-14
+ARG OPENROAD_DEB_NAME=openroad_2.0-17598-ga008522d8_amd64-ubuntu-22.04.deb
+ARG OPENROAD_DEB_URL=https://github.com/Precision-Innovations/OpenROAD/releases/download/${OPENROAD_RELEASE}/${OPENROAD_DEB_NAME}
+ARG OPENROAD_DEB_HASH="40ed178396b0276a5d5dfbbe695c9de9aac9088157a6655be02b39a0cef07207  ${OPENROAD_DEB_NAME}"
+RUN cd /tmp && \
+    wget ${OPENROAD_DEB_URL} && \
+    echo "${OPENROAD_DEB_HASH}" | sha256sum -c && \
+    apt-get update && apt-get install -y ./${OPENROAD_DEB_NAME} && \
+    rm ${OPENROAD_DEB_NAME} && rm -rf /var/lib/apt/lists/* && \
+    openroad -version
  
 # install draw.io desktop (run headless via xvfb) for diagram SVG export
 # (hash matches Files-SHA256-Hashes.txt published with the release; the .deb does not declare

@@ -418,7 +418,7 @@ jobs:
           retention-days: 7
 
   hardening:
-    timeout-minutes: 15
+    timeout-minutes: 30
     needs:
       - select_ci_image
       - build_and_test
@@ -434,13 +434,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Harden
+      - name: Harden (pre-PnR)
+        id: harden_pre_pnr
+        run: cd envs/hardening && make harden_pre_pnr UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      - name: Harden (place & route)
         id: harden
         run: cd envs/hardening && make harden UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
+      # upload even if PnR failed so the pre-PnR reports and the PnR log are still available
       - name: Upload Hardening reports
         uses: actions/upload-artifact@v4
-        if: steps.harden.outcome == 'success'
+        if: always() && steps.harden_pre_pnr.outcome == 'success'
         with:
           name: hardening-reports-${{ matrix.config }}
           path: |
@@ -449,6 +454,13 @@ jobs:
             envs/hardening/metrics/synthesis_utilization.pretty.txt
             envs/hardening/metrics/gate_breakdown.txt
             envs/hardening/metrics/stat_summary.txt
+            envs/hardening/metrics/pnr_utilization.csv
+            envs/hardening/metrics/pnr_utilization.pretty.txt
+            envs/hardening/metrics/pnr_gate_breakdown.txt
+            envs/hardening/metrics/pnr_timing.txt
+            envs/hardening/out/pnr/*.rpt
+            envs/hardening/out/pnr/summary.json
+            envs/hardening/out/pnr/pnr.log
           retention-days: 7
 
   hardening-metrics-diff:
@@ -503,6 +515,27 @@ jobs:
           "base-reports/metrics/gate_breakdown.txt"
           "pr-reports/metrics/gate_breakdown.txt"
           > metric-diff/hardening_gate_breakdown.md
+
+      - name: Compare Post-PnR Utilization by Hierarchy
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/metrics/pnr_utilization.pretty.txt"
+          "pr-reports/metrics/pnr_utilization.pretty.txt"
+          > metric-diff/pnr_utilization.md
+
+      - name: Compare Post-PnR Gate Breakdown
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/metrics/pnr_gate_breakdown.txt"
+          "pr-reports/metrics/pnr_gate_breakdown.txt"
+          > metric-diff/pnr_gate_breakdown.md
+
+      - name: Compare Post-PnR Timing
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/metrics/pnr_timing.txt"
+          "pr-reports/metrics/pnr_timing.txt"
+          > metric-diff/pnr_timing.md
 
       - name: Upload per-config metrics diff
         uses: actions/upload-artifact@v4

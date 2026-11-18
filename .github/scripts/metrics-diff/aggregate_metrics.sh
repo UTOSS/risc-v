@@ -60,6 +60,18 @@ else
     echo "    - Gate breakdown" >> "$OUTPUT_FILE"
     append_metric_cell "$harden_dir/hardening_gate_breakdown.md"
     echo "" >> "$OUTPUT_FILE"
+
+    # Nangate45 place & route section (same artifact as hardening)
+    echo "  - **Nangate45 place & route (OpenROAD)**" >> "$OUTPUT_FILE"
+    echo "    - Timing (OpenSTA)" >> "$OUTPUT_FILE"
+    append_metric_cell "$harden_dir/pnr_timing.md"
+    echo "" >> "$OUTPUT_FILE"
+    echo "    - Utilization by hierarchy" >> "$OUTPUT_FILE"
+    append_metric_cell "$harden_dir/pnr_utilization.md"
+    echo "" >> "$OUTPUT_FILE"
+    echo "    - Gate breakdown" >> "$OUTPUT_FILE"
+    append_metric_cell "$harden_dir/pnr_gate_breakdown.md"
+    echo "" >> "$OUTPUT_FILE"
   done
 fi
 

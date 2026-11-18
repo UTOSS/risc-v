@@ -254,6 +254,9 @@ docker_build_quartus_image:
 # ===========================
 # Hardening
 # ===========================
+harden_pre_pnr:
+	$(MAKE) -C envs/hardening harden_pre_pnr
+
 harden:
 	$(MAKE) -C envs/hardening harden
 
@@ -287,7 +290,7 @@ test_diagrams:
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb mcy \
-        svlint svlint_tb check_timescale harden \
+        svlint svlint_tb check_timescale harden_pre_pnr harden \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv \
