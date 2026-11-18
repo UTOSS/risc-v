@@ -320,6 +320,26 @@ jobs:
       - name: Gather metrics
         run: cd envs/de1-soc/quartus && make pretty-metrics
 
+      - name: Draw placement figures
+        id: images
+        if: steps.synthesize.outcome == 'success'
+        run: cd envs/de1-soc/quartus && make images UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Check placement figures are up to date
+        run: cd envs/de1-soc/quartus && make test_images UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      # the figures CI drew, so they can be downloaded and committed if a local run differs
+      - name: Upload placement figures
+        uses: actions/upload-artifact@v4
+        if: always() && steps.images.outcome == 'success'
+        with:
+          name: de1-soc-images-${{ matrix.config }}
+          path: envs/de1-soc/quartus/images/${{ matrix.config }}/*.png
+          retention-days: 7
+
       - name: Upload VCD file
         uses: actions/upload-artifact@v4
         if: steps.build-poc.outcome == 'success'
