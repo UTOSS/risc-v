@@ -1,0 +1,38 @@
+# Verbatim copy of OpenROAD-flow-scripts flow/platforms/nangate45/grid_strategy-M1-M4-M7.tcl @ 7a57dddc8
+#   https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts/blob/7a57dddc8427845f75a14bd975328ee8717a1c8b/flow/platforms/nangate45/grid_strategy-M1-M4-M7.tcl
+# Do not edit below the marker; re-sync from upstream instead (see README.md).
+# ----8<---- upstream content starts here
+####################################
+# voltage domains
+####################################
+set_voltage_domain -name {CORE} -power {VDD} -ground {VSS}
+####################################
+# standard cell grid
+####################################
+define_pdn_grid -name {grid} -voltage_domains {CORE} -pins {metal7}
+add_pdn_stripe -grid {grid} -layer {metal1} -width {0.17} -pitch {2.4} -offset {0} -followpins
+add_pdn_stripe -grid {grid} -layer {metal4} -width {0.48} -pitch {56.0} -offset {2}
+add_pdn_stripe -grid {grid} -layer {metal7} -width {1.40} -pitch {30.0} -offset {2}
+add_pdn_connect -grid {grid} -layers {metal1 metal4}
+add_pdn_connect -grid {grid} -layers {metal4 metal7}
+####################################
+# macro grids
+####################################
+####################################
+# grid for: CORE_macro_grid_1
+####################################
+define_pdn_grid -name {CORE_macro_grid_1} -voltage_domains {CORE} -macro \
+  -orient {R0 R180 MX MY} -halo {2.0 2.0 2.0 2.0} -default
+add_pdn_stripe -grid {CORE_macro_grid_1} -layer {metal5} -width {0.93} -pitch {10.0} -offset {2}
+add_pdn_stripe -grid {CORE_macro_grid_1} -layer {metal6} -width {0.93} -pitch {10.0} -offset {2}
+add_pdn_connect -grid {CORE_macro_grid_1} -layers {metal4 metal5}
+add_pdn_connect -grid {CORE_macro_grid_1} -layers {metal5 metal6}
+add_pdn_connect -grid {CORE_macro_grid_1} -layers {metal6 metal7}
+####################################
+# grid for: CORE_macro_grid_2
+####################################
+define_pdn_grid -name {CORE_macro_grid_2} -voltage_domains {CORE} -macro \
+  -orient {R90 R270 MXR90 MYR90} -halo {2.0 2.0 2.0 2.0} -default
+add_pdn_stripe -grid {CORE_macro_grid_2} -layer {metal6} -width {0.93} -pitch {40.0} -offset {2}
+add_pdn_connect -grid {CORE_macro_grid_2} -layers {metal4 metal6}
+add_pdn_connect -grid {CORE_macro_grid_2} -layers {metal6 metal7}

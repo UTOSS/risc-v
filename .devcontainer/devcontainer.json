@@ -3,6 +3,13 @@
   "image": "ghcr.io/utoss/risc-v-devcontainer",
   "remoteUser": "dev",
   "postStartCommand": "bash -c '.devcontainer/scripts/post-start.sh ${containerWorkspaceFolder}'",
+  "forwardPorts": [6080],
+  "portsAttributes": {
+    "6080": {
+      "label": "noVNC desktop (OpenROAD GUI)",
+      "onAutoForward": "notify"
+    }
+  },
   "customizations": {
     "vscode": {
       "settings": {
