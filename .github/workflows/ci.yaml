@@ -13,6 +13,13 @@ permissions:
   contents: read
   packages: write
 
+# runs on the same ref push to the same CI image tag (e.g. `ci-branch-main`), so overlapping runs can
+# overwrite each other's image between build and test; serialize them per ref and queue (rather than
+# drop) pending runs so every merge to main still gets tested
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  queue: max
+
 jobs:
   build_ci_image:
     # do this during a push to a branch (e.g. to main) or on a non-fork PR
