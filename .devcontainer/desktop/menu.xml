@@ -17,6 +17,12 @@
       </action>
     </item>
     <separator />
+    <item label="Quartus: DE1-SoC project (Tools &gt; Chip Planner)">
+      <action name="Execute">
+        <command>@WORKSPACE@/.devcontainer/scripts/quartus-gui.sh</command>
+      </action>
+    </item>
+    <separator />
     <item label="Terminal">
       <action name="Execute">
         <command>xterm -fa Monospace -fs 11 -e "cd @WORKSPACE@ &amp;&amp; exec zsh -l"</command>
