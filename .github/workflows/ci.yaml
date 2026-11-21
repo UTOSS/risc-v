@@ -568,7 +568,7 @@ jobs:
             exit 0
           fi
           git diff --cached --stat
-          git commit -m "Update generated placement and hardening images"
+          git commit -m "update generated placement and hardening images"
           git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
 
   hardening-metrics-diff:
