@@ -42,6 +42,9 @@ $(BLOCK_DIR)/%.svg: $(DRAWIO_SRC) scripts/embed_svg_fonts.py $(wildcard fonts/*.
 	@$(XVFB_RUN) $(DRAWIO) --export --format svg --page-index $(call page_index,$*) \
 		--output $@ $< $(DRAWIO_FLAGS) > $@.log 2>&1 || (cat $@.log; rm -f $@.log; exit 1)
 	@rm -f $@.log
+	@# draw.io gives the root <svg> a random id when a page uses light/dark adaptive colours; pin it
+	@# so that re-exporting an unchanged page is byte-identical (the `test` target relies on this)
+	@sed -i -E 's/ge-svg-[A-Za-z0-9_-]+/ge-svg-$*/g' $@
 	@echo "[FONT]  Embedding fonts in $@..."
 	@$(PYTHON) scripts/embed_svg_fonts.py $@
 	@echo "[DONE]  $@"
