@@ -49,7 +49,7 @@ The overall high-level structure is defined below:
 Spec: [5.1. "Zicsr" Extension for Control and Status Register (CSR) Instructions, Version
 2.0](https://docs.riscv.org/reference/isa/v20260120/unpriv/zicsr.html)
 
-![Zicsr Architecture](diagrams/zicsr.svg)
+![Zicsr Architecture](diagrams/block/zicsr.svg)
 
 `csr_decode` lives in ID, `csr_wb` lives in WB, and `csr_data` is instantiated at the
 core's top level alongside the hazard unit. There is no `csr_unit` wrapper. The diagram shows
@@ -105,7 +105,7 @@ to zero, while `mcause` exposes the interrupt bit and the low five exception-cod
 ### `ECALL` and `MRET` processing
 
 
-![ECALL and planned MRET Microarchitecture](diagrams/ecall.svg)
+![ECALL and planned MRET Microarchitecture](diagrams/block/ecall.svg)
 
 #### `ECALL` processing
 
