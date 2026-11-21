@@ -34,6 +34,8 @@ typedef struct packed {
 `endif
 `ifdef UTOSS_RISCV__ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;
+`endif
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   logic         is_mul;
   ext__m__types::m_mul_control_t mul_control;
   logic         is_div;
