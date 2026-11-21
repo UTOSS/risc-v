@@ -1,0 +1,16 @@
+{ "signal": [
+    { "name": "clk",       "wave": "p......" },
+    {},
+    { "name": "address",   "wave": "x3456x.", "data": ["0x00", "0x04", "0x08", "0x0C"] },
+    { "name": "read_data", "wave": "x.3456x", "data": ["DEADBEEF", "00C0FFEE", "12345678", "CAFEF00D"] },
+    {},
+    [ "memory",
+      { "name": "mem[0x00]", "wave": "3......", "data": ["DEADBEEF"] },
+      { "name": "mem[0x04]", "wave": "4......", "data": ["00C0FFEE"] },
+      { "name": "mem[0x08]", "wave": "5......", "data": ["12345678"] },
+      { "name": "mem[0x0C]", "wave": "6......", "data": ["CAFEF00D"] }
+    ]
+  ],
+  "head": { "text": "Synchronous memory read: data appears one cycle after the address", "tick": 0 },
+  "config": { "hscale": 3 }
+}

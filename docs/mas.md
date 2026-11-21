@@ -24,11 +24,34 @@ having read-only access as well.
 
 The overall high-level structure is defined below:
 
-![Top-Level Architecture](diagrams/top.svg)
+![Top-Level Architecture](diagrams/block/top.svg)
 
 ## Base ISA
 
 ### Instruction fetch stage
+
+![Fetch stage](diagrams/block/fetch_stage.svg)
+
+This is the initial stage of the pipeline and its job is to retireve the correct instruction from
+memory and pass it along to the decode stage.
+
+One of the important points about this stage is that its implementation is heavily influenced by the
+timing model of the memory that we use. We use synthronous memory, which means that when the data is
+requested from the memory, it becomes available on the next cycle. This causes us to keep track of
+multiple `pc_*` registers. This is demonstrated on the timing diagram below, observe that `pc_cur`
+we sent to deocder is actually fetch's `pc_prev`:
+
+![Fetch stage PC timing](diagrams/timing/fetch_pc_timing.svg)
+
+Fetch stage also has to respect hazards. Two scenarios are of relevance:
+1. a control hazard occurs -- when we are branching, we need to make sure we drop the instruction
+   that we were in the process of fetching since it will not be needed anymore, see timing diagram
+   below:
+   ![Fetch flush behavior](diagrams/timing/fetch_flush.svg)
+2. a use-after-load hazard occurs -- when we are loading a value from memory and then immediately
+   using it as part of a subsequenct computation, we need to make sure we stall for one cycle to let
+   that load happen and for the data to get forwarded correctly, see timing diagram below:
+   ![Fetch stall behavior](diagrams/timing/fetch_stall.svg)
 
 ### Instruction decode stage
 
@@ -39,6 +62,11 @@ The overall high-level structure is defined below:
 ### Write-back stage
 
 ## Memory
+
+Memory is synchronous: the `address` presented on `mem_bus` is registered on a rising clock edge,
+and the corresponding `read_data` becomes available in the following cycle.
+
+![Synchronous memory read timing](diagrams/timing/sync_mem_read.svg)
 
 ## B extension
 

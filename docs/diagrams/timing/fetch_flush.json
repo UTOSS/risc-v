@@ -1,0 +1,29 @@
+{ "signal": [
+    { "name": "clk", "wave": "p........" },
+    {},
+    [ "ex_to_if",
+      { "name": "pc_src",    "wave": "=....==..", "data": ["INCREMENT", "ALU_RESULT", "INCREMENT"] },
+      { "name": "pc_target", "wave": "x....=x..", "data": ["0x40"] }
+    ],
+    {},
+    { "name": "flush_f", "wave": "0....1.0." },
+    {},
+    [ "PC",
+      { "name": "pc_next", "wave": "=========", "data": ["0x04", "0x08", "0x0C", "0x10", "0x14", "0x40", "0x44", "0x48", "0x4C"] },
+      { "name": "pc_cur",  "wave": "=========", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14", "0x40", "0x44", "0x48"] },
+      { "name": "pc_prev", "wave": "x========", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14", "0x40", "0x44"] }
+    ],
+    {},
+    { "name": "imem address", "wave": "=========", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14", "0x40", "0x44", "0x48"] },
+    { "name": "imem data",    "wave": "x========", "data": ["instr[0x00]", "instr[0x04]", "branch[0x08]", "instr[0x0C]", "instr[0x10]", "instr[0x14]", "instr[0x40]", "instr[0x44]"] },
+    {},
+    [ "if_to_id",
+      { "name": "pc_cur",      "wave": "x========", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14", "0x40", "0x44"] },
+      { "name": "instruction", "wave": "x========", "data": ["instr[0x00]", "instr[0x04]", "branch[0x08]", "instr[0x0C]", "instr[0x10]", "instr[0x14]", "instr[0x40]", "instr[0x44]"] }
+    ],
+    {},
+    { "name": "IF/ID register", "wave": "x.=======", "data": ["instr[0x00]", "instr[0x04]", "branch[0x08]", "instr[0x0C]", "flushed", "flushed", "instr[0x40]"] }
+  ],
+  "head": { "text": "Fetch stage flush: the branch at 0x08 is taken to 0x40 when it reaches execute (cycle 5)", "tick": 0 },
+  "config": { "hscale": 3 }
+}
