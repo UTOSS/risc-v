@@ -13,21 +13,21 @@ module Instruction_Decode
   , output reg_t rs1
   , output reg_t rs2
 
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
+`ifdef UTOSS_RISCV__ENABLE_B_EXT
   , output ext__b__types::b_alu_control_t b_alu_control
 `endif
 
-`ifdef UTOSS_RISCV__MUL_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   , output logic is_mul
   , output ext__m__types::m_mul_control_t mul_control
 `endif
 
-`ifdef UTOSS_RISCV__DIV_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   , output logic is_div
   , output ext__m__types::m_div_control_t div_control
 `endif
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   , output logic is_ecall
 `endif
 
@@ -70,7 +70,7 @@ module Instruction_Decode
       funct3 = instr[14:12];
 
     end
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
     OPCODE_SYSTEM: begin
       funct3 = instr[14:12];
     end
@@ -91,7 +91,7 @@ module Instruction_Decode
       OPCODE_AUIPC: alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       OPCODE_LUI:   alu_op = ALU_OP__ADD; // used to add 0 to imm ext
       OPCODE_MISC_MEM:     alu_op = ALU_OP__UNSET;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       OPCODE_SYSTEM: alu_op = ALU_OP__ADD;
 `endif
       default:    alu_op = ALU_OP__UNSET;
@@ -135,7 +135,7 @@ module Instruction_Decode
         rd = instr[11:7];
       end
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       OPCODE_SYSTEM: begin
         rd = instr[11:7];
         rs1 = instr[19:15];
@@ -162,7 +162,7 @@ module Instruction_Decode
       OPCODE_JAL       : imm_ext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
       OPCODE_AUIPC  : imm_ext = {instr[31:12], 12'h000};
       OPCODE_LUI  : imm_ext = {instr[31:12], 12'h000};
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       OPCODE_SYSTEM : imm_ext = {{20{instr[31]}}, instr[31:20]}; // csr address
 `endif
       default:     imm_ext = 32'b0;
@@ -179,7 +179,7 @@ module Instruction_Decode
     );
 
 
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
+`ifdef UTOSS_RISCV__ENABLE_B_EXT
   ext__b__decoder u_ext__b__decoder
     ( .funct3        ( funct3        )
     , .funct7        ( funct7        )
@@ -190,23 +190,21 @@ module Instruction_Decode
     );
 `endif
 
-`ifdef UTOSS_RISCV__ANY_M
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   ext__m__decoder u_ext__m__decoder
     ( .funct3      ( funct3      )
     , .funct7      ( funct7      )
     , .opcode      ( opcode      )
-`ifdef UTOSS_RISCV__MUL_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
     , .is_mul      ( is_mul      )
     , .mul_control ( mul_control )
-`endif
-`ifdef UTOSS_RISCV__DIV_ENABLED
     , .is_div      ( is_div      )
     , .div_control ( div_control )
 `endif
     );
 `endif
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   // Match the complete encoding; CSR instructions with address zero are not ECALL.
   assign is_ecall = (opcode == OPCODE_SYSTEM)
                  && (imm_ext == '0)

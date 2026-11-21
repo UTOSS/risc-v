@@ -35,7 +35,7 @@ module zicsr_tb;
     forever #5 clk = ~clk;
   end
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   initial begin
     static bit saw_csr_stall    = 0;
     static bit saw_csr_flush_e  = 0;

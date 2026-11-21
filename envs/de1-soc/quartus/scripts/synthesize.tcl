@@ -17,15 +17,15 @@ if {[info exists ::env(UTOSS_RISCV_CONFIG)] && $::env(UTOSS_RISCV_CONFIG) ne ""}
 set macro_list {}
 
 if {[string first "Zbb" $utoss_riscv_config] >= 0} {
-	lappend macro_list UTOSS_RISCV_ENABLE_B_EXT
+	lappend macro_list UTOSS_RISCV__ENABLE_B_EXT
 }
 
 if {[string first "Zicsr" $utoss_riscv_config] >= 0} {
-	lappend macro_list UTOSS_RISCV__ZICSR_ENABLED
+	lappend macro_list UTOSS_RISCV__ENABLE_ZICSR_EXT
 }
 
 if {[string first "M" $utoss_riscv_config] >= 0} {
-	lappend macro_list UTOSS_RISCV__M_ENABLED UTOSS_RISCV__MUL_ENABLED UTOSS_RISCV__DIV_ENABLED UTOSS_RISCV__ANY_M
+	lappend macro_list UTOSS_RISCV__ENABLE_M_EXT
 }
 
 project_open $project_name

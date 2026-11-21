@@ -12,7 +12,7 @@ module write_back_stage
   , input  ex_to_mem_t     ex_to_mem
   , output var data_t      result
   , output var reg_t       rd
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   , output ext__zicsr__types::csr_wb_request_t csr_wb_request
 `endif
   );
@@ -38,13 +38,13 @@ module write_back_stage
       RESULT_SRC__ALU_RESULT: result = from_memory.alu_result;
       RESULT_SRC__READ_DATA:  result = mem_result;
       RESULT_SRC__PC_PLUS_4:  result = from_memory.pc_plus_4;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       RESULT_SRC__CSR_READ:   result = from_memory.csr_data;
 `endif
       default:                result = 32'hxxxxxxxx;
     endcase
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   csr_wb u_csr_wb
     ( .csr_request    ( from_memory.csr_request )
     , .csr_data       ( from_memory.csr_data    )
