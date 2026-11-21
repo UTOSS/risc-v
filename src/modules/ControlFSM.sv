@@ -29,7 +29,7 @@ module control_fsm
       (opcode == OPCODE_AUIPC) ||
       (opcode == OPCODE_LUI)
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
-      || ((opcode == OPCODE_SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111}))
+      || ((opcode == OPCODE_SYSTEM) && ((funct3 != 3'b000) && (funct3 != 3'b100)))
 `endif
 ;
 
@@ -43,7 +43,7 @@ module control_fsm
         result_src = RESULT_SRC__PC_PLUS_4;
 `ifdef UTOSS_RISCV__ZICSR_ENABLED
       OPCODE_SYSTEM:
-        if (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111})
+        if ((funct3 != 3'b000) && (funct3 != 3'b100))
           result_src = RESULT_SRC__CSR_READ;
         else
           result_src = result_src_t'('0);

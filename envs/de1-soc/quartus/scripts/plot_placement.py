@@ -86,6 +86,13 @@ def square(x, y):
     return ((x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1))
 
 
+def _fit_span(lo, hi, span):
+    lo -= (span - (hi - lo)) // 2
+    if lo < 0:
+        lo = 0
+    return lo, lo + span
+
+
 def fig_placement(lab, m10k, unplaced, summary, out, config):
     tiles = set(lab) | m10k
     xs = [x for x, _ in tiles]
@@ -93,6 +100,11 @@ def fig_placement(lab, m10k, unplaced, summary, out, config):
     pad = 2
     x0, x1 = max(0, min(xs) - pad), max(xs) + pad + 1
     y0, y1 = max(0, min(ys) - pad), max(ys) + pad + 1
+    # make the view a square window (1:1 map of tiles): grow the shorter axis around its center,
+    # shifting right/up instead of going below tile 0
+    span = max(x1 - x0, y1 - y0)
+    x0, x1 = _fit_span(x0, x1, span)
+    y0, y1 = _fit_span(y0, y1, span)
 
     fig = plt.figure(figsize=FIG_SIZE, dpi=DPI)
     ax = fig.add_axes([0.06, 0.07, 0.56, 0.80], anchor="NW")
@@ -129,7 +141,8 @@ def fig_placement(lab, m10k, unplaced, summary, out, config):
 
     ax.set_xlim(x0, x1)
     ax.set_ylim(y0, y1)
-    ax.set_xlabel("device column X  (tile index; tiles stretched to fill the plot)")
+    ax.set_aspect("equal", adjustable="box", anchor="NW")
+    ax.set_xlabel("device column X  (tile index)")
     ax.set_ylabel("device row Y")
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
