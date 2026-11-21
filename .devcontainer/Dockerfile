@@ -207,6 +207,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends optipng && \
     rm -rf /var/lib/apt/lists/* && \
     python3 -m pip install --no-cache-dir matplotlib==${MATPLOTLIB_VERSION}
 
+# WaveDrom renderer for the timing diagrams in docs/diagrams/timing (pinned so the checked-in SVGs
+# render byte-for-byte the same)
+ARG WAVEDROM_VERSION=2.0.3.post3
+RUN python3 -m pip install --no-cache-dir wavedrom==${WAVEDROM_VERSION}
+
 # browser-accessible desktop (noVNC) for the OpenROAD GUI; started by
 # .devcontainer/scripts/start-desktop.sh, right-click the desktop to open the GUI
 RUN apt-get update && apt-get install -y --no-install-recommends \
