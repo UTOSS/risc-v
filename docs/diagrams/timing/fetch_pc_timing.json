@@ -1,0 +1,20 @@
+{ "signal": [
+    { "name": "clk", "wave": "p......" },
+    {},
+    [ "PC",
+      { "name": "pc_next", "wave": "=======", "data": ["0x04", "0x08", "0x0C", "0x10", "0x14", "0x18", "0x1C"] },
+      { "name": "pc_cur",  "wave": "=======", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14", "0x18"] },
+      { "name": "pc_prev", "wave": "x======", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14"] }
+    ],
+    {},
+    { "name": "imem address", "wave": "=======", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14", "0x18"] },
+    { "name": "imem data",    "wave": "x======", "data": ["instr[0x00]", "instr[0x04]", "instr[0x08]", "instr[0x0C]", "instr[0x10]", "instr[0x14]"] },
+    {},
+    [ "if_to_id",
+      { "name": "pc_cur",      "wave": "x======", "data": ["0x00", "0x04", "0x08", "0x0C", "0x10", "0x14"] },
+      { "name": "instruction", "wave": "x======", "data": ["instr[0x00]", "instr[0x04]", "instr[0x08]", "instr[0x0C]", "instr[0x10]", "instr[0x14]"] }
+    ]
+  ],
+  "head": { "text": "Fetch stage: pc_prev lines the PC up with the instruction read from synchronous memory", "tick": 0 },
+  "config": { "hscale": 3 }
+}

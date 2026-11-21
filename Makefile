@@ -282,6 +282,12 @@ lint: svlint svlint_tb check_timescale
 diagrams:
 	$(MAKE) -C docs diagrams
 
+block_diagrams:
+	$(MAKE) -C docs block
+
+timing_diagrams:
+	$(MAKE) -C docs timing
+
 test_diagrams:
 	$(MAKE) -C docs test
 
@@ -294,5 +300,5 @@ test_diagrams:
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv \
-				diagrams test_diagrams update_diagrams update_diagrmas \
+				diagrams block_diagrams timing_diagrams test_diagrams update_diagrams update_diagrmas \
 				FORCE

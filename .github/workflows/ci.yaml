@@ -108,8 +108,22 @@ jobs:
       - name: Configure git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+      # re-exports the block diagrams from docs/diagrams/mas.drawio and re-renders the timing
+      # diagrams from docs/diagrams/timing/*.json, then checks both against the checked-in SVGs
       - name: Test diagrams
+        id: test-diagrams
         run: make test_diagrams
+
+      # the SVGs CI generated, so they can be downloaded and committed if a local export differs
+      - name: Upload diagrams
+        uses: actions/upload-artifact@v4
+        if: always() && steps.test-diagrams.outcome != 'skipped'
+        with:
+          name: diagrams
+          path: |
+            docs/diagrams/block/*.svg
+            docs/diagrams/timing/*.svg
+          retention-days: 7
 
   pyuvm:
     timeout-minutes: 10
