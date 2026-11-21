@@ -15,7 +15,7 @@ module decode_stage
   , input  wire       reg_write_w // regWrite from writeback stage
   , input  data_t     data
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   , output ext__zicsr__types::csr_request_t csr_request
   , input  data_t                           csr_data
 `endif
@@ -34,15 +34,13 @@ module decode_stage
 
   alu_control_t    alu_control;
 
-`ifdef UTOSS_RISCV__MUL_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   logic            is_mul;
   ext__m__types::m_mul_control_t mul_control;
-`endif
-`ifdef UTOSS_RISCV__DIV_ENABLED
   logic            is_div;
   ext__m__types::m_div_control_t div_control;
 `endif
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
+`ifdef UTOSS_RISCV__ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control; //NEW
 `endif
 
@@ -55,7 +53,7 @@ module decode_stage
   reg_t rd;
   reg_t rs1_decoded;
   reg_t rs2_decoded;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   wire  csr_is_imm;
 `endif
   reg_t rs1_addr;
@@ -93,23 +91,21 @@ module decode_stage
     , .rd              ( rd               )
     , .rs1             ( rs1_decoded      )
     , .rs2             ( rs2_decoded      )
-`ifdef UTOSS_RISCV__MUL_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
     , .is_mul          ( is_mul           )
     , .mul_control     ( mul_control      )
-`endif
-`ifdef UTOSS_RISCV__DIV_ENABLED
     , .is_div          ( is_div           )
     , .div_control     ( div_control      )
 `endif
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
+`ifdef UTOSS_RISCV__ENABLE_B_EXT
     , .b_alu_control   ( b_alu_control    )
 `endif
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
     , .is_ecall        ( id_to_ex.is_ecall )
 `endif
     );
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
   // actual register dependency for the RF / hazard path.
   assign csr_is_imm = (opcode == OPCODE_SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
@@ -132,7 +128,7 @@ module decode_stage
     , .writeData       ( rd2              )
     );
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   csr_decode u_csr_decode
     ( .opcode      ( opcode               )
     , .funct3      ( funct3               )
@@ -175,18 +171,16 @@ module decode_stage
   assign id_to_ex.imm_ext        = imm_ext;
   assign id_to_ex.pc_cur         = if_to_id.pc_cur;
   assign id_to_ex.pc_plus_4      = if_to_id.pc_plus_4;
-`ifdef UTOSS_RISCV__MUL_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   assign id_to_ex.is_mul         = is_mul;
   assign id_to_ex.mul_control    = mul_control;
-`endif
-`ifdef UTOSS_RISCV__DIV_ENABLED
   assign id_to_ex.is_div         = is_div;
   assign id_to_ex.div_control    = div_control;
 `endif
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
+`ifdef UTOSS_RISCV__ENABLE_B_EXT
   assign id_to_ex.b_alu_control  = b_alu_control;
 `endif
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   assign id_to_ex.csr_request    = csr_request;
   assign id_to_ex.csr_data       = csr_data;
 `endif

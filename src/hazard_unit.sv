@@ -15,7 +15,7 @@ module hazard_unit
   , input  reg_t      rs2_d
   , input  reg_t      rd_e
   , input  pc_src_t pc_src_e
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   , input  wire       reg_write_e
   , input  logic      csr_instr_d
   , input  logic      csr_write_intent_e
@@ -26,7 +26,7 @@ module hazard_unit
   , input  csr_addr_t csr_addr_m
   , input  csr_addr_t csr_addr_w
 `endif
-`ifdef UTOSS_RISCV__DIV_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   , input  logic div_e
   , input  logic div_busy_e
   , input  logic div_done_e
@@ -72,7 +72,7 @@ module hazard_unit
   logic csr_stall;
 
 //CSR stall for csr-to-csr stall and rs1 register hazards
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   assign csr_stall =
       csr_instr_d &&
       (((csr_write_intent_e && (csr_addr_d == csr_addr_e)) ||
@@ -85,7 +85,7 @@ module hazard_unit
   assign csr_stall = 1'b0;
 `endif
 
-`ifdef UTOSS_RISCV__DIV_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   wire div_stall;
   assign div_stall = div_e && !div_done_e;
 
@@ -111,7 +111,7 @@ module hazard_unit
   assign flush_d = control_hazard;
   assign flush_e = control_hazard || (!stall_e && (lw_stall || csr_stall));
 
-`ifdef UTOSS_RISCV__DIV_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
   assign div_start_e = div_e && !div_busy_e && !div_done_e;
   assign div_cancel_e = control_hazard;
 `endif

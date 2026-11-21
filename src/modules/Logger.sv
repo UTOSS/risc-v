@@ -147,7 +147,7 @@ module Logger
             OPCODE_LUI:      op_name = "lui";
             OPCODE_JALR:     op_name = "jalr";
             OPCODE_MISC_MEM: op_name = "fence";
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
             OPCODE_SYSTEM:
                 case (funct3)
                     3'b001: op_name = "csrrw";

@@ -28,7 +28,7 @@ module control_fsm
       (opcode == OPCODE_JALR) ||
       (opcode == OPCODE_AUIPC) ||
       (opcode == OPCODE_LUI)
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       || ((opcode == OPCODE_SYSTEM) && (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111}))
 `endif
 ;
@@ -41,7 +41,7 @@ module control_fsm
         result_src = RESULT_SRC__READ_DATA;
       OPCODE_JAL, OPCODE_JALR:
         result_src = RESULT_SRC__PC_PLUS_4;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       OPCODE_SYSTEM:
         if (funct3 inside {3'b001, 3'b010, 3'b011, 3'b101, 3'b110, 3'b111})
           result_src = RESULT_SRC__CSR_READ;
@@ -71,7 +71,7 @@ module control_fsm
         alu_src_a = ALU_SRC_A__RD1;
       OPCODE_AUIPC, OPCODE_JAL:
         alu_src_a = ALU_SRC_A__PC;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       OPCODE_SYSTEM:
         alu_src_a = ALU_SRC_A__RD1;
 `endif
@@ -85,7 +85,7 @@ module control_fsm
         alu_src_b = ALU_SRC_B__RD2;
       OPCODE_AUIPC, OPCODE_LUI, OPCODE_OP_IMM, OPCODE_JALR, OPCODE_LOAD, OPCODE_STORE:
         alu_src_b = ALU_SRC_B__IMM_EXT;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
       OPCODE_SYSTEM:
         alu_src_b = ALU_SRC_B__IMM_EXT;
 `endif
