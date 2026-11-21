@@ -35,7 +35,7 @@ module csr_immediate_hazard_tb;
     forever #5 clk = ~clk;
   end
 
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   initial begin
     static bit saw_csr_stall = 0;
 
@@ -65,7 +65,7 @@ module csr_immediate_hazard_tb;
   end
 `else
   initial begin
-    $display("Skipping csr_immediate_hazard_tb: build without UTOSS_RISCV__ZICSR_ENABLED");
+    $display("Skipping csr_immediate_hazard_tb: build without UTOSS_RISCV__ENABLE_ZICSR_EXT");
     $finish;
   end
 `endif

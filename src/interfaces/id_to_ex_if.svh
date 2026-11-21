@@ -4,7 +4,7 @@
 `include "src/headers/params.svh"
 `include "src/headers/types.svh"
 `include "src/ext/zicsr/types.svh"
-`ifdef UTOSS_RISCV__ANY_M
+`ifdef UTOSS_RISCV__ENABLE_M_EXT
 `include "src/ext/m/types.svh"
 `endif
 
@@ -27,19 +27,15 @@ typedef struct packed {
   reg_t         rs1;
   reg_t         rs2;
   imm_t         imm_ext;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   ext__zicsr__types::csr_request_t csr_request;
   data_t                           csr_data;
   logic                            is_ecall;
 `endif
-`ifdef UTOSS_RISCV_ENABLE_B_EXT
+`ifdef UTOSS_RISCV__ENABLE_B_EXT
   ext__b__types::b_alu_control_t b_alu_control;
-`endif
-`ifdef UTOSS_RISCV__MUL_ENABLED
   logic         is_mul;
   ext__m__types::m_mul_control_t mul_control;
-`endif
-`ifdef UTOSS_RISCV__DIV_ENABLED
   logic         is_div;
   ext__m__types::m_div_control_t div_control;
 `endif

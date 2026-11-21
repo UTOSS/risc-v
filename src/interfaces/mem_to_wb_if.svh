@@ -13,7 +13,7 @@ typedef struct packed {
   addr_t       pc_cur;
   addr_t       pc_plus_4;
   logic [2:0]  funct3;
-`ifdef UTOSS_RISCV__ZICSR_ENABLED
+`ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   ext__zicsr__types::csr_request_t csr_request;
   data_t                           csr_data;
 `endif
