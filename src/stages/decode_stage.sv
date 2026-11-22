@@ -108,7 +108,7 @@ module decode_stage
 `ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
   // Immediate CSR forms use zimm in the low rs1 field, so don't treat it as an
   // actual register dependency for the RF / hazard path.
-  assign csr_is_imm = (opcode == OPCODE_SYSTEM) && (funct3 inside {3'b101, 3'b110, 3'b111});
+  assign csr_is_imm = (opcode == OPCODE_SYSTEM) && (funct3[2] && (funct3[1:0] != 2'b00));
   assign rs1_addr   = csr_is_imm ? reg_t'(0) : rs1_decoded;
   assign rs2_addr   = rs2_decoded;
 `else

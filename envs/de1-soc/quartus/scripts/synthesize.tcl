@@ -28,6 +28,14 @@ if {[string first "M" $utoss_riscv_config] >= 0} {
 	lappend macro_list UTOSS_RISCV__ENABLE_M_EXT
 }
 
+# the compiler stages (quartus_map, quartus_fit, ...) run as separate processes that read the
+# assignments from the .qsf on disk, so the macros must be exported to it; otherwise they are only
+# set in this process and silently ignored (every config would synthesize as plain RV32I). the .qsf
+# is restored afterwards so the config macros do not leak into the checked-in project file.
+set qsf_file "$project_name.qsf"
+set qsf_backup "$project_name.qsf.orig"
+file copy -force $qsf_file $qsf_backup
+
 project_open $project_name
 
 foreach macro $macro_list {
@@ -35,5 +43,11 @@ foreach macro $macro_list {
 	set_global_assignment -name VERILOG_MACRO $macro
 }
 
-execute_flow -compile -dont_export_assignments
-project_close -dont_export_assignments
+set flow_failed [catch {execute_flow -compile} flow_result]
+project_close
+file copy -force $qsf_backup $qsf_file
+file delete -force $qsf_backup
+
+if {$flow_failed} {
+	error $flow_result
+}
