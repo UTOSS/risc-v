@@ -26,6 +26,8 @@ configs=$(
     name=$(basename "$d")
     if [[ "$name" =~ ^de1-soc-synthesis-metrics-diff-(.+)$ ]]; then
       echo "${BASH_REMATCH[1]}"
+    elif [[ "$name" =~ ^ecp5-synthesis-metrics-diff-(.+)$ ]]; then
+      echo "${BASH_REMATCH[1]}"
     elif [[ "$name" =~ ^hardening-metrics-diff-(.+)$ ]]; then
       echo "${BASH_REMATCH[1]}"
     fi
@@ -49,6 +51,19 @@ else
     echo "" >> "$OUTPUT_FILE"
     echo "    - Timing" >> "$OUTPUT_FILE"
     append_metric_cell "$de1_dir/timing_summary.md"
+    echo "" >> "$OUTPUT_FILE"
+
+    # ECP5 synthesis section
+    ecp5_dir="$ARTIFACTS_DIR/ecp5-synthesis-metrics-diff-${config}"
+    echo "  - **ECP5 synthesis (LFE5U-25F-7BG256I)**" >> "$OUTPUT_FILE"
+    echo "    - PnR summary" >> "$OUTPUT_FILE"
+    append_metric_cell "$ecp5_dir/pnr_summary.md"
+    echo "" >> "$OUTPUT_FILE"
+    echo "    - Utilization by entity" >> "$OUTPUT_FILE"
+    append_metric_cell "$ecp5_dir/pnr_by_entity.md"
+    echo "" >> "$OUTPUT_FILE"
+    echo "    - Timing" >> "$OUTPUT_FILE"
+    append_metric_cell "$ecp5_dir/timing_summary.md"
     echo "" >> "$OUTPUT_FILE"
 
     # Nangate45 hardening section
