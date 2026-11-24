@@ -3,6 +3,9 @@
 `include "src/interfaces/id_to_ex_if.svh"
 `include "src/interfaces/ex_to_mem_if.svh"
 `include "src/interfaces/ex_to_if_if.svh"
+`ifdef UTOSS_RISCV__ENABLE_ZKNH_EXT
+`include "src/ext/zknh/types.svh"
+`endif
 
 module execute_stage
   ( input id_to_ex_t id_to_ex
@@ -47,6 +50,8 @@ module execute_stage
 `endif
   data_t final_result;
   logic zero_flag;
+  data_t b_result;
+  logic  b_zero_flag;
 
 `ifdef UTOSS_RISCV__ENABLE_B_EXT
   data_t zbb_result, zbkb_result, zbkx_result;
@@ -155,15 +160,40 @@ module execute_stage
 
   always_comb
     if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
-        alu_result = zbb_result    | zbkb_result    | zbkx_result;
-        zero_flag  = zbb_zero_flag | zbkb_zero_flag | zbkx_zero_flag;
+        b_result = zbb_result    | zbkb_result    | zbkx_result;
+        b_zero_flag  = zbb_zero_flag | zbkb_zero_flag | zbkx_zero_flag;
     end else begin
-        alu_result = alu_result_base;
-        zero_flag  = zero_flag_base;
+        b_result = alu_result_base;
+        b_zero_flag  = zero_flag_base;
     end
 `else
-  assign alu_result = alu_result_base;
-  assign zero_flag  = zero_flag_base;
+  assign b_result = alu_result_base;
+  assign b_zero_flag = zero_flag_base;
+`endif
+
+`ifdef UTOSS_RISCV__ENABLE_ZKNH_EXT
+  data_t zknh_result;
+  logic  zknh_zero_flag;
+
+  ext__zknh__logic u_ext__zknh__logic
+    ( .a              ( alu_input_a           )
+    , .b              ( alu_input_b           )
+    , .zknh_control   ( id_to_ex.zknh_control )
+    , .out            ( zknh_result           )
+    , .zeroE          ( zknh_zero_flag        )
+    );
+
+  always_comb
+    if (id_to_ex.zknh_control != ext__zknh__types::ZKNH_CTRL__NONE) begin
+      alu_result = zknh_result;
+      zero_flag  = zknh_zero_flag;
+    end else begin
+      alu_result = b_result;
+      zero_flag  = b_zero_flag;
+    end
+`else
+  assign alu_result = b_result;
+  assign zero_flag  = b_zero_flag;
 `endif
 
 `ifdef UTOSS_RISCV__ENABLE_ZICSR_EXT
