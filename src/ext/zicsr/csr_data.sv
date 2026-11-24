@@ -10,6 +10,8 @@ module csr_data
   , input  ext__zicsr__types::csr_request_t    csr_request
   /* verilator lint_on UNUSEDSIGNAL */
   , input  ext__zicsr__types::csr_wb_request_t csr_wb_request
+
+  , input  logic                               retire // instruction retired, feeds minstret
   , output data_t                              csr_data
 
   , csr_hw_request_if.plugin mcause_hw_request
@@ -22,6 +24,7 @@ module csr_data
   data_t mtvec_read_value;
   data_t mepc_read_value;
   data_t mcause_read_value;
+  data_t hpm_read_value;
 
   csr_plugin_basic
     #( .NAME        ( "mscratch"         )
@@ -104,11 +107,24 @@ module csr_data
       , .csr_hw_request ( mcause_hw_request )
       );
 
+  // see https://docs.riscv.org/reference/isa/v20260120/priv/machine.html#2-1-1-10-hardware-performance-monitor
+  csr_hpm u_hpm
+    ( .clk            ( clk                 )
+    , .reset          ( reset               )
+    , .retire         ( retire              )
+
+    , .read_address   ( csr_request.address )
+    , .read_value     ( hpm_read_value      )
+
+    , .csr_wb_request ( csr_wb_request      )
+    );
+
   // async read
   assign csr_data = mscratch_read_value
                   | mhartid_read_value
                   | mtvec_read_value
                   | mepc_read_value
-                  | mcause_read_value;
+                  | mcause_read_value
+                  | hpm_read_value;
 
 endmodule
