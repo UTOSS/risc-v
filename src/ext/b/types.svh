@@ -38,6 +38,18 @@ package ext__b__types;
     , B_ALU_CTRL__XPERM8 = 5'b11100
     } b_alu_control_t;
 
+  // zba picks its operation with a 2-bit code instead of the control enum.
+  // Anything that zba does not implement maps to 2'b11, which makes it output 0,
+  // so its result can simply be OR-ed into the other sub-extension results.
+  function automatic logic [1:0] zba_inst(input b_alu_control_t control);
+    case (control)
+      B_ALU_CTRL__SH1ADD: zba_inst = 2'b00;
+      B_ALU_CTRL__SH2ADD: zba_inst = 2'b01;
+      B_ALU_CTRL__SH3ADD: zba_inst = 2'b10;
+      default:            zba_inst = 2'b11;
+    endcase
+  endfunction
+
 endpackage
 
 `endif

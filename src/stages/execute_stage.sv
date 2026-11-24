@@ -49,8 +49,10 @@ module execute_stage
   logic zero_flag;
 
 `ifdef UTOSS_RISCV__ENABLE_B_EXT
-  data_t zbb_result, zbkb_result, zbkx_result;
+  data_t zbb_result, zbkb_result, zbkx_result, zba_result;
   logic  zbb_zero_flag, zbkb_zero_flag, zbkx_zero_flag;
+  logic [1:0] zba_inst;
+  logic       zba_selected;
 `endif
 
 
@@ -152,11 +154,29 @@ module execute_stage
     , .out            ( zbkx_result            )
     , .zeroE          ( zbkx_zero_flag         )
     );
+  // zba is decoded by the B decoder but was never instantiated, so sh1add/sh2add/
+  // sh3add used to reach this point with a control the other ALUs ignore and
+  // produced 0. It selects its operation with a 2-bit code, and reports 0 for
+  // every other control, so its output can be OR-ed in like the others.
+  assign zba_inst     = ext__b__types::zba_inst(id_to_ex.b_alu_control);
+  assign zba_selected = (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__SH1ADD)
+                     || (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__SH2ADD)
+                     || (id_to_ex.b_alu_control == ext__b__types::B_ALU_CTRL__SH3ADD);
+
+  zba u_zba
+    ( .reg1   ( alu_input_a            )
+    , .reg2   ( alu_input_b            )
+    , .inst   ( zba_inst               )
+    , .funct3 ( 3'b000                 )
+    , .funct7 ( 7'b0000000             )
+    , .out    ( zba_result             )
+    );
 
   always_comb
     if (id_to_ex.b_alu_control != ext__b__types::B_ALU_CTRL__NONE) begin
-        alu_result = zbb_result    | zbkb_result    | zbkx_result;
-        zero_flag  = zbb_zero_flag | zbkb_zero_flag | zbkx_zero_flag;
+        alu_result = zbb_result    | zbkb_result    | zbkx_result    | zba_result;
+        zero_flag  = zbb_zero_flag | zbkb_zero_flag | zbkx_zero_flag
+                   | (zba_selected & (zba_result == '0));
     end else begin
         alu_result = alu_result_base;
         zero_flag  = zero_flag_base;
