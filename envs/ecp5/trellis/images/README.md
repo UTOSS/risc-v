@@ -13,9 +13,10 @@ make synthesize images UTOSS_RISCV_CONFIG=RV32I
 2. `scripts/plot_placement.py` draws the figure from those files with matplotlib (deterministic,
    compressed with `optipng`).
 
-CI redraws the figures after every compile and fails if they differ from the checked-in ones, so
-commit the updated figures together with any RTL change that affects them. If your local figures
-ever differ from CI's, the `ecp5-images-<config>` artifact of the CI run has the ones CI drew.
+CI redraws the figures on every PR and the `update-generated-images` job automatically commits any
+updated figures back to internal PR branches (they are also uploaded as `ecp5-images-<config>`
+artifacts). You can also run `make test_images UTOSS_RISCV_CONFIG=<config>` locally to check for
+drift.
 
 `placement.png` mirrors the DE1-SoC placement view, zoomed to the region of the device the design
 uses:
