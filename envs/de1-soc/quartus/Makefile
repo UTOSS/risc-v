@@ -17,7 +17,7 @@ refresh_ram:
 	$(QUARTUS_CDB) $(QUARTUS_PROJECT_NAME) --update_mif
 	$(QUARTUS_ASM) $(QUARTUS_PROJECT_NAME)
 
-$(METRICS_DIR)/fitter_utilization.csv: $(SCRIPTS_DIR)/panel_to_csv.tcl
+$(METRICS_DIR)/fitter_utilization.csv: $(SCRIPTS_DIR)/panel_to_csv.tcl output_files/$(QUARTUS_PROJECT_NAME).fit.summary
 	$(QUARTUS_SHELL) -t $< "Fitter||Resource Section||Fitter Resource Utilization by Entity" $@
 
 %.pretty.txt: %.csv
@@ -60,4 +60,4 @@ test_images:
 	fi
 	@echo "Placement figures in $(IMAGES_DIR) are up to date."
 
-.PHONY: synthesize refresh_ram list_panels images test_images
+.PHONY: synthesize refresh_ram list_panels metrics pretty-metrics images test_images
