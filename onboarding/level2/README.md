@@ -33,7 +33,7 @@ make run
 This will:
 1. Compile `main.s` using `riscv32-unknown-elf-gcc` into `main.elf`.
 2. Convert `main.elf` to a Verilog hex memory file `main.mem` using `riscv32-unknown-elf-objcopy`.
-3. Build the `envs/simulation` top-level simulator (`out/top_sim`) if not already built.
+3. Build the `envs/simulation` top-level simulator (`envs/simulation/out/top_sim`) if not already built.
 4. Pass `+MEM=.../main.mem` to the simulator and run it.
 
 ### 2. View Disassembly

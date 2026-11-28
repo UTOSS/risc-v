@@ -30,7 +30,7 @@ jobs:
     uses: ./.github/workflows/docker-image.yml
     with:
       image-name: ghcr.io/utoss/risc-v
-      dockerfile: ./Dockerfile.ci
+      dockerfile: ./infra/Dockerfile.ci
       tag-prefix: ci-
     secrets: inherit
 
@@ -145,7 +145,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pyuvm-results
-          path: PyUVM/results-*.xml
+          path: test/PyUVM/results-*.xml
           retention-days: 7
 
   build_and_test:
@@ -177,22 +177,14 @@ jobs:
         run: make build_tb UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Run testbench
-        run: make run_tb
+        run: make run_tb UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Upload VCD files
         uses: actions/upload-artifact@v4
         if: steps.build-testbench.outcome == 'success'
         with:
           name: vcd-files-${{ matrix.config }}
-          path: test/vcd/*.vcd
-          retention-days: 7
-
-      - name: Upload VVP files
-        uses: actions/upload-artifact@v4
-        if: steps.build-top.outcome == 'success'
-        with:
-          name: vvp-files-${{ matrix.config }}
-          path: out/*.vvp
+          path: test/sv/vcd/*.vcd
           retention-days: 7
 
   riscof:
@@ -229,8 +221,8 @@ jobs:
         with:
           name: riscof-report-${{ matrix.config }}
           path: |
-            riscof/riscof_work/report.html
-            riscof/riscof_work/style.css
+            test/riscof/riscof_work/report.html
+            test/riscof/riscof_work/style.css
           retention-days: 7
 
   riscv_dv:
@@ -259,7 +251,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: riscv-dv-logs-${{ matrix.config }}
-          path: utoss_riscv_dv/logs/**
+          path: test/utoss_riscv_dv/logs/**
           retention-days: 7
 
   mcy:
@@ -289,20 +281,20 @@ jobs:
         with:
           name: mcy-logs-${{ matrix.config }}
           path: |
-            mcy/config.mcy
-            mcy/database/**
-            mcy/tasks/**/logfile.txt
+            test/mcy/config.mcy
+            test/mcy/database/**
+            test/mcy/tasks/**/logfile.txt
           retention-days: 7
 
       - name: Publish MCY coverage
         if: always()
         run: |
-          if [ -f mcy/database/db.sqlite3 ]; then
+          if [ -f test/mcy/database/db.sqlite3 ]; then
             {
               echo '### MCY mutation coverage (${{ matrix.config }})'
               echo ''
               echo '```text'
-              (cd mcy && mcy status)
+              (cd test/mcy && mcy status)
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
           else
@@ -670,17 +662,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run CoreMark
-        run: make -C coremark run UTOSS_RISCV_CONFIG=${{ matrix.config }}
+        run: make -C benchmarks/coremark run UTOSS_RISCV_CONFIG=${{ matrix.config }}
 
       - name: Run Embench-IoT
-        run: make -C embench run UTOSS_RISCV_CONFIG=${{ matrix.config }} -j$(nproc)
+        run: make -C benchmarks/embench run UTOSS_RISCV_CONFIG=${{ matrix.config }} -j$(nproc)
 
       - name: Collect benchmark reports
         run: |
           mkdir -p benchmark-reports
-          cp "coremark/out/${{ matrix.config }}/coremark_metrics.txt" benchmark-reports/coremark_metrics.txt
-          cp "embench/out/${{ matrix.config }}/embench_metrics.txt" benchmark-reports/embench_metrics.txt
-          cp "embench/out/${{ matrix.config }}/results.json" benchmark-reports/embench_results.json
+          cp "benchmarks/coremark/out/${{ matrix.config }}/coremark_metrics.txt" benchmark-reports/coremark_metrics.txt
+          cp "benchmarks/embench/out/${{ matrix.config }}/embench_metrics.txt" benchmark-reports/embench_metrics.txt
+          cp "benchmarks/embench/out/${{ matrix.config }}/results.json" benchmark-reports/embench_results.json
 
       - name: Upload benchmark reports
         uses: actions/upload-artifact@v4
