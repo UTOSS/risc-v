@@ -34,6 +34,17 @@ envs/de1-soc/quartus/*.qws
 envs/de1-soc/quartus/metrics/*
 !envs/de1-soc/quartus/metrics/.gitkeep
 
+envs/ecp5/poc/poc.mem
+envs/ecp5/poc/poc.elf
+envs/ecp5/out/**
+!envs/ecp5/out/.gitkeep
+envs/ecp5/build/**
+!envs/ecp5/build/.gitkeep
+envs/ecp5/trellis/out/**
+!envs/ecp5/trellis/out/.gitkeep
+envs/ecp5/trellis/metrics/*
+!envs/ecp5/trellis/metrics/.gitkeep
+
 envs/hardening/out/**
 !envs/hardening/out/.gitkeep
 envs/hardening/metrics/*

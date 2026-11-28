@@ -1032,6 +1032,230 @@ def diff_embench_metrics(base_path: Optional[str], pr_path: Optional[str]) -> st
     )
 
 
+ECP5_UTIL_COL_SPECS = [
+    ColSpec("LUT4 (TRELLIS_COMB)", "LUT4", "lower", 0),
+    ColSpec("FF (TRELLIS_FF)", "FF", "lower", 0),
+    ColSpec("BRAM (DP16KD)", "BRAM", "lower", 0),
+    ColSpec("DSP (MULT18X18D)", "DSP", "lower", 0),
+    ColSpec("IO (TRELLIS_IO)", "IO", "lower", 0),
+    ColSpec("Total Cells", "Total Cells", "lower", 0),
+]
+
+ECP5_SUMMARY_SKIP_KEYS = {"Device"}
+
+
+def parse_ecp5_pnr_summary(path: str) -> "OrderedDict[Tuple[str, str], Tuple[float, int]]":
+    metrics: "OrderedDict[Tuple[str, str], Tuple[float, int]]" = OrderedDict()
+    category = "Device Resource Utilization"
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
+        for line in f:
+            s = line.strip()
+            if not s or set(s) <= {"=", "-"}:
+                continue
+            if s.startswith("-- "):
+                sec = s[3:].rstrip("-").strip()
+                sec = re.sub(r"\s*\(.*\)$", "", sec).strip()
+                category = sec or category
+                continue
+            if ":" not in line:
+                continue
+            key, val = line.split(":", 1)
+            key = key.strip()
+            val = val.strip()
+            if not key or key in ECP5_SUMMARY_SKIP_KEYS:
+                continue
+            m = re.match(r"^([+-]?[\d,]+(?:\.(\d+))?)", val)
+            if not m:
+                continue
+            num = float(m.group(1).replace(",", ""))
+            dec = len(m.group(2)) if m.group(2) else 0
+            metrics[(category, key)] = (num, dec)
+    return metrics
+
+
+def diff_ecp5_pnr_summary(base_path: Optional[str], pr_path: Optional[str]) -> str:
+    has_pr = bool(pr_path and os.path.isfile(pr_path))
+    has_base = bool(base_path and os.path.isfile(base_path))
+    blocks: List[str] = []
+
+    if has_pr and has_base:
+        base_m = parse_ecp5_pnr_summary(base_path)
+        pr_m = parse_ecp5_pnr_summary(pr_path)
+        all_keys = list(OrderedDict.fromkeys(list(pr_m.keys()) + list(base_m.keys())))
+        rows: List[List[str]] = []
+        for k in all_keys:
+            cat, name = k
+            in_base = k in base_m
+            in_pr = k in pr_m
+            b_val, b_dec = base_m.get(k, (None, 0))
+            p_val, p_dec = pr_m.get(k, (None, 0))
+            dec = max(b_dec, p_dec)
+            cell = format_diff_cell(
+                b_val,
+                p_val,
+                "lower",
+                dec,
+                is_added=(not in_base and in_pr),
+                is_removed=(in_base and not in_pr),
+            )
+            if cell:
+                cat_s = escape_md_cell(cat)
+                name_s = escape_md_cell(name)
+                if not in_base and in_pr:
+                    rows.append([cat_s, f"{CIRCLE_NEW} {name_s} *(new)*", cell])
+                elif in_base and not in_pr:
+                    rows.append([f"~~{cat_s}~~", f"~~{name_s}~~", f"~~{cell}~~"])
+                else:
+                    rows.append([cat_s, name_s, cell])
+        if rows:
+            blocks.append(render_table(["Category", "Metric", "Diff"], rows))
+
+    return render_section_output(
+        blocks, "ECP5 PnR Summary", pr_path, has_baseline=has_base, has_pr=has_pr
+    )
+
+
+def parse_ecp5_utilization_csv(path: str) -> "OrderedDict[str, Dict[str, float]]":
+    rows: "OrderedDict[str, Dict[str, float]]" = OrderedDict()
+    with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
+        reader = csv.DictReader(f)
+        for r in reader:
+            node = (r.get("Hierarchy Node") or "").strip()
+            if not node:
+                continue
+            vals: Dict[str, float] = {}
+            for spec in ECP5_UTIL_COL_SPECS:
+                raw = (r.get(spec.key) or "").strip().replace(",", "")
+                if raw:
+                    vals[spec.key] = float(raw)
+            rows[node] = vals
+    return rows
+
+
+def diff_ecp5_by_entity(
+    base_csv: Optional[str],
+    pr_csv: Optional[str],
+    pr_pretty: Optional[str],
+) -> str:
+    has_pr = bool(pr_csv and os.path.isfile(pr_csv))
+    has_base = bool(base_csv and os.path.isfile(base_csv))
+    raw_path = pr_pretty if (pr_pretty and os.path.isfile(pr_pretty)) else pr_csv
+    blocks: List[str] = []
+
+    if has_pr and has_base:
+        base_rows = parse_ecp5_utilization_csv(base_csv)
+        pr_rows = parse_ecp5_utilization_csv(pr_csv)
+        tbl = diff_table_rows(
+            base_rows,
+            pr_rows,
+            ECP5_UTIL_COL_SPECS,
+            key_header="Hierarchy / Instance",
+            label_fn=lambda k: f"`{escape_md_cell(k)}`",
+        )
+        if tbl:
+            blocks.append(tbl)
+
+    return render_section_output(
+        blocks,
+        "ECP5 Utilization by Entity",
+        raw_path,
+        has_baseline=has_base,
+        has_pr=has_pr,
+    )
+
+
+ECP5_TIMING_DIRECTIONS: Dict[str, str] = {
+    "Target frequency": "neutral",
+    "Achieved Fmax": "higher",
+    "Setup slack": "higher",
+    "Logic delay": "lower",
+    "Routing delay": "lower",
+    "Total path delay": "lower",
+}
+
+ECP5_TIMING_SKIP_KEYS = {"Clock", "From", "To"}
+
+
+def parse_ecp5_timing(path: str) -> "OrderedDict[Tuple[str, str], TimingMetric]":
+    metrics: "OrderedDict[Tuple[str, str], TimingMetric]" = OrderedDict()
+    category = "Timing"
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
+        for line in f:
+            s = line.strip()
+            if not s or set(s) <= {"=", "-"}:
+                continue
+            if s.startswith("-- "):
+                sec = s[3:].rstrip("-").strip()
+                category = sec or category
+                continue
+            if ":" not in line:
+                continue
+            key, val = line.split(":", 1)
+            key = key.strip()
+            val = val.strip()
+            if not key or key in ECP5_TIMING_SKIP_KEYS:
+                continue
+            m = re.match(r"^([+-]?[\d,]+(?:\.(\d+))?)(?:\s+([A-Za-z0-9^/%]+))?", val)
+            if m:
+                num = float(m.group(1).replace(",", ""))
+                dec = len(m.group(2)) if m.group(2) else 0
+                unit = (m.group(3) or "").strip()
+                metrics[(category, key)] = TimingMetric(category, key, num, val, unit, dec)
+            else:
+                metrics[(category, key)] = TimingMetric(category, key, None, val, "", 0)
+    return metrics
+
+
+def diff_ecp5_timing(base_path: Optional[str], pr_path: Optional[str]) -> str:
+    has_pr = bool(pr_path and os.path.isfile(pr_path))
+    has_base = bool(base_path and os.path.isfile(base_path))
+    blocks: List[str] = []
+
+    if has_pr and has_base:
+        base_m = parse_ecp5_timing(base_path)
+        pr_m = parse_ecp5_timing(pr_path)
+        all_keys = list(OrderedDict.fromkeys(list(pr_m.keys()) + list(base_m.keys())))
+        rows: List[List[str]] = []
+        for k in all_keys:
+            cat, name = k
+            in_base = k in base_m
+            in_pr = k in pr_m
+            bm = base_m.get(k)
+            pm = pr_m.get(k)
+            unit = (pm.unit if pm and pm.unit else (bm.unit if bm else ""))
+            label = f"{escape_md_cell(name)} ({escape_md_cell(unit)})" if unit else escape_md_cell(name)
+            direction = ECP5_TIMING_DIRECTIONS.get(name, "lower")
+
+            diff_cell = ""
+            if (bm is not None and bm.value is not None) and (pm is not None and pm.value is not None):
+                dec = max(bm.decimals, pm.decimals)
+                diff_cell = format_diff_cell(bm.value, pm.value, direction, dec)
+            else:
+                b_raw = bm.raw if bm else "n/a"
+                p_raw = pm.raw if pm else "n/a"
+                if b_raw != p_raw:
+                    if name == "Timing status":
+                        diff_cell = format_embench_status_diff(b_raw, p_raw)
+                    else:
+                        diff_cell = f"{CIRCLE_NEUTRAL} {escape_md_cell(b_raw)} \u2192 {escape_md_cell(p_raw)}"
+
+            if diff_cell:
+                cat_s = escape_md_cell(cat)
+                if not in_base and in_pr:
+                    rows.append([cat_s, f"{CIRCLE_NEW} {label} *(new)*", diff_cell])
+                elif in_base and not in_pr:
+                    rows.append([f"~~{cat_s}~~", f"~~{label}~~", f"~~{diff_cell}~~"])
+                else:
+                    rows.append([cat_s, label, diff_cell])
+
+        if rows:
+            blocks.append(render_table(["Category", "Metric", "Diff"], rows))
+
+    return render_section_output(
+        blocks, "ECP5 Timing Summary", pr_path, has_baseline=has_base, has_pr=has_pr
+    )
+
+
 # ---------------------------------------------------------------------------
 # Subcommand handlers
 # ---------------------------------------------------------------------------
@@ -1063,6 +1287,29 @@ def cmd_de1_soc(args: argparse.Namespace) -> None:
         os.path.join(args.pr_dir, "output_files/utoss-risc-v.sta.summary"),
     )
     write_file(os.path.join(args.out_dir, "timing_summary.md"), sta_md)
+
+
+def cmd_ecp5(args: argparse.Namespace) -> None:
+    os.makedirs(args.out_dir, exist_ok=True)
+
+    summary_md = diff_ecp5_pnr_summary(
+        os.path.join(args.base_dir, "pnr_summary.txt") if args.base_dir else None,
+        os.path.join(args.pr_dir, "pnr_summary.txt"),
+    )
+    write_file(os.path.join(args.out_dir, "pnr_summary.md"), summary_md)
+
+    entity_md = diff_ecp5_by_entity(
+        os.path.join(args.base_dir, "pnr_utilization.csv") if args.base_dir else None,
+        os.path.join(args.pr_dir, "pnr_utilization.csv"),
+        os.path.join(args.pr_dir, "pnr_utilization.pretty.txt"),
+    )
+    write_file(os.path.join(args.out_dir, "pnr_by_entity.md"), entity_md)
+
+    timing_md = diff_ecp5_timing(
+        os.path.join(args.base_dir, "timing_summary.txt") if args.base_dir else None,
+        os.path.join(args.pr_dir, "timing_summary.txt"),
+    )
+    write_file(os.path.join(args.out_dir, "timing_summary.md"), timing_md)
 
 
 def cmd_hardening(args: argparse.Namespace) -> None:
@@ -1139,7 +1386,7 @@ def cmd_aggregate(args: argparse.Namespace) -> None:
             if not os.path.isdir(full):
                 continue
             m = re.match(
-                r"^(?:de1-soc-synthesis-metrics-diff|hardening-metrics-diff|benchmarks-metrics-diff)-(.+)$",
+                r"^(?:de1-soc-synthesis-metrics-diff|ecp5-synthesis-metrics-diff|hardening-metrics-diff|benchmarks-metrics-diff)-(.+)$",
                 entry,
             )
             if m:
@@ -1180,6 +1427,20 @@ def cmd_aggregate(args: argparse.Namespace) -> None:
                     lines.append(f"##### {heading}")
                     lines.append("")
                     lines.append(read_md_or_missing(os.path.join(de1_dir, fname)))
+                    lines.append("")
+
+            ecp5_dir = os.path.join(artifacts_dir, f"ecp5-synthesis-metrics-diff-{config}")
+            if os.path.isdir(ecp5_dir):
+                lines.append("#### ECP5 Synthesis (LFE5U-25F-7BG256I)")
+                lines.append("")
+                for heading, fname in (
+                    ("PnR Summary", "pnr_summary.md"),
+                    ("Utilization by Entity", "pnr_by_entity.md"),
+                    ("Timing Summary", "timing_summary.md"),
+                ):
+                    lines.append(f"##### {heading}")
+                    lines.append("")
+                    lines.append(read_md_or_missing(os.path.join(ecp5_dir, fname)))
                     lines.append("")
 
             harden_dir = os.path.join(artifacts_dir, f"hardening-metrics-diff-{config}")
@@ -1238,6 +1499,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p_de1.add_argument("--pr-dir", required=True, help="PR/current Quartus reports directory.")
     p_de1.add_argument("--out-dir", required=True, help="Output directory for per-report .md files.")
     p_de1.set_defaults(func=cmd_de1_soc)
+
+    p_ecp5 = sub.add_parser("ecp5", help="Diff ECP5 Trellis/nextpnr reports.")
+    p_ecp5.add_argument("--base-dir", default="", help="Base branch ECP5 reports directory.")
+    p_ecp5.add_argument("--pr-dir", required=True, help="PR/current ECP5 reports directory.")
+    p_ecp5.add_argument("--out-dir", required=True, help="Output directory for per-report .md files.")
+    p_ecp5.set_defaults(func=cmd_ecp5)
 
     p_h = sub.add_parser("hardening", help="Diff Nangate45 hardening & PnR reports.")
     p_h.add_argument("--base-dir", default="", help="Base branch hardening reports directory.")

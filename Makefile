@@ -271,7 +271,7 @@ harden:
 METRICS_DIFF_SCRIPT := scripts/metrics/metrics_diff.py
 METRICS_BASE_REF    ?=
 METRICS_CONFIGS     ?= RV32I RV32IZbb_Zbkb RV32IZicsr
-METRICS_TARGETS     ?= de1-soc hardening benchmarks
+METRICS_TARGETS     ?= de1-soc ecp5 hardening benchmarks
 METRICS_DIFF_OUT    ?= $(OUT_DIR)/metrics-diff.md
 
 BASE_DIR      ?= base-reports
@@ -284,6 +284,12 @@ HEAD_LABEL    ?= this PR
 
 metrics-diff-de1-soc:
 	python3 $(METRICS_DIFF_SCRIPT) de1-soc \
+		--base-dir "$(BASE_DIR)" \
+		--pr-dir "$(PR_DIR)" \
+		--out-dir "$(DIFF_OUT_DIR)"
+
+metrics-diff-ecp5:
+	python3 $(METRICS_DIFF_SCRIPT) ecp5 \
 		--base-dir "$(BASE_DIR)" \
 		--pr-dir "$(PR_DIR)" \
 		--out-dir "$(DIFF_OUT_DIR)"
@@ -354,7 +360,7 @@ test_diagrams:
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb mcy \
         svlint svlint_tb check_timescale harden_pre_pnr harden_pnr harden \
-        metrics-diff metrics-diff-de1-soc metrics-diff-hardening metrics-diff-benchmarks metrics-diff-aggregate test-metrics-diff \
+        metrics-diff metrics-diff-de1-soc metrics-diff-ecp5 metrics-diff-hardening metrics-diff-benchmarks metrics-diff-aggregate test-metrics-diff \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv coremark embench \

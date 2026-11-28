@@ -23,7 +23,7 @@ if ! git rev-parse --verify --quiet "$BASE_REF" >/dev/null; then
 fi
 
 CONFIGS="${METRICS_CONFIGS:-RV32I RV32IZbb_Zbkb RV32IZicsr}"
-TARGETS="${METRICS_TARGETS:-de1-soc hardening benchmarks}"
+TARGETS="${METRICS_TARGETS:-de1-soc ecp5 hardening benchmarks}"
 OUTPUT_FILE="${METRICS_DIFF_OUT:-out/metrics-diff.md}"
 
 BASE_SHA="$(git rev-parse --short "$BASE_REF")"
@@ -68,6 +68,31 @@ collect_de1_soc() {
   cp "$qdir/output_files/utoss-risc-v.sta.summary" "$dest/output_files/"
   cp "$qdir/metrics/fitter_utilization.csv" "$dest/metrics/"
   cp "$qdir/metrics/fitter_utilization.pretty.txt" "$dest/metrics/"
+}
+
+collect_ecp5() {
+  local repo="$1"
+  local config="$2"
+  local dest="$3"
+  local tdir="$repo/envs/ecp5/trellis"
+
+  mkdir -p "$dest"
+  if [ ! -f "$tdir/Makefile" ]; then
+    return 1
+  fi
+  make -C "$repo/envs/ecp5/poc"
+  make -C "$tdir" synthesize UTOSS_RISCV_CONFIG="$config"
+  make -C "$tdir" pretty-metrics
+
+  for f in \
+    pnr_summary.txt \
+    pnr_utilization.csv \
+    pnr_utilization.pretty.txt \
+    timing_summary.txt; do
+    if [ -f "$tdir/metrics/$f" ]; then
+      cp "$tdir/metrics/$f" "$dest/$f"
+    fi
+  done
 }
 
 collect_hardening() {
@@ -140,6 +165,25 @@ for config in $CONFIGS; do
       BASE_DIR="$base_de1" \
       PR_DIR="$pr_de1" \
       DIFF_OUT_DIR="$DIFFS_DIR/de1-soc-synthesis-metrics-diff-$config"
+  fi
+
+  if has_target "ecp5"; then
+    base_ecp5="$REPORTS_DIR/base/ecp5-$config"
+    pr_ecp5="$REPORTS_DIR/pr/ecp5-$config"
+
+    echo "==> [ecp5][$config] Building baseline ($BASE_REF)"
+    if ! collect_ecp5 "$BASE_REPO" "$config" "$base_ecp5"; then
+      echo "WARNING: Baseline ecp5 failed for $config; reporting without baseline." >&2
+      rm -rf "$base_ecp5"
+    fi
+
+    echo "==> [ecp5][$config] Building current working tree"
+    collect_ecp5 "$REPO_ROOT" "$config" "$pr_ecp5"
+
+    make --no-print-directory metrics-diff-ecp5 \
+      BASE_DIR="$base_ecp5" \
+      PR_DIR="$pr_ecp5" \
+      DIFF_OUT_DIR="$DIFFS_DIR/ecp5-synthesis-metrics-diff-$config"
   fi
 
   if has_target "hardening"; then

@@ -495,6 +495,126 @@ GEOMEAN                                                       1.2164  0.8221
         self.assertIn("##### CoreMark", agg_text)
         self.assertIn("##### Embench-IoT", agg_text)
 
+    def test_ecp5_cli_and_aggregate(self):
+        ecp5_summary_base = """\
+====================================================================
+             ECP5 PLACE & ROUTE SUMMARY (LFE5U-25F-7BG256I)
+====================================================================
+Device                       : LFE5U-25F-7BG256I
+
+-- Device Resource Utilization -------------------------------------
+LUT4 (TRELLIS_COMB)          :   5117 /  24288 ( 21.1%)
+Registers (TRELLIS_FF)       :   1690 /  24288 (  7.0%)
+Block RAM 18Kb (DP16KD)      :      2 /     56 (  3.6%)
+
+-- Yosys Synthesis Primitives (pre-PnR) ----------------------------
+CCU2C                        :     78
+LUT4                         :   4937
+====================================================================
+"""
+        ecp5_summary_pr = """\
+====================================================================
+             ECP5 PLACE & ROUTE SUMMARY (LFE5U-25F-7BG256I)
+====================================================================
+Device                       : LFE5U-25F-7BG256I
+
+-- Device Resource Utilization -------------------------------------
+LUT4 (TRELLIS_COMB)          :   5000 /  24288 ( 20.6%)
+Registers (TRELLIS_FF)       :   1690 /  24288 (  7.0%)
+Block RAM 18Kb (DP16KD)      :      2 /     56 (  3.6%)
+
+-- Yosys Synthesis Primitives (pre-PnR) ----------------------------
+LUT4                         :   4800
+PFUMX                        :     10
+====================================================================
+"""
+        ecp5_util_base = """\
+Hierarchy Node,LUT4 (TRELLIS_COMB),FF (TRELLIS_FF),BRAM (DP16KD),DSP (MULT18X18D),IO (TRELLIS_IO),Total Cells
+top,5117,1690,2,0,14,6824
+top.memory_map,135,97,2,0,0,234
+"""
+        ecp5_util_pr = """\
+Hierarchy Node,LUT4 (TRELLIS_COMB),FF (TRELLIS_FF),BRAM (DP16KD),DSP (MULT18X18D),IO (TRELLIS_IO),Total Cells
+top,5000,1690,2,0,14,6707
+top.memory_map,135,97,2,0,0,234
+"""
+        ecp5_timing_base = """\
+====================================================================
+               ECP5 TIMING SUMMARY (LFE5U-25F-7BG256I)
+====================================================================
+Clock                        : $glbnet$clk$TRELLIS_IO_IN
+Target frequency             :     10.00 MHz (100.000 ns)
+Achieved Fmax                :     33.47 MHz (29.877 ns)
+Setup slack                  :   +70.123 ns
+Timing status                : PASS
+
+-- Worst Critical Path ---------------------------------------------
+From                         : memory_map.M.1.0
+To                           : core.id_to_ex_reg_TRELLIS_FF_Q_86
+Logic delay                  :    12.385 ns (41.5%)
+Routing delay                :    17.492 ns (58.5%)
+Total path delay             :    29.877 ns (119 segments)
+====================================================================
+"""
+        ecp5_timing_pr = """\
+====================================================================
+               ECP5 TIMING SUMMARY (LFE5U-25F-7BG256I)
+====================================================================
+Clock                        : $glbnet$clk$TRELLIS_IO_IN
+Target frequency             :     10.00 MHz (100.000 ns)
+Achieved Fmax                :     36.00 MHz (27.778 ns)
+Setup slack                  :   +72.222 ns
+Timing status                : PASS
+
+-- Worst Critical Path ---------------------------------------------
+From                         : memory_map.M.1.0
+To                           : core.ex_to_mem_reg_TRELLIS_FF_Q_12
+Logic delay                  :    11.500 ns (41.4%)
+Routing delay                :    16.278 ns (58.6%)
+Total path delay             :    27.778 ns (110 segments)
+====================================================================
+"""
+        base_e = os.path.join(self.tmp, "base_ecp5")
+        pr_e = os.path.join(self.tmp, "pr_ecp5")
+        self._write("base_ecp5/pnr_summary.txt", ecp5_summary_base)
+        self._write("pr_ecp5/pnr_summary.txt", ecp5_summary_pr)
+        self._write("base_ecp5/pnr_utilization.csv", ecp5_util_base)
+        self._write("pr_ecp5/pnr_utilization.csv", ecp5_util_pr)
+        self._write("base_ecp5/timing_summary.txt", ecp5_timing_base)
+        self._write("pr_ecp5/timing_summary.txt", ecp5_timing_pr)
+
+        artifacts = os.path.join(self.tmp, "ecp5_artifacts")
+        out_e = os.path.join(artifacts, "ecp5-synthesis-metrics-diff-RV32I")
+        md.main(["ecp5", "--base-dir", base_e, "--pr-dir", pr_e, "--out-dir", out_e])
+
+        with open(os.path.join(out_e, "pnr_summary.md"), "r", encoding="utf-8") as f:
+            s_table = f.read().split("<!-- FULL_REPORT_START -->", 1)[0]
+        self.assertIn("| Device Resource Utilization | LUT4 (TRELLIS_COMB) | 🟢 5,117 → 5,000 (-117 / -2.29%) |", s_table)
+        self.assertIn("| Yosys Synthesis Primitives | 🟠 PFUMX *(new)* | 🔴 0 → 10 (+10 / new) |", s_table)
+        self.assertIn("| ~~Yosys Synthesis Primitives~~ | ~~CCU2C~~ | ~~🟢 78 → 0 (-78 / -100.00%)~~ |", s_table)
+        self.assertNotIn("Registers (TRELLIS_FF)", s_table)
+
+        with open(os.path.join(out_e, "pnr_by_entity.md"), "r", encoding="utf-8") as f:
+            u_table = f.read().split("<!-- FULL_REPORT_START -->", 1)[0]
+        self.assertIn("| `top` | 🟢 5,117 → 5,000 (-117 / -2.29%) |  |  |  |  | 🟢 6,824 → 6,707 (-117 / -1.71%) |", u_table)
+        self.assertNotIn("top.memory_map", u_table)
+
+        with open(os.path.join(out_e, "timing_summary.md"), "r", encoding="utf-8") as f:
+            t_table = f.read().split("<!-- FULL_REPORT_START -->", 1)[0]
+        self.assertIn("| Timing | Achieved Fmax (MHz) | 🟢 33.47 → 36.00 (+2.53 / +7.56%) |", t_table)
+        self.assertIn("| Timing | Setup slack (ns) | 🟢 70.123 → 72.222 (+2.099 / +2.99%) |", t_table)
+        self.assertIn("| Worst Critical Path | Total path delay (ns) | 🟢 29.877 → 27.778 (-2.099 / -7.03%) |", t_table)
+        self.assertNotIn("Target frequency", t_table)
+
+        combined = os.path.join(self.tmp, "ecp5_comparison.md")
+        md.main(["aggregate", "--artifacts-dir", artifacts, "--output", combined])
+        with open(combined, "r", encoding="utf-8") as f:
+            agg_text = f.read()
+        self.assertIn("#### ECP5 Synthesis (LFE5U-25F-7BG256I)", agg_text)
+        self.assertIn("##### PnR Summary", agg_text)
+        self.assertIn("##### Utilization by Entity", agg_text)
+        self.assertIn("##### Timing Summary", agg_text)
+
     def test_post_comment_js_strips_full_reports_and_links_artifact(self):
         if shutil.which("node") is None:
             self.skipTest("node not installed")
