@@ -234,6 +234,15 @@ riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 
 include utoss_riscv_dv/Makefile
 
+# ===========================
+# Benchmarks (CoreMark & Embench-IoT)
+# ===========================
+coremark:
+	$(MAKE) -C coremark run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+
+embench:
+	$(MAKE) -C embench run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
 GITHUB_ORG_NAME=utoss
@@ -262,7 +271,7 @@ harden:
 METRICS_DIFF_SCRIPT := scripts/metrics/metrics_diff.py
 METRICS_BASE_REF    ?=
 METRICS_CONFIGS     ?= RV32I RV32IZbb_Zbkb RV32IZicsr
-METRICS_TARGETS     ?= de1-soc hardening
+METRICS_TARGETS     ?= de1-soc hardening benchmarks
 METRICS_DIFF_OUT    ?= $(OUT_DIR)/metrics-diff.md
 
 BASE_DIR      ?= base-reports
@@ -281,6 +290,12 @@ metrics-diff-de1-soc:
 
 metrics-diff-hardening:
 	python3 $(METRICS_DIFF_SCRIPT) hardening \
+		--base-dir "$(BASE_DIR)" \
+		--pr-dir "$(PR_DIR)" \
+		--out-dir "$(DIFF_OUT_DIR)"
+
+metrics-diff-benchmarks:
+	python3 $(METRICS_DIFF_SCRIPT) benchmarks \
 		--base-dir "$(BASE_DIR)" \
 		--pr-dir "$(PR_DIR)" \
 		--out-dir "$(DIFF_OUT_DIR)"
@@ -339,9 +354,9 @@ test_diagrams:
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb mcy \
         svlint svlint_tb check_timescale harden_pre_pnr harden_pnr harden \
-        metrics-diff metrics-diff-de1-soc metrics-diff-hardening metrics-diff-aggregate test-metrics-diff \
+        metrics-diff metrics-diff-de1-soc metrics-diff-hardening metrics-diff-benchmarks metrics-diff-aggregate test-metrics-diff \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
-        riscv_dv \
+        riscv_dv coremark embench \
 				diagrams block_diagrams timing_diagrams test_diagrams update_diagrams update_diagrmas \
 				FORCE

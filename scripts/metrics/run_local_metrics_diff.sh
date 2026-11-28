@@ -23,7 +23,7 @@ if ! git rev-parse --verify --quiet "$BASE_REF" >/dev/null; then
 fi
 
 CONFIGS="${METRICS_CONFIGS:-RV32I RV32IZbb_Zbkb RV32IZicsr}"
-TARGETS="${METRICS_TARGETS:-de1-soc hardening}"
+TARGETS="${METRICS_TARGETS:-de1-soc hardening benchmarks}"
 OUTPUT_FILE="${METRICS_DIFF_OUT:-out/metrics-diff.md}"
 
 BASE_SHA="$(git rev-parse --short "$BASE_REF")"
@@ -99,6 +99,29 @@ collect_hardening() {
   done
 }
 
+collect_benchmarks() {
+  local repo="$1"
+  local config="$2"
+  local dest="$3"
+
+  mkdir -p "$dest"
+  if [ -f "$repo/coremark/Makefile" ]; then
+    make -C "$repo/coremark" run UTOSS_RISCV_CONFIG="$config"
+    if [ -f "$repo/coremark/out/$config/coremark_metrics.txt" ]; then
+      cp "$repo/coremark/out/$config/coremark_metrics.txt" "$dest/coremark_metrics.txt"
+    fi
+  fi
+  if [ -f "$repo/embench/Makefile" ]; then
+    make -C "$repo/embench" run UTOSS_RISCV_CONFIG="$config" -j"$(nproc)"
+    if [ -f "$repo/embench/out/$config/embench_metrics.txt" ]; then
+      cp "$repo/embench/out/$config/embench_metrics.txt" "$dest/embench_metrics.txt"
+    fi
+    if [ -f "$repo/embench/out/$config/results.json" ]; then
+      cp "$repo/embench/out/$config/results.json" "$dest/embench_results.json"
+    fi
+  fi
+}
+
 for config in $CONFIGS; do
   if has_target "de1-soc"; then
     base_de1="$REPORTS_DIR/base/de1-soc-$config"
@@ -136,6 +159,25 @@ for config in $CONFIGS; do
       BASE_DIR="$base_harden" \
       PR_DIR="$pr_harden" \
       DIFF_OUT_DIR="$DIFFS_DIR/hardening-metrics-diff-$config"
+  fi
+
+  if has_target "benchmarks"; then
+    base_bench="$REPORTS_DIR/base/benchmarks-$config"
+    pr_bench="$REPORTS_DIR/pr/benchmarks-$config"
+
+    echo "==> [benchmarks][$config] Running baseline ($BASE_REF)"
+    if ! collect_benchmarks "$BASE_REPO" "$config" "$base_bench"; then
+      echo "WARNING: Baseline benchmarks failed for $config; reporting without baseline." >&2
+      rm -rf "$base_bench"
+    fi
+
+    echo "==> [benchmarks][$config] Running current working tree"
+    collect_benchmarks "$REPO_ROOT" "$config" "$pr_bench"
+
+    make --no-print-directory metrics-diff-benchmarks \
+      BASE_DIR="$base_bench" \
+      PR_DIR="$pr_bench" \
+      DIFF_OUT_DIR="$DIFFS_DIR/benchmarks-metrics-diff-$config"
   fi
 done
 

@@ -800,6 +800,238 @@ def diff_pnr_timing(base_path: Optional[str], pr_path: Optional[str]) -> str:
     )
 
 
+COREMARK_DIRECTIONS: Dict[str, str] = {
+    "Iterations": "neutral",
+    "Timed Cycles": "lower",
+    "Instructions Retired": "lower",
+    "CPI (Cycles / Instret)": "lower",
+    "IPC (Instret / Cycle)": "higher",
+    "CoreMark / MHz": "higher",
+    "Stall Cycles (timed)": "lower",
+    "Flush Cycles (timed)": "lower",
+    "Total Sim Cycles": "lower",
+    "Total Sim Instret": "lower",
+}
+
+COREMARK_SKIP_KEYS = {"ISA Config"}
+
+
+def parse_coremark_metrics(path: str) -> "OrderedDict[str, Tuple[float, int]]":
+    metrics: "OrderedDict[str, Tuple[float, int]]" = OrderedDict()
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
+        for line in f:
+            if ":" not in line:
+                continue
+            key, val = line.split(":", 1)
+            key = key.strip()
+            val = val.strip()
+            if not key or key in COREMARK_SKIP_KEYS:
+                continue
+            m = re.match(r"^([+-]?[\d,]+(?:\.(\d+))?)", val)
+            if not m:
+                continue
+            num = float(m.group(1).replace(",", ""))
+            dec = len(m.group(2)) if m.group(2) else 0
+            metrics[key] = (num, dec)
+    return metrics
+
+
+def diff_coremark_metrics(base_path: Optional[str], pr_path: Optional[str]) -> str:
+    has_pr = bool(pr_path and os.path.isfile(pr_path))
+    has_base = bool(base_path and os.path.isfile(base_path))
+    blocks: List[str] = []
+
+    if has_pr and has_base:
+        base_m = parse_coremark_metrics(base_path)
+        pr_m = parse_coremark_metrics(pr_path)
+        all_keys = list(OrderedDict.fromkeys(list(pr_m.keys()) + list(base_m.keys())))
+        rows: List[List[str]] = []
+        for k in all_keys:
+            in_base = k in base_m
+            in_pr = k in pr_m
+            b_val, b_dec = base_m.get(k, (None, 0))
+            p_val, p_dec = pr_m.get(k, (None, 0))
+            dec = max(b_dec, p_dec)
+            direction = COREMARK_DIRECTIONS.get(k, "lower")
+            cell = format_diff_cell(
+                b_val,
+                p_val,
+                direction,
+                dec,
+                is_added=(not in_base and in_pr),
+                is_removed=(in_base and not in_pr),
+            )
+            if cell:
+                rows.append(
+                    style_row(
+                        escape_md_cell(k),
+                        [cell],
+                        is_added=(not in_base and in_pr),
+                        is_removed=(in_base and not in_pr),
+                    )
+                )
+        if rows:
+            blocks.append(render_table(["Metric", "Diff"], rows))
+
+    return render_section_output(
+        blocks, "CoreMark Metrics", pr_path, has_baseline=has_base, has_pr=has_pr
+    )
+
+
+EMBENCH_COL_SPECS = [
+    ColSpec("Text(B)", "Text (B)", "lower", 0),
+    ColSpec("Cycles", "Cycles", "lower", 0),
+    ColSpec("Instret", "Instret", "lower", 0),
+    ColSpec("CPI", "CPI", "lower", 4),
+    ColSpec("IPC", "IPC", "higher", 4),
+    ColSpec("Stall%", "Stall (%)", "lower", 2),
+    ColSpec("Flush%", "Flush (%)", "lower", 2),
+]
+
+
+def parse_embench_metrics(
+    path: str,
+) -> Tuple["OrderedDict[str, Optional[str]]", "OrderedDict[str, Dict[str, float]]"]:
+    statuses: "OrderedDict[str, Optional[str]]" = OrderedDict()
+    rows: "OrderedDict[str, Dict[str, float]]" = OrderedDict()
+
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
+        for line in f:
+            s = line.strip()
+            if (
+                not s
+                or set(s) <= {"-", "="}
+                or s.startswith("ISA Config:")
+                or s.startswith("Benchmark ")
+            ):
+                continue
+            toks = s.split()
+            name = toks[0]
+            try:
+                if name == "GEOMEAN" and len(toks) >= 3:
+                    statuses[name] = None
+                    rows[name] = {
+                        "CPI": float(toks[1]),
+                        "IPC": float(toks[2]),
+                    }
+                elif name == "TOTAL/AGG" and len(toks) >= 8:
+                    statuses[name] = toks[1]
+                    rows[name] = {
+                        "Cycles": float(toks[2]),
+                        "Instret": float(toks[3]),
+                        "CPI": float(toks[4]),
+                        "IPC": float(toks[5]),
+                        "Stall%": float(toks[6].rstrip("%")),
+                        "Flush%": float(toks[7].rstrip("%")),
+                    }
+                elif len(toks) >= 9:
+                    statuses[name] = toks[1]
+                    rows[name] = {
+                        "Text(B)": float(toks[2]),
+                        "Cycles": float(toks[3]),
+                        "Instret": float(toks[4]),
+                        "CPI": float(toks[5]),
+                        "IPC": float(toks[6]),
+                        "Stall%": float(toks[7].rstrip("%")),
+                        "Flush%": float(toks[8].rstrip("%")),
+                    }
+            except ValueError:
+                continue
+
+    return statuses, rows
+
+
+def format_embench_status_diff(old_s: Optional[str], new_s: Optional[str]) -> str:
+    if old_s == new_s or (old_s is None and new_s is None):
+        return ""
+    o = old_s or "n/a"
+    n = new_s or "n/a"
+    circle = CIRCLE_NEUTRAL
+    if o != "PASS" and n == "PASS":
+        circle = CIRCLE_BETTER
+    elif o == "PASS" and n != "PASS":
+        circle = CIRCLE_WORSE
+    else:
+        mo = re.match(r"^(\d+)/(\d+)$", o)
+        mn = re.match(r"^(\d+)/(\d+)$", n)
+        if mo and mn:
+            if int(mn.group(1)) > int(mo.group(1)):
+                circle = CIRCLE_BETTER
+            elif int(mn.group(1)) < int(mo.group(1)):
+                circle = CIRCLE_WORSE
+    return f"{circle} {escape_md_cell(o)} \u2192 {escape_md_cell(n)}"
+
+
+def diff_embench_metrics(base_path: Optional[str], pr_path: Optional[str]) -> str:
+    has_pr = bool(pr_path and os.path.isfile(pr_path))
+    has_base = bool(base_path and os.path.isfile(base_path))
+    blocks: List[str] = []
+
+    if has_pr and has_base:
+        base_status, base_rows = parse_embench_metrics(base_path)
+        pr_status, pr_rows = parse_embench_metrics(pr_path)
+        pin_last = ("TOTAL/AGG", "GEOMEAN")
+        all_keys: List[str] = []
+        seen = set()
+        for src in (pr_rows, base_rows):
+            for k in src:
+                if k not in seen and k not in pin_last:
+                    seen.add(k)
+                    all_keys.append(k)
+        for k in pin_last:
+            if k in pr_rows or k in base_rows:
+                all_keys.append(k)
+
+        md_rows: List[List[str]] = []
+        for k in all_keys:
+            in_base = k in base_rows
+            in_pr = k in pr_rows
+            b_vals = base_rows.get(k, {})
+            p_vals = pr_rows.get(k, {})
+
+            status_cell = format_embench_status_diff(
+                base_status.get(k) if in_base else None,
+                pr_status.get(k) if in_pr else None,
+            )
+            cells = [status_cell]
+            any_changed = bool(status_cell)
+            for spec in EMBENCH_COL_SPECS:
+                b_v = b_vals.get(spec.key) if in_base else (0.0 if spec.key in p_vals else None)
+                p_v = p_vals.get(spec.key) if in_pr else (0.0 if spec.key in b_vals else None)
+                cell = format_diff_cell(
+                    b_v,
+                    p_v,
+                    spec.direction,
+                    spec.decimals,
+                    is_added=(not in_base and in_pr),
+                    is_removed=(in_base and not in_pr),
+                )
+                if cell:
+                    any_changed = True
+                cells.append(cell)
+
+            if not any_changed:
+                continue
+
+            label = f"**{escape_md_cell(k)}**" if k in pin_last else f"`{escape_md_cell(k)}`"
+            md_rows.append(
+                style_row(
+                    label,
+                    cells,
+                    is_added=(not in_base and in_pr),
+                    is_removed=(in_base and not in_pr),
+                )
+            )
+
+        if md_rows:
+            headers = ["Benchmark", "Status"] + [s.header for s in EMBENCH_COL_SPECS]
+            blocks.append(render_table(headers, md_rows))
+
+    return render_section_output(
+        blocks, "Embench-IoT Metrics", pr_path, has_baseline=has_base, has_pr=has_pr
+    )
+
+
 # ---------------------------------------------------------------------------
 # Subcommand handlers
 # ---------------------------------------------------------------------------
@@ -875,6 +1107,22 @@ def cmd_hardening(args: argparse.Namespace) -> None:
     write_file(os.path.join(args.out_dir, "pnr_timing.md"), pnr_timing_md)
 
 
+def cmd_benchmarks(args: argparse.Namespace) -> None:
+    os.makedirs(args.out_dir, exist_ok=True)
+
+    coremark_md = diff_coremark_metrics(
+        os.path.join(args.base_dir, "coremark_metrics.txt") if args.base_dir else None,
+        os.path.join(args.pr_dir, "coremark_metrics.txt"),
+    )
+    write_file(os.path.join(args.out_dir, "coremark.md"), coremark_md)
+
+    embench_md = diff_embench_metrics(
+        os.path.join(args.base_dir, "embench_metrics.txt") if args.base_dir else None,
+        os.path.join(args.pr_dir, "embench_metrics.txt"),
+    )
+    write_file(os.path.join(args.out_dir, "embench.md"), embench_md)
+
+
 def read_md_or_missing(path: str) -> str:
     if not os.path.isfile(path):
         return "*missing*"
@@ -890,13 +1138,16 @@ def cmd_aggregate(args: argparse.Namespace) -> None:
             full = os.path.join(artifacts_dir, entry)
             if not os.path.isdir(full):
                 continue
-            m = re.match(r"^(?:de1-soc-synthesis-metrics-diff|hardening-metrics-diff)-(.+)$", entry)
+            m = re.match(
+                r"^(?:de1-soc-synthesis-metrics-diff|hardening-metrics-diff|benchmarks-metrics-diff)-(.+)$",
+                entry,
+            )
             if m:
                 configs.add(m.group(1))
 
     sorted_configs = sorted(configs)
     lines: List[str] = [
-        "## \U0001f4ca Synthesis & Hardening Report Summary Diff",
+        "## \U0001f4ca Synthesis, Hardening & Benchmark Report Summary Diff",
         "",
         (
             f"Legend: {CIRCLE_BETTER} improved \u00b7 {CIRCLE_WORSE} regressed \u00b7 "
@@ -956,9 +1207,22 @@ def cmd_aggregate(args: argparse.Namespace) -> None:
                     lines.append(read_md_or_missing(os.path.join(harden_dir, fname)))
                     lines.append("")
 
+            bench_dir = os.path.join(artifacts_dir, f"benchmarks-metrics-diff-{config}")
+            if os.path.isdir(bench_dir):
+                lines.append("#### Benchmarks (CPI / Cycles)")
+                lines.append("")
+                for heading, fname in (
+                    ("CoreMark", "coremark.md"),
+                    ("Embench-IoT", "embench.md"),
+                ):
+                    lines.append(f"##### {heading}")
+                    lines.append("")
+                    lines.append(read_md_or_missing(os.path.join(bench_dir, fname)))
+                    lines.append("")
+
     lines.append("---")
     lines.append(
-        f"*Comparing synthesis & hardening results from {args.base_label} vs. {args.head_label}*"
+        f"*Comparing synthesis, hardening & benchmark results from {args.base_label} vs. {args.head_label}*"
     )
     lines.append("")
 
@@ -980,6 +1244,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p_h.add_argument("--pr-dir", required=True, help="PR/current hardening reports directory.")
     p_h.add_argument("--out-dir", required=True, help="Output directory for per-report .md files.")
     p_h.set_defaults(func=cmd_hardening)
+
+    p_b = sub.add_parser("benchmarks", help="Diff CoreMark & Embench-IoT benchmark reports.")
+    p_b.add_argument("--base-dir", default="", help="Base branch benchmark reports directory.")
+    p_b.add_argument("--pr-dir", required=True, help="PR/current benchmark reports directory.")
+    p_b.add_argument("--out-dir", required=True, help="Output directory for per-report .md files.")
+    p_b.set_defaults(func=cmd_benchmarks)
 
     p_agg = sub.add_parser("aggregate", help="Aggregate per-config diff directories into one report.")
     p_agg.add_argument("--artifacts-dir", default="metrics-diff", help="Directory containing per-config diff dirs.")

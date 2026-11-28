@@ -403,10 +403,97 @@ class TestMetricsDiff(unittest.TestCase):
 
         with open(combined, "r", encoding="utf-8") as f:
             text = f.read()
-        self.assertIn("## 📊 Synthesis & Hardening Report Summary Diff", text)
+        self.assertIn("## 📊 Synthesis, Hardening & Benchmark Report Summary Diff", text)
         self.assertIn("### `RV32I`", text)
         self.assertIn("#### DE1-SoC Synthesis", text)
         self.assertIn("🟢 2,160 → 2,100 (-60 / -2.78%)", text)
+
+    def test_benchmarks_coremark_embench_and_aggregate(self):
+        coremark_base = """\
+ISA Config             : RV32I/rv32i
+Iterations             : 1
+Timed Cycles           : 100000
+Instructions Retired   : 80000
+CPI (Cycles / Instret) : 1.2500
+IPC (Instret / Cycle)  : 0.8000
+CoreMark / MHz         : 10.0000
+Stall Cycles (timed)   : 10000 (10.00%)
+Flush Cycles (timed)   : 5000 (5.00%)
+Total Sim Cycles       : 105000
+Total Sim Instret      : 82000
+"""
+        coremark_pr = """\
+ISA Config             : RV32I/rv32i
+Iterations             : 1
+Timed Cycles           : 95000
+Instructions Retired   : 80000
+CPI (Cycles / Instret) : 1.1875
+IPC (Instret / Cycle)  : 0.8421
+CoreMark / MHz         : 10.5263
+Stall Cycles (timed)   : 8000 (8.42%)
+Flush Cycles (timed)   : 5000 (5.26%)
+Total Sim Cycles       : 100000
+Total Sim Instret      : 82000
+"""
+        embench_base = """\
+ISA Config: RV32I/rv32i
+Benchmark        Status   Text(B)       Cycles      Instret      CPI     IPC  Stall%  Flush%
+--------------------------------------------------------------------------------------------
+aha-mont64       PASS        1200       500000       400000   1.2500  0.8000  10.00%   5.00%
+crc32            PASS         800       200000       160000   1.2500  0.8000  10.00%   5.00%
+old-bench        PASS         500       100000        80000   1.2500  0.8000  10.00%   5.00%
+--------------------------------------------------------------------------------------------
+TOTAL/AGG        3/3                    800000       640000   1.2500  0.8000  10.00%   5.00%
+GEOMEAN                                                       1.2500  0.8000
+"""
+        embench_pr = """\
+ISA Config: RV32I/rv32i
+Benchmark        Status   Text(B)       Cycles      Instret      CPI     IPC  Stall%  Flush%
+--------------------------------------------------------------------------------------------
+aha-mont64       PASS        1200       480000       400000   1.2000  0.8333   8.00%   5.00%
+crc32            PASS         800       200000       160000   1.2500  0.8000  10.00%   5.00%
+new-bench        PASS         600       120000       100000   1.2000  0.8333   7.00%   4.00%
+--------------------------------------------------------------------------------------------
+TOTAL/AGG        3/3                    800000       660000   1.2121  0.8250   8.33%   4.80%
+GEOMEAN                                                       1.2164  0.8221
+"""
+        base_b = os.path.join(self.tmp, "base_bench")
+        pr_b = os.path.join(self.tmp, "pr_bench")
+        self._write("base_bench/coremark_metrics.txt", coremark_base)
+        self._write("pr_bench/coremark_metrics.txt", coremark_pr)
+        self._write("base_bench/embench_metrics.txt", embench_base)
+        self._write("pr_bench/embench_metrics.txt", embench_pr)
+
+        artifacts = os.path.join(self.tmp, "bench_artifacts")
+        out_b = os.path.join(artifacts, "benchmarks-metrics-diff-RV32I")
+        md.main(["benchmarks", "--base-dir", base_b, "--pr-dir", pr_b, "--out-dir", out_b])
+
+        with open(os.path.join(out_b, "coremark.md"), "r", encoding="utf-8") as f:
+            cm_out = f.read()
+        cm_table = cm_out.split("<!-- FULL_REPORT_START -->", 1)[0]
+        self.assertIn("| Timed Cycles | 🟢 100,000 → 95,000 (-5,000 / -5.00%) |", cm_table)
+        self.assertIn("| CPI (Cycles / Instret) | 🟢 1.2500 → 1.1875 (-0.0625 / -5.00%) |", cm_table)
+        self.assertIn("| IPC (Instret / Cycle) | 🟢 0.8000 → 0.8421 (+0.0421 / +5.26%) |", cm_table)
+        self.assertIn("| CoreMark / MHz | 🟢 10.0000 → 10.5263 (+0.5263 / +5.26%) |", cm_table)
+        self.assertNotIn("Iterations", cm_table)
+
+        with open(os.path.join(out_b, "embench.md"), "r", encoding="utf-8") as f:
+            em_out = f.read()
+        em_table = em_out.split("<!-- FULL_REPORT_START -->", 1)[0]
+        self.assertIn("| `aha-mont64` |  |  | 🟢 500,000 → 480,000 (-20,000 / -4.00%) |", em_table)
+        self.assertNotIn("crc32", em_table)
+        self.assertIn("| 🟠 `new-bench` *(new)* |", em_table)
+        self.assertIn("| ~~`old-bench`~~ |", em_table)
+        self.assertIn("| **TOTAL/AGG** |", em_table)
+        self.assertIn("| **GEOMEAN** |", em_table)
+
+        combined = os.path.join(self.tmp, "bench_comparison.md")
+        md.main(["aggregate", "--artifacts-dir", artifacts, "--output", combined])
+        with open(combined, "r", encoding="utf-8") as f:
+            agg_text = f.read()
+        self.assertIn("#### Benchmarks (CPI / Cycles)", agg_text)
+        self.assertIn("##### CoreMark", agg_text)
+        self.assertIn("##### Embench-IoT", agg_text)
 
     def test_post_comment_js_strips_full_reports_and_links_artifact(self):
         if shutil.which("node") is None:

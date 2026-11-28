@@ -56,10 +56,10 @@ module.exports = async ({ github, context, comparisonFile, artifactUrl = null })
     repo: context.repo.repo,
     issue_number: context.issue.number,
   });
-
   const botComment = comments.find(comment =>
     comment.user.type === 'Bot' &&
-    (comment.body.includes('Synthesis & Hardening Report Summary Diff') ||
+    (comment.body.includes('Synthesis, Hardening & Benchmark Report Summary Diff') ||
+     comment.body.includes('Synthesis & Hardening Report Summary Diff') ||
      comment.body.includes('🔧 DE1-SoC Synthesis Report Summary Diff'))
   );
 
