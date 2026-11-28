@@ -102,6 +102,7 @@ def main() -> int:
     parser.add_argument("--max-cycles", type=int, default=200000000)
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 1)
     parser.add_argument("--size-tool", default="riscv32-unknown-elf-size")
+    parser.add_argument("--pretty-out", type=Path, default=None)
     parser.add_argument("--json-out", type=Path, default=None)
     parser.add_argument("benchmarks", nargs="+", help="Benchmark names to run")
     args = parser.parse_args()
@@ -173,6 +174,38 @@ def main() -> int:
         f"{'':>12} {'':>12} {geo_cpi:>8.4f} {geo_ipc:>7.4f}"
     )
     print()
+
+    if args.pretty_out:
+        args.pretty_out.parent.mkdir(parents=True, exist_ok=True)
+        det_header = (
+            f"{'Benchmark':<16} {'Status':<7} {'Text(B)':>8} "
+            f"{'Cycles':>12} {'Instret':>12} {'CPI':>8} {'IPC':>7} "
+            f"{'Stall%':>7} {'Flush%':>7}"
+        )
+        det_lines = [
+            f"ISA Config: {args.isa}",
+            det_header,
+            "-" * len(det_header),
+        ]
+        for r in ordered:
+            stall_pct = (100.0 * r["stall_cycles"] / r["cycles"]) if r["cycles"] > 0 else 0.0
+            flush_pct = (100.0 * r["flush_cycles"] / r["cycles"]) if r["cycles"] > 0 else 0.0
+            det_lines.append(
+                f"{r['bench']:<16} {r['status']:<7} {r['text_bytes']:>8d} "
+                f"{r['cycles']:>12d} {r['instret']:>12d} {r['cpi']:>8.4f} {r['ipc']:>7.4f} "
+                f"{stall_pct:>6.2f}% {flush_pct:>6.2f}%"
+            )
+        det_lines.append("-" * len(det_header))
+        det_lines.append(
+            f"{'TOTAL/AGG':<16} {f'{len(passed)}/{len(ordered)}':<7} {'':>8} "
+            f"{total_cycles:>12d} {total_instret:>12d} {agg_cpi:>8.4f} {agg_ipc:>7.4f} "
+            f"{agg_stall_pct:>6.2f}% {agg_flush_pct:>6.2f}%"
+        )
+        det_lines.append(
+            f"{'GEOMEAN':<16} {'':<7} {'':>8} "
+            f"{'':>12} {'':>12} {geo_cpi:>8.4f} {geo_ipc:>7.4f}"
+        )
+        args.pretty_out.write_text("\n".join(det_lines) + "\n")
 
     if args.json_out:
         args.json_out.parent.mkdir(parents=True, exist_ok=True)

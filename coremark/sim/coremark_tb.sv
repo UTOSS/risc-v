@@ -158,11 +158,15 @@ module coremark_tb
     string           mem_file;
     string           vcd_path;
     string           isa_cfg;
+    string           report_path;
+    int              report_fd;
     longint unsigned max_cycles;
     int              iterations;
     real             cpi;
     real             ipc;
     real             cm_per_mhz;
+    real             stall_pct;
+    real             flush_pct;
 
     // zero-initialize RAM before loading image so .bss is deterministic
     for (int i = 0; i < MEM_WORDS; i = i + 1) begin
@@ -207,6 +211,8 @@ module coremark_tb
     cpi = (bench_instret > 0) ? (real'(bench_cycles) / real'(bench_instret)) : 0.0;
     ipc = (bench_cycles  > 0) ? (real'(bench_instret) / real'(bench_cycles)) : 0.0;
     cm_per_mhz = (bench_cycles > 0) ? ((real'(iterations) * 1.0e6) / real'(bench_cycles)) : 0.0;
+    stall_pct  = (bench_cycles > 0) ? (100.0 * real'(bench_stall_cycles) / real'(bench_cycles)) : 0.0;
+    flush_pct  = (bench_cycles > 0) ? (100.0 * real'(bench_flush_cycles) / real'(bench_cycles)) : 0.0;
 
     $display("\n=======================================================");
     $display("              UTOSS-RISC-V COREMARK METRICS");
@@ -218,16 +224,31 @@ module coremark_tb
     $display("  CPI (Cycles / Instret) : %0.4f", cpi);
     $display("  IPC (Instret / Cycle)  : %0.4f", ipc);
     $display("  CoreMark / MHz         : %0.4f", cm_per_mhz);
-    $display("  Stall Cycles (timed)   : %0d (%0.2f%%)",
-             bench_stall_cycles,
-             (bench_cycles > 0) ? (100.0 * real'(bench_stall_cycles) / real'(bench_cycles)) : 0.0);
-    $display("  Flush Cycles (timed)   : %0d (%0.2f%%)",
-             bench_flush_cycles,
-             (bench_cycles > 0) ? (100.0 * real'(bench_flush_cycles) / real'(bench_cycles)) : 0.0);
+    $display("  Stall Cycles (timed)   : %0d (%0.2f%%)", bench_stall_cycles, stall_pct);
+    $display("  Flush Cycles (timed)   : %0d (%0.2f%%)", bench_flush_cycles, flush_pct);
     $display("  Total Sim Cycles       : %0d", total_cycles);
     $display("  Total Sim Instret      : %0d", total_instret);
     $display("  Exit Code              : %0d", sim_exit_code);
     $display("=======================================================\n");
+
+    if ($value$plusargs("REPORT_PATH=%s", report_path)) begin
+      report_fd = $fopen(report_path, "w");
+      if (report_fd == 0) begin
+        $fatal(1, "ERROR: Failed to open report file %s", report_path);
+      end
+      $fwrite(report_fd, "ISA Config             : %s\n", isa_cfg);
+      $fwrite(report_fd, "Iterations             : %0d\n", iterations);
+      $fwrite(report_fd, "Timed Cycles           : %0d\n", bench_cycles);
+      $fwrite(report_fd, "Instructions Retired   : %0d\n", bench_instret);
+      $fwrite(report_fd, "CPI (Cycles / Instret) : %0.4f\n", cpi);
+      $fwrite(report_fd, "IPC (Instret / Cycle)  : %0.4f\n", ipc);
+      $fwrite(report_fd, "CoreMark / MHz         : %0.4f\n", cm_per_mhz);
+      $fwrite(report_fd, "Stall Cycles (timed)   : %0d (%0.2f%%)\n", bench_stall_cycles, stall_pct);
+      $fwrite(report_fd, "Flush Cycles (timed)   : %0d (%0.2f%%)\n", bench_flush_cycles, flush_pct);
+      $fwrite(report_fd, "Total Sim Cycles       : %0d\n", total_cycles);
+      $fwrite(report_fd, "Total Sim Instret      : %0d\n", total_instret);
+      $fclose(report_fd);
+    end
 
     if (sim_exit_code != 0) begin
       $fatal(1, "CoreMark exited with non-zero code %0d", sim_exit_code);

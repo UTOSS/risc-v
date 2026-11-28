@@ -86,10 +86,11 @@ CFG_TAG   := $(UTOSS_RISCV_CONFIG)
 BUILD_DIR := $(BUILD_ROOT)/$(CFG_TAG)
 OUT_DIR   := $(OUT_ROOT)/$(CFG_TAG)
 
-SIM_BIN   := $(OUT_DIR)/embench_sim
-ELF_DIR   := $(OUT_DIR)/elf
-MEM_DIR   := $(OUT_DIR)/mem
-JSON_OUT  := $(OUT_DIR)/results.json
+SIM_BIN    := $(OUT_DIR)/embench_sim
+ELF_DIR    := $(OUT_DIR)/elf
+MEM_DIR    := $(OUT_DIR)/mem
+PRETTY_OUT := $(OUT_DIR)/embench_metrics.txt
+JSON_OUT   := $(OUT_DIR)/results.json
 
 SUPPORT_SRCS := \
 	$(EMBENCH_DIR)/support/main.c \
@@ -191,6 +192,7 @@ run: build_sw build_sim
 		--max-cycles $(MAX_CYCLES) \
 		--jobs $(JOBS) \
 		--size-tool $(SIZE) \
+		--pretty-out $(PRETTY_OUT) \
 		--json-out $(JSON_OUT) \
 		$(BENCHMARKS)
 

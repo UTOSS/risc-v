@@ -70,6 +70,7 @@ OUT_DIR   := $(OUT_ROOT)/$(CFG_TAG)
 COREMARK_ELF := $(OUT_DIR)/coremark.elf
 COREMARK_MEM := $(OUT_DIR)/coremark.mem
 COREMARK_DIS := $(OUT_DIR)/coremark.dis
+REPORT_OUT   := $(OUT_DIR)/coremark_metrics.txt
 SIM_BIN      := $(OUT_DIR)/coremark_sim
 
 UPSTREAM_SRCS := \
@@ -129,6 +130,7 @@ SIM_PLUSARGS := \
 	+MAX_CYCLES=$(MAX_CYCLES) \
 	+ITERATIONS=$(ITERATIONS) \
 	+ISA=$(UTOSS_RISCV_CONFIG)/$(MARCH) \
+	+REPORT_PATH=$(REPORT_OUT) \
 	$(if $(VCD_PATH),+VCD_PATH=$(VCD_PATH))
 
 .PHONY: all fetch build_sw build_sim run disasm compare clean distclean
