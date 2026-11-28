@@ -91,6 +91,9 @@ jobs:
       - name: lint DE1-SoC environment files
         run: make svlint ENV=de1-soc
 
+      - name: lint ECP5 environment files
+        run: make svlint ENV=ecp5
+
       - name: lint Hardening environment files
         run: make svlint ENV=hardening
 
@@ -452,6 +455,145 @@ jobs:
           path: metric-diff/*.md
           retention-days: 7
 
+  ecp5:
+    timeout-minutes: 30
+    needs:
+      - select_ci_image
+      - build_and_test
+    if: always() && needs.build_and_test.result == 'success'
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build PoC
+        id: build-poc
+        run: cd envs/ecp5/poc && make
+
+      - name: Build and run ECP5 testbench
+        run: cd envs/ecp5 && make UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      - name: Synthesize and place & route
+        id: synthesize
+        run: cd envs/ecp5/trellis && make synthesize UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      - name: Gather metrics
+        run: cd envs/ecp5/trellis && make pretty-metrics
+
+      - name: Draw placement figures
+        id: images
+        if: steps.synthesize.outcome == 'success'
+        run: cd envs/ecp5/trellis && make images UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      # the figures CI drew are committed to internal PRs by the image-update job below
+      - name: Upload placement figures
+        uses: actions/upload-artifact@v4
+        if: always() && steps.images.outcome == 'success'
+        with:
+          name: ecp5-images-${{ matrix.config }}
+          path: envs/ecp5/trellis/images/${{ matrix.config }}/*.png
+          retention-days: 7
+
+      - name: Upload VCD file
+        uses: actions/upload-artifact@v4
+        if: steps.build-poc.outcome == 'success'
+        with:
+          name: ecp5-tb-vcd-${{ matrix.config }}
+          path: envs/ecp5/top_tb.vcd
+          retention-days: 7
+
+      - name: Upload bitstream
+        uses: actions/upload-artifact@v4
+        if: steps.synthesize.outcome == 'success'
+        with:
+          name: ecp5-bitstream-${{ matrix.config }}
+          path: envs/ecp5/trellis/out/utoss-risc-v.bit
+
+      - name: Upload ECP5 reports
+        uses: actions/upload-artifact@v4
+        if: steps.synthesize.outcome == 'success'
+        with:
+          name: ecp5-reports-${{ matrix.config }}
+          path: |
+            envs/ecp5/trellis/metrics/pnr_summary.txt
+            envs/ecp5/trellis/metrics/pnr_utilization.csv
+            envs/ecp5/trellis/metrics/pnr_utilization.pretty.txt
+            envs/ecp5/trellis/metrics/timing_summary.txt
+          retention-days: 7
+
+  ecp5-synthesis-metrics-diff:
+    timeout-minutes: 10
+    needs: ecp5
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download PR ECP5 reports
+        uses: actions/download-artifact@v4
+        with:
+          name: ecp5-reports-${{ matrix.config }}
+          path: pr-reports
+
+      - name: Download base branch ECP5 reports
+        uses: dawidd6/action-download-artifact@v3
+        continue-on-error: true
+        id: download-base
+        with:
+          workflow: ci.yaml
+          branch: ${{ github.base_ref }}
+          name: ecp5-reports-${{ matrix.config }}
+          path: base-reports
+          check_artifacts: true
+          search_artifacts: true
+
+      - name: Initialize metrics diff files
+        run: |
+          mkdir -p metric-diff
+
+      - name: Compare PnR Summary
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/pnr_summary.txt"
+          "pr-reports/pnr_summary.txt"
+          > metric-diff/pnr_summary.md
+
+      - name: Compare Utilization by Entity
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/pnr_utilization.pretty.txt"
+          "pr-reports/pnr_utilization.pretty.txt"
+          > metric-diff/pnr_by_entity.md
+
+      - name: Compare Timing Summary
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/timing_summary.txt"
+          "pr-reports/timing_summary.txt"
+          > metric-diff/timing_summary.md
+
+      - name: Upload per-config metrics diff
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecp5-synthesis-metrics-diff-${{ matrix.config }}
+          path: metric-diff/*.md
+          retention-days: 7
+
   hardening:
     timeout-minutes: 30
     needs:
@@ -510,6 +652,7 @@ jobs:
   update-generated-images:
     needs:
       - de1-soc
+      - ecp5
       - hardening
     if: >
       always() &&
@@ -533,6 +676,13 @@ jobs:
           pattern: de1-soc-images-*
           path: image-artifacts/de1-soc
 
+      - name: Download ECP5 placement images
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: ecp5-images-*
+          path: image-artifacts/ecp5
+
       - name: Download hardening images
         uses: actions/download-artifact@v4
         continue-on-error: true
@@ -550,6 +700,12 @@ jobs:
             mkdir -p "envs/de1-soc/quartus/images/$config"
             cp "$artifact"/*.png "envs/de1-soc/quartus/images/$config/"
           done
+          for artifact in image-artifacts/ecp5/ecp5-images-*; do
+            [ -d "$artifact" ] || continue
+            config="${artifact##*-}"
+            mkdir -p "envs/ecp5/trellis/images/$config"
+            cp "$artifact"/*.png "envs/ecp5/trellis/images/$config/"
+          done
           for artifact in image-artifacts/hardening/hardening-images-*; do
             [ -d "$artifact" ] || continue
             config="${artifact##*-}"
@@ -562,7 +718,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- envs/de1-soc/quartus/images envs/hardening/images
+          git add -- envs/de1-soc/quartus/images envs/ecp5/trellis/images envs/hardening/images
           if git diff --cached --quiet; then
             echo "Generated images are already up to date."
             exit 0
@@ -756,6 +912,7 @@ jobs:
     timeout-minutes: 10
     needs:
       - de1-soc-synthesis-metrics-diff
+      - ecp5-synthesis-metrics-diff
       - hardening-metrics-diff
       - benchmarks-metrics-diff
     if: >
@@ -763,7 +920,7 @@ jobs:
       !cancelled() &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event_name == 'pull_request' &&
-      (needs.de1-soc-synthesis-metrics-diff.result == 'success' || needs.hardening-metrics-diff.result == 'success' || needs.benchmarks-metrics-diff.result == 'success')
+      (needs.de1-soc-synthesis-metrics-diff.result == 'success' || needs.ecp5-synthesis-metrics-diff.result == 'success' || needs.hardening-metrics-diff.result == 'success' || needs.benchmarks-metrics-diff.result == 'success')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -777,6 +934,13 @@ jobs:
         continue-on-error: true
         with:
           pattern: de1-soc-synthesis-metrics-diff-*
+          path: metrics-diff
+
+      - name: Download per-config ECP5 metrics diff artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: ecp5-synthesis-metrics-diff-*
           path: metrics-diff
 
       - name: Download per-config Hardening metrics diff artifacts

@@ -1,0 +1,43 @@
+# Lattice Preference File (LPF) for UTOSS RISC-V on custom ECP5 board
+# Target device: LFE5U-25F-7BG256I (CABGA256, speed grade 7, industrial)
+#
+# NOTE: Pin locations below are valid Bank 0 (3.3V LVCMOS33) sites on the
+# CABGA256 package and serve as placeholders until the custom board PCB
+# pinout is finalized.
+
+# Primary clock input (Bank 0, PCLKT0_0)
+LOCATE COMP "clk" SITE "A7";
+IOBUF  PORT "clk" IO_TYPE=LVCMOS33;
+FREQUENCY PORT "clk" 10 MHZ;
+
+# Active-low reset input (Bank 0)
+LOCATE COMP "rst_n" SITE "A2";
+IOBUF  PORT "rst_n" IO_TYPE=LVCMOS33 PULLMODE=UP;
+
+# On-board status diodes / LEDs (Bank 0)
+LOCATE COMP "led[0]" SITE "A3";
+LOCATE COMP "led[1]" SITE "A4";
+LOCATE COMP "led[2]" SITE "A5";
+LOCATE COMP "led[3]" SITE "A6";
+IOBUF  PORT "led[0]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "led[1]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "led[2]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "led[3]" IO_TYPE=LVCMOS33;
+
+# General-purpose I/O pins (Bank 0)
+LOCATE COMP "gpio[0]" SITE "B3";
+LOCATE COMP "gpio[1]" SITE "B4";
+LOCATE COMP "gpio[2]" SITE "B5";
+LOCATE COMP "gpio[3]" SITE "B6";
+LOCATE COMP "gpio[4]" SITE "C4";
+LOCATE COMP "gpio[5]" SITE "C5";
+LOCATE COMP "gpio[6]" SITE "C6";
+LOCATE COMP "gpio[7]" SITE "D4";
+IOBUF  PORT "gpio[0]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "gpio[1]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "gpio[2]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "gpio[3]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "gpio[4]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "gpio[5]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "gpio[6]" IO_TYPE=LVCMOS33;
+IOBUF  PORT "gpio[7]" IO_TYPE=LVCMOS33;
