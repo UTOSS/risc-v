@@ -46,9 +46,15 @@ module utoss_riscv
   ext__zicsr__types::csr_wb_request_t wb_csr_wb_request;
   ext__zicsr__types::csr_request_t id_csr_request;
   data_t csr_data;
+  logic retire;
   csr_hw_request_if mtvec_hw_request();
   csr_hw_request_if mepc_hw_request();
   csr_hw_request_if mcause_hw_request();
+
+  // `minstret` counts the instructions that leave ID for EX: one that is stalled in ID stays there
+  // and is counted when it finally moves on, one that is flushed never enters EX at all, and an
+  // instruction that does enter EX always reaches WB because MEM and WB are never flushed.
+  assign retire = !reset && !stall_e && !flush_e;
 `endif
 
   // common declarations end
@@ -236,6 +242,7 @@ module utoss_riscv
 
     , .csr_request    ( id_csr_request    )
     , .csr_wb_request ( wb_csr_wb_request )
+    , .retire         ( retire            )
     , .csr_data       ( csr_data          )
 
     , .mcause_hw_request ( mcause_hw_request )
