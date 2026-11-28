@@ -234,6 +234,15 @@ riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 
 include utoss_riscv_dv/Makefile
 
+# ===========================
+# Benchmarks (CoreMark & Embench-IoT)
+# ===========================
+coremark:
+	$(MAKE) -C coremark run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+
+embench:
+	$(MAKE) -C embench run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
 GITHUB_ORG_NAME=utoss
@@ -292,6 +301,6 @@ test_diagrams:
         svlint svlint_tb check_timescale harden_pre_pnr harden \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
-        riscv_dv \
+        riscv_dv coremark embench \
 				diagrams block_diagrams timing_diagrams test_diagrams update_diagrams update_diagrmas \
 				FORCE

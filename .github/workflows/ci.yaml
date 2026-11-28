@@ -808,18 +808,119 @@ jobs:
           path: metric-diff/*.md
           retention-days: 7
 
+  benchmarks:
+    timeout-minutes: 30
+    needs:
+      - select_ci_image
+      - build_and_test
+    if: always() && needs.build_and_test.result == 'success'
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.select_ci_image.outputs.image-tag }}
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run CoreMark
+        run: make -C coremark run UTOSS_RISCV_CONFIG=${{ matrix.config }}
+
+      - name: Run Embench-IoT
+        run: make -C embench run UTOSS_RISCV_CONFIG=${{ matrix.config }} -j$(nproc)
+
+      - name: Collect benchmark reports
+        run: |
+          mkdir -p benchmark-reports
+          cp "coremark/out/${{ matrix.config }}/coremark_metrics.txt" benchmark-reports/coremark_metrics.txt
+          cp "embench/out/${{ matrix.config }}/embench_metrics.txt" benchmark-reports/embench_metrics.txt
+          cp "embench/out/${{ matrix.config }}/results.json" benchmark-reports/embench_results.json
+
+      - name: Upload benchmark reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-reports-${{ matrix.config }}
+          path: |
+            benchmark-reports/coremark_metrics.txt
+            benchmark-reports/embench_metrics.txt
+            benchmark-reports/embench_results.json
+          retention-days: 7
+
+  benchmarks-metrics-diff:
+    timeout-minutes: 10
+    needs: benchmarks
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    strategy:
+      matrix: *utoss-risc-v-matrix
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download PR benchmark reports
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-reports-${{ matrix.config }}
+          path: pr-reports
+
+      - name: Download base branch benchmark reports
+        uses: dawidd6/action-download-artifact@v3
+        continue-on-error: true
+        id: download-base
+        with:
+          workflow: ci.yaml
+          branch: ${{ github.base_ref }}
+          name: benchmark-reports-${{ matrix.config }}
+          path: base-reports
+          check_artifacts: true
+          search_artifacts: true
+
+      - name: Initialize metrics diff files
+        run: |
+          mkdir -p metric-diff
+
+      - name: Compare CoreMark Metrics
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/coremark_metrics.txt"
+          "pr-reports/coremark_metrics.txt"
+          > metric-diff/coremark.md
+
+      - name: Compare Embench-IoT Metrics
+        run: >
+          .github/scripts/metrics-diff/compare_metrics_diff.sh
+          "base-reports/embench_metrics.txt"
+          "pr-reports/embench_metrics.txt"
+          > metric-diff/embench.md
+
+      - name: Upload per-config benchmark metrics diff
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmarks-metrics-diff-${{ matrix.config }}
+          path: metric-diff/*.md
+          retention-days: 7
+
   metrics-diff-aggregate:
     timeout-minutes: 10
     needs:
       - de1-soc-synthesis-metrics-diff
       - ecp5-synthesis-metrics-diff
       - hardening-metrics-diff
+      - benchmarks-metrics-diff
     if: >
       always() &&
       !cancelled() &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event_name == 'pull_request' &&
-      (needs.de1-soc-synthesis-metrics-diff.result == 'success' || needs.ecp5-synthesis-metrics-diff.result == 'success' || needs.hardening-metrics-diff.result == 'success')
+      (needs.de1-soc-synthesis-metrics-diff.result == 'success' || needs.ecp5-synthesis-metrics-diff.result == 'success' || needs.hardening-metrics-diff.result == 'success' || needs.benchmarks-metrics-diff.result == 'success')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -847,6 +948,13 @@ jobs:
         continue-on-error: true
         with:
           pattern: hardening-metrics-diff-*
+          path: metrics-diff
+
+      - name: Download per-config Benchmark metrics diff artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: benchmarks-metrics-diff-*
           path: metrics-diff
 
       - name: Build combined comparison report

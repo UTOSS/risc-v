@@ -53,5 +53,13 @@ out/**
 build/**
 !build/.gitkeep
 
+coremark/build/
+coremark/out/
+coremark/upstream/
+
+embench/build/
+embench/out/
+embench/upstream/
+
 
 

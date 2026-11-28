@@ -33,7 +33,7 @@ fi
     echo "*No baseline available from main branch*"
     echo ""
     echo "<details>"
-    echo "<summary>View PR synthesis results</summary>"
+    echo "<summary>View PR results</summary>"
     echo ""
     echo "\`\`\`"
     cat "$PR_REPORT"

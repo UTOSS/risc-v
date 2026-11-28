@@ -17,7 +17,7 @@ append_metric_cell() {
   sed 's/^/      /' "$file" >> "$OUTPUT_FILE"
 }
 
-echo "## 📊 Synthesis & Hardening Report Summary Diff" > "$OUTPUT_FILE"
+echo "## 📊 Synthesis, Hardening & Benchmark Report Summary Diff" > "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 
 configs=$(
@@ -29,6 +29,8 @@ configs=$(
     elif [[ "$name" =~ ^ecp5-synthesis-metrics-diff-(.+)$ ]]; then
       echo "${BASH_REMATCH[1]}"
     elif [[ "$name" =~ ^hardening-metrics-diff-(.+)$ ]]; then
+      echo "${BASH_REMATCH[1]}"
+    elif [[ "$name" =~ ^benchmarks-metrics-diff-(.+)$ ]]; then
       echo "${BASH_REMATCH[1]}"
     fi
   done | sort -u
@@ -87,8 +89,18 @@ else
     echo "    - Gate breakdown" >> "$OUTPUT_FILE"
     append_metric_cell "$harden_dir/pnr_gate_breakdown.md"
     echo "" >> "$OUTPUT_FILE"
+
+    # Benchmarks section (CoreMark & Embench-IoT)
+    bench_dir="$ARTIFACTS_DIR/benchmarks-metrics-diff-${config}"
+    echo "  - **Benchmarks (CPI / Cycles)**" >> "$OUTPUT_FILE"
+    echo "    - CoreMark" >> "$OUTPUT_FILE"
+    append_metric_cell "$bench_dir/coremark.md"
+    echo "" >> "$OUTPUT_FILE"
+    echo "    - Embench-IoT" >> "$OUTPUT_FILE"
+    append_metric_cell "$bench_dir/embench.md"
+    echo "" >> "$OUTPUT_FILE"
   done
 fi
 
 echo "---" >> "$OUTPUT_FILE"
-echo "*Comparing synthesis & hardening results from main branch vs. this PR*" >> "$OUTPUT_FILE"
+echo "*Comparing synthesis, hardening & benchmark results from main branch vs. this PR*" >> "$OUTPUT_FILE"
