@@ -44,6 +44,8 @@ synthesize:
 	$(MAKE) -C quartus synthesize UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
 
 clean:
-	rm -rf $(OUT_DIR) $(BUILD_DIR)
+	@mkdir -p $(OUT_DIR) $(BUILD_DIR)
+	@find $(OUT_DIR) -mindepth 1 ! -name '.gitkeep' -delete
+	@find $(BUILD_DIR) -mindepth 1 ! -name '.gitkeep' -delete
 
 .PHONY: all run_tb poc synthesize clean

@@ -6,7 +6,7 @@
 # entries because the verbatim ORFS scripts next to this file (tapcell.tcl, fastroute.tcl) read
 # them from there, exactly as they do inside ORFS.
 
-# Tech/Libs (config.mk:7-8); LEF directory is installed by Dockerfile.ci
+# Tech/Libs (config.mk:7-8); LEF directory is installed by infra/Dockerfile.ci
 set ::env(TECH_LEF_NAME) NangateOpenCellLibrary.tech.lef
 set ::env(SC_LEF_NAME)   NangateOpenCellLibrary.macro.mod.lef
 

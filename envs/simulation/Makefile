@@ -1,6 +1,6 @@
 BASE_INCLUDE_DIR := ../../
-OUT_DIR          := $(BASE_INCLUDE_DIR)out
-BUILD_DIR        := $(BASE_INCLUDE_DIR)build/simulation
+OUT_DIR          := out
+BUILD_DIR        := build
 
 VERILATOR        := verilator
 
@@ -41,6 +41,8 @@ run: $(SIM_BIN)
 	$(SIM_BIN) $(if $(MEM),+MEM=$(MEM)) $(if $(CYCLES),+CYCLES=$(CYCLES)) $(if $(VCD),+VCD_PATH=$(VCD))
 
 clean:
-	rm -rf $(BUILD_DIR) $(SIM_BIN)
+	@mkdir -p $(BUILD_DIR) $(OUT_DIR)
+	@find $(BUILD_DIR) -mindepth 1 ! -name '.gitkeep' -delete
+	@find $(OUT_DIR) -mindepth 1 ! -name '.gitkeep' -delete
 
 .PHONY: all run clean

@@ -1,18 +1,32 @@
 *.vvp
 *.vcd
 
-riscof/riscof_work/
-riscof/riscv-arch-test/
-riscof/utoss_riscv/__pycache__/
-riscof/utoss_riscv/utoss_riscv_isa.yaml
-riscof/sail_cSim/__pycache__
-riscof/config.ini
-riscof/dut_sim
-utoss_riscv_dv/logs/
-mcy/database/
-mcy/tasks/
-mcy/config.mcy
+test/sv/out/**
+!test/sv/out/.gitkeep
+test/sv/build/**
+!test/sv/build/.gitkeep
+
+test/riscof/build/**
+!test/riscof/build/.gitkeep
+test/riscof/riscof_work/
+test/riscof/riscv-arch-test/
+test/riscof/utoss_riscv/__pycache__/
+test/riscof/utoss_riscv/utoss_riscv_isa.yaml
+test/riscof/sail_cSim/__pycache__
+test/riscof/config.ini
+test/riscof/dut_sim
+
+test/utoss_riscv_dv/logs/
+
+test/mcy/database/
+test/mcy/tasks/
+test/mcy/config.mcy
 debug.log
+
+envs/simulation/out/**
+!envs/simulation/out/.gitkeep
+envs/simulation/build/**
+!envs/simulation/build/.gitkeep
 
 envs/de1-soc/poc/poc*.mem
 envs/de1-soc/poc/poc*.mif
@@ -37,18 +51,17 @@ envs/hardening/out/**
 envs/hardening/metrics/*
 !envs/hardening/metrics/.gitkeep
 
-out/**
-!out/.gitkeep
-build/**
-!build/.gitkeep
+benchmarks/coremark/build/**
+!benchmarks/coremark/build/.gitkeep
+benchmarks/coremark/out/**
+!benchmarks/coremark/out/.gitkeep
+benchmarks/coremark/upstream/
 
-coremark/build/
-coremark/out/
-coremark/upstream/
-
-embench/build/
-embench/out/
-embench/upstream/
+benchmarks/embench/build/**
+!benchmarks/embench/build/.gitkeep
+benchmarks/embench/out/**
+!benchmarks/embench/out/.gitkeep
+benchmarks/embench/upstream/
 
 
 

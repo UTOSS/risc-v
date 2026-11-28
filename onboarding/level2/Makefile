@@ -15,7 +15,7 @@ LINK_SCRIPT   := link.ld
 
 REPO_ROOT     := ../..
 SIM_DIR       := $(REPO_ROOT)/envs/simulation
-SIM_BIN       := $(REPO_ROOT)/out/top_sim
+SIM_BIN       := $(SIM_DIR)/out/top_sim
 
 # Optional runtime overrides:
 #   CYCLES=<N>   Maximum cycles to simulate (e.g. make run CYCLES=50)

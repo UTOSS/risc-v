@@ -1,5 +1,5 @@
 # Reference only: these packages are preinstalled in the CI and devcontainer images
-# (Dockerfile.ci and .devcontainer/Dockerfile, ARG MATPLOTLIB_VERSION); nothing installs from this file.
+# (infra/Dockerfile.ci and .devcontainer/Dockerfile, ARG MATPLOTLIB_VERSION); nothing installs from this file.
 # Keep the versions here in sync with those Dockerfiles.
 #
 # matplotlib is pinned because the checked-in layout figures (images/) must render byte-for-byte the

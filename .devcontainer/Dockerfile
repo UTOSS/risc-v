@@ -79,7 +79,7 @@ ENV PATH="/opt/oss-cad-suite/bin:${PATH}"
 
 # install cocotb and pyuvm verification dependencies
 USER root
-COPY PyUVM/requirements.txt /tmp/pyuvm-requirements.txt
+COPY test/PyUVM/requirements.txt /tmp/pyuvm-requirements.txt
 RUN apt update && apt install -y python3 python3-pip libpython3-dev && \
     python3 -m pip install --no-cache-dir -r /tmp/pyuvm-requirements.txt
 

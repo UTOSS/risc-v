@@ -3,13 +3,22 @@
 # ===========================
 SRC_DIR      := src
 ENVS_DIR     := envs
-TB_DIR       := test
-OUT_DIR      := out
-BUILD_DIR    := build
+TEST_DIR     := test
+TB_DIR       := $(TEST_DIR)/sv
+TB_OUT_DIR   := $(TB_DIR)/out
+TB_BUILD_DIR := $(TB_DIR)/build
+BENCHMARKS_DIR := benchmarks
+INFRA_DIR    := infra
+CHECKS_DIR   := checks
+SVLINT_CONFIG := $(CHECKS_DIR)/svlint.toml
 VERILATOR    := verilator
 
 ENV          := simulation
-RISCOF_DIR           := riscof
+TOP_OUT_DIR  := $(ENVS_DIR)/$(ENV)/out
+TOP_BUILD_DIR := $(ENVS_DIR)/$(ENV)/build
+
+RISCOF_DIR           := $(TEST_DIR)/riscof
+RISCOF_BUILD_DIR     := $(RISCOF_DIR)/build
 RISCOF_DUT_SRC       := $(RISCOF_DIR)/dut.sv
 RISCOF_DUT_BIN       := $(RISCOF_DIR)/dut_sim
 RISCOF_CONFIG_TEMPLATE := $(RISCOF_DIR)/config.ini.m4
@@ -17,6 +26,9 @@ RISCOF_CONFIG        := $(RISCOF_DIR)/config.ini
 
 RISCOF_UTOSS_RISCV_ISA_CONFIG_TEMPLATE := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_isa.yaml.m4
 RISCOF_UTOSS_RISCV_ISA_CONFIG          := $(RISCOF_DIR)/utoss_riscv/utoss_riscv_isa.yaml
+
+MCY_DIR      := $(TEST_DIR)/mcy
+PYUVM_DIR    := $(TEST_DIR)/PyUVM
 
 # =============
 # Build config
@@ -67,13 +79,13 @@ TB_DEFINES := -DTESTBENCH
 # ===========================
 # Sources
 # ===========================
-SRCS := $(sort $(shell find $(SRC_DIR) -name "*.sv" -o -name "*.v")) \
+SRCS := $(sort $(shell find $(SRC_DIR) -not -path "*/build/*" \( -name "*.sv" -o -name "*.v" \))) \
         $(sort $(shell find $(ENVS_DIR)/$(ENV) -not -path "*/out/*" -not -path "*/build/*" \( -name "*.sv" -o -name "*.v" \)))
 
 TB_SRCS := $(wildcard $(TB_DIR)/*_tb.sv)
 TB_UTILS := $(TB_DIR)/utils.svh
-TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(OUT_DIR)/%_tb_sim, $(TB_SRCS))
-TB_VCD_BASE_PATH := test/vcd
+TB_BINS := $(patsubst $(TB_DIR)/%_tb.sv, $(TB_OUT_DIR)/%_tb_sim, $(TB_SRCS))
+TB_VCD_BASE_PATH := $(TB_DIR)/vcd
 
 # ===========================
 # Default
@@ -96,20 +108,20 @@ print_verilator_defines:
 # ===========================
 # Top module
 # ===========================
-build_top: $(OUT_DIR)/top_sim
+build_top: $(TOP_OUT_DIR)/top_sim
 
-run_top: $(OUT_DIR)/top_sim
+run_top: $(TOP_OUT_DIR)/top_sim
 	./$<
 
-$(OUT_DIR)/top_sim: $(SRCS)
-	@mkdir -p $(OUT_DIR)
-	@mkdir -p $(BUILD_DIR)/top
+$(TOP_OUT_DIR)/top_sim: $(SRCS)
+	@mkdir -p $(TOP_OUT_DIR)
+	@mkdir -p $(TOP_BUILD_DIR)/top
 	$(VERILATOR) $(TOP_VERILATOR_FLAGS) \
 		--top-module $(TOP_MODULE) \
-		--Mdir $(BUILD_DIR)/top \
+		--Mdir $(TOP_BUILD_DIR)/top \
 		-o top_sim \
 		$(SRCS)
-	cp $(BUILD_DIR)/top/top_sim $@
+	cp $(TOP_BUILD_DIR)/top/top_sim $@
 
 # ===========================
 # Testbenches
@@ -136,15 +148,15 @@ run_tb: build_tb
 	fi
 
 # Pattern rule for building individual testbenches
-$(OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
-	@mkdir -p $(OUT_DIR)
-	@mkdir -p $(BUILD_DIR)/$(basename $(notdir $@))
+$(TB_OUT_DIR)/%_tb_sim: $(TB_DIR)/%_tb.sv $(TB_UTILS) $(SRCS)
+	@mkdir -p $(TB_OUT_DIR)
+	@mkdir -p $(TB_BUILD_DIR)/$(basename $(notdir $@))
 	$(VERILATOR) $(VERILATOR_FLAGS) $(TB_DEFINES) \
 		--top-module $(basename $(notdir $<)) \
-		--Mdir $(BUILD_DIR)/$(basename $(notdir $@)) \
+		--Mdir $(TB_BUILD_DIR)/$(basename $(notdir $@)) \
 		-o $(basename $(notdir $@)) \
 		$(SRCS) $<
-	cp $(BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
+	cp $(TB_BUILD_DIR)/$(basename $(notdir $@))/$(basename $(notdir $@)) $@
 
 # ===========================
 # MCY mutation testing
@@ -153,7 +165,7 @@ MCY_SEED ?=
 MCY_SIZE ?= 50 # Number of mutations to run
 MCY_TOP ?= top # Name of top module
 
-# List of tb files to check against. By default. uses all files in test/
+# List of tb files to check against. By default, uses all files in test/sv/
 MCY_TESTS ?=
 
 # List of files to mutate. By default, uses all files in src/
@@ -163,17 +175,17 @@ MCY_FILES ?=
 mcy:
 	m4 -D M4__MCY_SEED="$(MCY_SEED)" -D M4__MCY_SIZE="$(MCY_SIZE)" \
 		-D M4__MCY_TOP="$(MCY_TOP)" -D M4__MCY_TESTS="$(MCY_TESTS)" \
-		-D M4__MCY_DEFINES="$(strip $(UTOSS_RISCV_VERILATOR_DEFINES))" mcy/config.mcy.m4 > mcy/config.mcy
-	cd mcy && mcy purge && MCY_FILES="$(MCY_FILES)" mcy init && mcy run
+		-D M4__MCY_DEFINES="$(strip $(UTOSS_RISCV_VERILATOR_DEFINES))" $(MCY_DIR)/config.mcy.m4 > $(MCY_DIR)/config.mcy
+	cd $(MCY_DIR) && mcy purge && MCY_FILES="$(MCY_FILES)" mcy init && mcy run
 
 # ===========================
 # PyUVM verification
 # ===========================
 .PHONY: test_pyuvm
 test_pyuvm:
-	cd PyUVM && PYTHONPATH="$(CURDIR)/PyUVM" python3 -m pytest --import-mode=importlib tests
-	$(MAKE) -C PyUVM MODULE=test_alu
-	$(MAKE) -C PyUVM MODULE=test_ecall UTOSS_RISCV_CONFIG=RV32IZicsr
+	cd $(PYUVM_DIR) && PYTHONPATH="$(CURDIR)/$(PYUVM_DIR)" python3 -m pytest --import-mode=importlib tests
+	$(MAKE) -C $(PYUVM_DIR) MODULE=test_alu
+	$(MAKE) -C $(PYUVM_DIR) MODULE=test_ecall UTOSS_RISCV_CONFIG=RV32IZicsr
 
 # ===========================
 # Create new testbench
@@ -189,13 +201,13 @@ new_tb:
 # RISCOF
 # ===========================
 $(RISCOF_DUT_BIN): $(SRCS) $(RISCOF_DUT_SRC) FORCE
-	@mkdir -p $(BUILD_DIR)/riscof
+	@mkdir -p $(RISCOF_BUILD_DIR)
 	$(VERILATOR) $(RISCOF_VERILATOR_FLAGS) \
 		--top-module dut \
-		--Mdir $(BUILD_DIR)/riscof \
+		--Mdir $(RISCOF_BUILD_DIR) \
 		-o dut_sim \
 		$(SRCS) $(RISCOF_DUT_SRC)
-	cp $(BUILD_DIR)/riscof/dut_sim $(RISCOF_DUT_BIN)
+	cp $(RISCOF_BUILD_DIR)/dut_sim $(RISCOF_DUT_BIN)
 
 $(RISCOF_CONFIG): $(RISCOF_CONFIG_TEMPLATE)
 	m4 -D M4__WORKSPACE_PATH="$(PWD)" $< > $@
@@ -232,16 +244,16 @@ riscof_run: $(RISCOF_UTOSS_RISCV_ISA_CONFIG) $(RISCOF_CONFIG) riscof_build_dut
 		--testfile=riscof_work/test_list.yaml \
 		--no-browser
 
-include utoss_riscv_dv/Makefile
+include $(TEST_DIR)/utoss_riscv_dv/Makefile
 
 # ===========================
 # Benchmarks (CoreMark & Embench-IoT)
 # ===========================
 coremark:
-	$(MAKE) -C coremark run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+	$(MAKE) -C $(BENCHMARKS_DIR)/coremark run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
 
 embench:
-	$(MAKE) -C embench run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+	$(MAKE) -C $(BENCHMARKS_DIR)/embench run UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
 
 # sidekick image builds
 GITHUB_CONTAINER_REGISTRY=ghcr.io
@@ -249,7 +261,7 @@ GITHUB_ORG_NAME=utoss
 QUARTUS_IMAGE_NAME=${GITHUB_CONTAINER_REGISTRY}/${GITHUB_ORG_NAME}/quartus:latest
 
 docker_build_quartus_image:
-	docker build -f Dockerfile.quartus -t ${QUARTUS_IMAGE_NAME} .
+	docker build -f $(INFRA_DIR)/Dockerfile.quartus -t ${QUARTUS_IMAGE_NAME} .
 	docker login ${GITHUB_CONTAINER_REGISTRY}
 	docker push ${QUARTUS_IMAGE_NAME}
 
@@ -266,15 +278,15 @@ harden:
 # Linting
 # ===========================
 svlint:
-	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
+	bash -o pipefail -c 'svlint -c $(SVLINT_CONFIG) $(if $(CI),--github-actions) $(SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
 svlint_tb:
-	bash -o pipefail -c 'svlint $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
+	bash -o pipefail -c 'svlint -c $(SVLINT_CONFIG) $(if $(CI),--github-actions) $(TB_SRCS) $(if $(CI),| sed "s/::error/::warning/g")'
 
 # every design unit in src/ must bring in a timescale itself, so that Verilator's TIMESCALEMOD
 # check does not depend on the order in which source files are passed to it
 check_timescale:
-	python3 checks/check_timescale.py $(if $(CI),--github-actions) $(SRC_DIR)
+	python3 $(CHECKS_DIR)/check_timescale.py $(if $(CI),--github-actions) $(SRC_DIR)
 
 lint: svlint svlint_tb check_timescale
 
@@ -298,7 +310,7 @@ test_diagrams:
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb mcy \
-        svlint svlint_tb check_timescale harden_pre_pnr harden \
+        svlint svlint_tb check_timescale lint harden_pre_pnr harden \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv coremark embench \
