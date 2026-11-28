@@ -50,8 +50,8 @@ harden_pre_pnr:
 		--pretty $(METRICS_DIR)/synthesis_utilization.pretty.txt \
 		--gates $(METRICS_DIR)/gate_breakdown.txt
 
-# full hardening: synthesis, then place & route + post-PnR utilization/gate breakdown/timing
-harden: harden_pre_pnr
+# synthesis + place & route + post-PnR metrics (without re-rendering checked-in layout PNGs)
+harden_pnr: harden_pre_pnr
 	@mkdir -p $(PNR_DIR) $(METRICS_DIR)
 	set -o pipefail; $(OPENROAD) -no_init -exit $(SCRIPTS_DIR)/harden.tcl 2>&1 | tee $(PNR_DIR)/pnr.log
 	$(PYTHON) $(SCRIPTS_DIR)/parse_pnr_metrics.py \
@@ -60,7 +60,9 @@ harden: harden_pre_pnr
 		--pretty $(METRICS_DIR)/pnr_utilization.pretty.txt \
 		--gates $(METRICS_DIR)/pnr_gate_breakdown.txt \
 		--timing $(METRICS_DIR)/pnr_timing.txt
-	$(MAKE) harden_images
+
+# full hardening: synthesis, place & route, metrics, and layout images
+harden: harden_pnr harden_images
 
 # draw the layout figures from the stage snapshots of the last `make harden` run: dump each
 # snapshot's geometry with OpenROAD, then plot it with matplotlib
@@ -96,4 +98,4 @@ clean:
 		find $(METRICS_DIR) -mindepth 1 ! -name '.gitkeep' -delete; \
 	fi
 
-.PHONY: all harden_pre_pnr harden harden_images test_harden_images clean
+.PHONY: all harden_pre_pnr harden_pnr harden harden_images test_harden_images clean

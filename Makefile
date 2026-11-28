@@ -257,10 +257,71 @@ docker_build_quartus_image:
 # Hardening
 # ===========================
 harden_pre_pnr:
-	$(MAKE) -C envs/hardening harden_pre_pnr
+	$(MAKE) -C envs/hardening harden_pre_pnr UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+
+harden_pnr:
+	$(MAKE) -C envs/hardening harden_pnr UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
 
 harden:
-	$(MAKE) -C envs/hardening harden
+	$(MAKE) -C envs/hardening harden UTOSS_RISCV_CONFIG=$(UTOSS_RISCV_CONFIG)
+
+# ===========================
+# Metrics & Diff Reports
+# ===========================
+METRICS_DIFF_SCRIPT := scripts/metrics/metrics_diff.py
+METRICS_BASE_REF    ?=
+METRICS_CONFIGS     ?= RV32I RV32IZbb_Zbkb RV32IZicsr
+METRICS_TARGETS     ?= de1-soc ecp5 hardening benchmarks
+METRICS_DIFF_OUT    ?= $(OUT_DIR)/metrics-diff.md
+
+BASE_DIR      ?= base-reports
+PR_DIR        ?= pr-reports
+DIFF_OUT_DIR  ?= metric-diff
+ARTIFACTS_DIR ?= metrics-diff
+OUTPUT_FILE   ?= comparison.md
+BASE_LABEL    ?= main branch
+HEAD_LABEL    ?= this PR
+
+metrics-diff-de1-soc:
+	python3 $(METRICS_DIFF_SCRIPT) de1-soc \
+		--base-dir "$(BASE_DIR)" \
+		--pr-dir "$(PR_DIR)" \
+		--out-dir "$(DIFF_OUT_DIR)"
+
+metrics-diff-ecp5:
+	python3 $(METRICS_DIFF_SCRIPT) ecp5 \
+		--base-dir "$(BASE_DIR)" \
+		--pr-dir "$(PR_DIR)" \
+		--out-dir "$(DIFF_OUT_DIR)"
+
+metrics-diff-hardening:
+	python3 $(METRICS_DIFF_SCRIPT) hardening \
+		--base-dir "$(BASE_DIR)" \
+		--pr-dir "$(PR_DIR)" \
+		--out-dir "$(DIFF_OUT_DIR)"
+
+metrics-diff-benchmarks:
+	python3 $(METRICS_DIFF_SCRIPT) benchmarks \
+		--base-dir "$(BASE_DIR)" \
+		--pr-dir "$(PR_DIR)" \
+		--out-dir "$(DIFF_OUT_DIR)"
+
+metrics-diff-aggregate:
+	python3 $(METRICS_DIFF_SCRIPT) aggregate \
+		--artifacts-dir "$(ARTIFACTS_DIR)" \
+		--output "$(OUTPUT_FILE)" \
+		--base-label "$(BASE_LABEL)" \
+		--head-label "$(HEAD_LABEL)"
+
+metrics-diff:
+	METRICS_BASE_REF="$(METRICS_BASE_REF)" \
+	METRICS_CONFIGS="$(METRICS_CONFIGS)" \
+	METRICS_TARGETS="$(METRICS_TARGETS)" \
+	METRICS_DIFF_OUT="$(METRICS_DIFF_OUT)" \
+		bash scripts/metrics/run_local_metrics_diff.sh
+
+test-metrics-diff:
+	python3 -m unittest discover -s scripts/metrics -p "test_*.py" -v
 
 # ===========================
 # Linting
@@ -298,7 +359,8 @@ test_diagrams:
 # Phony targets
 # ===========================
 .PHONY: all build_top run_top build_tb run_tb new_tb mcy \
-        svlint svlint_tb check_timescale harden_pre_pnr harden \
+        svlint svlint_tb check_timescale harden_pre_pnr harden_pnr harden \
+        metrics-diff metrics-diff-de1-soc metrics-diff-ecp5 metrics-diff-hardening metrics-diff-benchmarks metrics-diff-aggregate test-metrics-diff \
         riscof_build_dut riscof_validateyaml riscof_clone_archtest \
         riscof_generate_testlist riscof_run \
         riscv_dv coremark embench \

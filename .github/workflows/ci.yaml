@@ -68,6 +68,17 @@ jobs:
       tag-prefix: ""
     secrets: inherit
 
+  test_metrics_diff:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test metrics diff scripts
+        run: make test-metrics-diff
+
   svlint:
     needs: select_ci_image
     if: always() # dont skip if build_ci_image is skipped
@@ -423,30 +434,12 @@ jobs:
           check_artifacts: true
           search_artifacts: true
 
-      - name: Initialize metrics diff files
-        run: |
-          mkdir -p metric-diff
-
-      - name: Compare Fitter Summary
+      - name: Compare DE1-SoC metrics
         run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/output_files/utoss-risc-v.fit.summary"
-          "pr-reports/output_files/utoss-risc-v.fit.summary"
-          > metric-diff/fitter_summary.md
-
-      - name: Compare Fitter Resource Utilization by Entity
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/metrics/fitter_utilization.pretty.txt"
-          "pr-reports/metrics/fitter_utilization.pretty.txt"
-          > metric-diff/fitter_by_entity.md
-
-      - name: Compare Timing Analysis Summary
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/output_files/utoss-risc-v.sta.summary"
-          "pr-reports/output_files/utoss-risc-v.sta.summary"
-          > metric-diff/timing_summary.md
+          make metrics-diff-de1-soc
+          BASE_DIR=base-reports
+          PR_DIR=pr-reports
+          DIFF_OUT_DIR=metric-diff
 
       - name: Upload per-config metrics diff
         uses: actions/upload-artifact@v4
@@ -562,30 +555,12 @@ jobs:
           check_artifacts: true
           search_artifacts: true
 
-      - name: Initialize metrics diff files
-        run: |
-          mkdir -p metric-diff
-
-      - name: Compare PnR Summary
+      - name: Compare ECP5 metrics
         run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/pnr_summary.txt"
-          "pr-reports/pnr_summary.txt"
-          > metric-diff/pnr_summary.md
-
-      - name: Compare Utilization by Entity
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/pnr_utilization.pretty.txt"
-          "pr-reports/pnr_utilization.pretty.txt"
-          > metric-diff/pnr_by_entity.md
-
-      - name: Compare Timing Summary
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/timing_summary.txt"
-          "pr-reports/timing_summary.txt"
-          > metric-diff/timing_summary.md
+          make metrics-diff-ecp5
+          BASE_DIR=base-reports
+          PR_DIR=pr-reports
+          DIFF_OUT_DIR=metric-diff
 
       - name: Upload per-config metrics diff
         uses: actions/upload-artifact@v4
@@ -762,44 +737,12 @@ jobs:
           check_artifacts: true
           search_artifacts: true
 
-      - name: Initialize metrics diff files
-        run: |
-          mkdir -p metric-diff
-
-      - name: Compare Hardening Utilization by Entity
+      - name: Compare Hardening & PnR metrics
         run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/metrics/synthesis_utilization.pretty.txt"
-          "pr-reports/metrics/synthesis_utilization.pretty.txt"
-          > metric-diff/hardening_utilization.md
-
-      - name: Compare Hardening Gate Breakdown
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/metrics/gate_breakdown.txt"
-          "pr-reports/metrics/gate_breakdown.txt"
-          > metric-diff/hardening_gate_breakdown.md
-
-      - name: Compare Post-PnR Utilization by Hierarchy
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/metrics/pnr_utilization.pretty.txt"
-          "pr-reports/metrics/pnr_utilization.pretty.txt"
-          > metric-diff/pnr_utilization.md
-
-      - name: Compare Post-PnR Gate Breakdown
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/metrics/pnr_gate_breakdown.txt"
-          "pr-reports/metrics/pnr_gate_breakdown.txt"
-          > metric-diff/pnr_gate_breakdown.md
-
-      - name: Compare Post-PnR Timing
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/metrics/pnr_timing.txt"
-          "pr-reports/metrics/pnr_timing.txt"
-          > metric-diff/pnr_timing.md
+          make metrics-diff-hardening
+          BASE_DIR=base-reports
+          PR_DIR=pr-reports
+          DIFF_OUT_DIR=metric-diff
 
       - name: Upload per-config metrics diff
         uses: actions/upload-artifact@v4
@@ -883,23 +826,12 @@ jobs:
           check_artifacts: true
           search_artifacts: true
 
-      - name: Initialize metrics diff files
-        run: |
-          mkdir -p metric-diff
-
-      - name: Compare CoreMark Metrics
+      - name: Compare Benchmark metrics
         run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/coremark_metrics.txt"
-          "pr-reports/coremark_metrics.txt"
-          > metric-diff/coremark.md
-
-      - name: Compare Embench-IoT Metrics
-        run: >
-          .github/scripts/metrics-diff/compare_metrics_diff.sh
-          "base-reports/embench_metrics.txt"
-          "pr-reports/embench_metrics.txt"
-          > metric-diff/embench.md
+          make metrics-diff-benchmarks
+          BASE_DIR=base-reports
+          PR_DIR=pr-reports
+          DIFF_OUT_DIR=metric-diff
 
       - name: Upload per-config benchmark metrics diff
         uses: actions/upload-artifact@v4
@@ -958,14 +890,30 @@ jobs:
           path: metrics-diff
 
       - name: Build combined comparison report
-        run: bash .github/scripts/metrics-diff/aggregate_metrics.sh metrics-diff comparison.md
+        run: >
+          make metrics-diff-aggregate
+          ARTIFACTS_DIR=metrics-diff
+          OUTPUT_FILE=comparison.md
 
       - name: Publish comparison to job summary
         run: cat comparison.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload combined metrics diff report
+        id: upload-report
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-diff-report
+          path: comparison.md
+          retention-days: 7
 
       - name: Post comment on PR
         uses: actions/github-script@v7
         with:
           script: |
             const script = require('./.github/scripts/metrics-diff/post_comment.js');
-            await script({github, context, comparisonFile: 'comparison.md'});
+            await script({
+              github,
+              context,
+              comparisonFile: 'comparison.md',
+              artifactUrl: '${{ steps.upload-report.outputs.artifact-url }}',
+            });
